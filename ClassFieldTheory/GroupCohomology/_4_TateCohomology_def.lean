@@ -262,9 +262,54 @@ def TateCohomology.iso_groupHomology (n : ℕ) :
 -- def TateCohomology.isoGroupHomology (n : ℕ) (M : Rep R G) :
 --     (TateCohomology (-n - 2)).obj M ≅ groupHomology M (n + 1) :=  (isoGroupHomology' n).app M
 
-def TateCohomology_zero_iso (M : Rep R G) : (TateCohomology 0).obj M ≅
+namespace TateCohomology.zeroIso
+
+-- #check groupCohomology.d₀₁
+-- def d_₁₀ (M : Rep R G) : M.V ⟶ M.V := M.norm
+
+variable (M : Rep R G)
+
+@[simps] def sc : ShortComplex (ModuleCat R) where
+  X₁ := M.V
+  X₂ := M.V
+  X₃ := ModuleCat.of R (G → M.V)
+  f := M.norm
+  g := groupCohomology.d₀₁ M
+  zero := norm_comp_d_eq_zero M
+
+@[simps!] def isoShortComplexH0 :
+    (TateComplex M).sc 0 ≅ sc M :=
+  (TateComplex M).isoSc' (.negSucc 0) 0 1 (by simp) (by simp) ≪≫
+    ShortComplex.isoMk (chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
+      (by simp [TateComplex_d_neg_one])
+      (comp_d₀₁_eq M)
+
+omit [DecidableEq G] in
+lemma wi : ModuleCat.ofHom M.ρ.invariants.subtype ≫ (zeroIso.sc M).g = 0 := by
+  ext; simp
+
+omit [DecidableEq G] in
+def hi : IsLimit (KernelFork.ofι (ModuleCat.ofHom M.ρ.invariants.subtype) (wi M)) :=
+  KernelFork.IsLimit.ofι _ _ _ _ _
+
+end TateCohomology.zeroIso
+
+def TateCohomology.zeroIso (M : Rep R G) : (TateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) :=
-  sorry
+  ShortComplex.homologyMapIso (zeroIso.isoShortComplexH0 M) ≪≫
+    ShortComplex.LeftHomologyData.homologyIso
+      { K := ModuleCat.of R M.ρ.invariants
+        H := ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants)
+        i := ModuleCat.ofHom M.ρ.invariants.subtype
+        π := ModuleCat.ofHom (Submodule.mkQ _)
+        wi := zeroIso.wi M
+        hi := _ }
+
+    /- calc
+  _ ≅ ModuleCat.of R _ := (ShortComplex.moduleCatLeftHomologyData _).homologyIso
+  _ ≅ _ := _ -/
+-- ModuleCat.of R (↥(LinearMap.ker (ModuleCat.Hom.hom S.g)) ⧸ LinearMap.range S.moduleCatToCycles)
+
 
 def TateCohomology_neg_one_iso (M : Rep R G) : (TateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
