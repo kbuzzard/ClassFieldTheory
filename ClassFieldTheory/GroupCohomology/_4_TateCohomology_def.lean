@@ -44,6 +44,7 @@ def _root_.Rep.norm (M : Rep R G) : M.V ⟶ M.V := ModuleCat.ofHom M.ρ.norm
 This is the map from the coinvariants of `M : Rep R G` to the invariants, induced by the map
 `m ↦ ∑ g : G, M.ρ g m`.
 -/
+@[reducible]
 def TateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
   (zeroChainsIso M).hom ≫ M.norm ≫ (cochainsIso₀ M).inv
 
@@ -81,15 +82,12 @@ lemma comp_eq_zero (M : Rep R G) : M.norm ≫ (d₀₁ M) = 0 := by
 
 
 lemma TateNorm_comp_d (M : Rep R G) : TateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
-  ext : 1
-  expose_names
+  ext1 g
   simp only [ModuleCat.of_coe, CochainComplex.of_x, ChainComplex.of_x, Limits.comp_zero]
-  ext : 1
-  simp
-  apply LinearMap.ext
-  intro m
-  simp [TateNorm, groupHomology.zeroChainsIso]
-  change (cochainsIso₁ M).inv.hom ((d₀₁ M).hom (M.norm.hom (Finsupp.single _ _ _))) = _
+  ext1
+  simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, ModuleCat.hom_zero]
+  ext1 m
+  simp [groupHomology.zeroChainsIso]
   conv_lhs => enter [2]; rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp]
   rw [comp_eq_zero]
   simp
