@@ -284,13 +284,36 @@ variable (M : Rep R G)
       (by simp [TateComplex_d_neg_one])
       (comp_d₀₁_eq M)
 
-omit [DecidableEq G] in
-lemma wi : ModuleCat.ofHom M.ρ.invariants.subtype ≫ (zeroIso.sc M).g = 0 := by
+omit [Finite G] [DecidableEq G] in
+lemma wi : ModuleCat.ofHom M.ρ.invariants.subtype ≫ groupCohomology.d₀₁ M = 0 := by
   ext; simp
 
 omit [DecidableEq G] in
-def hi : IsLimit (KernelFork.ofι (ModuleCat.ofHom M.ρ.invariants.subtype) (wi M)) :=
-  KernelFork.IsLimit.ofι _ _ _ _ _
+@[simps!] def hi : IsLimit (KernelFork.ofι (ModuleCat.ofHom M.ρ.invariants.subtype) (wi M)) :=
+  IsKernel.isoKernel _ _ (ModuleCat.kernelIsLimit _)
+    (LinearEquiv.ofEq _ _ <| (groupCohomology.d₀₁_ker_eq_invariants M).symm).toModuleIso rfl
+
+omit [DecidableEq G] in
+lemma wπ : (hi M).lift (KernelFork.ofι M.norm (norm_comp_d_eq_zero M)) ≫
+    ModuleCat.ofHom ((range M.ρ.norm).submoduleOf M.ρ.invariants).mkQ = 0 := by
+  ext (x : M.V)
+  simp only [ModuleCat.of_coe, Fork.ofι_pt, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
+    LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply, ModuleCat.hom_zero, zero_apply,
+    Submodule.Quotient.mk_eq_zero]
+  refine ⟨_, rfl⟩
+
+omit [DecidableEq G] in
+@[simp] lemma hπ_aux (x : M.V) :
+    Subtype.val (((hi M).lift (KernelFork.ofι M.norm (norm_comp_d_eq_zero M))).hom x) =
+    M.norm x :=
+  rfl
+
+def hπ : IsColimit (CokernelCofork.ofπ (ModuleCat.ofHom ((range M.ρ.norm).submoduleOf
+    M.ρ.invariants).mkQ) (wπ M)) :=
+  IsCokernel.cokernelIso _ _ (ModuleCat.cokernelIsColimit _)
+    (Submodule.quotEquivOfEq _ _ <| Submodule.ext fun x ↦ by
+      exact ⟨fun ⟨y, hy⟩ ↦ hy ▸ ⟨y, rfl⟩, fun ⟨y, hy⟩ ↦ ⟨y, Subtype.ext hy⟩⟩).toModuleIso
+    rfl
 
 end TateCohomology.zeroIso
 
@@ -303,13 +326,9 @@ def TateCohomology.zeroIso (M : Rep R G) : (TateCohomology 0).obj M ≅
         i := ModuleCat.ofHom M.ρ.invariants.subtype
         π := ModuleCat.ofHom (Submodule.mkQ _)
         wi := zeroIso.wi M
-        hi := _ }
-
-    /- calc
-  _ ≅ ModuleCat.of R _ := (ShortComplex.moduleCatLeftHomologyData _).homologyIso
-  _ ≅ _ := _ -/
--- ModuleCat.of R (↥(LinearMap.ker (ModuleCat.Hom.hom S.g)) ⧸ LinearMap.range S.moduleCatToCycles)
-
+        hi := zeroIso.hi M
+        wπ := zeroIso.wπ M
+        hπ := zeroIso.hπ M }
 
 def TateCohomology_neg_one_iso (M : Rep R G) : (TateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
