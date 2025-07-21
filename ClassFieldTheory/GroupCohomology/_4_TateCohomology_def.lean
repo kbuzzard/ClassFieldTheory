@@ -35,12 +35,7 @@ end Representation
 
 namespace groupCohomology
 
-def _root_.groupHomology.zeroChainsIso (M : Rep R G) : (inhomogeneousChains M).X 0 ≅ M.V :=
-  LinearEquiv.toModuleIso (Finsupp.LinearEquiv.finsuppUnique R (↑M.V) (Fin 0 → G))
-
-def _root_.groupHomology.oneChainsIso (M : Rep R G) : (inhomogeneousChains M).X 1 ≅
-    ModuleCat.of R (G →₀ M.V) :=
-  LinearEquiv.toModuleIso <| Finsupp.mapDomain.linearEquiv _ _ <| Equiv.funUnique (Fin 1) G
+open groupHomology
 
 def _root_.Rep.norm (M : Rep R G) : M.V ⟶ M.V := ModuleCat.ofHom M.ρ.norm
 
@@ -50,19 +45,14 @@ This is the map from the coinvariants of `M : Rep R G` to the invariants, induce
 -/
 @[reducible]
 def TateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
-  (zeroChainsIso M).hom ≫ M.norm ≫ (cochainsIso₀ M).inv
+  (chainsIso₀ M).hom ≫ M.norm ≫ (cochainsIso₀ M).inv
 
--- lemma TateNorm_single (M : Rep R G) (m : M.V) :
---   TateNorm M m = ∑ g : G, M.ρ g m := by
---   simp only [TateNorm, zeroChainsIso_hom_apply, cochainsIso₀_hom_apply, LinearMap.coe_comp,
---     LinearMap.coe_sum, Function.comp_apply]
---   rfl
-
--- lemma cochainsIso₀_apply (M : Rep R G): (inhomogeneousCochains M).X 0 ≅ A.V :=
---   (LinearEquiv.funUnique (Fin 0 → G) k A).toModuleIso
+lemma TateNorm.def (M : Rep R G) :
+    TateNorm M = (chainsIso₀ M).hom ≫ M.norm ≫ (cochainsIso₀ M).inv := rfl
 
 omit [DecidableEq G] in
-lemma comp_eq_zero (M : Rep R G) : M.norm ≫ (d₀₁ M) = 0 := by
+@[simp]
+lemma norm_comp_d_eq_zero (M : Rep R G) : M.norm ≫ (d₀₁ M) = 0 := by
   ext : 1
   simp only [ModuleCat.hom_comp, ModuleCat.hom_zero, Rep.norm, ModuleCat.hom_ofHom]
   ext : 1
@@ -72,30 +62,13 @@ lemma comp_eq_zero (M : Rep R G) : M.norm ≫ (d₀₁ M) = 0 := by
   intro g
   rw [← LinearMap.comp_apply, Representation.norm_comm]
 
--- lemma comp_eq_zero' (M : Rep R G) : (d₀₁ M) ≫ M.norm = 0 := by
---   ext : 1
---   simp only [ModuleCat.hom_comp, ModuleCat.hom_zero, Rep.norm, ModuleCat.hom_ofHom]
---   ext : 1
---   expose_names
---   simp only [LinearMap.comp_apply, zero_apply]
---   rw [← LinearMap.mem_ker, d₀₁_ker_eq_invariants]
---   simp only [Representation.mem_invariants]
---   intro g
---   rw [← LinearMap.comp_apply, Representation.norm_comm']
-
-
 lemma TateNorm_comp_d (M : Rep R G) : TateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
-  ext1 g
-  simp only [ModuleCat.of_coe, CochainComplex.of_x, ChainComplex.of_x, Limits.comp_zero]
-  ext1
-  simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, ModuleCat.hom_zero]
-  ext1 m
-  simp [groupHomology.zeroChainsIso]
-  conv_lhs => enter [2]; rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp]
-  rw [comp_eq_zero]
-  simp
+  simp only [ChainComplex.of_x, CochainComplex.of_x, TateNorm.def, Category.assoc, eq_d₀₁_comp_inv,
+    Preadditive.IsIso.comp_left_eq_zero]
+  simp [← Category.assoc]
 
 omit [DecidableEq G] in
+@[simp]
 lemma comp_eq_zero' (M : Rep R G) : (groupHomology.d₁₀ M) ≫ M.norm = 0 := by
   ext1
   simp
@@ -106,24 +79,10 @@ lemma comp_eq_zero' (M : Rep R G) : (groupHomology.d₁₀ M) ≫ M.norm = 0 := 
   rw [← LinearMap.comp_apply, Representation.norm_comm']
   simp
 
-variable (M : Rep R G) in
-#check (inhomogeneousChains M).d 1 0
-
-variable (M : Rep R G) in
-#check groupHomology.d₁₀ M
-
 lemma d_comp_TateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ TateNorm M = 0 := by
-  ext1 f
-  simp
-  ext : 2
-  expose_names
-  simp [zeroChainsIso]
-  have (x0 : ModuleCat.of R _): (inhomogeneousChains M).d 1 0 x0 =
-    (groupHomology.zeroChainsIso M).inv ((groupHomology.d₁₀ M)
-    ((groupHomology.oneChainsIso M).toLinearEquiv x0)) := by
-
-    sorry
-  sorry
+  simp only [ChainComplex.of_x, CochainComplex.of_x, ← Category.assoc,
+    Preadditive.IsIso.comp_right_eq_zero]
+  simp [← comp_d₁₀_eq]
 
 def TateComplex.ConnectData (M : Rep R G) :
     CochainComplex.ConnectData (inhomogeneousChains M) (inhomogeneousCochains M) where
@@ -186,7 +145,7 @@ def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
         simp at v
         ext i
         simp at i
-        simp [cochainsIso₀, groupHomology.zeroChainsIso]
+        simp [cochainsIso₀, chainsIso₀]
 
         sorry else
         sorry
