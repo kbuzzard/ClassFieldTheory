@@ -38,6 +38,10 @@ namespace groupCohomology
 def _root_.groupHomology.zeroChainsIso (M : Rep R G) : (inhomogeneousChains M).X 0 ≅ M.V :=
   LinearEquiv.toModuleIso (Finsupp.LinearEquiv.finsuppUnique R (↑M.V) (Fin 0 → G))
 
+def _root_.groupHomology.oneChainsIso (M : Rep R G) : (inhomogeneousChains M).X 1 ≅
+    ModuleCat.of R (G →₀ M.V) :=
+  LinearEquiv.toModuleIso <| Finsupp.mapDomain.linearEquiv _ _ <| Equiv.funUnique (Fin 1) G
+
 def _root_.Rep.norm (M : Rep R G) : M.V ⟶ M.V := ModuleCat.ofHom M.ρ.norm
 
 /--
@@ -91,14 +95,34 @@ lemma TateNorm_comp_d (M : Rep R G) : TateNorm M ≫ (inhomogeneousCochains M).d
   rw [comp_eq_zero]
   simp
 
-lemma d_comp_TateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ TateNorm M = 0 := by
-  ext : 2
+omit [DecidableEq G] in
+lemma comp_eq_zero' (M : Rep R G) : (groupHomology.d₁₀ M) ≫ M.norm = 0 := by
+  ext1
   simp
-  apply LinearMap.ext
-  intro m
-  expose_names
+  ext g m
+  simp
+  rw [d₁₀_single]
+  simp [Rep.norm]
+  rw [← LinearMap.comp_apply, Representation.norm_comm']
   simp
 
+variable (M : Rep R G) in
+#check (inhomogeneousChains M).d 1 0
+
+variable (M : Rep R G) in
+#check groupHomology.d₁₀ M
+
+lemma d_comp_TateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ TateNorm M = 0 := by
+  ext1 f
+  simp
+  ext : 2
+  expose_names
+  simp [zeroChainsIso]
+  have (x0 : ModuleCat.of R _): (inhomogeneousChains M).d 1 0 x0 =
+    (groupHomology.zeroChainsIso M).inv ((groupHomology.d₁₀ M)
+    ((groupHomology.oneChainsIso M).toLinearEquiv x0)) := by
+
+    sorry
   sorry
 
 def TateComplex.ConnectData (M : Rep R G) :
@@ -162,7 +186,7 @@ def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
         simp at v
         ext i
         simp at i
-        simp [TateNorm, cochainsIso₀, groupHomology.zeroChainsIso]
+        simp [cochainsIso₀, groupHomology.zeroChainsIso]
 
         sorry else
         sorry
