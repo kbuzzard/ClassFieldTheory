@@ -62,7 +62,6 @@ lemma comp_eq_zero (M : Rep R G) : M.norm ≫ (d₀₁ M) = 0 := by
   ext : 1
   simp only [ModuleCat.hom_comp, ModuleCat.hom_zero, Rep.norm, ModuleCat.hom_ofHom]
   ext : 1
-  expose_names
   simp only [LinearMap.comp_apply, zero_apply]
   rw [← LinearMap.mem_ker, d₀₁_ker_eq_invariants]
   simp only [Representation.mem_invariants]
@@ -92,8 +91,13 @@ lemma TateNorm_comp_d (M : Rep R G) : TateNorm M ≫ (inhomogeneousCochains M).d
   rw [comp_eq_zero]
   simp
 
-lemma d_comp_TateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ TateNorm M  = 0 :=
-
+lemma d_comp_TateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ TateNorm M = 0 := by
+  ext : 2
+  simp
+  apply LinearMap.ext
+  intro m
+  expose_names
+  simp
 
   sorry
 
@@ -165,7 +169,7 @@ def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
   }
   map_id := sorry
   map_comp := sorry
-#synth Subsingleton (Fin 0)
+
 def TateCohomology (n : ℤ) : Rep R G ⥤ ModuleCat R :=
   TateComplexFunctor ⋙ HomologicalComplex.homologyFunctor _ _ n
 
