@@ -154,6 +154,7 @@ variable {C : Type u} [Category.{v, u} C] [HasZeroMorphisms C]
   {K' : ChainComplex C ℕ} {L' : CochainComplex C ℕ} (h' : CochainComplex.ConnectData K' L')
   (fK : K ⟶ K') (fL : L ⟶ L') (f_comm : fK.f 0 ≫ h'.d₀ = h.d₀ ≫ fL.f 0)
 
+@[simps]
 def _root_.CochainComplex.ConnectData.map : h.cochainComplex ⟶ h'.cochainComplex where
   f
     | Int.ofNat n => fL.f _
@@ -164,6 +165,15 @@ def _root_.CochainComplex.ConnectData.map : h.cochainComplex ⟶ h'.cochainCompl
     · exact fL.comm _ _
     · simpa
     · exact fK.comm _ _
+
+open CochainComplex.ConnectData in
+lemma _root_.CochainComplex.ConnectData.map_id : h.map h (𝟙 K) (𝟙 L) (by simp) = 𝟙 _ := by
+  ext m
+  obtain m | (_ | m) := m
+  · simp
+  · simp only [Int.reduceNegSucc, cochainComplex_X, Int.reduceNeg, X_negOne, map_f,
+      HomologicalComplex.id_f]; rfl
+  · simp
 
 open HomologicalComplex in
 lemma _root_.CochainComplex.ConnectData.homologyMap_map_eq_pos (n : ℕ) (m : ℤ) (hmn : m = n + 1)
@@ -208,8 +218,6 @@ def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
       rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp]
       erw [TateComplex.norm_comm]
       simp
-  map_id M := by sorry
-  map_comp := by sorry
 
 def TateCohomology (n : ℤ) : Rep R G ⥤ ModuleCat R :=
   TateComplexFunctor ⋙ HomologicalComplex.homologyFunctor _ _ n
@@ -227,6 +235,7 @@ instance TateComplexFunctor_preservesFiniteColimits :
     PreservesFiniteColimits (TateComplexFunctor (R := R) (G := G)) :=
   sorry
 
+omit [DecidableEq G] in
 lemma TateCohomology.cochainsFunctor_Exact {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) : (S.map TateComplexFunctor).ShortExact :=
   ShortComplex.ShortExact.map_of_exact hS TateComplexFunctor
