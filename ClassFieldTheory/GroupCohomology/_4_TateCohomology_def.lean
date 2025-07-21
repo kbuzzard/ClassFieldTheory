@@ -205,6 +205,11 @@ lemma _root_.CochainComplex.ConnectData.homologyMap_map_eq_neg (n : ℕ) (m : �
   obtain rfl : m = .negSucc (n + 1) := hmn
   simp [CochainComplex.ConnectData.map, -Int.natCast_add]
 
+-- open HomologicalComplex in
+-- lemma _root_.CochainComplex.ConnectData.zero_iso :
+--     homologyMap (h.cochainComplex)
+
+
 end ConnectData
 
 def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
@@ -270,6 +275,8 @@ def TateCohomology.iso_groupHomology (n : ℕ) :
 def TateCohomology_zero_iso (M : Rep R G) : (TateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) :=
   sorry
+
+#check groupCohomology.H0
 
 def TateCohomology_neg_one_iso (M : Rep R G) : (TateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
