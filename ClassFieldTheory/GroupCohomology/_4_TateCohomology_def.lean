@@ -98,15 +98,21 @@ noncomputable abbrev TateCohomology.δ {S : ShortComplex (Rep R G)} (hS : S.Shor
     (n : ℤ) : (TateCohomology n).obj S.X₃ ⟶ (TateCohomology (n + 1)).obj S.X₁ :=
   (TateCohomology.cochainsFunctor_Exact hS).δ n (n + 1) rfl
 
-def TateCohomology.iso_groupCohomology (n : ℕ) (M : Rep R G) :
+def TateCohomology.isoGroupCohomology' (n : ℕ) :
     TateCohomology (n + 1) ≅ groupCohomology.functor R G (n + 1) := by
   convert Iso.refl _
   sorry
 
-def TateCohomology.iso_groupHomology (n : ℕ) (M : Rep R G) :
-    (TateCohomology (-n - 2)).obj M ≅ groupHomology M (n + 1) := by
+def TateCohomology.isoGroupHomology' (n : ℕ) :
+    TateCohomology (-n - 2) ≅ groupHomology.functor R G (n + 1) := by
   convert Iso.refl _
   sorry
+
+def TateCohomology.isoGroupCohomology (n : ℕ) (M : Rep R G) :
+    (TateCohomology (n + 1)).obj M ≅ groupCohomology M (n + 1) := (isoGroupCohomology' n).app M
+
+def TateCohomology.isoGroupHomology (n : ℕ) (M : Rep R G) :
+    (TateCohomology (-n - 2)).obj M ≅ groupHomology M (n + 1) :=  (isoGroupHomology' n).app M
 
 def TateCohomology_zero_iso (M : Rep R G) : (TateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) :=
