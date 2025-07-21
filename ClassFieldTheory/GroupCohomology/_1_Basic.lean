@@ -105,17 +105,22 @@ If `M` is a trivial representation of a finite group `G` and `M` is torsion-free
 then `H¹(G,M) = 0`.
 -/
 lemma groupCohomology.H1_isZero_of_trivial [DecidableEq G] (M : Rep R G) [NoZeroSMulDivisors ℕ M]
-    [M.IsTrivial] [Finite G] : IsZero (H1 M) :=
+    [M.IsTrivial] [Finite G] : IsZero (H1 M) := by
   /-
   Since `M` is a trivial representation, we can identify `H¹(G,M)` with `Hom(G,M)`,
   which is zero if `G` is finite and `M` is torsion-free.
 
   This uses `groupCohomology.H1LequivOfIsTrivial`.
   -/
-  sorry
-
-noncomputable
-def groupHomology.functor (n : ℕ) [DecidableEq G]: Rep R G ⥤ ModuleCat R where
-  obj M := groupHomology M n
-  map f := groupHomology.map (MonoidHom.id G) f n
-  map_comp _ _ := map_id_comp _ _ _
+  refine IsZero.of_iso ?_ (groupCohomology.H1IsoOfIsTrivial M)
+  have (f : (ModuleCat.of R (Additive G →+ ↑M.V))) : f = 0
+  · ext g
+    have : IsOfFinAddOrder (Additive.ofMul g)
+    · exact isOfFinAddOrder_of_finite (Additive.ofMul g)
+    obtain ⟨n, hpos, hn⟩ := IsOfFinAddOrder.exists_nsmul_eq_zero this
+    have : n • f (Additive.ofMul g) = 0
+    · simp [← AddMonoidHom.map_nsmul, hn]
+    aesop
+  have : Subsingleton (ModuleCat.of R (Additive G →+ ↑M.V))
+  · exact subsingleton_of_forall_eq 0 this
+  exact ModuleCat.isZero_of_subsingleton (ModuleCat.of R (Additive G →+ ↑M.V))

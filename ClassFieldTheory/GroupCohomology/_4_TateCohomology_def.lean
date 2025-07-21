@@ -231,6 +231,12 @@ def TateCohomology.iso_groupCohomology (n : ℕ)  :
 --   convert Iso.refl _
 --   sorry
 
+def TateCohomology.isoGroupCohomology (n : ℕ) (M : Rep R G) :
+    (TateCohomology (n + 1)).obj M ≅ groupCohomology M (n + 1) := (isoGroupCohomology' n).app M
+
+def TateCohomology.isoGroupHomology (n : ℕ) (M : Rep R G) :
+    (TateCohomology (-n - 2)).obj M ≅ groupHomology M (n + 1) :=  (isoGroupHomology' n).app M
+
 def TateCohomology_zero_iso (M : Rep R G) : (TateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) :=
   sorry

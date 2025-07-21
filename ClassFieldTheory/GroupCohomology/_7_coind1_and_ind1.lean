@@ -295,7 +295,7 @@ The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` w
 instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type} [Group Q]
     {φ : G →* Q} (surj : Function.Surjective φ) :
     ((coind₁ G ⋙ quotientToInvariantsFunctor surj).obj A).TrivialCohomology :=
-  Rep.trivialCohomology_of_iso (Rep.coind₁_quotientToInvariants_iso A surj)
+  .of_iso (Rep.coind₁_quotientToInvariants_iso A surj)
 
 /--
 The functor which takes a representation `ρ` of `G` on `V` to the
@@ -343,14 +343,14 @@ This map takes an element `m : M` to the constant function with value `M`.
   inv_hom_id := by ext; simp
 
 instance coind₁'_trivialCohomology : (coind₁'.obj M).TrivialCohomology :=
-  trivialCohomology_of_iso (coind₁'_obj_iso_coind₁ M)
+  .of_iso (coind₁'_obj_iso_coind₁ M)
 
 instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
   have iso := (quotientToInvariantsFunctor surj).mapIso (coind₁'_obj_iso_coind₁ M)
   have _ : ((quotientToInvariantsFunctor surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
   · exact coind₁_quotientToInvariants_trivialCohomology M.V surj
-  apply trivialCohomology_of_iso iso
+  exact .of_iso iso
 
 variable (G)
 
@@ -435,7 +435,7 @@ def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V where
 
 instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
   let _ := (ind₁_trivialHomology G M.V)
-  trivialHomology_of_iso (ind₁'_obj_iso M)
+  .of_iso (ind₁'_obj_iso M)
 
 section FiniteGroup
 
@@ -477,26 +477,26 @@ lemma ind₁'_iso_coind₁'_app_apply [Finite G] (f : G →₀ M.V) (x : G) :
   rfl
 
 instance ind₁_trivialCohomology [Finite G] : TrivialCohomology ((ind₁ G).obj A) :=
-  trivialCohomology_of_iso (ind₁_obj_iso_coind₁_obj A)
+  .of_iso (ind₁_obj_iso_coind₁_obj A)
 
 instance ind₁'_trivialCohomology [Finite G] : TrivialCohomology (ind₁'.obj M) :=
-  trivialCohomology_of_iso (ind₁'_obj_iso M)
+  .of_iso (ind₁'_obj_iso M)
 
 instance coind₁_trivialHomology [Finite G] : TrivialHomology ((coind₁ G).obj A) :=
-  trivialHomology_of_iso (ind₁_obj_iso_coind₁_obj A).symm
+  .of_iso (ind₁_obj_iso_coind₁_obj A).symm
 
 instance coind₁'_trivialHomology [Finite G] : TrivialHomology (coind₁'.obj M) :=
-  trivialHomology_of_iso (coind₁'_obj_iso_coind₁ M)
+  .of_iso (coind₁'_obj_iso_coind₁ M)
 
 instance ind₁_trivialTateCohomology [Finite G] : TrivialTateCohomology ((ind₁ G).obj A) := sorry
 
 instance coind₁_trivialTate [Finite G] : TrivialTateCohomology ((coind₁ G).obj A) :=
-  trivialTateCohomology_of_iso (ind₁_obj_iso_coind₁_obj A).symm
+  .of_iso (ind₁_obj_iso_coind₁_obj A).symm
 
 instance coind₁'_trivialTate [Finite G] : TrivialTateCohomology (coind₁'.obj M) :=
-  trivialTateCohomology_of_iso (coind₁'_obj_iso_coind₁ M)
+  .of_iso (coind₁'_obj_iso_coind₁ M)
 
 instance ind₁'_trivialTate [Finite G] : TrivialTateCohomology (ind₁'.obj M) :=
-  trivialTateCohomology_of_iso (ind₁'_iso_coind₁'.app M)
+  .of_iso (ind₁'_iso_coind₁'.app M)
 
 end FiniteGroup

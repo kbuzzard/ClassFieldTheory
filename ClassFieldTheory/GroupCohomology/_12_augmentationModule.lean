@@ -174,7 +174,7 @@ For a finite group, the left regular representation is acyclic.
 -/
 instance _root_.Rep.leftRegular.trivialCohomology [Finite G] [DecidableEq G]:
     (leftRegular R G).TrivialCohomology :=
-  trivialCohomology_of_iso (iso_ind₁' R G)
+  .of_iso (iso_ind₁' R G)
 
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,R)` to `Hⁿ⁺²(G,aug R G)` is an isomorphism.

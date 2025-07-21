@@ -29,7 +29,7 @@ representation `M` to `H`, as an object of `Rep R H`.
 This is notation for `(Rep.res H).obj M`, which is an abbreviation of
 `(Action.res (ModuleCat R) H.subtype).obj M`
 -/
-notation M "↓" φ => (res φ).obj M
+notation3 M " ↓ " φ => (res φ).obj M
 
 /-
 `simp` lemmas for `Action.res` also work for `Rep.res` because it is an abbreviation:
