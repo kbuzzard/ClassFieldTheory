@@ -185,7 +185,18 @@ def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
           rw [add_comm]; ring
         rw [this]
         simp [TateComplex]}
-  map_comp := by sorry
+  map_comp f g := by
+    ext _ _
+    simp
+    split
+    · change _ = (ModuleCat.Hom.hom ((cochainsMap (MonoidHom.id G) g).f _) ∘ₗ
+        (ModuleCat.Hom.hom ((cochainsMap (MonoidHom.id G) f).f _))) _
+      exact congrFun rfl _
+    · change _ = (ModuleCat.Hom.hom ((chainsMap (MonoidHom.id G) g).f _) ∘ₗ
+        (ModuleCat.Hom.hom ((chainsMap (MonoidHom.id G) f).f _))) _
+      refine congrFun ?_ _
+      rw [← ModuleCat.hom_comp, chainsMap_id_comp]
+      rfl
 
 def TateCohomology (n : ℤ) : Rep R G ⥤ ModuleCat R :=
   TateComplexFunctor ⋙ HomologicalComplex.homologyFunctor _ _ n
