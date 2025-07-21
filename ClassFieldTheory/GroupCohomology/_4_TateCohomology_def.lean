@@ -1,4 +1,5 @@
 import Mathlib
+
 open
   CategoryTheory
   Limits
@@ -7,13 +8,15 @@ open
   Rep
   LinearMap
 
-variable {R : Type} [CommRing R]
-variable {G : Type} [Group G] [Finite G] [DecidableEq G]
+universe u v w
+
+variable {R : Type u} [CommRing R]
+variable {G : Type u} [Group G] [Finite G] [DecidableEq G]
 
 noncomputable section
 
 namespace Representation
-variable {A : Type} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
+variable {A : Type w} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
 
 def norm : A →ₗ[R] A :=
   let _ := Fintype.ofFinite G
@@ -35,7 +38,12 @@ end Representation
 
 namespace groupCohomology
 
-open groupHomology
+def _root_.groupHomology.zeroChainsIso (M : Rep.{u} R G) : (inhomogeneousChains M).X 0 ≅ M.V :=
+  LinearEquiv.toModuleIso (Finsupp.LinearEquiv.finsuppUnique R (↑M.V) (Fin 0 → G))
+
+def _root_.groupHomology.oneChainsIso (M : Rep R G) : (inhomogeneousChains M).X 1 ≅
+    ModuleCat.of R (G →₀ M.V) :=
+  LinearEquiv.toModuleIso <| Finsupp.mapDomain.linearEquiv _ _ <| Equiv.funUnique (Fin 1) G
 
 def _root_.Rep.norm (M : Rep R G) : M.V ⟶ M.V := ModuleCat.ofHom M.ρ.norm
 
@@ -101,6 +109,22 @@ lemma TateComplex_d_ofNat (M : Rep R G) (n : ℕ) :
 lemma TateComplex_d_neg (M : Rep R G) (n : ℕ) :
     (TateComplex M).d (-(n + 2 : ℤ)) (-(n + 1 : ℤ)) = (inhomogeneousChains M).d (n + 1) n := rfl
 
+omit [DecidableEq G] in
+lemma TateComplex.norm_comm (A B : Rep R G) (φ : A ⟶ B) :
+    φ.hom ≫ B.norm = A.norm ≫ φ.hom := by
+  ext1
+  simp
+  ext1 a
+  simp
+  conv_rhs =>
+    simp [Rep.norm, Representation.norm];
+    enter [2]; intro x; rw [Rep.hom_comm_apply]
+  simp [Rep.norm, Representation.norm]
+
+def TateComplex.norm' : End (forget₂ (Rep R G) (ModuleCat R)) where
+  app M := M.norm
+  naturality := TateComplex.norm_comm
+
 def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
   obj M := TateComplex M
   map φ := {
@@ -142,14 +166,18 @@ def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
           cochainsMap_id_f_hom_eq_compLeft]
         apply LinearMap.ext
         intro v
-        simp at v
         ext i
-        simp at i
         simp [cochainsIso₀, chainsIso₀]
-
-        sorry else
-        sorry
-  }
+        rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, TateComplex.norm_comm]
+        simp
+        else
+        simp
+        have : Int.negSucc a + 1 = Int.negSucc (a - 1) := by
+          simp [Int.negSucc_eq]
+          conv_rhs => enter [2]; rw [Nat.cast_sub (by omega), neg_sub]
+          rw [add_comm]; ring
+        rw [this]
+        simp [TateComplex]}
   map_id := sorry
   map_comp := sorry
 
@@ -178,15 +206,30 @@ noncomputable abbrev TateCohomology.δ {S : ShortComplex (Rep R G)} (hS : S.Shor
     (n : ℤ) : (TateCohomology n).obj S.X₃ ⟶ (TateCohomology (n + 1)).obj S.X₁ :=
   (TateCohomology.cochainsFunctor_Exact hS).δ n (n + 1) rfl
 
-def TateCohomology.iso_groupCohomology (n : ℕ) (M : Rep R G) :
-    TateCohomology (n + 1) ≅ groupCohomology.functor R G (n + 1) := by
-  convert Iso.refl _
-  sorry
+def TateCohomology.iso_groupCohomology (n : ℕ)  :
+    TateCohomology.{u} (n + 1) ≅ groupCohomology.functor.{u} R G (n + 1) where
+  hom := {
+    app M := (CochainComplex.ConnectData.homologyIsoPos (TateComplex.ConnectData M) n
+      (Int.ofNat n + 1) (by norm_num)).hom
+    naturality {X Y} := by
+      -- aesop
+      sorry
+  }
+  inv := {
+    app M := (CochainComplex.ConnectData.homologyIsoPos (TateComplex.ConnectData M) n
+      (Int.ofNat n + 1) (by norm_num)).inv
+    naturality := sorry
+  }
+  -- simp [groupCohomology.functor]
 
-def TateCohomology.iso_groupHomology (n : ℕ) (M : Rep R G) :
-    (TateCohomology (-n - 2)).obj M ≅ groupHomology M (n + 1) := by
-  convert Iso.refl _
-  sorry
+  -- -- sorry
+  -- -- convert Iso.refl _
+  -- -- sorry
+
+-- def TateCohomology.iso_groupHomology (n : ℕ) (M : Rep R G) :
+--     (TateCohomology (-n - 2)) ≅ groupHomology.functor M (n + 1) := by
+--   convert Iso.refl _
+--   sorry
 
 def TateCohomology_zero_iso (M : Rep R G) : (TateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) :=
