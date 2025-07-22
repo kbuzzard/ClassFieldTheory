@@ -70,7 +70,6 @@ instance : Mono (coind₁'_ι.app M) where
     specialize this l
     exact this
 
-
 /--
 The functor taking `M : Rep R G` to `up.obj M`, defined by the short exact sequence
 
@@ -84,8 +83,10 @@ of the cohomology of `M`.
   map f:= by
     apply cokernel.desc _ (coind₁'.map f ≫ cokernel.π _)
     rw [←Category.assoc, ←coind₁'_ι.naturality, Category.assoc, cokernel.condition, comp_zero]
-  map_id := sorry
-  map_comp := sorry
+  map_id := by simp
+  map_comp f g := by
+    simp only [Functor.id_obj, Functor.map_comp, Category.assoc]
+    refine coequalizer.hom_ext (by simp)
 
 /--
 The functor taking `M : Rep R G` to the short complex:
