@@ -140,12 +140,9 @@ variable [DecidableEq G]
 The connecting homomorphism from `H⁰(G,up M)` to `H¹(G,M)` is
 an epimorphism (i.e. surjective).
 -/
-instance up_δ_zero_epi : Epi (δ (up_shortExact M) 0 1 rfl) :=
-  /-
-  The next term in the long exact sequence is `H¹(G,coind₁'.obj M)`, which is zero
-  since coinduced representations are acyclic.
-  -/
-  sorry
+instance up_δ_zero_epi : Epi (δ (up_shortExact M) 0 1 rfl) := by
+  refine epi_δ_of_isZero (up_shortExact M) 0 ?_
+  simpa only [upSes_obj_X₂, zero_add] using isZero_of_trivialCohomology
 
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,up M)` to `Hⁿ⁺²(G,M)` is an isomorphism.
@@ -246,8 +243,8 @@ variable [Finite G]
 The connecting homomorphism `H⁰(G,down.obj M) ⟶ H¹(G, M)` is an epimorphism if `G` is finite.
 -/
 instance down_δ_zero_epi : Epi (δ (down_shortExact M) 0 1 rfl) := by
-  have := ind₁'_trivialCohomology M
-  sorry
+  refine epi_δ_of_isZero (down_shortExact M) 0 ?_
+  simpa only [zero_add] using isZero_of_trivialCohomology
 
 /--
 The connecting homomorphism `H⁰(H,down.obj M ↓ H) ⟶ H¹(H, M ↓ H)` is an epimorphism if
@@ -255,7 +252,7 @@ The connecting homomorphism `H⁰(H,down.obj M ↓ H) ⟶ H¹(H, M ↓ H)` is an
 -/
 instance down_δ_zero_res_epi {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) : Epi (δ (down_shortExact_res M φ) 0 1 rfl) := by
-  have := ind₁'_trivialCohomology M
+
   sorry
 
 /--
