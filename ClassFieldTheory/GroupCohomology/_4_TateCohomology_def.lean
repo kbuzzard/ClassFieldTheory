@@ -1,4 +1,5 @@
 import Mathlib
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 
 open
   CategoryTheory
@@ -328,7 +329,7 @@ def TateCohomology.iso_groupCohomology (n : ℕ)  :
     TateCohomology.{u} (n + 1) ≅ groupCohomology.functor.{u} R G (n + 1) :=
   NatIso.ofComponents
   (fun M ↦ (TateComplex.ConnectData M).homologyIsoPos _ _ (by norm_num)) <| fun {X Y} f ↦ by
-  simp only [TateCohomology, TateComplexFunctor, cochainsFunctor_map, Functor.comp_obj,
+  simp only [TateCohomology, TateComplexFunctor, Functor.comp_obj,
     HomologicalComplex.homologyFunctor_obj, functor_obj, Functor.comp_map,
     HomologicalComplex.homologyFunctor_map, functor_map]
   rw [CochainComplex.ConnectData.homologyMap_map_eq_pos (m := n + 1) (n := n) (hmn := rfl)]
@@ -338,7 +339,7 @@ def TateCohomology.iso_groupHomology (n : ℕ) :
     (TateCohomology (-n - 2)) ≅ groupHomology.functor R G (n + 1) :=
   NatIso.ofComponents (fun M ↦ CochainComplex.ConnectData.homologyIsoNeg
     (TateComplex.ConnectData M) _ _ (by norm_num; rw [add_comm]; rfl)) <| fun {X Y} f ↦ by
-    simp only [TateCohomology, TateComplexFunctor, cochainsFunctor_map, Functor.comp_obj,
+    simp only [TateCohomology, TateComplexFunctor, Functor.comp_obj,
       HomologicalComplex.homologyFunctor_obj, groupHomology.functor_obj, Functor.comp_map,
       HomologicalComplex.homologyFunctor_map, groupHomology.functor_map]
     rw [CochainComplex.ConnectData.homologyMap_map_eq_neg (m := _) (n := n) (hmn := by omega)]
@@ -360,7 +361,7 @@ variable (M : Rep R G)
     (TateComplex M).sc 0 ≅ sc M :=
   (TateComplex M).isoSc' (.negSucc 0) 0 1 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
-      (by simp? [TateComplex_d_neg_one])
+      (by simp [TateComplex_d_neg_one])
       (comp_d₀₁_eq M)
 
 end TateCohomology.zeroIso
