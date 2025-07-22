@@ -200,8 +200,10 @@ def down : Rep R G ⥤ Rep R G where
   obj M := kernel (ind₁'_π.app M)
   map φ := kernel.lift _ (kernel.ι _ ≫ ind₁'.map φ) (by
     rw [Category.assoc, ind₁'_π.naturality, ←Category.assoc, kernel.condition, zero_comp])
-  map_id _ := sorry
-  map_comp _ := sorry
+  map_id _ := by simp
+  map_comp f g := by
+    simp only [Functor.id_obj, Functor.map_comp]
+    refine equalizer.hom_ext (by simp)
 
 abbrev down_ses : ShortComplex (Rep R G) where
   X₁ := down.obj M
