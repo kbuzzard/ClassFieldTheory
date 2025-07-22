@@ -398,7 +398,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 
 \begin{definition} \label{def:norm}
 	\lean{Representation.norm,
-		groupCohomology.TateNorm}
+		groupCohomology.tateNorm}
 	\leanok
 	\uses{def:group homology}
 	Let $G$ be a finite group and $M$ a representation of $G$ over a commutative ring $R$.
@@ -426,6 +426,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	These equalities follow by reindexing the sums defining $N_G (m)$:
 	\[
 		g \bullet \sum_{x \in G} x \bullet m
@@ -439,13 +440,14 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{proof}
 
 \begin{lemma}	\label{lem:norm comp d}
-	\lean{groupCohomology.TateNorm_comp_d}
+	\lean{groupCohomology.tateNorm_comp_d}
 	\uses{lem:norm comm}
 	\leanok
 	The composition $d^0 \circ N_G$ is zero.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	The map $d^0 : M \to (G \to M)$ is given by
 	$(d^0 m)(g) = m - g\bullet m$.
 	Using this formula, we obtain (by Lemma \ref{lem:norm comm})
@@ -453,13 +455,14 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{proof}
 
 \begin{lemma}	\label{lem:d comp norm}
-	\lean{groupCohomology.d_comp_TateNorm}
+	\lean{groupCohomology.d_comp_tateNorm}
 	\uses{lem:norm comm, def:group homology}
 	\leanok
 	The composition $N_G \circ d_0$ is zero.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	Since the elements $\single(g,m)$ span $C_1(G,M)$, it's sufficient to check
 	that these are all mapped to $0$.
 	We have by \ref{lem:norm comm}
@@ -473,6 +476,9 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 
 \begin{lemma} \label{lem:norm naturality}
 	\uses{def:norm}
+	\lean{tateComplex.norm_comm,
+		tateComplex.norm'}
+	\leanok
 	For every map $f : A \to B$ in $\Rep(R,G)$ we have a commuting square:
 	\[
 		\begin{array}{rcl}
@@ -485,6 +491,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	For $m \in M$ we have
 	\[
 		f(N_G (m))
@@ -495,8 +502,8 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{proof}
 
 \begin{definition} \label{def:Tate cohomology}
-	\lean{groupCohomology.TateComplex,
-		groupCohomology.TateComplexFunctor,
+	\lean{groupCohomology.tateComplex,
+		groupCohomology.tateComplexFunctor,
 		groupCohomology.TateCohomology}
 	\uses{
 		lem:norm comp d,
@@ -526,12 +533,12 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{definition}
 
 \begin{lemma}	\label{lem:Tate cohomology is cohomology or homology}
-  \lean{groupCohomology.TateCohomology.iso_groupCohomology,
-    groupCohomology.TateCohomology.iso_groupHomology,
-		groupCohomology.TateCohomology_zero_iso,
-		groupCohomology.TateCohomology_zero_iso_of_isTrivial,
-		groupCohomology.TateCohomology_neg_one_iso,
-		groupCohomology.TateCohomology_neg_one_iso_of_isTrivial}
+  \lean{groupCohomology.TateCohomology.isoGroupCohomology,
+    groupCohomology.TateCohomology.isoGroupHomology,
+		groupCohomology.TateCohomology.zeroIso,
+		groupCohomology.TateCohomology.zeroIsoOfIsTrivial,
+		groupCohomology.TateCohomology.negOneIso,
+		groupCohomology.TateCohomology.negOneIsoOfIsTrivial}
 	\uses{def:Tate cohomology}
 	\leanok
 	Let $G$ be a finite group and $M$ a representation of $G$.
@@ -562,6 +569,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	This result is clear from the definition for $n > 0$ and $n < -1$. We'll discuss
 	the two remaining cases.
 
@@ -575,8 +583,8 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{proof}
 
 \begin{definition}	\label{def:Tate long exact sequence}
-  \lean{groupCohomology.TateComplexFunctor_preservesFiniteLimits,
-    groupCohomology.TateComplexFunctor_preservesFiniteColimits,
+  \lean{groupCohomology.preservesFiniteLimits_tateComplexFunctor,
+    groupCohomology.preservesFiniteColimits_tateComplexFunctor,
 		groupCohomology.TateCohomology.δ}
 	\uses{def:Tate cohomology,
 		lem:cochainsFunctor exact}

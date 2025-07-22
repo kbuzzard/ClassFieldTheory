@@ -92,7 +92,7 @@ instance TrivialTateCohomology.to_trivialCohomology [Finite G] {M : Rep R G}
     classical
     have : Finite H := .of_injective _ hφ
     exact (TrivialTateCohomology.isZero _ hφ).of_iso
-      (TateCohomology.iso_groupCohomology n|>.app (M ↓ φ)).symm
+      (TateCohomology.isoGroupCohomology n|>.app (M ↓ φ)).symm
 
 instance TrivialTateCohomology.to_trivialHomology [Finite G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialHomology where
@@ -100,7 +100,7 @@ instance TrivialTateCohomology.to_trivialHomology [Finite G] {M : Rep R G}
     classical
     have : Finite H := .of_injective _ hφ
     exact (TrivialTateCohomology.isZero _ hφ).of_iso
-      (TateCohomology.iso_groupHomology n|>.app (M ↓ φ)).symm
+      (TateCohomology.isoGroupHomology n|>.app (M ↓ φ)).symm
 
 instance [Subsingleton G] {M : Rep R G} :
     M.TrivialCohomology where
@@ -124,19 +124,19 @@ instance [Subsingleton G] {M : Rep R G} :
         rfl }
     match n with
     | .ofNat 0 =>
-      refine IsZero.of_iso ?_ (TateCohomology_zero_iso_of_isTrivial _)
+      refine IsZero.of_iso ?_ (TateCohomology.zeroIsoOfIsTrivial _)
       rw [Nat.card_unique, Nat.cast_one, LinearMap.range_eq_top_of_cancel (by exact fun _ _ a ↦ a)]
       exact ModuleCat.isZero_of_subsingleton _
     | .ofNat (n + 1) =>
       exact (isZero_of_trivialCohomology).of_iso
-        (TateCohomology.iso_groupCohomology n|>.app ((Rep.res f).obj M))
+        (TateCohomology.isoGroupCohomology n|>.app ((Rep.res f).obj M))
     | .negSucc 0 =>
-      refine IsZero.of_iso ?_ (TateCohomology_neg_one_iso_of_isTrivial _)
+      refine IsZero.of_iso ?_ (TateCohomology.negOneIsoOfIsTrivial _)
       rw [Nat.card_unique, Nat.cast_one, LinearMap.ker_eq_bot_of_cancel (by exact fun _ _ a ↦ a)]
       exact ModuleCat.isZero_of_subsingleton _
     | .negSucc (n + 1) =>
       rw [show Int.negSucc (n + 1) = -n - 2 by grind]
       exact isZero_of_trivialHomology.of_iso
-        (TateCohomology.iso_groupHomology n|>.app ((Rep.res f).obj M))
+        (TateCohomology.isoGroupHomology n|>.app ((Rep.res f).obj M))
 
 end Rep
