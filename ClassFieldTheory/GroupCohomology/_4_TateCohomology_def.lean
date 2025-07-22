@@ -36,6 +36,22 @@ lemma norm_comm' (g : G) : ρ.norm ∘ₗ ρ g = ρ.norm := LinearMap.ext fun a 
 
 end Representation
 
+-- section ConnectData
+
+-- variable {C : Type u} [Category.{v, u} C] [HasZeroMorphisms C]
+--   {K : ChainComplex.{v, u} C ℕ} {L : CochainComplex C ℕ}
+
+-- def ConnectDataFunctor (h : CochainComplex.ConnectData K L) :
+--     Rep R G ⥤ CochainComplex.{v} (ModuleCat R) ℤ where
+--   obj M := by
+--     -- refine (CochainComplex.ConnectData.cochainComplex (C := C) (K := K) _)
+--     sorry
+--   map := sorry
+--   map_id := sorry
+--   map_comp := sorry
+
+-- end ConnectData
+
 namespace groupCohomology
 
 def _root_.groupHomology.zeroChainsIso (M : Rep.{u} R G) : (inhomogeneousChains M).X 0 ≅ M.V :=
@@ -135,89 +151,98 @@ def TateComplex.norm' : End (forget₂ (Rep R G) (ModuleCat R)) where
   app M := M.norm
   naturality := TateComplex.norm_comm
 
+section ConnectData
+
+variable {C : Type u} [Category.{v, u} C] [HasZeroMorphisms C]
+  {K : ChainComplex C ℕ} {L : CochainComplex C ℕ} (h : CochainComplex.ConnectData K L)
+  {K' : ChainComplex C ℕ} {L' : CochainComplex C ℕ} (h' : CochainComplex.ConnectData K' L')
+  (fK : K ⟶ K') (fL : L ⟶ L') (f_comm : fK.f 0 ≫ h'.d₀ = h.d₀ ≫ fL.f 0)
+
+@[simps]
+def _root_.CochainComplex.ConnectData.map : h.cochainComplex ⟶ h'.cochainComplex where
+  f
+    | Int.ofNat n => fL.f _
+    | Int.negSucc n => fK.f _
+  comm' := fun i j ↦ by
+    rintro rfl
+    obtain i | (_ | i) := i
+    · exact fL.comm _ _
+    · simpa
+    · exact fK.comm _ _
+
+open CochainComplex.ConnectData in
+lemma _root_.CochainComplex.ConnectData.map_id : h.map h (𝟙 K) (𝟙 L) (by simp) = 𝟙 _ := by
+  ext m
+  obtain m | (_ | m) := m
+  · simp
+  · simp only [Int.reduceNegSucc, cochainComplex_X, Int.reduceNeg, X_negOne, map_f,
+      HomologicalComplex.id_f]; rfl
+  · simp
+
+open HomologicalComplex in
+lemma _root_.CochainComplex.ConnectData.homologyMap_map_eq_pos (n : ℕ) (m : ℤ) (hmn : m = n + 1)
+    [HasHomology h.cochainComplex m] [HasHomology L (n + 1)]
+    [HasHomology h'.cochainComplex m] [HasHomology L' (n + 1)] :
+    homologyMap (h.map h' fK fL f_comm) m =
+    (h.homologyIsoPos n m hmn).hom ≫ homologyMap fL (n + 1) ≫ (h'.homologyIsoPos n m hmn).inv := by
+  rw [← cancel_mono (HomologicalComplex.homologyι ..)]
+  dsimp [CochainComplex.ConnectData.homologyIsoPos]
+  simp only [homologyι_naturality, Category.assoc, restrictionHomologyIso_hom_homologyι,
+    homologyι_naturality_assoc, restrictionHomologyIso_inv_homologyι_assoc]
+  congr 1
+  rw [← cancel_epi (HomologicalComplex.pOpcycles ..)]
+  obtain rfl : m = ↑(n + 1) := hmn
+  simp [CochainComplex.ConnectData.map, -Int.natCast_add]
+
+open HomologicalComplex in
+lemma _root_.CochainComplex.ConnectData.homologyMap_map_eq_neg (n : ℕ) (m : ℤ) (hmn : m = -↑(n + 2))
+    [HasHomology h.cochainComplex m] [HasHomology K (n + 1)]
+    [HasHomology h'.cochainComplex m] [HasHomology K' (n + 1)] :
+    homologyMap (h.map h' fK fL f_comm) m =
+    (h.homologyIsoNeg n m hmn).hom ≫ homologyMap fK (n + 1) ≫ (h'.homologyIsoNeg n m hmn).inv := by
+  rw [← cancel_mono (HomologicalComplex.homologyι ..)]
+  dsimp [CochainComplex.ConnectData.homologyIsoNeg]
+  simp only [homologyι_naturality, Category.assoc, restrictionHomologyIso_hom_homologyι,
+    homologyι_naturality_assoc, restrictionHomologyIso_inv_homologyι_assoc]
+  congr 1
+  rw [← cancel_epi (HomologicalComplex.pOpcycles ..)]
+  obtain rfl : m = .negSucc (n + 1) := hmn
+  simp [CochainComplex.ConnectData.map, -Int.natCast_add]
+
+-- open HomologicalComplex in
+-- lemma _root_.CochainComplex.ConnectData.zero_iso :
+--     homologyMap (h.cochainComplex)
+
+
+end ConnectData
+
 def TateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
   obj M := TateComplex M
-  map φ := {
-    f
-    | Int.ofNat i => ((cochainsFunctor R G).map φ).f ↑i
-    | Int.negSucc i => (chainsMap (MonoidHom.id G) φ).f i
-    comm' := fun i j ↦ by
-      rintro rfl
-      cases i
-      · expose_names
-        ext : 1
-        simp only [TateComplex, TateComplex.ConnectData, Int.ofNat_eq_coe,
-          CochainComplex.ConnectData.cochainComplex_X, CochainComplex.ConnectData.X_ofNat,
-          CochainComplex.of_x, cochainsFunctor_obj, cochainsFunctor_map,
-          CochainComplex.ConnectData.cochainComplex_d, ModuleCat.hom_comp,
-          cochainsMap_id_f_hom_eq_compLeft]
-        erw [CochainComplex.ConnectData.d_ofNat, CochainComplex.ConnectData.d_ofNat]
-        simp only [CochainComplex.of_d]
-        have : Nat.cast a + 1 = Int.ofNat (a + 1) := by norm_cast
-        suffices ModuleCat.Hom.hom (inhomogeneousCochains.d Y a) ∘ₗ
-          (ModuleCat.Hom.hom φ.hom).compLeft (Fin a → G) =
-          ((cochainsMap (MonoidHom.id G) φ).f (a + 1)).hom ∘ₗ (inhomogeneousCochains.d X a).hom by
-          rw [this]
-          congr
-        simp only [CochainComplex.of_x, cochainsMap_id_f_hom_eq_compLeft]
-        apply LinearMap.ext
-        intro v
-        simp only [LinearMap.coe_comp, Function.comp_apply]
-        ext i
-        simp only [inhomogeneousCochains.d_hom_apply, compLeft_apply, Function.comp_apply, map_add,
-          map_sum, map_smul, add_left_inj]
-        exact Rep.hom_comm_apply _ _ _ |>.symm
-      · expose_names
-        if ha : a = 0 then
-        subst ha
-        simp [TateComplex, TateComplex.ConnectData]
-        ext : 1
-        simp only [ModuleCat.hom_comp,
-          cochainsMap_id_f_hom_eq_compLeft]
-        apply LinearMap.ext
-        intro v
-        ext i
-        simp [cochainsIso₀]
-        rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp]
-        erw [TateComplex.norm_comm]
-        simp
-        else
-        simp
-        have : Int.negSucc a + 1 = Int.negSucc (a - 1) := by
-          simp [Int.negSucc_eq]
-          conv_rhs => enter [2]; rw [Nat.cast_sub (by omega), neg_sub]
-          rw [add_comm]; ring
-        rw [this]
-        simp [TateComplex]}
-  map_comp f g := by
-    ext _ _
-    simp
-    split
-    · change _ = (ModuleCat.Hom.hom ((cochainsMap (MonoidHom.id G) g).f _) ∘ₗ
-        (ModuleCat.Hom.hom ((cochainsMap (MonoidHom.id G) f).f _))) _
-      exact congrFun rfl _
-    · change _ = (ModuleCat.Hom.hom ((chainsMap (MonoidHom.id G) g).f _) ∘ₗ
-        (ModuleCat.Hom.hom ((chainsMap (MonoidHom.id G) f).f _))) _
-      refine congrFun ?_ _
-      rw [← ModuleCat.hom_comp, chainsMap_id_comp]
-      rfl
+  map {X Y} φ := CochainComplex.ConnectData.map _ _ (chainsMap (.id G) φ) (cochainsFunctor R G |>.map φ)
+    <| by
+      simp
+      ext1
+      ext g1 x g2
+      simp [TateComplex.ConnectData, cochainsIso₀, chainsIso₀]
+      rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp]
+      erw [TateComplex.norm_comm]
+      simp
 
 def TateCohomology (n : ℤ) : Rep R G ⥤ ModuleCat R :=
   TateComplexFunctor ⋙ HomologicalComplex.homologyFunctor _ _ n
 
--- #synth groupCohomology
 /-
 The next two statements say that `TateComplexFunctor` is an exact functor.
 -/
 instance TateComplexFunctor_preservesFiniteLimits :
     PreservesFiniteLimits (TateComplexFunctor (R := R) (G := G)) := by
-
   sorry
 
 instance TateComplexFunctor_preservesFiniteColimits :
     PreservesFiniteColimits (TateComplexFunctor (R := R) (G := G)) :=
   sorry
 
+omit [DecidableEq G] in
 lemma TateCohomology.cochainsFunctor_Exact {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) : (S.map TateComplexFunctor).ShortExact :=
   ShortComplex.ShortExact.map_of_exact hS TateComplexFunctor
@@ -230,41 +255,47 @@ noncomputable abbrev TateCohomology.δ {S : ShortComplex (Rep R G)} (hS : S.Shor
   (TateCohomology.cochainsFunctor_Exact hS).δ n (n + 1) rfl
 
 def TateCohomology.iso_groupCohomology (n : ℕ)  :
-    TateCohomology.{u} (n + 1) ≅ groupCohomology.functor.{u} R G (n + 1) where
-  hom := {
-    app M := (CochainComplex.ConnectData.homologyIsoPos (TateComplex.ConnectData M) n
-      (Int.ofNat n + 1) (by norm_num)).hom
-    naturality {X Y} := by
-      -- aesop
-      sorry
-  }
-  inv := {
-    app M := (CochainComplex.ConnectData.homologyIsoPos (TateComplex.ConnectData M) n
-      (Int.ofNat n + 1) (by norm_num)).inv
-    naturality := sorry
-  }
-  -- simp [groupCohomology.functor]
-
-  -- -- sorry
-  -- -- convert Iso.refl _
-  -- -- sorry
+    TateCohomology.{u} (n + 1) ≅ groupCohomology.functor.{u} R G (n + 1) :=
+  NatIso.ofComponents
+  (fun M ↦ (TateComplex.ConnectData M).homologyIsoPos _ _ (by norm_num)) <| fun {X Y} f ↦ by
+  simp only [TateCohomology, TateComplexFunctor, cochainsFunctor_map, Functor.comp_obj,
+    HomologicalComplex.homologyFunctor_obj, functor_obj, Functor.comp_map,
+    HomologicalComplex.homologyFunctor_map, functor_map]
+  rw [CochainComplex.ConnectData.homologyMap_map_eq_pos (m := n + 1) (n := n) (hmn := rfl)]
+  simp
 
 def TateCohomology.iso_groupHomology (n : ℕ) :
     (TateCohomology (-n - 2)) ≅ groupHomology.functor R G (n + 1) :=
   NatIso.ofComponents (fun M ↦ CochainComplex.ConnectData.homologyIsoNeg
     (TateComplex.ConnectData M) _ _ (by norm_num; rw [add_comm]; rfl)) <| fun {X Y} f ↦ by
-    ext m
+    simp only [TateCohomology, TateComplexFunctor, cochainsFunctor_map, Functor.comp_obj,
+      HomologicalComplex.homologyFunctor_obj, groupHomology.functor_obj, Functor.comp_map,
+      HomologicalComplex.homologyFunctor_map, groupHomology.functor_map]
+    rw [CochainComplex.ConnectData.homologyMap_map_eq_neg (m := _) (n := n) (hmn := by omega)]
     simp
 
+namespace TateCohomology.zeroIso
 
+variable (M : Rep R G)
 
-    sorry
+@[simps] def sc : ShortComplex (ModuleCat R) where
+  X₁ := M.V
+  X₂ := M.V
+  X₃ := ModuleCat.of R (G → M.V)
+  f := M.norm
+  g := groupCohomology.d₀₁ M
+  zero := norm_comp_d_eq_zero M
 
--- def TateCohomology.isoGroupCohomology (n : ℕ) (M : Rep R G) :
---     (TateCohomology (n + 1)).obj M ≅ groupCohomology M (n + 1) := (isoGroupCohomology' n).app M
+@[simps!] def isoShortComplexH0 :
+    (TateComplex M).sc 0 ≅ sc M :=
+  (TateComplex M).isoSc' (.negSucc 0) 0 1 (by simp) (by simp) ≪≫
+    ShortComplex.isoMk (chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
+      (by simp [TateComplex_d_neg_one])
+      (comp_d₀₁_eq M)
 
--- def TateCohomology.isoGroupHomology (n : ℕ) (M : Rep R G) :
---     (TateCohomology (-n - 2)).obj M ≅ groupHomology M (n + 1) :=  (isoGroupHomology' n).app M
+omit [Finite G] [DecidableEq G] in
+lemma wi : ModuleCat.ofHom M.ρ.invariants.subtype ≫ groupCohomology.d₀₁ M = 0 := by
+  ext; simp
 
 namespace TateCohomology.zeroIso
 
@@ -305,6 +336,7 @@ def TateCohomology.zeroIso (M : Rep R G) : (TateCohomology 0).obj M ≅
 def TateCohomology_neg_one_iso (M : Rep R G) : (TateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
     (Submodule.span R (⋃ g : G, range (1 - M.ρ g))).submoduleOf (ker M.ρ.norm)) :=
+  
   sorry
 
 def TateCohomology_zero_iso_of_isTrivial (M : Rep R G) [M.ρ.IsTrivial] : (TateCohomology 0).obj M ≅
