@@ -26,7 +26,7 @@ lemma herbrandB1_le_herbrandZ1 : ρ.herbrandB1 ≤ ρ.herbrandZ1 := sorry
 
 abbrev herbrandH0 := ρ.herbrandZ0 ⧸ (ρ.herbrandB0.submoduleOf ρ.herbrandZ0)
 
-abbrev herbrandH1 := ρ.herbrandZ1 ⧸ (ρ.herbrandB0.submoduleOf ρ.herbrandZ1)
+abbrev herbrandH1 := ρ.herbrandZ1 ⧸ (ρ.herbrandB1.submoduleOf ρ.herbrandZ1)
 
 def herbrandQuotient : ℚ := Nat.card ρ.herbrandH0 / Nat.card ρ.herbrandH1
 
@@ -50,7 +50,7 @@ def herbrandQuotient (M : Rep R G) : ℚ :=
 
 lemma herbrandQuotient_of : herbrandQuotient (of ρ) = ρ.herbrandQuotient :=
   /-
-  show that `herbrandH0` and `herbrandH1` are isomorphis to the Tate cohomology groups
+  show that `herbrandH0` and `herbrandH1` are isomorphic to the Tate cohomology groups
   `H⁰` and `H¹`. Then use the periodicity of the Tate cohomology groups.
   -/
   sorry
