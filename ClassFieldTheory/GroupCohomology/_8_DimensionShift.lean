@@ -67,11 +67,12 @@ of the cohomology of `M`.
 -/
 @[simps] def up : Rep R G ⥤ Rep R G where
   obj M := cokernel (coind₁'_ι.app M)
-  map f:= by
+  map f := by
     apply cokernel.desc _ (coind₁'.map f ≫ cokernel.π _)
     rw [←Category.assoc, ←coind₁'_ι.naturality, Category.assoc, cokernel.condition, comp_zero]
-  map_id := sorry
-  map_comp := sorry
+  map_id X := by simp
+  map_comp _ _ := by
+    simpa only [Functor.id_obj, Functor.map_comp] using coequalizer.hom_ext (by simp)
 
 /--
 The functor taking `M : Rep R G` to the short complex:
@@ -200,8 +201,9 @@ def down : Rep R G ⥤ Rep R G where
   obj M := kernel (ind₁'_π.app M)
   map φ := kernel.lift _ (kernel.ι _ ≫ ind₁'.map φ) (by
     rw [Category.assoc, ind₁'_π.naturality, ←Category.assoc, kernel.condition, zero_comp])
-  map_id _ := sorry
-  map_comp _ := sorry
+  map_id _ := by simp
+  map_comp _ _ := by
+    simpa only [Functor.id_obj, Functor.map_comp] using equalizer.hom_ext (by simp)
 
 abbrev down_ses : ShortComplex (Rep R G) where
   X₁ := down.obj M
