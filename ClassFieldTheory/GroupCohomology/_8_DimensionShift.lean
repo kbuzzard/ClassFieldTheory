@@ -147,9 +147,8 @@ def up_δiso (n : ℕ) : groupCohomology (up.obj M) (n + 1) ≅ groupCohomology 
 def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n + 2) where
   hom := {
     app M := (up_δiso M n).hom
-    naturality := sorry
-    -- by
-      -- simp only [up_δiso, asIso]
+    naturality := by
+      simp only [up_δiso, asIso]
 
   }
   inv := {
@@ -290,32 +289,24 @@ variable [Finite G]
 open Rep
   dimensionShift
 
-lemma isZero_of_trivialTateCohomology' [DecidableEq G] (M : Rep R G)
+-- An explicit version of `isZero_of_trivialTateCohomology`
+private lemma isZero_of_trivialTateCohomology' [DecidableEq G] (M : Rep R G)
     [M.TrivialTateCohomology] (n : ℤ) : IsZero ((TateComplexFunctor.obj M).homology n) :=
   TrivialTateCohomology.isZero (.id G) Function.injective_id
 
 instance instIsIso_up_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
     IsIso (TateCohomology.δ (up_shortExact M) n) := by
-  have t : TrivialTateCohomology (coind₁'.obj M) := inferInstance
-  refine
-    ShortComplex.ShortExact.isIso_δ (TateCohomology.cochainsFunctor_Exact (up_shortExact M)) n
-      (n + 1) (TateCohomology.δ._proof_2 n) ?_ ?_
-  simp
-  exact isZero_of_trivialTateCohomology' (coind₁'.obj M) n
-  simp
-  exact isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1)
-
+  have _ : TrivialTateCohomology (coind₁'.obj M) := inferInstance
+  refine ShortComplex.ShortExact.isIso_δ (TateCohomology.cochainsFunctor_Exact (up_shortExact M))
+    n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
+    (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
 
 instance instIsIso_down_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
     IsIso (TateCohomology.δ (down_shortExact M) n) := by
-  have t : TrivialTateCohomology (ind₁'.obj M) := inferInstance
-  refine
-    ShortComplex.ShortExact.isIso_δ (TateCohomology.cochainsFunctor_Exact (down_shortExact M)) n
-      (n + 1) (TateCohomology.δ._proof_2 n) ?_ ?_
-  simp
-  exact isZero_of_trivialTateCohomology' (ind₁'.obj M) n
-  simp
-  exact isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1)
+  have _ : TrivialTateCohomology (ind₁'.obj M) := inferInstance
+  refine ShortComplex.ShortExact.isIso_δ (TateCohomology.cochainsFunctor_Exact (down_shortExact M))
+    n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
+    (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
 
 def upδiso_Tate (n : ℤ) [DecidableEq G] (M : Rep R G) :
     (TateCohomology n).obj (up.obj M) ≅ (TateCohomology (n + 1)).obj M :=
