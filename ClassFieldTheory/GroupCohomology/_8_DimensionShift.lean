@@ -148,6 +148,9 @@ def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n 
   hom := {
     app M := (up_δiso M n).hom
     naturality := sorry
+    -- by
+      -- simp only [up_δiso, asIso]
+
   }
   inv := {
     app M := (up_δiso M n).inv
@@ -287,7 +290,7 @@ variable [Finite G]
 open Rep
   dimensionShift
 
-lemma isZero_of_trivialTateCohomology' [Finite G] [DecidableEq G] (M : Rep R G)
+lemma isZero_of_trivialTateCohomology' [DecidableEq G] (M : Rep R G)
     [M.TrivialTateCohomology] (n : ℤ) : IsZero ((TateComplexFunctor.obj M).homology n) :=
   TrivialTateCohomology.isZero (.id G) Function.injective_id
 
@@ -316,8 +319,6 @@ instance instIsIso_down_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
 
 def upδiso_Tate (n : ℤ) [DecidableEq G] (M : Rep R G) :
     (TateCohomology n).obj (up.obj M) ≅ (TateCohomology (n + 1)).obj M :=
-  -- typeclass inference spends a long time failing to apply `instIsIso_down_shortExact`
-  -- so let's shortcut the instance
   have := instIsIso_up_shortExact M n
   asIso (TateCohomology.δ (up_shortExact M) n)
 
