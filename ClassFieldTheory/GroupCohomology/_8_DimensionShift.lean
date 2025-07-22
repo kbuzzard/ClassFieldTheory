@@ -147,11 +147,9 @@ instance up_δ_zero_epi : Epi (δ (up_shortExact M) 0 1 rfl) := by
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,up M)` to `Hⁿ⁺²(G,M)` is an isomorphism.
 -/
-instance up_δ_isIso (n : ℕ) : IsIso (δ (up_shortExact M) (n + 1) (n + 2) rfl) :=
-  /-
-  This map is sandwiched between two zeros by `groupCohomology.ofCoind₁`.
-  -/
-  sorry
+instance up_δ_isIso (n : ℕ) : IsIso (δ (up_shortExact M) (n + 1) (n + 2) rfl) := by
+  refine isIso_δ_of_isZero (up_shortExact M) (n + 1) ?_ ?_
+  all_goals simpa only [upSes_obj_X₂] using isZero_of_trivialCohomology
 
 def up_δiso (n : ℕ) : groupCohomology (up.obj M) (n + 1) ≅ groupCohomology M (n + 2) :=
   asIso (δ (up_shortExact M) (n + 1) (n + 2) rfl)
@@ -181,11 +179,9 @@ isomorphism.
 -/
 instance up_δ_isIso_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) (n : ℕ) : IsIso (δ (up_shortExact_res M φ) (n + 1) (n + 2) rfl)
-  :=
-  /-
-  This map is sandwiched between two zeros by `groupCohomology.ofCoind₁`.
-  -/
-  sorry
+  := by
+  refine isIso_δ_of_isZero (up_shortExact_res M φ) (n + 1) ?_ ?_
+  all_goals simpa only [ShortComplex.map_X₂, upSes_obj_X₂] using TrivialCohomology.isZero φ inj
 
 def up_δiso_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) (n : ℕ) :
@@ -258,8 +254,8 @@ The connecting homomorphism `Hⁿ⁺¹(G,down.obj M) ⟶ Hⁿ⁺²(G, M)` is an 
 if `G` is finite.
 -/
 instance down_δ_isIso  (n : ℕ) : IsIso (δ (down_shortExact M) (n + 1) (n + 2) rfl) := by
-  have := ind₁'_trivialCohomology M
-  sorry
+  refine isIso_δ_of_isZero (down_shortExact M) (n + 1) ?_ ?_
+  all_goals exact isZero_of_trivialCohomology
 
 def down_δiso (n : ℕ) : groupCohomology M (n + 1) ≅ groupCohomology (down.obj M) (n + 2) :=
   asIso (δ (down_shortExact M) (n + 1) (n + 2) rfl)
@@ -280,8 +276,8 @@ if `H` is a subgroup of a finite group `G`.
 -/
 instance down_δ_res_isIso (n : ℕ) {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
     (inj : Function.Injective φ) : IsIso (δ (down_shortExact_res M φ) (n + 1) (n + 2) rfl) := by
-  have := ind₁'_trivialCohomology M
-  sorry
+  refine isIso_δ_of_isZero (down_shortExact_res M φ) (n + 1) ?_ ?_
+  all_goals simpa only [ShortComplex.map_X₂] using TrivialCohomology.isZero φ inj
 
 def down_δiso_res {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
     (inj : Function.Injective φ) (n : ℕ) :
