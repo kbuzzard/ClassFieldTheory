@@ -54,7 +54,6 @@ instance : Mono (coind₁'_ι.app M) where
   right_cancellation := by
     intro Z g f hgf
     ext n
-    have l := congrFun (congrArg DFunLike.coe (congrArg hom hgf)) n
     have : Function.Injective (hom (coind₁'_ι.app M)) := by
       refine (injective_iff_map_eq_zero' (hom (coind₁'_ι.app M))).mpr (fun a  => ?_)
       constructor
@@ -62,7 +61,7 @@ instance : Mono (coind₁'_ι.app M) where
         have : Function.const G a = 0 := by exact g
         simpa [Function.const_eq_zero] using this
       · exact fun a_1 ↦ congrArg (⇑(hom (coind₁'_ι.app M))) a_1
-    exact this l
+    exact this (congrFun (congrArg DFunLike.coe (congrArg hom hgf)) n)
 
 /--
 The functor taking `M : Rep R G` to `up.obj M`, defined by the short exact sequence
@@ -78,9 +77,7 @@ of the cohomology of `M`.
     apply cokernel.desc _ (coind₁'.map f ≫ cokernel.π _)
     rw [←Category.assoc, ←coind₁'_ι.naturality, Category.assoc, cokernel.condition, comp_zero]
   map_id := by simp
-  map_comp f g := by
-    simp only [Functor.id_obj, Functor.map_comp, Category.assoc]
-    refine coequalizer.hom_ext (by simp)
+  map_comp f g := by simpa only using coequalizer.hom_ext (by simp)
 
 /--
 The functor taking `M : Rep R G` to the short complex:
@@ -201,9 +198,7 @@ def down : Rep R G ⥤ Rep R G where
   map φ := kernel.lift _ (kernel.ι _ ≫ ind₁'.map φ) (by
     rw [Category.assoc, ind₁'_π.naturality, ←Category.assoc, kernel.condition, zero_comp])
   map_id _ := by simp
-  map_comp f g := by
-    simp only [Functor.id_obj, Functor.map_comp]
-    refine equalizer.hom_ext (by simp)
+  map_comp f g := by simpa only using equalizer.hom_ext (by simp)
 
 abbrev down_ses : ShortComplex (Rep R G) where
   X₁ := down.obj M
