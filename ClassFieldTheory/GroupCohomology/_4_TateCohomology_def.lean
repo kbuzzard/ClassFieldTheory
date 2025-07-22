@@ -293,32 +293,6 @@ variable (M : Rep R G)
       (by simp [TateComplex_d_neg_one])
       (comp_d₀₁_eq M)
 
-omit [Finite G] [DecidableEq G] in
-lemma wi : ModuleCat.ofHom M.ρ.invariants.subtype ≫ groupCohomology.d₀₁ M = 0 := by
-  ext; simp
-
-namespace TateCohomology.zeroIso
-
--- #check groupCohomology.d₀₁
--- def d_₁₀ (M : Rep R G) : M.V ⟶ M.V := M.norm
-
-variable (M : Rep R G)
-
-@[simps] def sc : ShortComplex (ModuleCat R) where
-  X₁ := M.V
-  X₂ := M.V
-  X₃ := ModuleCat.of R (G → M.V)
-  f := M.norm
-  g := groupCohomology.d₀₁ M
-  zero := norm_comp_d_eq_zero M
-
-@[simps!] def isoShortComplexH0 :
-    (TateComplex M).sc 0 ≅ sc M :=
-  (TateComplex M).isoSc' (.negSucc 0) 0 1 (by simp) (by simp) ≪≫
-    ShortComplex.isoMk (chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
-      (by simp [TateComplex_d_neg_one])
-      (comp_d₀₁_eq M)
-
 end TateCohomology.zeroIso
 
 def TateCohomology.zeroIso (M : Rep R G) : (TateCohomology 0).obj M ≅
@@ -336,7 +310,7 @@ def TateCohomology.zeroIso (M : Rep R G) : (TateCohomology 0).obj M ≅
 def TateCohomology_neg_one_iso (M : Rep R G) : (TateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
     (Submodule.span R (⋃ g : G, range (1 - M.ρ g))).submoduleOf (ker M.ρ.norm)) :=
-  
+
   sorry
 
 def TateCohomology_zero_iso_of_isTrivial (M : Rep R G) [M.ρ.IsTrivial] : (TateCohomology 0).obj M ≅
