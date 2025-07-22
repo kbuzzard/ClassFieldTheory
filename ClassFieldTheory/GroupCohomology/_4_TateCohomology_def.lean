@@ -88,6 +88,10 @@ lemma norm_comp_d_eq_zero (M : Rep R G) : M.norm ≫ (d₀₁ M) = 0 := by
   rw [← LinearMap.comp_apply, Representation.norm_comm]
 
 omit [DecidableEq G] in
+lemma d₀₁_norm_eq_zero {M : Rep R G} (x : M.V) : d₀₁ M (M.norm x) = 0 :=
+  congr($(norm_comp_d_eq_zero M) x)
+
+omit [DecidableEq G] in
 lemma TateNorm_comp_d (M : Rep R G) : TateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
   simp only [ChainComplex.of_x, CochainComplex.of_x, TateNorm.def, Category.assoc, eq_d₀₁_comp_inv,
     Preadditive.IsIso.comp_left_eq_zero]
@@ -293,47 +297,41 @@ omit [Finite G] [DecidableEq G] in
 lemma wi : ModuleCat.ofHom M.ρ.invariants.subtype ≫ groupCohomology.d₀₁ M = 0 := by
   ext; simp
 
-omit [DecidableEq G] in
-@[simps!] def hi : IsLimit (KernelFork.ofι (ModuleCat.ofHom M.ρ.invariants.subtype) (wi M)) :=
-  IsKernel.isoKernel _ _ (ModuleCat.kernelIsLimit _)
-    (LinearEquiv.ofEq _ _ <| (groupCohomology.d₀₁_ker_eq_invariants M).symm).toModuleIso rfl
+namespace TateCohomology.zeroIso
 
-omit [DecidableEq G] in
-lemma wπ : (hi M).lift (KernelFork.ofι M.norm (norm_comp_d_eq_zero M)) ≫
-    ModuleCat.ofHom ((range M.ρ.norm).submoduleOf M.ρ.invariants).mkQ = 0 := by
-  ext (x : M.V)
-  simp only [ModuleCat.of_coe, Fork.ofι_pt, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
-    LinearMap.coe_comp, Function.comp_apply, Submodule.mkQ_apply, ModuleCat.hom_zero, zero_apply,
-    Submodule.Quotient.mk_eq_zero]
-  refine ⟨_, rfl⟩
+-- #check groupCohomology.d₀₁
+-- def d_₁₀ (M : Rep R G) : M.V ⟶ M.V := M.norm
 
-omit [DecidableEq G] in
-@[simp] lemma hπ_aux (x : M.V) :
-    Subtype.val (((hi M).lift (KernelFork.ofι M.norm (norm_comp_d_eq_zero M))).hom x) =
-    M.norm x :=
-  rfl
+variable (M : Rep R G)
 
-def hπ : IsColimit (CokernelCofork.ofπ (ModuleCat.ofHom ((range M.ρ.norm).submoduleOf
-    M.ρ.invariants).mkQ) (wπ M)) :=
-  IsCokernel.cokernelIso _ _ (ModuleCat.cokernelIsColimit _)
-    (Submodule.quotEquivOfEq _ _ <| Submodule.ext fun x ↦ by
-      exact ⟨fun ⟨y, hy⟩ ↦ hy ▸ ⟨y, rfl⟩, fun ⟨y, hy⟩ ↦ ⟨y, Subtype.ext hy⟩⟩).toModuleIso
-    rfl
+@[simps] def sc : ShortComplex (ModuleCat R) where
+  X₁ := M.V
+  X₂ := M.V
+  X₃ := ModuleCat.of R (G → M.V)
+  f := M.norm
+  g := groupCohomology.d₀₁ M
+  zero := norm_comp_d_eq_zero M
+
+@[simps!] def isoShortComplexH0 :
+    (TateComplex M).sc 0 ≅ sc M :=
+  (TateComplex M).isoSc' (.negSucc 0) 0 1 (by simp) (by simp) ≪≫
+    ShortComplex.isoMk (chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
+      (by simp [TateComplex_d_neg_one])
+      (comp_d₀₁_eq M)
 
 end TateCohomology.zeroIso
 
 def TateCohomology.zeroIso (M : Rep R G) : (TateCohomology 0).obj M ≅
-    ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) :=
-  ShortComplex.homologyMapIso (zeroIso.isoShortComplexH0 M) ≪≫
-    ShortComplex.LeftHomologyData.homologyIso
-      { K := ModuleCat.of R M.ρ.invariants
-        H := ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants)
-        i := ModuleCat.ofHom M.ρ.invariants.subtype
-        π := ModuleCat.ofHom (Submodule.mkQ _)
-        wi := zeroIso.wi M
-        hi := zeroIso.hi M
-        wπ := zeroIso.wπ M
-        hπ := zeroIso.hπ M }
+    ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := calc
+  (TateCohomology 0).obj M
+    ≅ (zeroIso.sc M).homology := ShortComplex.homologyMapIso (zeroIso.isoShortComplexH0 M)
+  _ ≅ ModuleCat.of R (ker (groupCohomology.d₀₁ M).hom ⧸ _) := ShortComplex.moduleCatHomologyIso _
+  _ ≅ ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := by
+    refine (Submodule.Quotient.equiv _ _
+      (LinearEquiv.ofEq _ _ (d₀₁_ker_eq_invariants M)) ?_).toModuleIso
+    refine Submodule.ext fun ⟨x, hx⟩ ↦ ⟨?_, ?_⟩
+    · rintro ⟨_, ⟨y, rfl⟩, hy⟩; exact ⟨y, congr(Subtype.val $hy)⟩
+    · rintro ⟨y, rfl⟩; exact ⟨⟨M.norm y, d₀₁_norm_eq_zero y⟩, ⟨_, rfl⟩, rfl⟩
 
 def TateCohomology_neg_one_iso (M : Rep R G) : (TateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
