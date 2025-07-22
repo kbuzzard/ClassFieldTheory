@@ -338,7 +338,7 @@ def TateCohomology.zeroIso (M : Rep R G) : (TateCohomology 0).obj M ≅
 def TateCohomology_neg_one_iso (M : Rep R G) : (TateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
     (Submodule.span R (⋃ g : G, range (1 - M.ρ g))).submoduleOf (ker M.ρ.norm)) :=
-
+  
   sorry
 
 def TateCohomology_zero_iso_of_isTrivial (M : Rep R G) [M.ρ.IsTrivial] : (TateCohomology 0).obj M ≅
