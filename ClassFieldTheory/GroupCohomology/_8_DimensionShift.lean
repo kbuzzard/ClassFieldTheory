@@ -289,7 +289,9 @@ variable [Finite G]
 open Rep
   dimensionShift
 
--- An explicit version of `isZero_of_trivialTateCohomology`
+/--
+An explicit version of `isZero_of_trivialTateCohomology`
+-/
 private lemma isZero_of_trivialTateCohomology' [DecidableEq G] (M : Rep R G)
     [M.TrivialTateCohomology] (n : ℤ) : IsZero ((TateComplexFunctor.obj M).homology n) :=
   TrivialTateCohomology.isZero (.id G) Function.injective_id
