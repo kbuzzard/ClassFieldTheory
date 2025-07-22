@@ -19,7 +19,7 @@ namespace groupCohomology
 
 /--
 Suppose we have a short exact sewuence `0 ⟶ A ⟶ B ⟶ C ⟶ 0` in `Rep R G`.
-If `H¹(H,A) = 0` then the invariants form a short exact sequence in `Rep R H`:
+If `H¹(K,A) = 0` then the `K`-invariants form a short exact sequence in `Rep R Q`:
 
   `0 ⟶ Aᴷ ⟶ Bᴷ ⟶ Cᴷ ⟶ 0`, where `K = φ.ker`.
 -/

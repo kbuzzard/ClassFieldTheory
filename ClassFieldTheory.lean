@@ -1,4 +1,5 @@
 import ClassFieldTheory.GroupCohomology.Examples.Examples
+import ClassFieldTheory.Tactic.Dualize
 import ClassFieldTheory.GroupCohomology._1_Basic
 import ClassFieldTheory.GroupCohomology._3_inflation
 import ClassFieldTheory.GroupCohomology._2_restriction
