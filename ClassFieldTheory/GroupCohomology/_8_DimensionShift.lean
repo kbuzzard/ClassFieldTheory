@@ -171,11 +171,9 @@ The connecting homomorphism from `H^{n+1}(G,up M)` to `H^{n+2}(G,M)` is
 an epimorphism (i.e. surjective).
 -/
 instance up_δ_zero_epi_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
-    (inj : Function.Injective φ) : Epi (δ (up_shortExact_res M φ) 0 1 rfl) :=
-  /-
-  The next term in the long exact sequence is zero.
-  -/
-  sorry
+    (inj : Function.Injective φ) : Epi (δ (up_shortExact_res M φ) 0 1 rfl) := by
+  refine epi_δ_of_isZero (up_shortExact_res M φ) 0 ?_
+  simpa only [ShortComplex.map_X₂, upSes_obj_X₂, zero_add] using TrivialCohomology.isZero φ inj
 
 /--
 The connecting homomorphism from `H^{n+1}(G,up M)` to `H^{n+2}(G,M)` is an
@@ -252,8 +250,8 @@ The connecting homomorphism `H⁰(H,down.obj M ↓ H) ⟶ H¹(H, M ↓ H)` is an
 -/
 instance down_δ_zero_res_epi {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) : Epi (δ (down_shortExact_res M φ) 0 1 rfl) := by
-
-  sorry
+  refine epi_δ_of_isZero (down_shortExact_res M φ) 0 ?_
+  simpa only [ShortComplex.map_X₂, zero_add] using TrivialCohomology.isZero φ inj
 
 /--
 The connecting homomorphism `Hⁿ⁺¹(G,down.obj M) ⟶ Hⁿ⁺²(G, M)` is an isomorphism
