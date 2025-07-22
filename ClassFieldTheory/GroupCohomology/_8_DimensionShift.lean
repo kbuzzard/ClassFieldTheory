@@ -147,9 +147,7 @@ def up_δiso (n : ℕ) : groupCohomology (up.obj M) (n + 1) ≅ groupCohomology 
 def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n + 2) where
   hom := {
     app M := (up_δiso M n).hom
-    naturality := by
-      simp only [up_δiso, asIso]
-
+    naturality := sorry
   }
   inv := {
     app M := (up_δiso M n).inv
