@@ -296,25 +296,63 @@ lemma _root_.groupHomology.map_chainsFunctor_eval_shortExact
     (C := ModuleCat R) (X.map (chainsFunctor R G))).mp
       (map_chainsFunctor_shortExact hX) n
 
+instance : (TateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
+  map_zero X Y := by
+    ext
+    simp_rw [TateComplexFunctor]
+    aesop_cat
+
+lemma _root_.CategoryTheory.ShortComplex.map_comp {C D E : Type*} [Category C] [Category D]
+    [Category E] [Limits.HasZeroMorphisms C] (S : ShortComplex C)
+    [Limits.HasZeroMorphisms D] [Limits.HasZeroMorphisms E]
+    (F : Functor C D) [F.PreservesZeroMorphisms] (G : Functor D E) [G.PreservesZeroMorphisms] :
+  S.map (F ⋙ G) = (S.map F).map G := rfl
+
+lemma _root_.CategoryTheory.ShortComplex.short_exact_map_of_natIso {C D : Type*}
+    [Category C] [Category D] [Limits.HasZeroMorphisms C] [Limits.HasZeroMorphisms D]
+    {F G : Functor C D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] {S : ShortComplex C}
+    (hIso : F ≅ G) (hExact : (S.map F).ShortExact) : (S.map G).ShortExact :=
+  ShortComplex.shortExact_of_iso (S.mapNatIso hIso) hExact
+
+open ShortComplex in
+lemma _root_.CategoryTheory.ShortComplex.short_exact_map_iff_natIso {C D : Type*}
+    [Category C] [Category D] [Limits.HasZeroMorphisms C] [Limits.HasZeroMorphisms D]
+    {F G : Functor C D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (S : ShortComplex C)
+    (hIso : F ≅ G) : (S.map F).ShortExact ↔ (S.map G).ShortExact where
+  mp h := short_exact_map_of_natIso hIso h
+  mpr h := short_exact_map_of_natIso hIso.symm h
+
+omit [DecidableEq G] in
+lemma TateCohomology.cochainsFunctor_Exact {S : ShortComplex (Rep R G)}
+    (hS : S.ShortExact) : (S.map TateComplexFunctor).ShortExact := by
+  rw [HomologicalComplex.shortExact_iff_degreewise_shortExact]
+  intro i
+  rw [← ShortComplex.map_comp]
+  cases i
+  · apply ShortComplex.short_exact_map_of_natIso (TateComplex.eval_nonneg _).symm
+    exact map_cochainsFunctor_eval_shortExact _ hS
+  apply ShortComplex.short_exact_map_of_natIso (TateComplex.eval_neg _).symm
+  exact map_chainsFunctor_eval_shortExact _ hS
+
+instance : (TateComplexFunctor (R := R) (G := G)).Additive where
+  map_add := sorry
 
 /-
 The next two statements say that `TateComplexFunctor` is an exact functor.
 -/
 instance TateComplexFunctor_preservesFiniteLimits :
-    PreservesFiniteLimits (TateComplexFunctor (R := R) (G := G)) where
-  preservesFiniteLimits J _ _ := HomologicalComplex.preservesLimitsOfShape_of_eval _ <| fun i ↦ by
-
-    --simp [TateComplexFunctor]
-    sorry
+    PreservesFiniteLimits (TateComplexFunctor (R := R) (G := G)) := by
+  have := (TateComplexFunctor (R := R) (G := G)).exact_tfae.out 0 3
+  refine (this.mp ?_).1
+  intro S hS
+  exact TateCohomology.cochainsFunctor_Exact hS
 
 instance TateComplexFunctor_preservesFiniteColimits :
-    PreservesFiniteColimits (TateComplexFunctor (R := R) (G := G)) :=
-  sorry
-
-omit [DecidableEq G] in
-lemma TateCohomology.cochainsFunctor_Exact {S : ShortComplex (Rep R G)}
-    (hS : S.ShortExact) : (S.map TateComplexFunctor).ShortExact :=
-  ShortComplex.ShortExact.map_of_exact hS TateComplexFunctor
+    PreservesFiniteColimits (TateComplexFunctor (R := R) (G := G)) := by
+  have := (TateComplexFunctor (R := R) (G := G)).exact_tfae.out 0 3
+  refine (this.mp ?_).2
+  intro S hS
+  exact TateCohomology.cochainsFunctor_Exact hS
 
 end Exact
 
