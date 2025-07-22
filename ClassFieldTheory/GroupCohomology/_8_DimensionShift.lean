@@ -2,6 +2,7 @@ import Mathlib
 import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
 
+set_option maxHeartbeats 0
 /-!
 We define functors `up` and `down` from `Rep R G` to itself.
 `up.obj M` is defined to be the cokernel of the injection `coind₁'_ι : M ⟶ coind₁'.obj M` and
@@ -158,16 +159,74 @@ instance up_δ_isIso (n : ℕ) : IsIso (δ (up_shortExact M) (n + 1) (n + 2) rfl
 def up_δiso (n : ℕ) : groupCohomology (up.obj M) (n + 1) ≅ groupCohomology M (n + 2) :=
   asIso (δ (up_shortExact M) (n + 1) (n + 2) rfl)
 
-def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n + 2) where
+
+#check HomologicalComplex.HomologySequence.δ_naturality
+#check HomologicalComplex
+#check groupCohomology.map
+#check cokernel.π_desc
+
+/-coind₁'.map f ≫
+    cokernel.π (coind₁'_ι.app Y) =
+  cokernel.π (coind₁'_ι.app X) ≫
+    cokernel.desc (coind₁'_ι.app X)
+      (coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y))
+      ⋯-/
+
+/-cokernel.π (coind₁'_ι.app X✝) ≫
+    cokernel.desc (coind₁'_ι.app X✝)
+      (coind₁'.map f ≫
+        { X₁ := Y✝, X₂ := coind₁'.obj Y✝, X₃ := up.obj Y✝, f := coind₁'_ι.app Y✝, g := cokernel.π (coind₁'_ι.app Y✝),
+            zero := ⋯ }.g)
+      ⋯ =
+  coind₁'.map f ≫
+    { X₁ := Y✝, X₂ := coind₁'.obj Y✝, X₃ := up.obj Y✝, f := coind₁'_ι.app Y✝, g := cokernel.π (coind₁'_ι.app Y✝),
+        zero := ⋯ }.g-/
+--(upSes.obj X).map (cochainsFunctor R G)
+def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n + 2):=
+  NatIso.ofComponents ( fun  X => by simpa [Functor.comp_obj, functor_obj] using up_δiso (M:=X) n)
+    <| fun {X Y} f ↦ by
+      have l1:= (upSes.map f)
+      have:=HomologicalComplex.HomologySequence.δ_naturality
+       (ShortComplex.homMk ((cochainsFunctor R G).map (upSes.map f).1)
+         ((cochainsFunctor R G).map (upSes.map f).2) ((cochainsFunctor R G).map (upSes.map f).3)
+           rfl (?_))
+       ( map_cochainsFunctor_shortExact (up_shortExact X))
+        ( map_cochainsFunctor_shortExact (up_shortExact Y)) (n+1) (n+2) rfl
+      exact id (Eq.symm this)
+      simp only [ShortComplex.map_X₂, upSes_obj_X₂, cochainsFunctor_obj, ShortComplex.map_X₃,
+        upSes_obj_X₃, up_obj, Functor.id_obj, upSes_map_τ₂, cochainsFunctor_map, ShortComplex.map_g,
+        upSes_obj_g, upSes_map_τ₃, up_map]
+      have:coind₁'.map f ≫  cokernel.π (coind₁'_ι.app Y) =  cokernel.π (coind₁'_ι.app X) ≫
+       cokernel.desc (coind₁'_ι.app X) ( (coind₁'.map f) ≫ cokernel.π (coind₁'_ι.app Y)) (up._proof_2 f)
+        :=(cokernel.π_desc _ _ _).symm
+      ext a b c
+      simp
+      have:= congrFun (congrArg DFunLike.coe (congrArg hom this)) (b c)
+      calc
+       _=(ModuleCat.Hom.hom (cokernel.π (coind₁'_ι.app Y)).hom) ((hom (coind₁'.map f).hom) (b c)):=rfl
+       _=(hom (coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y))) (b c) :=rfl
+       _= (hom
+      (cokernel.π (coind₁'_ι.app X) ≫ cokernel.desc (coind₁'_ι.app X) (coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y))
+        (up._proof_2 f)))
+        (b c):=by rw[this]
+       _=_:=rfl
+
+
+
+
+/-where
   hom := {
     app M := (up_δiso M n).hom
-    naturality := sorry
+   δ.naturality X Y f:=by
+
+
+      sorry
   }
   inv := {
     app M := (up_δiso M n).inv
     naturality := sorry
   }
-
+-/
 /--
 The connecting homomorphism from `H^{n+1}(G,up M)` to `H^{n+2}(G,M)` is
 an epimorphism (i.e. surjective).
@@ -268,15 +327,17 @@ instance down_δ_isIso  (n : ℕ) : IsIso (δ (down_shortExact M) (n + 1) (n + 2
 def down_δiso (n : ℕ) : groupCohomology M (n + 1) ≅ groupCohomology (down.obj M) (n + 2) :=
   asIso (δ (down_shortExact M) (n + 1) (n + 2) rfl)
 
-def down_δiso_natTrans (n : ℕ) : functor R G (n + 1) ≅ down ⋙ functor R G (n + 2) where
-  hom := {
-    app M := (down_δiso M n).hom
-    naturality := sorry
-  }
-  inv := {
-    app M := (down_δiso M n).inv
-    naturality := sorry
-  }
+
+
+def down_δiso_natTrans (n : ℕ) : functor R G (n + 1) ≅ down ⋙ functor R G (n + 2) :=
+NatIso.ofComponents (fun M ↦by simp only [functor_obj, Functor.comp_obj] ; exact down_δiso (M:=M) _)
+<| fun {X Y} f ↦ by
+  simp only
+   [functor_obj, Functor.comp_obj, functor_map, down_δiso, asIso, id_eq, Functor.comp_map]
+  ext s
+  simp only [ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply]
+
+  sorry
 
 /--
 The connecting homomorphism `Hⁿ⁺¹(H,down.obj M ↓ H) ⟶ Hⁿ⁺²(H, M ↓ H)` is an isomorphism
