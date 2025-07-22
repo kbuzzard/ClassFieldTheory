@@ -37,22 +37,6 @@ lemma norm_comm' (g : G) : ρ.norm ∘ₗ ρ g = ρ.norm := LinearMap.ext fun a 
 
 end Representation
 
--- section ConnectData
-
--- variable {C : Type u} [Category.{v, u} C] [HasZeroMorphisms C]
---   {K : ChainComplex.{v, u} C ℕ} {L : CochainComplex C ℕ}
-
--- def ConnectDataFunctor (h : CochainComplex.ConnectData K L) :
---     Rep R G ⥤ CochainComplex.{v} (ModuleCat R) ℤ where
---   obj M := by
---     -- refine (CochainComplex.ConnectData.cochainComplex (C := C) (K := K) _)
---     sorry
---   map := sorry
---   map_id := sorry
---   map_comp := sorry
-
--- end ConnectData
-
 namespace groupCohomology
 
 def _root_.groupHomology.zeroChainsIso (M : Rep.{u} R G) : (inhomogeneousChains M).X 0 ≅ M.V :=
@@ -215,10 +199,6 @@ lemma _root_.CochainComplex.ConnectData.homologyMap_map_eq_neg (n : ℕ) (m : �
   obtain rfl : m = .negSucc (n + 1) := hmn
   simp [CochainComplex.ConnectData.map, -Int.natCast_add]
 
--- open HomologicalComplex in
--- lemma _root_.CochainComplex.ConnectData.zero_iso :
---     homologyMap (h.cochainComplex)
-
 end ConnectData
 
 @[reducible]
@@ -335,7 +315,6 @@ lemma TateCohomology.cochainsFunctor_Exact {S : ShortComplex (Rep R G)}
   exact map_chainsFunctor_eval_shortExact _ hS
 
 instance : (TateComplexFunctor (R := R) (G := G)).Additive where
-  map_add := sorry
 
 /-
 The next two statements say that `TateComplexFunctor` is an exact functor.

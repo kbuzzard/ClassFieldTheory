@@ -1,5 +1,4 @@
 import ClassFieldTheory.GroupCohomology.Examples.Examples
-import ClassFieldTheory.Tactic.Dualize
 import ClassFieldTheory.GroupCohomology._10_inflationRestriction
 import ClassFieldTheory.GroupCohomology._11_TrivialityCriterion
 import ClassFieldTheory.GroupCohomology._12_augmentationModule
@@ -22,3 +21,5 @@ import ClassFieldTheory.GroupCohomology.obsolete.groupCohomology
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Pi
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+import ClassFieldTheory.Tactic.Dualize
