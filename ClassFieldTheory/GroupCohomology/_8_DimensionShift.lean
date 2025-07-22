@@ -51,24 +51,18 @@ lemma coind₁'_ι.app_apply {M : Rep R G} (m : M) (x : G) : (coind₁'_ι.app M
 The map from `M` to its coinduced representation is a monomorphism.
 -/
 instance : Mono (coind₁'_ι.app M) where
-  right_cancellation :=by
+  right_cancellation := by
     intro Z g f hgf
     ext n
-    have l: (g ≫ coind₁'_ι.app M) n = (f ≫ coind₁'_ι.app M) n :=by
-     exact congrFun (congrArg DFunLike.coe (congrArg hom hgf)) n
-    simp at l ⊢
-    have: Function.Injective (hom (coind₁'_ι.app M)):=by
+    have l := congrFun (congrArg DFunLike.coe (congrArg hom hgf)) n
+    have : Function.Injective (hom (coind₁'_ι.app M)) := by
       refine (injective_iff_map_eq_zero' (hom (coind₁'_ι.app M))).mpr (fun a  => ?_)
       constructor
       · intro g
-        simp only [Functor.id_obj, coind₁'_ι, Representation.coind₁'_ι] at a g
-        have:Function.const G a =0 :=by exact g
-        simpa [Function.const_eq_zero] using  this
-      · intro h
-        simp only [h,Functor.id_obj, map_zero]
-    simp only [Functor.id_obj,Function.Injective] at this
-    specialize this l
-    exact this
+        have : Function.const G a = 0 := by exact g
+        simpa [Function.const_eq_zero] using this
+      · exact fun a_1 ↦ congrArg (⇑(hom (coind₁'_ι.app M))) a_1
+    exact this l
 
 /--
 The functor taking `M : Rep R G` to `up.obj M`, defined by the short exact sequence
