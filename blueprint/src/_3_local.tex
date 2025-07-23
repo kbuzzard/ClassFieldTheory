@@ -457,14 +457,14 @@ We therefore have a reciprocity isomorphism $\Gal(l/k) \cong k^\times / N(l^\tim
 \end{proof}
 
 
-\begin{definition} \label{def:local inv}
-	\uses{lem:H2 cyclic Z}
-	By \ref{lem:H2 cyclic Z} we have an isomorphim $H^2(l/k, l^\times) \cong \frac{1}{[l:k]}\Z / \Z$
-	defined by
-	\[
-		\inv_{l/k}(\sigma) = \frac{1}{[l:k]} \sum_{i=0}^{[l:k]-1} v_k(\sigma(F_k^i, F_k)).
-	\]
-	The map $\inv_{l/k}$ is called the \emph{local invariant}.
+\begin{definition} \label{def:unramified local inv}
+	\uses{lem:unramified units trivial, def:local inv}
+
+	The \emph{local invariant} $\inv_{l/k} : H^2(l/k, l^\times) \cong \frac{1}{[l:k]}\Z / \Z$ is the
+	composition of the isomorphism $H^2(l/k, l^\times) \cong H^2(l/k, \Z)$
+	from \ref{lem:unramified units trivial} with the local invariant
+	$\inv_{\Gal(l/k)} : H^2(l/k, \Z) \cong \frac{1}{[l:k]}\Z / \Z$ from \ref{def:local inv} with
+  generator the Frobenius.
 \end{definition}
 
 \begin{lemma} \label{lem:local inv fundamental class}
@@ -474,14 +474,7 @@ We therefore have a reciprocity isomorphism $\Gal(l/k) \cong k^\times / N(l^\tim
 \end{lemma}
 
 \begin{proof}
-	It follows from the definitions that all the terms in the sum defining the local invariant are zero
-	apart from the term $i=[l:k]-1$, so we have
-	\[
-		\inv_{l/k}(\sigma_{l/k})
-		= \frac{1}{[l:k]} v_k(\sigma(F_k^{[l:k]-1}, F_k)).
-		= \frac{1}{[l:k]} v_k(\pi_k)
-		= \frac{1}{[l:k]}.
-	\]
+	Corollary of $\inv_{\Gal(l/k)}(\sigma_{\Gal(l/k)}) = 1$ from \ref{lem:local inv iso}.
 \end{proof}
 
 
