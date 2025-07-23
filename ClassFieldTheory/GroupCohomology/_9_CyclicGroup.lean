@@ -332,6 +332,12 @@ def periodicCohomology' (n m : ℕ) :
     rw [mul_add, mul_one, ←add_assoc, add_assoc, add_comm 1, ←add_assoc]
     apply periodicCohomology
 
+def periodicCohomology_mod2 (m n : ℕ) (h : m ≡ n [MOD 2]) :
+    functor R G (m + 1) ≅ functor R G (n + 1) :=
+  if hLe : m ≤ n then
+    (periodicCohomology' m ((n - m) /2)).trans <| eqToIso (by grind [Nat.modEq_iff_dvd])
+  else
+   (eqToIso (by grind [Nat.modEq_iff_dvd])).trans (periodicCohomology' n ((m - n) /2)).symm
 
 omit [DecidableEq G] in
 /--
@@ -340,12 +346,15 @@ and positive integers `e` and `o` with `e` even and `o` odd, such that
 `Hᵉ(G,M)` and `Hᵒ(G,M)` are both zero.
 Then `Hⁿ(G,M)` is zero for all `n > 0`.
 -/
-lemma isZero_ofEven_ofOdd {M : Rep R G} {a b : ℕ}
+lemma isZero_ofEven_Odd {M : Rep R G} {a b : ℕ}
     (hₑ : IsZero (groupCohomology M (2 * a + 2)))
     (hₒ : IsZero (groupCohomology M (2 * b + 1))) (n : ℕ) :
     IsZero (groupCohomology M (n + 1)) := by
-  sorry
-
+  obtain hn | hn := n.even_or_odd
+  · refine .of_iso hₒ <| (periodicCohomology_mod2 n (2 * b) ?_).app M
+    grind [Nat.modEq_iff_dvd, Nat.even_iff]
+  · refine .of_iso hₑ <| (periodicCohomology_mod2 n (2 * a + 1) ?_).app M
+    grind [Nat.modEq_iff_dvd, Nat.odd_iff]
 
 end Rep
 
