@@ -166,7 +166,7 @@ def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n 
        _ = (hom (coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y))) (b c) := rfl
        _ = (hom (cokernel.π (coind₁'_ι.app X) ≫ cokernel.desc (coind₁'_ι.app X)
         (coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y)) (up._proof_2 f)))
-        (b c):= by rw[ congrFun (congrArg DFunLike.coe (congrArg hom this)) (b c)]
+        (b c):= by rw [congrFun (congrArg DFunLike.coe (congrArg hom this)) (b c)]
        _ = _ := rfl
 
 /--
