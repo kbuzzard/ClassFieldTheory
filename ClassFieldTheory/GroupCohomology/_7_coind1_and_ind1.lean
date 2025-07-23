@@ -380,7 +380,13 @@ This map takes an element `m : M` to the constant function with value `M`.
     hom    := ofHom Representation.coind₁'_ι
     comm _ := by ext : 1; exact M.ρ.coind₁'_ι_comm _
   }
-  naturality := sorry
+  naturality _ _ _ := by simpa using by rfl
+
+instance : Mono (coind₁'_ι.app M) := by
+  refine (mono_iff_injective (coind₁'_ι.app M)).mpr ?_
+  intro x y eq
+  change Function.const G x 1 = Function.const G y 1
+  exact congrFun eq 1
 
 lemma LinearEquiv.symm_apply {R S M N : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
     [AddCommMonoid N] [Module R M] [Module S N] {σ : R →+* S} {σ' : S →+* R}
