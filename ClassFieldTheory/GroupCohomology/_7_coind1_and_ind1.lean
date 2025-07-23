@@ -324,7 +324,7 @@ This map takes an element `m : M` to the constant function with value `M`.
     hom    := ofHom Representation.coind₁'_ι
     comm _ := by ext : 1; exact M.ρ.coind₁'_ι_comm _
   }
-  naturality {_ _} _ := by simpa using by rfl
+  naturality _ _ _ := by simpa using by rfl
 
 @[simps] def coind₁'_obj_iso_coind₁ : coind₁'.obj M ≅ (coind₁ G).obj M.V where
   hom := {
