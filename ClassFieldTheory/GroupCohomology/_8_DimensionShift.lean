@@ -185,14 +185,12 @@ def up_δiso (n : ℕ) : groupCohomology (up.obj M) (n + 1) ≅ groupCohomology 
 def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n + 2):=
   NatIso.ofComponents ( fun  X => by simpa [Functor.comp_obj, functor_obj] using up_δiso (M:=X) n)
     <| fun {X Y} f ↦ by
-      have l1:= (upSes.map f)
-      have:=HomologicalComplex.HomologySequence.δ_naturality
+      refine id (Eq.symm (HomologicalComplex.HomologySequence.δ_naturality
        (ShortComplex.homMk ((cochainsFunctor R G).map (upSes.map f).1)
          ((cochainsFunctor R G).map (upSes.map f).2) ((cochainsFunctor R G).map (upSes.map f).3)
            rfl (?_))
        ( map_cochainsFunctor_shortExact (up_shortExact X))
-        ( map_cochainsFunctor_shortExact (up_shortExact Y)) (n+1) (n+2) rfl
-      exact id (Eq.symm this)
+        ( map_cochainsFunctor_shortExact (up_shortExact Y)) (n+1) (n+2) rfl))
       simp only [ShortComplex.map_X₂, upSes_obj_X₂, cochainsFunctor_obj, ShortComplex.map_X₃,
         upSes_obj_X₃, up_obj, Functor.id_obj, upSes_map_τ₂, cochainsFunctor_map, ShortComplex.map_g,
         upSes_obj_g, upSes_map_τ₃, up_map]
@@ -200,15 +198,15 @@ def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n 
        cokernel.desc (coind₁'_ι.app X) ( (coind₁'.map f) ≫ cokernel.π (coind₁'_ι.app Y)) (up._proof_2 f)
         :=(cokernel.π_desc _ _ _).symm
       ext a b c
-      simp
-      have:= congrFun (congrArg DFunLike.coe (congrArg hom this)) (b c)
+      simp only [CochainComplex.of_x, HomologicalComplex.comp_f, ModuleCat.hom_comp,
+        cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
+        LinearMap.compLeft_apply]
       calc
-       _=(ModuleCat.Hom.hom (cokernel.π (coind₁'_ι.app Y)).hom) ((hom (coind₁'.map f).hom) (b c)):=rfl
        _=(hom (coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y))) (b c) :=rfl
        _= (hom
       (cokernel.π (coind₁'_ι.app X) ≫ cokernel.desc (coind₁'_ι.app X) (coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y))
         (up._proof_2 f)))
-        (b c):=by rw[this]
+        (b c):=by rw[ congrFun (congrArg DFunLike.coe (congrArg hom this)) (b c)]
        _=_:=rfl
 
 
@@ -286,6 +284,40 @@ abbrev down_ses : ShortComplex (Rep R G) where
   g := ind₁'_π.app M
   zero := kernel.condition (ind₁'_π.app M)
 
+
+
+@[simps] def downSes : Rep R G ⥤ ShortComplex (Rep R G) where
+  obj M := {
+    X₁ :=down.obj M
+    X₂ := ind₁'.obj M
+    X₃ := M
+    f := kernel.ι (ind₁'_π.app M)
+    g := ind₁'_π.app M
+    zero := kernel.condition (ind₁'_π.app M)
+  }
+  map {X Y} f := {
+    τ₁ :=down.map f
+    τ₂ := ind₁'.map f
+    τ₃ :=  f
+    comm₁₂ :=by
+     simp only [down, Functor.id_obj, kernel.lift_ι]
+    comm₂₃ :=by
+      simp only [Functor.id_obj, naturality, Functor.id_map]
+  }
+  map_comp f g := by
+    simp only [Functor.id_obj, Functor.map_comp]
+    rfl
+  map_id M := by
+    simp only [Functor.id_obj, CategoryTheory.Functor.map_id]
+    rfl
+
+   /- congr
+    rw [up_map]
+    apply IsColimit.desc_self-/
+
+/-(cokernel.π_desc _ _ _).symm-/
+/-coind₁'_ι.naturality f-/
+
 omit [DecidableEq G] in
 lemma down_shortExact : (down_ses M).ShortExact where
   exact   := ShortComplex.exact_kernel (ind₁'_π.app M)
@@ -332,17 +364,38 @@ def down_δiso (n : ℕ) : groupCohomology M (n + 1) ≅ groupCohomology (down.o
 def down_δiso_natTrans (n : ℕ) : functor R G (n + 1) ≅ down ⋙ functor R G (n + 2) :=
 NatIso.ofComponents (fun M ↦by simp only [functor_obj, Functor.comp_obj] ; exact down_δiso (M:=M) _)
 <| fun {X Y} f ↦ by
-  simp only
-   [functor_obj, Functor.comp_obj, functor_map, down_δiso, asIso, id_eq, Functor.comp_map]
-  ext s
-  simp only [ModuleCat.hom_comp, LinearMap.coe_comp, Function.comp_apply]
+    refine id (Eq.symm (HomologicalComplex.HomologySequence.δ_naturality
+       (ShortComplex.homMk ((cochainsFunctor R G).map (downSes.map f).1)
+         ((cochainsFunctor R G).map (downSes.map f).2) ((cochainsFunctor R G).map (downSes.map f).3)
+           ?_ ?_ ) ( map_cochainsFunctor_shortExact (down_shortExact X))
+        ( map_cochainsFunctor_shortExact (down_shortExact Y)) (n+1) (n+2) rfl))
+    simp only [ShortComplex.map_X₁, cochainsFunctor_obj, ShortComplex.map_X₂, downSes_obj_X₁,
+        downSes_map_τ₁, cochainsFunctor_map, ShortComplex.map_f, Functor.id_obj, downSes_obj_X₂,
+        downSes_map_τ₂]
+    ext a b c
+    simp only [CochainComplex.of_x, HomologicalComplex.comp_f, ModuleCat.hom_comp,
+        cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
+        LinearMap.compLeft_apply]
+    have:(down.map f) ≫  kernel.ι (ind₁'_π.app Y)=(kernel.ι (ind₁'_π.app X)) ≫  ind₁'.map f
+       :=by simp only [down, Functor.id_obj, kernel.lift_ι]
+    calc
+      _=hom ((down.map f) ≫  kernel.ι (ind₁'_π.app Y))   (b c):=rfl
+      _=hom (  (kernel.ι (ind₁'_π.app X)) ≫  ind₁'.map f)   (b c):=by rw[this] ;rfl
+      _=_ :=rfl
 
-  sorry
+    simp only [ShortComplex.map_X₂, cochainsFunctor_obj, ShortComplex.map_X₃, downSes_obj_X₂,
+         downSes_map_τ₂, cochainsFunctor_map, ShortComplex.map_g, downSes_obj_X₃, downSes_map_τ₃]
+    ext a b c
+    simp only [CochainComplex.of_x, HomologicalComplex.comp_f, ModuleCat.hom_comp,
+          cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
+          LinearMap.compLeft_apply]
+    calc
+      _=(hom (  (ind₁'.map f) ≫ (ind₁'_π.app Y))) (b c) :=rfl
+      _= (hom (ind₁'_π.app X ≫ (𝟭 (Rep R G)).map f)) (b c):=by
+         rw[(ind₁'_π (G:=G) (R:=R) ).naturality  f]
+      _=_:=rfl
 
-/--
-The connecting homomorphism `Hⁿ⁺¹(H,down.obj M ↓ H) ⟶ Hⁿ⁺²(H, M ↓ H)` is an isomorphism
-if `H` is a subgroup of a finite group `G`.
--/
+
 instance down_δ_res_isIso (n : ℕ) {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
     (inj : Function.Injective φ) : IsIso (δ (down_shortExact_res M φ) (n + 1) (n + 2) rfl) := by
   have := ind₁'_trivialCohomology M
