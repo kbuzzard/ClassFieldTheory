@@ -13,6 +13,14 @@ import ClassFieldTheory.GroupCohomology._6_LeftRegular
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
 import ClassFieldTheory.GroupCohomology._8_DimensionShift
 import ClassFieldTheory.GroupCohomology._9_CyclicGroup
+import ClassFieldTheory.GroupCohomology.obsolete.CyclicGroup
+import ClassFieldTheory.GroupCohomology.obsolete.HerbrandQuotient_old
+import ClassFieldTheory.GroupCohomology.obsolete._0_Current_PRs
+import ClassFieldTheory.GroupCohomology.obsolete._4_DimensionShift
+import ClassFieldTheory.GroupCohomology.obsolete.groupCohomology
+import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Pi
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
