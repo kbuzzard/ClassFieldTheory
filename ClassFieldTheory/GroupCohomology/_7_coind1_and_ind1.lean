@@ -498,11 +498,15 @@ def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V where
   inv := ofHom {
     val := M.ρ.ind₁'_lequiv.symm.toLinearMap
     property g := by
-      rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
+
       sorry
   }
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+  hom_inv_id := by
+    ext x
+    exact LinearEquiv.symm_apply_apply M.ρ.ind₁'_lequiv x
+  inv_hom_id := by
+    ext x
+    exact LinearEquiv.apply_symm_apply M.ρ.ind₁'_lequiv x
 
 instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
   let _ := (ind₁_trivialHomology G M.V)
