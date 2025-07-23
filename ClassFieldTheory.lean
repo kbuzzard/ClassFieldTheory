@@ -14,4 +14,5 @@ import ClassFieldTheory.GroupCohomology._11_TrivialityCriterion
 import ClassFieldTheory.GroupCohomology._12_augmentationModule
 import ClassFieldTheory.GroupCohomology._13_HerbrandQuotient
 import ClassFieldTheory.GroupCohomology._14_SplittingModule
+import ClassFieldTheory.GroupCohomology.HerbrandInt
 import ClassFieldTheory.Mathlib.CopyLeftHomologyData
