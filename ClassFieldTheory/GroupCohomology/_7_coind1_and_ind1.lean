@@ -452,7 +452,7 @@ by `M.ρ` on `M.V`.
 def ind₁' : Rep R G ⥤ Rep R G where
   obj M := of M.ρ.ind₁'
   map f := {
-    hom := ofHom (Representation.ind₁'_map (ModuleCat.Hom.hom f.hom))
+    hom := ofHom (Representation.ind₁'_map f.hom.hom)
     comm g := by
       ext : 1
       apply ind₁'_map_comm
@@ -480,7 +480,7 @@ def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
   naturality _ _ x := by
     ext z
     change Representation.ind₁'_π ((ind₁'.map x).hom.hom z) =
-      x.hom.hom ((Representation.ind₁'_π) z)
+      x.hom.hom (Representation.ind₁'_π z)
     simp [ind₁', sum_mapRange_index]
     exact (map_finsuppSum x.hom.hom z _).symm
 
