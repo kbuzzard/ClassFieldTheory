@@ -145,7 +145,7 @@ def up_δiso (n : ℕ) : groupCohomology (up.obj M) (n + 1) ≅ groupCohomology 
   asIso (δ (up_shortExact M) (n + 1) (n + 2) rfl)
 
 def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n + 2) :=
-  NatIso.ofComponents (fun  X => by simpa [Functor.comp_obj, functor_obj] using up_δiso (M := X) n)
+  NatIso.ofComponents (fun X => by simpa [Functor.comp_obj, functor_obj] using up_δiso (M := X) n)
   <| fun {X Y} f ↦ by
       refine id (Eq.symm (HomologicalComplex.HomologySequence.δ_naturality
         (ShortComplex.homMk ((cochainsFunctor R G).map (upSes.map f).1)
