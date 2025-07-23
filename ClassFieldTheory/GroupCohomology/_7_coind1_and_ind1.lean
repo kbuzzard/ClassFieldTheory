@@ -190,12 +190,8 @@ omit [Group G] in
 lemma ind₁'_π_comm (g : G) : ind₁'_π ∘ₗ ind₁' ρ g = ρ g ∘ₗ ind₁'_π := by
   ext; simp
 
-/--
-The linear automorphism of `G →₀ V`, which gives an isomorphism
-between `ind₁' ρ` and `ind₁ R G V`.
--/
-@[simps] def ind₁'_lequiv : (G →₀ V) ≃ₗ[R] Ind₁V R G V where
-  toFun f:= f.sum (fun x v ↦ Ind₁V.mk R G V x (ρ x v))
+@[simps] def ind₁'_lmap : (G →₀ V) →ₗ[R] Ind₁V R G V where
+  toFun f:= f.sum (fun g v ↦ Ind₁V.mk R G V g (ρ g v))
   map_add' _ _ := by
     rw [sum_add_index']
     · simp
@@ -206,9 +202,69 @@ between `ind₁' ρ` and `ind₁ R G V`.
     · simp only [map_smul, RingHom.id_apply, smul_sum]
     · intro
       simp only [map_zero]
-  invFun f := sorry
-  left_inv f := sorry
-  right_inv := sorry
+
+def ind₁'_invlmap_aux : (G →₀ R) →ₗ[R] V →ₗ[R] G →₀ V where
+  toFun f := {
+    toFun v := f.sum (fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
+    map_add' v1 v2 := by simp
+    map_smul' r v := by simp [Finsupp.smul_sum, smul_smul, mul_comm]}
+  map_add' f1 f2 := by
+    ext v g
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, sum_apply, LinearMap.add_apply, coe_add, coe_sum,
+      Pi.add_apply]
+    rw [Finsupp.sum_add_index' (f := f1) (g := f2) (by simp) (by simp [add_smul]),
+      Finsupp.sum_apply', Finsupp.sum_apply']
+  map_smul' r f := by
+    ext : 1
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_apply]
+    rw [Finsupp.sum_smul_index' (by simp), Finsupp.smul_sum]
+    simp [smul_smul]
+
+def ind₁'_invlmap : Ind₁V R G V →ₗ[R] (G →₀ V) :=
+  (TensorProduct.lift (ind₁'_invlmap_aux ρ)).comp ((Coinvariants.ker _).quotEquivOfEqBot (by
+    simpa [Coinvariants.ker, sub_eq_zero]
+     using fun a ↦ by exact LinearMap.congr_fun TensorProduct.map_id a)).toLinearMap
+
+/--
+The linear automorphism of `G →₀ V`, which gives an isomorphism
+between `ind₁' ρ` and `ind₁ R G V`.
+-/
+@[simps!] def ind₁'_lequiv : (G →₀ V) ≃ₗ[R] Ind₁V R G V where
+  toLinearMap := ind₁'_lmap ρ
+  invFun := ind₁'_invlmap ρ
+  left_inv f := by
+    rw [LinearMap.toFun_eq_coe]
+    induction f using Finsupp.induction_linear
+    · simp
+    · rename_i f g h1 h2
+      rw [map_add, map_add, h1, h2]
+    · rename_i g v
+      simp [ind₁'_invlmap, Submodule.quotEquivOfEqBot, Coinvariants.mk]
+      erw [Submodule.mkQ_apply, Submodule.liftQ_apply]
+      simp [ind₁'_invlmap_aux]
+  right_inv f := by
+    rw [LinearMap.toFun_eq_coe]
+    induction' f using Submodule.Quotient.induction_on with f
+    induction' f using TensorProduct.induction_on
+    · simp
+    · rename_i x y
+      simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
+        LinearEquiv.ofLinear_toLinearMap, LinearMap.coe_comp, Function.comp_apply]
+      erw [Submodule.liftQ_apply]
+      simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul]
+      induction x using Finsupp.induction_linear
+      · simp
+      · rename_i f g h1 h2
+        rw [map_add, LinearMap.add_apply, map_add, h1, h2, TensorProduct.add_tmul]
+        rfl
+      · rename_i g r
+        simp [ind₁'_invlmap_aux, Coinvariants.mk]
+        rw [← map_smul, ← Submodule.mkQ_apply]
+        congr
+        rw [TensorProduct.smul_tmul', Finsupp.smul_single, smul_eq_mul, mul_one]
+    · rename_i f g h1 h2
+      rw [← Submodule.mkQ_apply, map_add, map_add, map_add,
+        Submodule.mkQ_apply, Submodule.mkQ_apply, h1, h2]
 
 @[simp] lemma ind₁'_lequiv_comp_lsingle (x : G) :
     ρ.ind₁'_lequiv ∘ₗ lsingle x = Ind₁V.mk R G V x ∘ₗ ρ x := by ext; simp
@@ -326,6 +382,11 @@ This map takes an element `m : M` to the constant function with value `M`.
   }
   naturality := sorry
 
+lemma LinearEquiv.symm_apply {R S M N : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
+    [AddCommMonoid N] [Module R M] [Module S N] {σ : R →+* S} {σ' : S →+* R}
+    {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ} (e : M ≃ₛₗ[σ] N) (n : N) :
+  e.symm n = e.invFun n := rfl
+
 @[simps] def coind₁'_obj_iso_coind₁ : coind₁'.obj M ≅ (coind₁ G).obj M.V where
   hom := {
     hom := ofHom (by
@@ -337,7 +398,17 @@ This map takes an element `m : M` to the constant function with value `M`.
   }
   inv := {
     hom := ofHom M.ρ.coind₁'_lequiv_coind₁.symm.toLinearMap
-    comm g := sorry
+    comm g := by
+      ext f
+      simp only [Functor.comp_obj, coindFunctor_obj, trivialFunctor_obj_V,
+        RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp,
+        MonoidHom.coe_coe, RingHom.coe_coe, Function.comp_apply, coind_apply, ModuleCat.hom_comp,
+        ModuleCat.hom_ofHom, LinearMap.coe_comp, ρ_hom]
+      rw [ModuleCat.endRingEquiv_symm_apply_hom, LinearMap.restrict_apply]
+      simp only [coind₁', Representation.coind₁', coind₁'_lequiv_coind₁, LinearEquiv.coe_coe,
+        LinearEquiv.symm_apply, of_ρ, MonoidHom.coe_mk, OneHom.coe_mk, LinearMap.coe_mk,
+        AddHom.coe_mk, mul_inv_rev, map_mul, Module.End.mul_apply, self_inv_apply]
+      congr
   }
   hom_inv_id := by ext; simp
   inv_hom_id := by ext; simp
