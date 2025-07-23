@@ -13,6 +13,7 @@ import ClassFieldTheory.GroupCohomology._6_LeftRegular
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
 import ClassFieldTheory.GroupCohomology._8_DimensionShift
 import ClassFieldTheory.GroupCohomology._9_CyclicGroup
+<<<<<<< HEAD
 import ClassFieldTheory.GroupCohomology.obsolete.CyclicGroup
 import ClassFieldTheory.GroupCohomology.obsolete.HerbrandQuotient_old
 import ClassFieldTheory.GroupCohomology.obsolete._0_Current_PRs
@@ -26,3 +27,11 @@ import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.B
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 import ClassFieldTheory.Tactic.Dualize
+=======
+import ClassFieldTheory.GroupCohomology._10_inflationRestriction
+import ClassFieldTheory.GroupCohomology._11_TrivialityCriterion
+import ClassFieldTheory.GroupCohomology._12_augmentationModule
+import ClassFieldTheory.GroupCohomology._13_HerbrandQuotient
+import ClassFieldTheory.GroupCohomology._14_SplittingModule
+import ClassFieldTheory.Mathlib.CopyLeftHomologyData
+>>>>>>> origin/main
