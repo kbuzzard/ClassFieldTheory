@@ -498,8 +498,11 @@ def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V where
   inv := ofHom {
     val := M.ρ.ind₁'_lequiv.symm.toLinearMap
     property g := by
-
-      sorry
+      erw [LinearEquiv.coe_toLinearMap, LinearEquiv.coe_toLinearMap]
+      erw [LinearEquiv.symm_comp_eq, ← Function.comp_assoc, LinearEquiv.eq_comp_symm]
+      erw [← LinearEquiv.coe_toLinearMap, ← LinearEquiv.coe_toLinearMap]
+      erw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
+      exact (M.ρ.ind₁'_lequiv_comm g).symm
   }
   hom_inv_id := by
     ext x
