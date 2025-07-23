@@ -326,6 +326,12 @@ This map takes an element `m : M` to the constant function with value `M`.
   }
   naturality _ _ _ := by simpa using by rfl
 
+instance : Mono (coind₁'_ι.app M) := by
+  refine (mono_iff_injective (coind₁'_ι.app M)).mpr ?_
+  intro x y eq
+  change Function.const G x 1 = Function.const G y 1
+  exact congrFun eq 1
+
 @[simps] def coind₁'_obj_iso_coind₁ : coind₁'.obj M ≅ (coind₁ G).obj M.V where
   hom := {
     hom := ofHom (by
@@ -419,7 +425,7 @@ instance : Epi (ind₁'_π.app M) := by
   refine (epi_iff_surjective (ind₁'_π.app M)).2 fun m ↦ ?_
   use single 1 m
   show Representation.ind₁'_π (fun₀ | 1 => m) = m
-  simp only [Functor.id_obj, ind₁'_π_apply, Module.End.one_apply, sum_single_index]
+  simp only [Functor.id_obj, ind₁'_π_apply, Module.End.one_apply, sum_single_index]--
 
 lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
