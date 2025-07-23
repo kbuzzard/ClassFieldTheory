@@ -2,7 +2,6 @@ import Mathlib
 import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
 
-set_option maxHeartbeats 0
 /-!
 We define functors `up` and `down` from `Rep R G` to itself.
 `up.obj M` is defined to be the cokernel of the injection `coind₁'_ι : M ⟶ coind₁'.obj M` and
@@ -291,37 +290,37 @@ def down_δiso (n : ℕ) : groupCohomology M (n + 1) ≅ groupCohomology (down.o
   asIso (δ (down_shortExact M) (n + 1) (n + 2) rfl)
 
 def down_δiso_natTrans (n : ℕ) : functor R G (n + 1) ≅ down ⋙ functor R G (n + 2) :=
-  NatIso.ofComponents (fun M ↦ by simp only [functor_obj, Functor.comp_obj]; exact down_δiso (M := M) _)
+  NatIso.ofComponents (fun M ↦ by simp only [functor_obj, Functor.comp_obj]; exact down_δiso M _)
   <| fun {X Y} f ↦ by
     refine id (Eq.symm (HomologicalComplex.HomologySequence.δ_naturality
-       (ShortComplex.homMk ((cochainsFunctor R G).map (downSes.map f).1)
-         ((cochainsFunctor R G).map (downSes.map f).2) ((cochainsFunctor R G).map (downSes.map f).3)
-           ?_ ?_ ) ( map_cochainsFunctor_shortExact (down_shortExact X))
-        ( map_cochainsFunctor_shortExact (down_shortExact Y)) (n+1) (n+2) rfl))
+      (ShortComplex.homMk ((cochainsFunctor R G).map (downSes.map f).1)
+      ((cochainsFunctor R G).map (downSes.map f).2) ((cochainsFunctor R G).map (downSes.map f).3)
+      ?_ ?_ ) ( map_cochainsFunctor_shortExact (down_shortExact X))
+      (map_cochainsFunctor_shortExact (down_shortExact Y)) (n+1) (n+2) rfl))
     simp only [ShortComplex.map_X₁, cochainsFunctor_obj, ShortComplex.map_X₂, downSes_obj_X₁,
-        downSes_map_τ₁, cochainsFunctor_map, ShortComplex.map_f, Functor.id_obj, downSes_obj_X₂,
-        downSes_map_τ₂]
+      downSes_map_τ₁, cochainsFunctor_map, ShortComplex.map_f, Functor.id_obj, downSes_obj_X₂,
+      downSes_map_τ₂]
     ext a b c
     simp only [CochainComplex.of_x, HomologicalComplex.comp_f, ModuleCat.hom_comp,
-        cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
-        LinearMap.compLeft_apply]
-    have :(down.map f) ≫  kernel.ι (ind₁'_π.app Y)=(kernel.ι (ind₁'_π.app X)) ≫  ind₁'.map f
-      :=by simp only [down, Functor.id_obj, kernel.lift_ι]
+      cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
+      LinearMap.compLeft_apply]
+    have :(down.map f) ≫ kernel.ι (ind₁'_π.app Y )= (kernel.ι (ind₁'_π.app X)) ≫ ind₁'.map f := by
+      simp only [down, Functor.id_obj, kernel.lift_ι]
     calc
-      _=hom ((down.map f) ≫  kernel.ι (ind₁'_π.app Y))   (b c):=rfl
-      _=hom (  (kernel.ι (ind₁'_π.app X)) ≫  ind₁'.map f)   (b c):=by rw[this] ;rfl
-      _=_ :=rfl
+      _ = hom ((down.map f) ≫ kernel.ι (ind₁'_π.app Y)) (b c) := rfl
+      _ = hom ((kernel.ι (ind₁'_π.app X)) ≫ ind₁'.map f) (b c) := by rw [this] ; rfl
+      _ = _ := rfl
     simp only [ShortComplex.map_X₂, cochainsFunctor_obj, ShortComplex.map_X₃, downSes_obj_X₂,
-         downSes_map_τ₂, cochainsFunctor_map, ShortComplex.map_g, downSes_obj_X₃, downSes_map_τ₃]
+      downSes_map_τ₂, cochainsFunctor_map, ShortComplex.map_g, downSes_obj_X₃, downSes_map_τ₃]
     ext a b c
     simp only [CochainComplex.of_x, HomologicalComplex.comp_f, ModuleCat.hom_comp,
-          cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
-          LinearMap.compLeft_apply]
+      cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
+      LinearMap.compLeft_apply]
     calc
-      _=(hom (  (ind₁'.map f) ≫ (ind₁'_π.app Y))) (b c) :=rfl
-      _= (hom (ind₁'_π.app X ≫ (𝟭 (Rep R G)).map f)) (b c):=by
-         rw[(ind₁'_π (G:=G) (R:=R) ).naturality  f]
-      _=_:=rfl
+      _ = (hom ((ind₁'.map f) ≫ (ind₁'_π.app Y))) (b c) := rfl
+      _ = (hom (ind₁'_π.app X ≫ (𝟭 (Rep R G)).map f)) (b c) := by
+        rw [(ind₁'_π (G:=G) (R:=R)).naturality f]
+      _ = _ := rfl
 
 instance down_δ_res_isIso (n : ℕ) {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
     (inj : Function.Injective φ) : IsIso (δ (down_shortExact_res M φ) (n + 1) (n + 2) rfl) := by
