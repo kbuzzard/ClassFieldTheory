@@ -47,9 +47,7 @@ lemma TrivialCohomology.of_iso {M N : Rep R G} (f : M ≅ N) [N.TrivialCohomolog
 
 lemma TrivialCohomology.res_injective (M : Rep R G ){H : Type} [Group H] {f : H →* G}
     (inj : Function.Injective f) [M.TrivialCohomology] : (M ↓ f).TrivialCohomology where
-  isZero K _ g inj_g n := by
-    change IsZero (groupCohomology (M ↓ f.comp g) (n + 1))
-    exact isZero (f.comp g) (by simp; exact Function.Injective.comp inj inj_g)
+  isZero _ _ g inj_g _ := isZero (f.comp g) (inj.comp inj_g)
 
 lemma isZero_of_trivialCohomology {M : Rep R G} [M.TrivialCohomology] {n : ℕ} :
     IsZero (groupCohomology M (n + 1)) :=
@@ -77,9 +75,7 @@ lemma TrivialHomology.of_iso {M N : Rep R G} (f : M ≅ N) [N.TrivialHomology] :
 
 lemma TrivialHomology.res_injective (M : Rep R G) {H : Type} [Group H] {f : H →* G}
     (inj : Function.Injective f) [M.TrivialHomology] : (M ↓ f).TrivialHomology where
-  isZero K _ g inj_g n := by
-    change IsZero (groupHomology (M ↓ f.comp g) (n + 1))
-    exact isZero (f.comp g) (by simp; exact Function.Injective.comp inj inj_g)
+  isZero _ _ g inj_g _ := isZero (f.comp g) (inj.comp inj_g)
 
 lemma isZero_of_trivialHomology [DecidableEq G] {M : Rep R G} [M.TrivialHomology] {n : ℕ} :
     IsZero (groupHomology M (n + 1)) :=
