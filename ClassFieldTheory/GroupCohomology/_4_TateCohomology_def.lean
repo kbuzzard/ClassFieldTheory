@@ -269,7 +269,7 @@ variable (M : Rep R G)
 
 /-- The isomorphism between the concrete short complex computing `-1`-th Tate cohomology
   and the corresponding parts of the Tate complex. -/
-@[simps!] def isoShortComplexHneg1 :
+@[simps!] private def isoShortComplexHneg1 :
     (tateComplex M).sc (-1) ≅ sc M :=
   (tateComplex M).isoSc' (-2) (-1) 0 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (chainsIso₁ M) (chainsIso₀ M) (cochainsIso₀ M)
