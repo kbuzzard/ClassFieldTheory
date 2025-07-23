@@ -123,6 +123,16 @@ lemma map₁_ker :
 @[simps!] def map₂ : (G →₀ A) →ₗ[R] (G →₀ A) :=
   LinearMap.id - lmapDomain _ _ (fun x ↦ gen G * x)
 
+omit [Finite G] [DecidableEq G]
+lemma map₂'_apply₂ (f : G →₀ A) (x : G) :
+    Representation.map₂ (R := R) f x = f x - f ((gen G)⁻¹ * x) := by
+  simp [Representation.map₂]
+  convert Finsupp.mapDomain_apply ?_ _ ((gen G)⁻¹ * x)
+  · simp
+  · intro x y h
+    simpa using h
+
+
 omit [Finite G] [DecidableEq G] in
 @[simp] lemma map₂_comp_lsingle (x : G) :
     map₂ (R := R) (G := G) (A := A) ∘ₗ lsingle x = lsingle x - lsingle (gen G * x) := by
@@ -162,7 +172,7 @@ namespace Rep
 
 /--
 The map `coind₁'.obj M ⟶ coind₁' M` which takes a function `f : G → M.V` to
-`x ↦ f x - f (gen G * x)`.
+`x ↦ f x - f ((gen G)⁻¹ * x)`.
 -/
 def map₁ : coind₁' (R := R) (G := G) ⟶ coind₁' where
   app M := {
@@ -203,6 +213,8 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
 
     sorry
 
+
+
 omit [Finite G] [DecidableEq G] in
 lemma map₂_app_gg_ind₁'_π_app :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
@@ -227,8 +239,17 @@ The vertical maps are the canonical isomorphism `ind₁'_iso_coind₁`
 and the horizontal maps are `map₁` and `map₂`.
 -/
 lemma map₁_comp_ind₁'_iso_coind₁' :
-    map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv = (ind₁'_iso_coind₁'.app M).inv ≫ map₂.app M :=
-  sorry
+    map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv = (ind₁'_iso_coind₁'.app M).inv ≫ map₂.app M := by
+  ext x
+  simp [coind₁', ind₁'] at x ⊢
+  ext d
+
+  simp only [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', linearEquivFunOnFinite,
+    Equiv.invFun_as_coe, ModuleCat.hom_ofHom, map₁, Representation.map₁, LinearMap.coe_mk,
+    AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, equivFunOnFinite_symm_apply_toFun,
+    map₂]
+  rw [Representation.map₂'_apply₂]
+  simp
 
 
 /--
