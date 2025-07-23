@@ -51,8 +51,7 @@ lemma coind₁'_ι.app_apply {M : Rep R G} (m : M) (x : G) : (coind₁'_ι.app M
 The map from `M` to its coinduced representation is a monomorphism.
 -/
 instance : Mono (coind₁'_ι.app M) where
-  right_cancellation := by
-    intro Z g f hgf
+  right_cancellation g f hgf := by
     ext n
     have : Function.Injective (hom (coind₁'_ι.app M)) := by
       refine (injective_iff_map_eq_zero' (hom (coind₁'_ι.app M))).mpr (fun a  => ?_)
