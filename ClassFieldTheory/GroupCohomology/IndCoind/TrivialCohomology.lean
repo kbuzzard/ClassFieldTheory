@@ -194,7 +194,34 @@ instance trivialTateCohomology_ind₁AsFinsupp : TrivialTateCohomology (ind₁As
       use ∑ x : G ⧸ φ.range, single (Quotient.out x) (f (Quotient.out x))
       ext g
       simp [Representation.norm]
-      sorry
+      rw [← Finset.sum_comm]
+      simp_rw [Finsupp.coe_finset_sum, Finset.sum_apply]
+      calc ∑ g : G ⧸ S, ∑ s : S, (fun₀ | g.out * s => f g.out) x
+        _ = ∑ g : G ⧸ S, ∑ s : S, if g.out * s = x then f g.out else 0 := by
+          simp only [Finsupp.single_apply]
+        _ = ∑ g : G ⧸ S, ∑ s : S, if s = g.out⁻¹ * x then f g.out else 0 := by
+          apply Finset.sum_congr rfl fun _ _ ↦ ?_
+          apply Finset.sum_congr rfl fun _ _ ↦ ?_
+          congr 1
+          simp [eq_inv_mul_iff_mul_eq]
+        _ = ∑ g : G ⧸ S, ∑ s ∈ (Finset.univ : Finset S).map ⟨S.subtype, S.subtype_injective⟩, if s = g.out⁻¹ * x then f g.out else 0 := by
+          simp_rw [Finset.sum_map]
+          simp
+        _ = ∑ g : G ⧸ S, ∑ s ∈ (Finset.univ : Finset G).filter (· ∈ S), if s = g.out⁻¹ * x then f g.out else 0 := by
+          apply Finset.sum_congr rfl fun _ _ ↦ ?_
+          apply Finset.sum_congr ?_ fun _ _ ↦ rfl
+          ext w
+          simp
+        _ = ∑ g : G ⧸ S, ∑ s : G, if s = g.out⁻¹ * x then if s ∈ S then f g.out else 0 else 0 := by
+          simp_rw [Finset.sum_filter, ← ite_and, and_comm]
+        _ = ∑ g : G ⧸ S, if g.out⁻¹ * x ∈ S then f g.out else 0 := by
+          simp
+        _ = ∑ g : G ⧸ S, if g = ⟦x⟧ then f g.out else 0 := by
+          simp [h₁]
+        _ = f x := by
+          simp
+          convert hf x ⟨_, h₀' S x⟩
+          simp
     · sorry
 
 instance trivialTateCohomology_ind₁ : TrivialTateCohomology ((ind₁ G).obj A) := by
