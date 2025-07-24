@@ -367,6 +367,7 @@ instance instIsIso_down_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
 
 def upδiso_Tate (n : ℤ) [DecidableEq G] (M : Rep R G) :
     (tateCohomology n).obj (up.obj M) ≅ (tateCohomology (n + 1)).obj M :=
+
   have := instIsIso_up_shortExact M n
   asIso (tateCohomology.δ (up_shortExact M) n)
 
