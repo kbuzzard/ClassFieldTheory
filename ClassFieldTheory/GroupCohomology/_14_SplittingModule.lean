@@ -301,15 +301,15 @@ lemma trivialCohomology [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] :
     rfl
 
 
-def TateCohomology_iso [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] (n : ℤ) :
-  (TateCohomology n).obj (trivial R G R) ≅ (TateCohomology (n + 2)).obj M := sorry
+def tateCohomology_iso [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] (n : ℤ) :
+  (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M := sorry
 
 def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
-    (TateCohomology 0).obj N ≅ ModuleCat.of ℤ (Additive (Abelianization G)) := by
+    (tateCohomology 0).obj N ≅ ModuleCat.of ℤ (Additive (Abelianization G)) := by
   symm
-  apply Iso.trans (Y := (TateCohomology (-2)).obj (trivial ℤ G ℤ))
+  apply Iso.trans (Y := (tateCohomology (-2)).obj (trivial ℤ G ℤ))
   · sorry -- current PR.
-  · apply TateCohomology_iso τ
+  · apply tateCohomology_iso τ
 
 end Rep.split
 

@@ -307,7 +307,7 @@ The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` w
 -/
 instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type} [Group Q]
     {φ : G →* Q} (surj : Function.Surjective φ) :
-    ((coind₁ G ⋙ quotientToInvariantsFunctor surj).obj A).TrivialCohomology :=
+    ((coind₁ G ⋙ quotientToInvariantsFunctor' surj).obj A).TrivialCohomology :=
   .of_iso (Rep.coind₁_quotientToInvariants_iso A surj)
 
 /--
@@ -361,8 +361,8 @@ instance coind₁'_trivialCohomology : (coind₁'.obj M).TrivialCohomology :=
 
 instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
-  have iso := (quotientToInvariantsFunctor surj).mapIso (coind₁'_obj_iso_coind₁ M)
-  have _ : ((quotientToInvariantsFunctor surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
+  have iso := (quotientToInvariantsFunctor' surj).mapIso (coind₁'_obj_iso_coind₁ M)
+  have _ : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
   · exact coind₁_quotientToInvariants_trivialCohomology M.V surj
   exact .of_iso iso
 
@@ -457,14 +457,13 @@ variable (G) in
 @[simps! V] def ind₁AsFinsupp : Rep R G := ind₁'.obj <| (trivialFunctor R G).obj A
 
 variable (G) in
-/-- A version of `coind₁` that's actually defined as `G → A` with some action. -/
-@[simps! V] def coind₁AsPi : Rep R G  :=   coind₁'.obj <| (trivialFunctor R G).obj A
+@[simps! V] def coind₁AsPi : Rep R G := coind₁'.obj <| (trivialFunctor R G).obj A
 
 @[simp]
 lemma ind₁AsFinsupp_ρ (g : G) : (ind₁AsFinsupp G A).ρ g = lmapDomain _ _ (fun x ↦ x * g⁻¹) := by
   simp [ind₁AsFinsupp, trivialFunctor]
 
--- TODO: Replace with `coind₁AsPi_ρ`. Currently can't be proved for obscure reasons.
+-- TODO: Replace with `coind₁AsPi_ρ`. Currently can't be proved first for obscure reasons.
 @[simp]
 lemma coind₁AsPi_ρ_apply (g : G) (f : G → A) (x : G) : (coind₁AsPi G A).ρ g f x = f (x * g) := by
   simp [coind₁AsPi, coind₁', trivialFunctor]
@@ -534,15 +533,15 @@ instance coind₁_trivialHomology [Finite G] : TrivialHomology ((coind₁ G).obj
 instance coind₁'_trivialHomology [Finite G] : TrivialHomology (coind₁'.obj M) :=
   .of_iso (coind₁'_obj_iso_coind₁ M)
 
-instance ind₁_trivialTateCohomology [Finite G] : TrivialTateCohomology ((ind₁ G).obj A) := sorry
+instance ind₁_trivialtateCohomology [Finite G] : TrivialtateCohomology ((ind₁ G).obj A) := sorry
 
-instance coind₁_trivialTate [Finite G] : TrivialTateCohomology ((coind₁ G).obj A) :=
+instance coind₁_trivialTate [Finite G] : TrivialtateCohomology ((coind₁ G).obj A) :=
   .of_iso (ind₁_obj_iso_coind₁_obj A).symm
 
-instance coind₁'_trivialTate [Finite G] : TrivialTateCohomology (coind₁'.obj M) :=
+instance coind₁'_trivialTate [Finite G] : TrivialtateCohomology (coind₁'.obj M) :=
   .of_iso (coind₁'_obj_iso_coind₁ M)
 
-instance ind₁'_trivialTate [Finite G] : TrivialTateCohomology (ind₁'.obj M) :=
+instance ind₁'_trivialTate [Finite G] : TrivialtateCohomology (ind₁'.obj M) :=
   .of_iso (ind₁'_iso_coind₁'.app M)
 
 end FiniteGroup

@@ -88,64 +88,65 @@ lemma trivialHomology_iff_res {M : Rep R G} :
   mp _ _ _ _ inj := .res M inj
   mpr h := h (f := .id G) Function.injective_id
 
-class TrivialTateCohomology [Finite G] (M : Rep R G) : Prop where
+class TrivialtateCohomology [Finite G] (M : Rep R G) : Prop where
   isZero ⦃H : Type⦄ [Group H] [DecidableEq H] (φ : H →* G) (inj : Function.Injective φ) {n : ℤ} :
     have := Finite.of_injective φ inj
-    IsZero ((TateCohomology n).obj (M ↓ φ : Rep R H))
+    IsZero ((tateCohomology n).obj (M ↓ φ : Rep R H))
 
-lemma TrivialTateCohomology.of_iso [Finite G] {M N : Rep R G} (f : M ≅ N)
-    [N.TrivialTateCohomology] :
-    M.TrivialTateCohomology := by
+lemma TrivialtateCohomology.of_iso [Finite G] {M N : Rep R G} (f : M ≅ N)
+    [N.TrivialtateCohomology] :
+    M.TrivialtateCohomology := by
   constructor
   intro S _ _ φ hφ n
   have _ : Finite S := Finite.of_injective φ hφ
-  have : (TateCohomology n).obj (M ↓ φ) ≅ (TateCohomology n).obj (N ↓ φ)
-  · apply (TateCohomology n).mapIso
+  have : (tateCohomology n).obj (M ↓ φ) ≅ (tateCohomology n).obj (N ↓ φ)
+  · apply (tateCohomology n).mapIso
     exact (res φ).mapIso f
-  exact (TrivialTateCohomology.isZero _ hφ).of_iso this
+  exact (TrivialtateCohomology.isZero _ hφ).of_iso this
 
-lemma isZero_of_trivialTateCohomology [Finite G] [DecidableEq G] {M : Rep R G}
-    [M.TrivialTateCohomology] {n : ℕ} : IsZero ((TateCohomology n).obj M) :=
-  TrivialTateCohomology.isZero (.id G) Function.injective_id
+lemma isZero_of_trivialtateCohomology [Finite G] [DecidableEq G] {M : Rep R G}
+    [M.TrivialtateCohomology] {n : ℕ} : IsZero ((tateCohomology n).obj M) :=
+  TrivialtateCohomology.isZero (.id G) Function.injective_id
 
-instance TrivialTateCohomology.to_trivialCohomology [Finite G] {M : Rep R G}
-    [M.TrivialTateCohomology] : M.TrivialCohomology where
+instance TrivialtateCohomology.to_trivialCohomology [Finite G] {M : Rep R G}
+    [M.TrivialtateCohomology] : M.TrivialCohomology where
   isZero H _ φ hφ n := by
     classical
     have : Finite H := .of_injective _ hφ
-    exact (TrivialTateCohomology.isZero _ hφ).of_iso
-      (TateCohomology.isoGroupCohomology n (M ↓ φ)).symm
+    exact (TrivialtateCohomology.isZero _ hφ).of_iso
+      (tateCohomology.isoGroupCohomology n|>.app (M ↓ φ)).symm
 
-instance TrivialTateCohomology.to_trivialHomology [Finite G] {M : Rep R G}
-    [M.TrivialTateCohomology] : M.TrivialHomology where
+instance TrivialtateCohomology.to_trivialHomology [Finite G] {M : Rep R G}
+    [M.TrivialtateCohomology] : M.TrivialHomology where
   isZero H _ φ hφ n := by
     classical
     have : Finite H := .of_injective _ hφ
-    exact (TrivialTateCohomology.isZero _ hφ).of_iso
-      (TateCohomology.isoGroupHomology n (M ↓ φ)).symm
+    exact (TrivialtateCohomology.isZero _ hφ).of_iso
+      (tateCohomology.isoGroupHomology n|>.app (M ↓ φ)).symm
 
-lemma TrivialTateCohomology.of_cases [Finite G] {M : Rep R G}
+lemma TrivialtateCohomology.of_cases [Finite G] {M : Rep R G}
     [M.TrivialCohomology] [M.TrivialHomology]
     (h : ∀ {H : Type} [Group H] [DecidableEq H] (φ : H →* G) (inj : Function.Injective φ),
       have := Finite.of_injective φ inj
-      IsZero ((TateCohomology 0).obj (M ↓ φ : Rep R H)) ∧
-        IsZero ((TateCohomology (-1)).obj (M ↓ φ : Rep R H))) :
-    TrivialTateCohomology M where
+      IsZero ((tateCohomology 0).obj (M ↓ φ : Rep R H)) ∧
+        IsZero ((tateCohomology (-1)).obj (M ↓ φ : Rep R H))) :
+    TrivialtateCohomology M where
   isZero _ _ _ φ inj n := by
     have := Finite.of_injective φ inj
     match n with
     | .ofNat (n + 1) =>
       letI := TrivialCohomology.res M inj
-      exact (isZero_of_trivialCohomology).of_iso
-        (TateCohomology.isoGroupCohomology n (M ↓ φ))
+      exact (isZero_of_trivialCohomology).of_iso <|
+        (tateCohomology.isoGroupCohomology n).app (M ↓ φ)
     | .negSucc (n + 1) =>
       letI := TrivialHomology.res M inj
       rw [show Int.negSucc (n + 1) = -n - 2 by grind]
-      exact isZero_of_trivialHomology.of_iso (TateCohomology.isoGroupHomology n (M ↓ φ))
+      exact isZero_of_trivialHomology.of_iso <|
+        (tateCohomology.isoGroupHomology n).app (M ↓ φ)
     | 0 =>
-      grind
+      aesop
     | .negSucc 0 =>
-      grind
+      aesop
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialCohomology where
   isZero H _ _ hf _ := by
@@ -157,7 +158,7 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialHomology where
     letI : Subsingleton H := Function.Injective.subsingleton hf
     apply isZero_groupHomology_succ_of_subsingleton
 
-instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
+instance [Subsingleton G] {M : Rep R G} : M.TrivialtateCohomology := by
   refine .of_cases ?_
   intro H _ _ φ inj
   have : Subsingleton H := Function.Injective.subsingleton inj
@@ -166,10 +167,10 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
       rw [Subsingleton.eq_one g, map_one]
       rfl }
   constructor
-  · refine IsZero.of_iso ?_ (TateCohomology_zero_iso_of_isTrivial _)
+  · refine IsZero.of_iso ?_ (tateCohomology.zeroIsoOfIsTrivial _)
     rw [Nat.card_unique, Nat.cast_one, LinearMap.range_eq_top_of_cancel (by exact fun _ _ a ↦ a)]
     exact ModuleCat.isZero_of_subsingleton _
-  refine IsZero.of_iso ?_ (TateCohomology_neg_one_iso_of_isTrivial _)
+  refine IsZero.of_iso ?_ (tateCohomology.negOneIsoOfIsTrivial _)
   rw [Nat.card_unique, Nat.cast_one, LinearMap.ker_eq_bot_of_cancel (by exact fun _ _ a ↦ a)]
   exact ModuleCat.isZero_of_subsingleton _
 

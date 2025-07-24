@@ -9,12 +9,12 @@ In this file we have a group homomorphism `φ : G →* Q` satisfying the conditi
 
 From this, we define a functor
 
-  `Rep.quotientToInvariantsFunctor surj : Rep R G ⥤ Rep R Q`,
+  `Rep.quotientToInvariantsFunctor' surj : Rep R G ⥤ Rep R Q`,
 
 which takes a representation `M` of `G` to the subspace of vectors which are fixed by `φ.ker`,
 with the obvious action of `Q`.
 
-We use the abbreviation `M ↑ surj` for `(Rep.quotientToInvariantsFunctor surj).obj M`.
+We use the abbreviation `M ↑ surj` for `(Rep.quotientToInvariantsFunctor' surj).obj M`.
 
 We define the natural map of `G`-representations
 
@@ -22,11 +22,11 @@ We define the natural map of `G`-representations
 
 Using this map, we define the inflation map as a morphism of functors
 
-  `groupCohomology.cochain_infl : quotientToInvariantsFunctor surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G`.
+  `groupCohomology.cochain_infl : quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G`.
 
 Using this we define the inflation map on group cohomology:
 
-  `infl (n : ℕ) : Rep.quotientToInvariantsFunctor surj ⋙ functor R Q n ⟶ functor R G n`
+  `infl (n : ℕ) : Rep.quotientToInvariantsFunctor' surj ⋙ functor R Q n ⟶ functor R G n`
 
 Since this is defined on cochains first, we are able to deduce `δ`-naturality of the inflation map
 on cohomology.
@@ -44,7 +44,7 @@ variable {R G : Type} [CommRing R] [Group G] --[DecidableEq G]
 variable {Q : Type} [Group Q] {φ : G →* Q} (surj : Function.Surjective φ) -- [DecidableEq H]
 
 namespace Rep
-@[simps] noncomputable def quotientToInvariantsFunctor :
+@[simps] noncomputable def quotientToInvariantsFunctor' :
     Rep R G ⥤ Rep R Q where
   obj M := M.quotientToInvariants φ.ker ↓ (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm
   map f := ofHom {
@@ -65,57 +65,57 @@ namespace Rep
   map_id _ := rfl
   map_comp _ _ := rfl
 
-lemma quotientToInvariantsFunctor_obj_ρ (M : Rep R G) :
-    ((quotientToInvariantsFunctor surj).obj M).ρ =
+lemma quotientToInvariantsFunctor'_obj_ρ (M : Rep R G) :
+    ((quotientToInvariantsFunctor' surj).obj M).ρ =
     (M.quotientToInvariants φ.ker).ρ.comp ((QuotientGroup.quotientKerEquivOfSurjective φ surj).symm)
     := rfl
 
-lemma quotientToInvariantsFunctor_obj_ρ_apply (M : Rep R G) (g : G) :
-    ((quotientToInvariantsFunctor surj).obj M).ρ (φ g) =
+lemma quotientToInvariantsFunctor'_obj_ρ_apply (M : Rep R G) (g : G) :
+    ((quotientToInvariantsFunctor' surj).obj M).ρ (φ g) =
     (M.quotientToInvariants φ.ker).ρ g
     := by
-  rw [quotientToInvariantsFunctor_obj_ρ]
-  simp only [quotientToInvariantsFunctor_obj, Action.res_obj_V, of_ρ, MonoidHom.coe_comp,
+  rw [quotientToInvariantsFunctor'_obj_ρ]
+  simp only [quotientToInvariantsFunctor'_obj, Action.res_obj_V, of_ρ, MonoidHom.coe_comp,
     MonoidHom.coe_coe, Function.comp_apply]
   congr
   rw [MulEquiv.symm_apply_eq]
   rfl
 
-lemma quotientToInvariantsFunctor_obj_ρ_apply₂ (M : Rep R G) (g : G)
-    (v : (quotientToInvariantsFunctor surj).obj M) :
-    (((quotientToInvariantsFunctor surj).obj M).ρ (φ g) v).val =
+lemma quotientToInvariantsFunctor'_obj_ρ_apply₂ (M : Rep R G) (g : G)
+    (v : (quotientToInvariantsFunctor' surj).obj M) :
+    (((quotientToInvariantsFunctor' surj).obj M).ρ (φ g) v).val =
     M.ρ g v.val
     := by
-  rw [quotientToInvariantsFunctor_obj_ρ_apply]
+  rw [quotientToInvariantsFunctor'_obj_ρ_apply]
   rfl
 
-instance : (quotientToInvariantsFunctor (R := R) surj).PreservesZeroMorphisms where
+instance : (quotientToInvariantsFunctor' (R := R) surj).PreservesZeroMorphisms where
   map_zero _ _ := rfl
 
 set_option quotPrecheck false in
 /--
 `M ↑ H` means the `H` invariants of `M`, as a representation of `G ⧸ H`.
 -/
-notation M " ↑ " surj => (Rep.quotientToInvariantsFunctor surj).obj M
+notation M " ↑ " surj => (Rep.quotientToInvariantsFunctor' surj).obj M
 
-noncomputable def res_quotientToInvariantsFunctor_ι (M : Rep R G) :
+noncomputable def res_quotientToInvariantsFunctor'_ι (M : Rep R G) :
     ((M ↑ surj) ↓ φ) ⟶ M where
   hom := ofHom (Submodule.subtype _)
   comm g := by
     ext m
-    simp only [quotientToInvariantsFunctor_obj, Action.res_obj_V, Action.res_obj_ρ,
+    simp only [quotientToInvariantsFunctor'_obj, Action.res_obj_V, Action.res_obj_ρ,
       RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
       RingHom.coe_coe, Function.comp_apply, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
       LinearMap.coe_comp, Submodule.coe_subtype, ρ_hom]
-    rw [←Rep.quotientToInvariantsFunctor_obj_ρ_apply₂ surj M]
+    rw [←Rep.quotientToInvariantsFunctor'_obj_ρ_apply₂ surj M]
     rfl
 
 end Rep
 namespace groupCohomology
 
 noncomputable def cochain_infl :
-    quotientToInvariantsFunctor surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G where
-  app M := cochainsMap φ <| res_quotientToInvariantsFunctor_ι surj M
+    quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G where
+  app M := cochainsMap φ <| res_quotientToInvariantsFunctor'_ι surj M
   naturality _ _ _ := rfl
 
 /--
@@ -123,7 +123,7 @@ The inflation map `Hⁿ(G⧸H, M ↑ H) ⟶ Hⁿ(G,M)` as a natural transformati
 This is defined using the inflation map on cocycles.
 -/
 noncomputable def infl (n : ℕ) :
-    Rep.quotientToInvariantsFunctor surj ⋙ functor R Q n ⟶ functor R G n :=
+    Rep.quotientToInvariantsFunctor' surj ⋙ functor R Q n ⟶ functor R G n :=
   (groupCohomology.cochain_infl surj) ◫ 𝟙 (homologyFunctor _ _ n)
 
 
@@ -145,11 +145,11 @@ where the horizontal maps are connecting homomorphisms
 and the vertical maps are inflation.
 -/
 lemma infl_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
-    (hS' : (S.map (quotientToInvariantsFunctor surj)).ShortExact)  (i j : ℕ) (hij : i + 1 = j) :
+    (hS' : (S.map (quotientToInvariantsFunctor' surj)).ShortExact)  (i j : ℕ) (hij : i + 1 = j) :
     δ hS' i j hij ≫ (infl surj j).app _ = (infl surj i).app _ ≫ δ hS i j hij
     := by
   let C := S.map (cochainsFunctor R G)
-  let S' := S.map (quotientToInvariantsFunctor surj)
+  let S' := S.map (quotientToInvariantsFunctor' surj)
   let C' := S'.map (cochainsFunctor R Q)
   let φ : C' ⟶ C := {
     τ₁ := (cochain_infl surj).app S.X₁
