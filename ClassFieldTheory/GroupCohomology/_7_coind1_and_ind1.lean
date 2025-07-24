@@ -39,6 +39,19 @@ We prove that `ind₁'.obj M` is isomorphic to `(ind₁ G).obj M.V`, and therefo
 Similarly we show that `coind₁'.obj M` is isomorphic to `(coind₁ G).obj M.V` and therefore has
 trivial cohomology. In the case that `G` is a finite group, we show that all four of these
 repressentations have trivial Tate cohomology.
+
+## Implementation notes
+
+`ind₁`/`coind₁` are defined as the base change of finsupp/pi quotiented out by the trivial
+relation.
+This is because they are abbrevs of the general construction from mathlib.
+
+Instead of redefining them as `G →₀ A`/`G → A` with the `G`-action on the domain, which would break
+the defeq with the general construction, we provide `ind₁AsFinsupp`/`coind₁AsPi`, a version of
+`ind₁`/`coind₁` that's actually defined as `G →₀ A`/`G → A`.
+
+`ind₁AsFinsupp`/`coind₁AsPi` are not bundled as functors because they should only be used for
+pointwise computations.
 -/
 
 open
@@ -302,6 +315,7 @@ The functor which takes a representation `ρ` of `G` on `V` to the
 coinduced representation on `G → V`, where the action of `G` is by `ρ` in `V` and by
 right translation on `G`.
 -/
+@[simps obj]
 def coind₁' : Rep R G ⥤ Rep R G where
   obj M := of M.ρ.coind₁'
   map φ := {
@@ -378,6 +392,7 @@ The functor taking a representation `M` of `G` to the induced representation on
 the space `G →₀ M`. The action of `G` on `G →₀ M.V` is by left-translation on `G` and
 by `M.ρ` on `M.V`.
 -/
+@[simps! obj]
 def ind₁' : Rep R G ⥤ Rep R G where
   obj M := of M.ρ.ind₁'
   map f := {
@@ -436,6 +451,34 @@ def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V where
 instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
   let _ := (ind₁_trivialHomology G M.V)
   .of_iso (ind₁'_obj_iso M)
+
+variable (G) in
+/-- A version of `ind₁` that's actually defined as `G →₀ A` with some action. -/
+@[simps! V] def ind₁AsFinsupp : Rep R G := ind₁'.obj <| (trivialFunctor R G).obj A
+
+variable (G) in
+/-- A version of `coind₁` that's actually defined as `G → A` with some action. -/
+@[simps! V] def coind₁AsPi : Rep R G  :=   coind₁'.obj <| (trivialFunctor R G).obj A
+
+@[simp]
+lemma ind₁AsFinsupp_ρ (g : G) : (ind₁AsFinsupp G A).ρ g = lmapDomain _ _ (fun x ↦ x * g⁻¹) := by
+  simp [ind₁AsFinsupp, trivialFunctor]
+
+-- TODO: Replace with `coind₁AsPi_ρ`. Currently can't be proved for obscure reasons.
+@[simp]
+lemma coind₁AsPi_ρ_apply (g : G) (f : G → A) (x : G) : (coind₁AsPi G A).ρ g f x = f (x * g) := by
+  simp [coind₁AsPi, coind₁', trivialFunctor]
+
+@[simp]
+lemma coind₁AsPi_ρ (g : G) (f : G → A) (x : G) :
+    (coind₁AsPi G A).ρ g = (LinearEquiv.piCongrLeft R (fun _ ↦ A) <| .mulRight g).toLinearMap :=
+  sorry
+
+/-- `ind₁AsFinsupp` is isomorphic to `ind₁` pointwise. -/
+def ind₁AsFinsuppIso : ind₁AsFinsupp G A ≅ (ind₁ G).obj A := ind₁'_obj_iso_ind₁ _
+
+/-- `coind₁AsPi` is isomorphic to `coind₁` pointwise. -/
+def coind₁AsPiIso : coind₁AsPi G A ≅ (coind₁ G).obj (.of R A) := coind₁'_obj_iso_coind₁ _
 
 section FiniteGroup
 
