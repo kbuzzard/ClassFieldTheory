@@ -1,8 +1,21 @@
-import Mathlib
+import Mathlib.Algebra.Azumaya.Basic
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Algebra.Module.PID
+import Mathlib.Algebra.MvPolynomial.Funext
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+import Mathlib.LinearAlgebra.FreeProduct.Basic
+import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.Henselian
+import Mathlib.RingTheory.HopkinsLevitzki
+
+/- This file contains the normal basis theorem from mathlib PR #27390 -/
 
 namespace AlgEquiv
 
-/-- `AlgEquiv.toAlgHom` as a `MonoidHom`. -/
+/- `AlgEquiv.toAlgHom` as a `MonoidHom`. -/
 @[simps] def toAlgHomHom (R A) [CommSemiring R] [Semiring A] [Algebra R A] :
     (A ≃ₐ[R] A) →* A →ₐ[R] A where
   toFun := AlgEquiv.toAlgHom
