@@ -136,16 +136,17 @@ lemma TrivialTateCohomology.of_cases [Finite G] {M : Rep R G}
     match n with
     | .ofNat (n + 1) =>
       letI := TrivialCohomology.res M inj
-      exact (isZero_of_trivialCohomology).of_iso
-        (TateCohomology.isoGroupCohomology n (M ↓ φ))
+      exact (isZero_of_trivialCohomology).of_iso <|
+        (TateCohomology.isoGroupCohomology n).app (M ↓ φ)
     | .negSucc (n + 1) =>
       letI := TrivialHomology.res M inj
       rw [show Int.negSucc (n + 1) = -n - 2 by grind]
-      exact isZero_of_trivialHomology.of_iso (TateCohomology.isoGroupHomology n (M ↓ φ))
+      exact isZero_of_trivialHomology.of_iso <|
+        (TateCohomology.isoGroupHomology n).app (M ↓ φ)
     | 0 =>
-      grind
+      aesop
     | .negSucc 0 =>
-      grind
+      aesop
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialCohomology where
   isZero H _ _ hf _ := by
@@ -166,10 +167,10 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
       rw [Subsingleton.eq_one g, map_one]
       rfl }
   constructor
-  · refine IsZero.of_iso ?_ (TateCohomology_zero_iso_of_isTrivial _)
+  · refine IsZero.of_iso ?_ (TateCohomology.zeroIsoOfIsTrivial _)
     rw [Nat.card_unique, Nat.cast_one, LinearMap.range_eq_top_of_cancel (by exact fun _ _ a ↦ a)]
     exact ModuleCat.isZero_of_subsingleton _
-  refine IsZero.of_iso ?_ (TateCohomology_neg_one_iso_of_isTrivial _)
+  refine IsZero.of_iso ?_ (TateCohomology.negOneIsoOfIsTrivial _)
   rw [Nat.card_unique, Nat.cast_one, LinearMap.ker_eq_bot_of_cancel (by exact fun _ _ a ↦ a)]
   exact ModuleCat.isZero_of_subsingleton _
 
