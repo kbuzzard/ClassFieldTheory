@@ -571,6 +571,8 @@ variable {K L}
 
 theorem normalBasis_apply (e : L ≃ₐ[K] L) : normalBasis K L e = e (normalBasis K L 1) := sorry
 
+/-- For a finite Galois extension `L/K`, the isomorphism between `ind₁` of `K`
+and `L` in the category of `(L ≃ₐ[K] L)`-representations. -/
 noncomputable def iso_ind₁ :
     (Rep.ind₁ (L ≃ₐ[K] L)).obj (.of K K) ≅ Rep.of (AlgEquiv.toLinearMapHom K L) := by
   refine (Rep.ind₁AsFinsuppIso (G := (L ≃ₐ[K] L)) (.of K K)).symm ≪≫
@@ -586,6 +588,8 @@ noncomputable def iso_ind₁ :
   rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, 
     Finsupp.sum_fintype _ _ (fun i => by exact zero_smul K _),
     Finsupp.sum_fintype _ _ (fun i => by exact zero_smul K _)]
+  -- For strange reasons, the simp lemma `ind₁AsFinsupp_ρ` doesn't work here, so
+  -- we unfold instead.
   unfold Rep.ind₁AsFinsupp
   simp only [Rep.ind₁'_obj, Rep.trivialFunctor_obj_V, RingHom.toMonoidHom_eq_coe,
     RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
