@@ -292,13 +292,13 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
       apply Representation.map₂_comm
   }
   naturality := by
-    intro N L f
-    ext x
-    dsimp only [Representation.map₂, ind₁']
-    ext x
+    intro X Y f
+    ext (w : G →₀ X.V)
     simp
+    change (_ : G →₀ _) = _
+    ext g
+    simp [ind₁', Representation.map₂_apply, -Representation.map₂_apply_toFun]
 
-    sorry
 
 
 
@@ -337,7 +337,6 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
     map₂]
   rw [Representation.map₂'_apply₂]
   simp
-
 
 /--
 For a cyclic group `G`, this is the sequence of representations of a cyclic group:
