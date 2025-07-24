@@ -334,7 +334,7 @@ instance coind₁_trivialCohomology (A : ModuleCat R) : ((coind₁ G).obj A).Tri
 
 variable {G}
 
-set_option maxHeartbeats 2000000
+set_option maxHeartbeats 1000000
 def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
     (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
