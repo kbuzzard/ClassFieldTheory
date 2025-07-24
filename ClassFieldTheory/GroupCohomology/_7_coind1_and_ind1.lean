@@ -334,16 +334,70 @@ instance coind₁_trivialCohomology (A : ModuleCat R) : ((coind₁ G).obj A).Tri
 
 variable {G}
 
+set_option maxHeartbeats 2000000
 def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
-    (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A :=
-  /-
-  As an `R`-module, `(coind₁ G).obj A` is the function space `G → A`, the action of `G` is by
-  right translation on `G`. Let `K` be the kernel of a surjective homomorphism `φ : G →* Q`.
-  The `K`-invariants are just functions `G / K ⟶ M` with the action
-  of `G / K ≃* Q` by translation on `G / K`. This is exactly the right hand side.
-  -/
-  sorry
+    (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
+  let t1 : (invariants (MonoidHom.comp ((coind₁ G).obj A).ρ φ.ker.subtype)) ≃ₗ[R]
+    (coindV (⊥ : Subgroup (G ⧸ φ.ker)).subtype
+    ((trivialFunctor R (⊥ : Subgroup (G ⧸ φ.ker))).obj A).ρ) := {
+      toFun x := ⟨Quotient.lift x.1.1 (fun a b hab ↦ by
+        nth_rw 1 [← x.2 ⟨a⁻¹ * b, QuotientGroup.leftRel_apply.mp hab⟩]
+        simp), by simp [coindV, trivialFunctor]⟩
+      map_add' x y := by
+        ext x
+        induction x using QuotientGroup.induction_on
+        simp
+      map_smul' r x := by
+        ext x
+        induction x using QuotientGroup.induction_on
+        simp
+      invFun x := ⟨⟨x.1.comp QuotientGroup.mk, by simp [coindV, trivialFunctor]⟩, fun a ↦ by
+        simpa [← Subtype.val_inj] using funext (by simp)⟩
+      left_inv := by simpa [Function.LeftInverse] using fun _ _ _ ↦ funext (by simp)
+      right_inv := by
+        simp only [Function.RightInverse, Function.LeftInverse, trivialFunctor_obj_V,
+          Functor.comp_obj, coindFunctor_obj, of_ρ, Subtype.forall, Subtype.mk.injEq]
+        intro _ _
+        ext x
+        induction x using QuotientGroup.induction_on
+        simp }
+  let t2 : (coindV (⊥ : Subgroup (G ⧸ φ.ker)).subtype
+    ((trivialFunctor R (⊥ : Subgroup (G ⧸ φ.ker))).obj A).ρ) ≃ₗ[R]
+    ↥(coindV (⊥ : Subgroup Q).subtype ((trivialFunctor R (⊥ : Subgroup Q)).obj A).ρ) := {
+      toFun x := ⟨x.1.comp (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm, by
+        simp [coindV, trivialFunctor]⟩
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl
+      invFun y := ⟨y.1.comp (QuotientGroup.quotientKerEquivOfSurjective φ surj), by
+        simp [coindV, trivialFunctor]⟩
+      left_inv := by simpa [Function.LeftInverse] using fun a ha ↦ by simp [Function.comp_assoc]
+      right_inv := by
+        simpa [Function.RightInverse, Function.LeftInverse] using
+          fun a ha ↦ by simp [Function.comp_assoc] }
+  refine Action.mkIso (LinearEquiv.toModuleIso (t1.trans t2)) (fun q ↦ ?_)
+  simp only [Functor.comp_obj, coindFunctor_obj, quotientToInvariantsFunctor_obj, Action.res_obj_V,
+    trivialFunctor_obj_V, of_ρ, Action.res_obj_ρ, RingHom.toMonoidHom_eq_coe,
+    RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
+    Function.comp_apply, LinearEquiv.toModuleIso_hom, coind_apply]
+  ext x q'
+  simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply, LinearEquiv.trans_apply]
+  rw [ModuleCat.endRingEquiv_symm_apply_hom, ModuleCat.endRingEquiv_symm_apply_hom,
+    LinearMap.restrict_apply]
+  simp only [LinearMap.funLeft_apply]
+  unfold t1 t2
+  simp only [trivialFunctor_obj_V, Functor.comp_obj, coindFunctor_obj, of_ρ, LinearEquiv.coe_mk,
+    LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_mul]
+  let r := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q
+  let r' := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q'
+  let s := Classical.choose (QuotientGroup.mk_surjective r)
+  let s' := Classical.choose (QuotientGroup.mk_surjective r')
+  have h1 : QuotientGroup.mk s = (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q :=
+    Classical.choose_spec (QuotientGroup.mk_surjective r)
+  have h2 : QuotientGroup.mk s' = (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q' :=
+    Classical.choose_spec (QuotientGroup.mk_surjective r')
+  simp [← h1, ← h2, ← QuotientGroup.mk_mul]
 
 /--
 The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` with trivial cohomology.
