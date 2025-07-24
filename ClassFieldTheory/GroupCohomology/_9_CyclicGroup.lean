@@ -62,8 +62,6 @@ theorem unique_gen_pow [Fintype G] (x : G) :
 
 variable {G} [Finite G] [DecidableEq G]
 
--- Not sure if you want the parts from here to...
-
 @[simp] lemma ofHom_sub (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
   (ofHom (f₁ - f₂) : A ⟶ B) = ofHom f₁ - ofHom f₂ := rfl
 
@@ -75,8 +73,6 @@ variable {G} [Finite G] [DecidableEq G]
 
 @[simp] lemma ofHom_one (A : ModuleCat R) :
   (ofHom 1 : A ⟶ A) = 𝟙 A := rfl
-
--- here. Can be deleted without any changes
 
 omit [IsCyclic G] [Finite G] [DecidableEq G] in
 @[simp] lemma Rep.ρ_mul_eq_comp (M : Rep R G) (x y : G) :
@@ -348,8 +344,7 @@ def periodicitySequence : CochainComplex (Rep R G) (Fin 4) where
   | 1,2 => map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv
   | 2,3 => ind₁'_π.app M
   | _,_ => 0
-  d_comp_d' := by
-    intro i j k hij hjk
+  d_comp_d' i j k hij hjk := by
     fin_cases i
     all_goals
       fin_cases j
