@@ -551,28 +551,9 @@ instance : Epi (ind₁'_π.app M) := by
 
 lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
-def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V where
-  hom := ofHom {
-      val := M.ρ.ind₁'_lequiv.toLinearMap
-      property g := by
-        rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
-        exact M.ρ.ind₁'_lequiv_comm g
-    }
-  inv := ofHom {
-    val := M.ρ.ind₁'_lequiv.symm.toLinearMap
-    property g := by
-      erw [LinearEquiv.coe_toLinearMap, LinearEquiv.coe_toLinearMap]
-      erw [LinearEquiv.symm_comp_eq, ← Function.comp_assoc, LinearEquiv.eq_comp_symm]
-      erw [← LinearEquiv.coe_toLinearMap, ← LinearEquiv.coe_toLinearMap]
-      erw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
-      exact (M.ρ.ind₁'_lequiv_comm g).symm
-  }
-  hom_inv_id := by
-    ext x
-    exact LinearEquiv.symm_apply_apply M.ρ.ind₁'_lequiv x
-  inv_hom_id := by
-    ext x
-    exact LinearEquiv.apply_symm_apply M.ρ.ind₁'_lequiv x
+def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
+  Action.mkIso (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) (fun g ↦
+    ModuleCat.hom_ext (LinearMap.ext fun x ↦ LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x))
 
 instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
   let _ := (ind₁_trivialHomology G M.V)
