@@ -142,7 +142,7 @@ lemma map₁_ker :
   LinearMap.id - lmapDomain _ _ (fun x ↦ gen G * x)
 
 omit [Finite G] [DecidableEq G]
-lemma map₂'_apply₂ (f : G →₀ A) (x : G) :
+lemma map₂_apply (f : G →₀ A) (x : G) :
     Representation.map₂ (R := R) f x = f x - f ((gen G)⁻¹ * x) := by
   simp [Representation.map₂]
   convert Finsupp.mapDomain_apply ?_ _ ((gen G)⁻¹ * x)
@@ -299,9 +299,6 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
     ext g
     simp [ind₁', Representation.map₂_apply, -Representation.map₂_apply_toFun]
 
-
-
-
 omit [Finite G] in
 lemma map₂_app_gg_ind₁'_π_app :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
@@ -335,7 +332,7 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
     Equiv.invFun_as_coe, ModuleCat.hom_ofHom, map₁, Representation.map₁, LinearMap.coe_mk,
     AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, equivFunOnFinite_symm_apply_toFun,
     map₂]
-  rw [Representation.map₂'_apply₂]
+  rw [Representation.map₂_apply]
   simp
 
 /--
