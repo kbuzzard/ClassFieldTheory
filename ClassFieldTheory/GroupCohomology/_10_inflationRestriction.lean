@@ -23,9 +23,9 @@ If `H¹(K,A) = 0` then the `K`-invariants form a short exact sequence in `Rep R 
 
   `0 ⟶ Aᴷ ⟶ Bᴷ ⟶ Cᴷ ⟶ 0`, where `K = φ.ker`.
 -/
-lemma quotientToInvariantsFunctor_shortExact_ofShortExact {S : ShortComplex (Rep R G)}
+lemma quotientToInvariantsFunctor'_shortExact_ofShortExact {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) (hS' : IsZero (H1 (S.X₁ ↓ φ.ker.subtype))) :
-    (S.map (quotientToInvariantsFunctor surj)).ShortExact := by
+    (S.map (quotientToInvariantsFunctor' surj)).ShortExact := by
   /-
   This is the opening section of the long exact sequence. The next term is `H¹(K,S.X₁)`, which
   is assumeed to be zero.

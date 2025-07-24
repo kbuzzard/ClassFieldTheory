@@ -294,7 +294,7 @@ The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` w
 -/
 instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type} [Group Q]
     {φ : G →* Q} (surj : Function.Surjective φ) :
-    ((coind₁ G ⋙ quotientToInvariantsFunctor surj).obj A).TrivialCohomology :=
+    ((coind₁ G ⋙ quotientToInvariantsFunctor' surj).obj A).TrivialCohomology :=
   .of_iso (Rep.coind₁_quotientToInvariants_iso A surj)
 
 /--
@@ -347,8 +347,8 @@ instance coind₁'_trivialCohomology : (coind₁'.obj M).TrivialCohomology :=
 
 instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
-  have iso := (quotientToInvariantsFunctor surj).mapIso (coind₁'_obj_iso_coind₁ M)
-  have _ : ((quotientToInvariantsFunctor surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
+  have iso := (quotientToInvariantsFunctor' surj).mapIso (coind₁'_obj_iso_coind₁ M)
+  have _ : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
   · exact coind₁_quotientToInvariants_trivialCohomology M.V surj
   exact .of_iso iso
 
