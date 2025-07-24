@@ -458,13 +458,13 @@ variable (G) in
 
 variable (G) in
 /-- A version of `coind₁` that's actually defined as `G → A` with some action. -/
-@[simps! V] def coind₁AsPi : Rep R G  :=   coind₁'.obj <| (trivialFunctor R G).obj A
+@[simps! V] def coind₁AsPi : Rep R G := coind₁'.obj <| (trivialFunctor R G).obj A
 
 @[simp]
 lemma ind₁AsFinsupp_ρ (g : G) : (ind₁AsFinsupp G A).ρ g = lmapDomain _ _ (fun x ↦ x * g⁻¹) := by
   simp [ind₁AsFinsupp, trivialFunctor]
 
--- TODO: Replace with `coind₁AsPi_ρ`. Currently can't be proved for obscure reasons.
+-- TODO: Replace with `coind₁AsPi_ρ`. Currently can't be proved first for obscure reasons.
 @[simp]
 lemma coind₁AsPi_ρ_apply (g : G) (f : G → A) (x : G) : (coind₁AsPi G A).ρ g f x = f (x * g) := by
   simp [coind₁AsPi, coind₁', trivialFunctor]
