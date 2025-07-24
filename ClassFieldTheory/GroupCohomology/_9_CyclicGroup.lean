@@ -1,6 +1,8 @@
 import Mathlib
 import ClassFieldTheory.GroupCohomology._6_LeftRegular
+import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
 import ClassFieldTheory.GroupCohomology._8_DimensionShift
+import ClassFieldTheory.Mathlib.ModuleCatExact
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
@@ -29,9 +31,9 @@ open
   BigOperators
   groupCohomology
 
-
+-- TODO: add universes
 variable {R : Type} [CommRing R]
-variable (G : Type) [Group G] [instCyclic :IsCyclic G] [Finite G] [DecidableEq G]
+variable (G : Type) [Group G] [instCyclic : IsCyclic G]
 variable (M : Rep R G)
 
 noncomputable section
@@ -41,7 +43,24 @@ noncomputable section
 -/
 abbrev gen : G := IsCyclic.exists_generator.choose
 
-variable {G}
+variable {G} in
+lemma gen_generate (x : G) : x ∈ Subgroup.zpowers (gen G) :=
+  IsCyclic.exists_generator.choose_spec x
+
+theorem unique_gen_zpow_zmod [Fintype G] (x : G) :
+    ∃! n : ZMod (Fintype.card G), x = gen G ^ n.val :=
+  IsCyclic.unique_zpow_zmod gen_generate x
+
+theorem unique_gen_pow [Fintype G] (x : G) :
+    ∃! n < Fintype.card G, x = gen G ^ n := by
+  obtain ⟨k, hk, hk_unique⟩ := unique_gen_zpow_zmod G x
+  refine ⟨k.val, ⟨⟨ZMod.val_lt _, hk⟩, ?_⟩⟩
+  intro y ⟨hy_lt, hy⟩
+  rw [← hk_unique y]
+  · rw [ZMod.val_natCast, Nat.mod_eq_of_lt hy_lt]
+  · simp [hy]
+
+variable {G} [Finite G] [DecidableEq G]
 
 @[simp] lemma ofHom_sub (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
   (ofHom (f₁ - f₂) : A ⟶ B) = ofHom f₁ - ofHom f₂ := rfl
@@ -63,6 +82,8 @@ namespace Representation
 
 variable {A : Type} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
 
+omit [Finite G] [DecidableEq G]
+
 @[simps] def map₁ : (G → A) →ₗ[R] (G → A) where
   toFun f x := f x - f ((gen G)⁻¹ * x)
   map_add' _ _ := by
@@ -72,7 +93,6 @@ variable {A : Type} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
     ext
     simp [← smul_sub]
 
-omit [Finite G] [DecidableEq G] in
 lemma map₁_comm (g : G) :
     map₁ ∘ₗ ρ.coind₁' g = ρ.coind₁' g ∘ₗ map₁  := by
   apply LinearMap.ext
@@ -81,12 +101,10 @@ lemma map₁_comm (g : G) :
   intro
   simp [mul_assoc]
 
-omit [Finite G] [DecidableEq G] in
 lemma map₁_comp_coind_ι :
     map₁ (R := R) (G := G) (A := A) ∘ₗ coind₁'_ι = 0 := by
   ext; simp
 
-omit [Finite G] [DecidableEq G] in
 lemma map₁_ker :
     LinearMap.ker (map₁ (R := R) (G := G) (A := A)) = LinearMap.range coind₁'_ι := by
   ext f
@@ -139,7 +157,6 @@ omit [Finite G] [DecidableEq G] in
   ext
   simp [map₂, LinearMap.sub_comp]
 
-omit [Finite G] [DecidableEq G] in
 lemma map₂_comm (g : G) :
     map₂ ∘ₗ ρ.ind₁' g = ρ.ind₁' g ∘ₗ map₂ := by
   ext x : 1
@@ -147,28 +164,98 @@ lemma map₂_comm (g : G) :
     LinearMap.comp_sub, ind₁'_comp_lsingle, ←LinearMap.comp_assoc, map₂_comp_lsingle,
     LinearMap.sub_comp, ind₁'_comp_lsingle, mul_assoc]
 
-omit [Finite G] [DecidableEq G] in
 lemma ind₁'_π_comp_map₂ :
     ind₁'_π ∘ₗ map₂ (R := R) (G := G) (A := A) = 0 := by
   ext : 1
   rw [LinearMap.comp_assoc, map₂_comp_lsingle, LinearMap.comp_sub,
     LinearMap.zero_comp, sub_eq_zero, ind₁'_π_comp_lsingle, ind₁'_π_comp_lsingle]
 
-lemma map₂_range :
+lemma map₂_range [Fintype G] [DecidableEq G] :
     LinearMap.range (map₂ (R := R) (G := G) (A := A)) = LinearMap.ker ind₁'_π := by
-  ext f
+  ext w
   constructor
-  · rintro ⟨_, rfl⟩
-    exact LinearMap.congr_fun ind₁'_π_comp_map₂ _
-  · intro hf
-    rw [LinearMap.mem_ker] at hf
-    simp only [map₂, LinearMap.mem_range, LinearMap.sub_apply, LinearMap.id_coe, id_eq,
-      lmapDomain_apply]
-    sorry
+  · rintro ⟨y, rfl⟩
+    have := ind₁'_π_comp_map₂ (R := R) (G := G) (A := A)
+    apply_fun (· y) at this
+    exact this
+  · intro hw_ker
+    change Representation.ind₁'_π (R := R) w = 0 at hw_ker
+    simp [Representation.ind₁'_π] at hw_ker
+    rw [LinearMap.mem_range]
+    let f : G → A := fun g ↦ ∑ i ∈ Finset.Icc 0 (unique_gen_pow G g).choose, w (gen G ^ i)
+    have hf_apply (k : ℤ) : f (gen G ^ k) = ∑ i ∈ Finset.Icc 0 (k.natMod (Fintype.card G)), w (gen G ^ i) := by
+      simp only [f]
+      congr
+      rw [((unique_gen_pow G (gen G ^ k)).choose_spec.right (k.natMod (Fintype.card G)) ⟨?_, ?_⟩).symm]
+      · apply Int.natMod_lt
+        exact Fintype.card_ne_zero
+      · rw [← zpow_natCast, Int.natMod, Int.ofNat_toNat, max_eq_left, zpow_mod_card]
+        simp [Int.emod_nonneg]
+    have hf_apply_of_lt (k : ℕ) (hk : k < Fintype.card G) :
+        f (gen G ^ k) = ∑ i ∈ Finset.Icc 0 k, w (gen G ^ i) := by
+      convert hf_apply k
+      · simp
+      · zify
+        rw [Int.natMod, Int.toNat_of_nonneg, Int.emod_eq_of_lt]
+        · positivity
+        · exact_mod_cast hk
+        · apply Int.emod_nonneg
+          simp
+    use equivFunOnFinite.symm f
+    ext g
+    rw [map₂_apply]
+    change f g - f ((gen G)⁻¹ * g) = w g
+    obtain ⟨k, ⟨hk_lt, rfl⟩, hk_unique⟩ := unique_gen_pow G g
+    by_cases hk : k = 0
+    · rw [hk, hf_apply_of_lt, pow_zero, mul_one]
+      · have : (gen G)⁻¹ = gen G ^ (Fintype.card G - 1 : ℕ) := by
+          rw [inv_eq_iff_mul_eq_one, ← pow_succ',
+            Nat.sub_add_cancel Fintype.card_pos, pow_card_eq_one]
+        rw [this, hf_apply_of_lt]
+        · simp
+          calc
+            _ = ∑ i ∈ Finset.Ico 0 (Fintype.card G), w (gen G ^ i) := by
+              congr
+              apply Finset.Icc_sub_one_right_eq_Ico_of_not_isMin
+              rw [isMin_iff_forall_not_lt]
+              push_neg
+              use 0, Fintype.card_pos
+            _ = ∑ x ∈ (Finset.Ico 0 (Fintype.card G)).image (gen G ^ ·), w x := by
+              rw [Finset.sum_image]
+              intro x hx y hy h
+              simp at hx hy h
+              simp only at hk_unique
+              have := (unique_gen_pow G (gen G ^ x)).choose_spec.right
+              rw [this x, this y]
+              · simp [hy, h]
+              · simp [hx]
+            _ = ∑ x ∈ (Finset.univ : Finset G), w x := by
+              congr
+              rw [Finset.eq_univ_iff_forall]
+              intro x
+              simp
+              obtain ⟨a, ha, ha'⟩ := unique_gen_pow G x
+              use a, ha.left, ha.right.symm
+            _ = 0 := by
+              simpa [Finsupp.sum_fintype] using hw_ker
+        · simp
+          exact Fintype.card_pos
+      · exact Fintype.card_pos
+    · rw [← zpow_neg_one, hf_apply_of_lt, ← zpow_natCast, ← zpow_add,
+        neg_add_eq_sub, show (k : ℤ) - 1 = (k - 1 : ℕ) by omega,
+        zpow_natCast, hf_apply_of_lt]
+      · nth_rw 1 [show k = k - 1 + 1 by omega]
+        rw [Finset.sum_Icc_succ_top]
+        rw [add_sub_cancel_left, zpow_natCast, Nat.sub_add_cancel (by omega)]
+        omega
+      · omega
+      · omega
 
 end Representation
 
 namespace Rep
+
+omit [DecidableEq G]
 
 /--
 The map `coind₁'.obj M ⟶ coind₁' M` which takes a function `f : G → M.V` to
@@ -215,12 +302,12 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
 
 
 
-omit [Finite G] [DecidableEq G] in
+omit [Finite G] in
 lemma map₂_app_gg_ind₁'_π_app :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
   apply Representation.ind₁'_π_comp_map₂
 
-omit [Finite G] [DecidableEq G] in
+omit [Finite G] in
 lemma map₂_gg_ind₁'_π : map₂ (R := R) (G := G) ≫ ind₁'_π = 0 := by
   ext : 2
   apply map₂_app_gg_ind₁'_π_app
@@ -289,9 +376,91 @@ def periodicitySequence : CochainComplex (Rep R G) (Fin 4) where
       rw [← Iso.app_inv _ _, map₁_comp_ind₁'_iso_coind₁', Category.assoc,
         map₂_app_gg_ind₁'_π_app, comp_zero]
 
-lemma periodicitySequence_exactAt_one : (periodicitySequence M).ExactAt 1 := sorry
+@[simp]
+lemma periodicitySequence_X_zero : (periodicitySequence M).X 0 = M :=
+  rfl
 
-lemma periodicitySequence_exactAt_two : (periodicitySequence M).ExactAt 2 := sorry
+@[simp]
+lemma periodicitySequence_X_one : (periodicitySequence M).X 1 = coind₁'.obj M :=
+  rfl
+
+@[simp]
+lemma periodicitySequence_X_two : (periodicitySequence M).X 2 = ind₁'.obj M :=
+  rfl
+
+@[simp]
+lemma periodicitySequence_X_three : (periodicitySequence M).X 3 = M :=
+  rfl
+
+@[simp]
+lemma periodicitySequence_d_zero_one :
+    (periodicitySequence M).d 0 1 = coind₁'_ι.app M :=
+  rfl
+
+@[simp]
+lemma periodicitySequence_d_one_two :
+    (periodicitySequence M).d 1 2 = map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv :=
+  rfl
+
+@[simp]
+lemma periodicitySequence_d_two_three :
+    (periodicitySequence M).d 2 3 = ind₁'_π.app M :=
+  rfl
+
+lemma periodicitySequence_exactAt_one : (periodicitySequence M).ExactAt 1 := by
+  rw [HomologicalComplex.ExactAt, HomologicalComplex.sc,
+    HomologicalComplex.shortComplexFunctor,
+    ComplexShape.prev_eq' _ (i := 0) (by simp),
+    ComplexShape.next_eq' _ (j := 2) (by simp)]
+  -- S is ShortComplex (Rep R G) here
+  -- but Rep R G is equivalent to ModuleCat R[G]
+  -- this steps transfers our task to exactness in ModuleCat R[G]
+  apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
+  -- a sequence of R-modules is exact if LinearMap.range _ = LinearMap.ker _
+  -- in fact, range ≤ ker in complexes, so we just need ker ≤ range
+  apply ShortComplex.Exact.moduleCat_of_ker_le_range
+  simp [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra,
+    toModuleMonoidAlgebraMap, ModuleCat.hom_ofHom]
+  -- now we get w with w ∈ ker
+  have := Representation.map₁_ker (R := R) (G := G) (A := M.V)
+  -- Figuring these few lines out took 20 minutes!
+  intro (w : G → M.V) hw
+  simp
+  change w ∈ LinearMap.range Representation.coind₁'_ι
+  rw [← Representation.map₁_ker]
+  simp [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', LinearMap.comp] at hw ⊢
+  exact (LinearEquiv.symm_apply_eq _).mp hw
+
+lemma periodicitySequence_exactAt_two [Fintype G] [DecidableEq G] :
+    (periodicitySequence M).ExactAt 2 := by
+  rw [HomologicalComplex.ExactAt, HomologicalComplex.sc,
+    HomologicalComplex.shortComplexFunctor,
+    ComplexShape.prev_eq' _ (i := 1) (by simp),
+    ComplexShape.next_eq' _ (j := 3) (by simp)]
+  -- S is ShortComplex (Rep R G) here
+  -- but Rep R G is equivalent to ModuleCat R[G]
+  -- this steps transfers our task to exactness in ModuleCat R[G]
+  apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
+  -- a sequence of R-modules is exact if LinearMap.range _ = LinearMap.ker _
+  -- in fact, range ≤ ker in complexes, so we just need ker ≤ range
+  apply ShortComplex.Exact.moduleCat_of_ker_le_range
+  simp [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra,
+    toModuleMonoidAlgebraMap, ModuleCat.hom_ofHom]
+  -- now we get w with w ∈ ker
+  intro w hw_ker
+  -- prove w ∈ range!™ (type coercion hell)
+  change G →₀ M.V at w
+  simp [ind₁'_π] at hw_ker
+  change w ∈ LinearMap.ker (Representation.ind₁'_π (R := R)) at hw_ker
+  rw [← Representation.map₂_range] at hw_ker
+  simp [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', LinearMap.comp] at hw_ker ⊢
+  obtain ⟨y, rfl⟩ := hw_ker
+  use (y : G → M.V)
+  change (linearEquivFunOnFinite ..).symm (Representation.map₁ y) = Representation.map₂ (R := R) y
+  -- I need a Representation (Rep) version of map₁_comp_ind₁'_iso_coind₁' here
+  ext w
+  rw [Representation.map₂_apply]
+  simp [linearEquivFunOnFinite]
 
 include instCyclic in
 def up_obj_iso_down_obj : up.obj M ≅ down.obj M :=
