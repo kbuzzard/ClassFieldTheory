@@ -457,6 +457,7 @@ variable (G) in
 @[simps! V] def ind₁AsFinsupp : Rep R G := ind₁'.obj <| (trivialFunctor R G).obj A
 
 variable (G) in
+/-- A version of `coind₁` that's actually defined as `G → A` with some action. -/
 @[simps! V] def coind₁AsPi : Rep R G := coind₁'.obj <| (trivialFunctor R G).obj A
 
 @[simp]
