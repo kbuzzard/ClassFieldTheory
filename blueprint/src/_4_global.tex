@@ -55,11 +55,11 @@ Let $S$ be a finite set of places of $k$, containing all of the infinite primes 
 of the primes which ramify in $l$.
 We shall use the notation
 \[
-	\A_{l,S} = \prod_{v \in S} \prod_{w | v} l_w \times \prod_{v \in S} \prod_{w | v} \cO_v.
+	\A_{l,S} = \prod_{v \in S} \prod_{w | v} l_w \times \prod_{v \notin S} \prod_{w | v} \cO_v.
 \]
 We also write $\cO_{l,S}$ for the ring $S$-integers in $l$:
 \[
-	\cO_{l,S} = \{x \in l, \forall v \not\in S, \forall w | v, |x|_v \le 1\} = k \cap \A_{l,S}.
+	\cO_{l,S} = \{x \in l, \forall v \not\in S, \forall w | v, |x|_v \le 1\} = l \cap \A_{l,S}.
 \]
 We regard $\cO_{l,S}$ as a subring of $\A_{l,S}$ and
 $\cO_{l,S}^\times$ as a subgroup of $\A_{l,S}^\times$.

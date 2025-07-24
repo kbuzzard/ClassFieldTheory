@@ -29,13 +29,13 @@ representation `M` to `H`, as an object of `Rep R H`.
 This is notation for `(Rep.res H).obj M`, which is an abbreviation of
 `(Action.res (ModuleCat R) H.subtype).obj M`
 -/
-notation3 M " ↓ " φ => (res φ).obj M
+notation3:60 M:60 " ↓ " φ:61 => (res φ).obj M
 
 /-
 `simp` lemmas for `Action.res` also work for `Rep.res` because it is an abbreviation:
 -/
 example (M : Rep R G) (H : Type) [Group H] (φ : H →* G) (h : H) :
-  (M ↓ φ).ρ h = M.ρ (φ h) := by simp only [Action.res_obj_V, res_obj_ρ]
+  (M ↓ φ).ρ h = M.ρ (φ h) := by simp
 
 example (M : Rep R G) (H : Type) [Group H] (φ : H →* G)  :
   (M ↓ φ).V = M.V := by simp only [Action.res_obj_V]
