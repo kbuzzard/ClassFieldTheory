@@ -67,8 +67,8 @@ def dualizationNameDict : String → List String
   | x            => [x]
 
 def dualizationFixAbbreviation : List String → List String
-  | "tate" :: "Homology" :: s => "TateCohomology" :: s
-  | "Tate" :: "Homology" :: s => "TateCohomology" :: s
+  | "tate" :: "Homology" :: s => "tateCohomology" :: s
+  | "Tate" :: "Homology" :: s => "tateCohomology" :: s
   | x :: s                    => x :: dualizationFixAbbreviation s
   | []                        => []
 

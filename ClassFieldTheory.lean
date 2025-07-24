@@ -8,7 +8,7 @@ import ClassFieldTheory.GroupCohomology._14_SplittingModule
 import ClassFieldTheory.GroupCohomology._1_Basic
 import ClassFieldTheory.GroupCohomology._2_restriction
 import ClassFieldTheory.GroupCohomology._3_inflation
-import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
+import ClassFieldTheory.GroupCohomology._4_tateCohomology_def
 import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
 import ClassFieldTheory.GroupCohomology._6_LeftRegular
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
@@ -17,9 +17,4 @@ import ClassFieldTheory.GroupCohomology._9_CyclicGroup
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import ClassFieldTheory.Mathlib.CopyLeftHomologyData
-import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Pi
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 import ClassFieldTheory.Tactic.Dualize
