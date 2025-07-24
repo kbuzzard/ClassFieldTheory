@@ -432,7 +432,7 @@ instance : Epi (ind₁'_π.app M) :=
 
 lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
-def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V where
+def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V where
   hom := ofHom {
       val := M.ρ.ind₁'_lequiv.toLinearMap
       property g := by
@@ -450,7 +450,7 @@ def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V where
 
 instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
   let _ := (ind₁_trivialHomology G M.V)
-  .of_iso (ind₁'_obj_iso M)
+  .of_iso (ind₁'_obj_iso_ind₁ M)
 
 variable (G) in
 /-- A version of `ind₁` that's actually defined as `G →₀ A` with some action. -/
@@ -470,9 +470,12 @@ lemma coind₁AsPi_ρ_apply (g : G) (f : G → A) (x : G) : (coind₁AsPi G A).�
   simp [coind₁AsPi, coind₁', trivialFunctor]
 
 @[simp]
-lemma coind₁AsPi_ρ (g : G) (f : G → A) (x : G) :
-    (coind₁AsPi G A).ρ g = (LinearEquiv.piCongrLeft R (fun _ ↦ A) <| .mulRight g).toLinearMap :=
-  sorry
+lemma coind₁AsPi_ρ (g : G) :
+    (coind₁AsPi G A).ρ g = (LinearEquiv.piCongrLeft R (fun _ ↦ A) <| (Equiv.mulRight g).symm).toLinearMap := by
+  simp only [coind₁AsPi_V]
+  ext f x
+  erw [coind₁AsPi_ρ_apply]
+  simp [LinearEquiv.piCongrLeft]
 
 /-- `ind₁AsFinsupp` is isomorphic to `ind₁` pointwise. -/
 def ind₁AsFinsuppIso : ind₁AsFinsupp G A ≅ (ind₁ G).obj A := ind₁'_obj_iso_ind₁ _
@@ -523,7 +526,7 @@ instance ind₁_trivialCohomology [Finite G] : TrivialCohomology ((ind₁ G).obj
   .of_iso (ind₁_obj_iso_coind₁_obj A)
 
 instance ind₁'_trivialCohomology [Finite G] : TrivialCohomology (ind₁'.obj M) :=
-  .of_iso (ind₁'_obj_iso M)
+  .of_iso (ind₁'_obj_iso_ind₁ M)
 
 instance coind₁_trivialHomology [Finite G] : TrivialHomology ((coind₁ G).obj A) :=
   .of_iso (ind₁_obj_iso_coind₁_obj A).symm
