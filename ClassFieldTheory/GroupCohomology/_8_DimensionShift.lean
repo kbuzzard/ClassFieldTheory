@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._4_tateCohomology_def
+import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
 
 /-!

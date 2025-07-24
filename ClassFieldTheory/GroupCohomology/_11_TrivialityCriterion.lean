@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._4_tateCohomology_def
+import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
 import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
 import ClassFieldTheory.GroupCohomology._8_DimensionShift
 import ClassFieldTheory.GroupCohomology._10_inflationRestriction
