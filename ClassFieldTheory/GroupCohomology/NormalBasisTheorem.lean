@@ -11,7 +11,7 @@ import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopkinsLevitzki
 
-/- This file contains the normal basis theorem from mathlib PR #27390 -/
+/- This file contains the normal basis theorem from Junyan's mathlib PR #27390 -/
 
 namespace AlgEquiv
 
