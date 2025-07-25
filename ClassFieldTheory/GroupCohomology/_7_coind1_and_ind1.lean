@@ -389,8 +389,6 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) 
     simpa [Function.RightInverse, Function.LeftInverse] using
       fun a ha ↦ by simp [Function.comp_assoc]
 
---set_option trace.profiler true in
-set_option maxHeartbeats 550000 in
 def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
     (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
@@ -403,12 +401,10 @@ def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     Function.comp_apply, LinearEquiv.toModuleIso_hom, coind_apply]
   ext x q'
   simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, LinearEquiv.trans_apply]
-  rw [ModuleCat.endRingEquiv_symm_apply_hom, ModuleCat.endRingEquiv_symm_apply_hom,
-    LinearMap.restrict_apply]
-  simp only [LinearMap.funLeft_apply, coind₁_quotientToInvariants_iso_aux1, coind₁_quotientToInvariants_iso_aux2]
-  simp only [trivialFunctor_obj_V, Functor.comp_obj, coindFunctor_obj, of_ρ, LinearEquiv.coe_mk,
-    LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_mul]
+    Function.comp_apply, LinearEquiv.trans_apply, ModuleCat.endRingEquiv_symm_apply_hom _ _,
+    LinearMap.restrict_apply, LinearMap.funLeft_apply, coind₁_quotientToInvariants_iso_aux1,
+    coind₁_quotientToInvariants_iso_aux2, trivialFunctor_obj_V, Functor.comp_obj, coindFunctor_obj,
+    of_ρ, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_mul]
   let r := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q
   let r' := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q'
   let s := Classical.choose (QuotientGroup.mk_surjective r)
