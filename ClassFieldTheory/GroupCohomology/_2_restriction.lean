@@ -9,8 +9,7 @@ open
   groupCohomology
   BigOperators
 
-variable {R : Type} [CommRing R]
-variable {G : Type} [Group G]
+variable {R G S : Type} [CommRing R] [Group G] [Group S] {M : Rep R G}
 
 noncomputable section
 
@@ -30,6 +29,8 @@ This is notation for `(Rep.res H).obj M`, which is an abbreviation of
 `(Action.res (ModuleCat R) H.subtype).obj M`
 -/
 notation3:60 M:60 " ↓ " φ:61 => (res φ).obj M
+
+@[simp] lemma res_ρ_apply (φ : S →* G) (s : S) : (M ↓ φ).ρ s = M.ρ (φ s) := rfl
 
 /-
 `simp` lemmas for `Action.res` also work for `Rep.res` because it is an abbreviation:

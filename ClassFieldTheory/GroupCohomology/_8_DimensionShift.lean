@@ -1,4 +1,5 @@
 import Mathlib
+import ClassFieldTheory.GroupCohomology.IndCoind.TrivialCohomology
 import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
 
