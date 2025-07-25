@@ -571,7 +571,7 @@ instance : Epi (ind₁'_π.app M) := by
 
 lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
-def ind₁'_obj_iso : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
+def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
   Action.mkIso (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) (fun g ↦
     ModuleCat.hom_ext (LinearMap.ext fun x ↦ LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x))
 
