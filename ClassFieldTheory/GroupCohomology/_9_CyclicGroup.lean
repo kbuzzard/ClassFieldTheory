@@ -38,10 +38,11 @@ variable (M : Rep R G)
 
 noncomputable section
 
+namespace IsCyclic
 /--
 `gen G` is a generator of the cyclic group `G`.
 -/
-abbrev gen : G := IsCyclic.exists_generator.choose
+def gen : G := IsCyclic.exists_generator.choose
 
 variable {G} in
 lemma gen_generate (x : G) : x ∈ Subgroup.zpowers (gen G) :=
@@ -59,6 +60,10 @@ theorem unique_gen_pow [Fintype G] (x : G) :
   rw [← hk_unique y]
   · rw [ZMod.val_natCast, Nat.mod_eq_of_lt hy_lt]
   · simp [hy]
+
+end IsCyclic
+
+open IsCyclic
 
 variable {G} [Finite G] [DecidableEq G]
 
