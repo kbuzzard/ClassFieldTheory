@@ -268,6 +268,11 @@ lemma ind₁'_lequiv_coind₁'_comm' [Finite G] (g : G) :
   rw [ind₁'_lequiv_coind₁'_comm, LinearMap.comp_apply, LinearEquiv.coe_coe,
     LinearEquiv.apply_symm_apply]
 
+lemma coind₁'_ι_app_injective : Function.Injective (@coind₁'_ι R G _ V _ _) := by
+  intro _ _ h
+  change Function.const _ _ = Function.const _ _ at h
+  simpa using h
+
 end Representation
 
 namespace Rep
