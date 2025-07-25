@@ -17,9 +17,7 @@ with the action of `G` by right-translation. In other words `(g f) x = f (x g)` 
 The space `(ind₁ G).obj A` is `G →₀ A` with the action of `G` by right-translation, i.e.
 `g (single x v) = single (x * g⁻¹) v`.
 
-Both `ind₁` and `coind₁` are defined as special cases of the functors `ind` and `coind` in Matlib.
-
-We prove that `coind₁.obj A` has trivial cohomology and `ind₁.obj X` is has trivial homology.
+Both `ind₁` and `coind₁` are defined as special cases of the functors `ind` and `coind` in Mathlib.
 
 We also define two functors
 
@@ -38,10 +36,8 @@ the constant function on `G` with value `v`.
 We define the canonical epimorphism `ind₁'_π : ind₁'.obj M ⟶ M` which takes a finitely supported
 function to the sum of its values.
 
-We prove that `ind₁'.obj M` is isomorphic to `(ind₁ G).obj M.V`, and therefore has trivial homology.
-Similarly we show that `coind₁'.obj M` is isomorphic to `(coind₁ G).obj M.V` and therefore has
-trivial cohomology. In the case that `G` is a finite group, we show that all four of these
-repressentations have trivial Tate cohomology.
+We prove that `ind₁'.obj M` is isomorphic to `(ind₁ G).obj M.V`.
+Similarly, we show that `coind₁'.obj M` is isomorphic to `(coind₁ G).obj M.V`.
 
 ## Implementation notes
 
@@ -372,18 +368,6 @@ variable {R} (M : Rep R G) (A : ModuleCat R)
 abbrev coind₁ : ModuleCat R ⥤ Rep R G :=
   trivialFunctor R (⊥ : Subgroup G) ⋙ coindFunctor R (⊥ : Subgroup G).subtype
 
-/--
-Coinduced representations have trivial cohomology.
--/
-instance coind₁_trivialCohomology (A : ModuleCat R) : ((coind₁ G).obj A).TrivialCohomology :=
-  /-
-  For any subgroup `S` of `G`, the restriction to `S` of `(coind₁ G).obj A` is isomorphic to
-  a direct sum of representations of the form `(coind₁ S).obj A`, one copy for each coset of `S`.
-  It remains to show that `Hⁿ(S,(coind₁ S).obj A) ≅ 0`. By Shapiro's lemma, we have
-  `Hⁿ(S,(coind₁ S).obj A) ≅ Hⁿ(Unit,A) ≅ 0`.
-  -/
-  sorry
-
 variable {G}
 
 def coind₁_quotientToInvariants_iso_aux1 {Q : Type} [Group Q] (φ : G →* Q) :
@@ -452,14 +436,6 @@ def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
   simp [← h1, ← h2, ← QuotientGroup.mk_mul]
 
 /--
-The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` with trivial cohomology.
--/
-instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type} [Group Q]
-    {φ : G →* Q} (surj : Function.Surjective φ) :
-    ((coind₁ G ⋙ quotientToInvariantsFunctor' surj).obj A).TrivialCohomology :=
-  .of_iso (Rep.coind₁_quotientToInvariants_iso A surj)
-
-/--
 The functor which takes a representation `ρ` of `G` on `V` to the
 coinduced representation on `G → V`, where the action of `G` is by `ρ` in `V` and by
 right translation on `G`.
@@ -526,16 +502,6 @@ lemma LinearEquiv.symm_apply {R S M N : Type*} [Semiring R] [Semiring S] [AddCom
   hom_inv_id := by ext; simp
   inv_hom_id := by ext; simp
 
-instance coind₁'_trivialCohomology : (coind₁'.obj M).TrivialCohomology :=
-  .of_iso (coind₁'_obj_iso_coind₁ M)
-
-instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
-    (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
-  have iso := (quotientToInvariantsFunctor' surj).mapIso (coind₁'_obj_iso_coind₁ M)
-  have _ : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
-  · exact coind₁_quotientToInvariants_trivialCohomology M.V surj
-  exact .of_iso iso
-
 variable (G)
 
 /--
@@ -544,14 +510,6 @@ where the action of `G` is by left-translation.
 -/
 def ind₁ : ModuleCat R ⥤ Rep R G :=
   trivialFunctor R (⊥ : Subgroup G) ⋙ indFunctor R (⊥ : Subgroup G).subtype
-
-instance ind₁_trivialHomology (A : ModuleCat R) : TrivialHomology ((ind₁ G).obj A) :=
-  /-
-  Let `S` be a subgroup of `G`.
-  The restriction to `S` of `(ind₁ G).obj A` is isomorphic (after choosing coset representatives)
-  to `(ind₁ S).obj (G/S →₀ A)`. By Shapiro's lemma, this has trivial homology.
-  -/
-  sorry
 
 @[simp] lemma ind₁_obj_ρ (A : ModuleCat R) : ((ind₁ G).obj A).ρ = Representation.ind₁ R G A := rfl
 
@@ -609,10 +567,6 @@ def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
   Action.mkIso (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) (fun g ↦
     ModuleCat.hom_ext (LinearMap.ext fun x ↦ LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x))
 
-instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
-  let _ := (ind₁_trivialHomology G M.V)
-  .of_iso (ind₁'_obj_iso_ind₁ M)
-
 variable (G) in
 /-- A version of `ind₁` that's actually defined as `G →₀ A` with some action. -/
 abbrev ind₁AsFinsupp : Rep R G := .of <| Representation.ind₁AsFinsupp R G A
@@ -667,29 +621,6 @@ def ind₁'_iso_coind₁' [Finite G] : ind₁' (R := R) (G := G) ≅ coind₁' w
 lemma ind₁'_iso_coind₁'_app_apply [Finite G] (f : G →₀ M.V) (x : G) :
     (ind₁'_iso_coind₁'.app M).hom f x = f x := by
   rfl
-
-instance ind₁_trivialCohomology [Finite G] : TrivialCohomology ((ind₁ G).obj A) :=
-  .of_iso (ind₁_obj_iso_coind₁_obj A)
-
-instance ind₁'_trivialCohomology [Finite G] : TrivialCohomology (ind₁'.obj M) :=
-  .of_iso (ind₁'_obj_iso_ind₁ M)
-
-instance coind₁_trivialHomology [Finite G] : TrivialHomology ((coind₁ G).obj A) :=
-  .of_iso (ind₁_obj_iso_coind₁_obj A).symm
-
-instance coind₁'_trivialHomology [Finite G] : TrivialHomology (coind₁'.obj M) :=
-  .of_iso (coind₁'_obj_iso_coind₁ M)
-
-instance ind₁_trivialtateCohomology [Finite G] : TrivialTateCohomology ((ind₁ G).obj A) := sorry
-
-instance coind₁_trivialTate [Finite G] : TrivialTateCohomology ((coind₁ G).obj A) :=
-  .of_iso (ind₁_obj_iso_coind₁_obj A).symm
-
-instance coind₁'_trivialTate [Finite G] : TrivialTateCohomology (coind₁'.obj M) :=
-  .of_iso (coind₁'_obj_iso_coind₁ M)
-
-instance ind₁'_trivialTate [Finite G] : TrivialTateCohomology (ind₁'.obj M) :=
-  .of_iso (ind₁'_iso_coind₁'.app M)
 
 end FiniteGroup
 
