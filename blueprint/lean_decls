@@ -91,7 +91,7 @@ groupCohomology.inflation_restriction_exact
 Representation.map₁
 Representation.map₁_ker
 Representation.map₂_range
-Rep.up_iso_down
+Rep.upIsoDown
 Rep.periodicCohomology
 groupCohomology.trivialCohomology_of_even_of_odd_of_solvable
 groupCohomology.trivialCohomology_of_even_of_odd
