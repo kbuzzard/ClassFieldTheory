@@ -538,10 +538,6 @@ def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
   Action.mkIso (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) (fun g ↦
     ModuleCat.hom_ext (LinearMap.ext fun x ↦ LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x))
 
-instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
-  let _ := (ind₁_trivialHomology G M.V)
-  .of_iso (ind₁'_obj_iso_ind₁ M)
-
 variable (G) in
 /-- A version of `ind₁` that's actually defined as `G →₀ A` with some action. -/
 @[simps! V] def ind₁AsFinsupp : Rep R G := ind₁'.obj <| trivial R G A

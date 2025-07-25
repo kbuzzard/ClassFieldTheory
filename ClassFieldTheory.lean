@@ -18,6 +18,7 @@ import ClassFieldTheory.GroupCohomology._14_SplittingModule
 import ClassFieldTheory.GroupCohomology._15_corestriction
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.NonArchDef
+import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic

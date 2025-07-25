@@ -1,5 +1,5 @@
-import Mathlib
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
+import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 
 -- Sorried version of normal basis theorem, see mathlib PR #27390
 namespace IsGalois
@@ -26,7 +26,7 @@ noncomputable def iso_ind₁ :
       ((IsGalois.normalBasis K L).reindex (Equiv.inv (L ≃ₐ[K] L))).repr.symm) ?_
   intro x
   ext f
-  simp only [Rep.ind₁AsFinsupp_V, Rep.trivialFunctor_obj_V, LinearEquiv.toModuleIso_hom,
+  simp only [Rep.ind₁AsFinsupp_V, Rep.trivial, LinearEquiv.toModuleIso_hom,
     Basis.coe_repr_symm, Basis.coe_reindex, Equiv.inv_symm, Equiv.inv_apply, ModuleCat.hom_comp,
     ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, RingHom.toMonoidHom_eq_coe,
     RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
@@ -37,7 +37,7 @@ noncomputable def iso_ind₁ :
   -- For strange reasons, the simp lemma `ind₁AsFinsupp_ρ` doesn't work here, so
   -- we unfold instead.
   unfold Rep.ind₁AsFinsupp
-  simp only [Rep.ind₁'_obj, Rep.trivialFunctor_obj_V, RingHom.toMonoidHom_eq_coe,
+  simp only [Rep.ind₁'_obj, Rep.trivial, RingHom.toMonoidHom_eq_coe,
     RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
     Function.comp_apply, Representation.ind₁'_apply, map_sum, map_smul]
   unfold ModuleCat.endRingEquiv
@@ -49,8 +49,9 @@ noncomputable def iso_ind₁ :
   rw [Finsupp.mapDomain_mapRange _ _ _ _ (fun _ _ => rfl), Finsupp.mapRange_apply]
   simp only [Equiv.coe_mulRight, mul_inv_rev]
   rw [IsGalois.normalBasis_apply y⁻¹, IsGalois.normalBasis_apply (x⁻¹ * y⁻¹)]
-  simp only [AlgEquiv.mul_apply, AlgEquiv.toLinearMap_apply, AlgEquiv.apply_inv_self]
+  simp only [AlgEquiv.mul_apply, AlgEquiv.toLinearMap_apply, AlgEquiv.coe_inv]
   congr 1
   change Finsupp.mapDomain (Equiv.mulRight x).symm _ _ = _
   rw [← Finsupp.equivMapDomain_eq_mapDomain, Finsupp.equivMapDomain_apply]
-  simp only [Equiv.mulRight_symm, inv_inv, Equiv.coe_mulRight]
+  simp [Equiv.mulRight_symm, inv_inv, Equiv.coe_mulRight]
+  rw [AlgEquiv.apply_symm_apply]

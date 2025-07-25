@@ -33,7 +33,6 @@ open
   groupHomology
   groupCohomology
 
-
 noncomputable section
 
 variable {R G S A : Type} [CommRing R] [Group G] [Group S] {M : Rep R G} {A : ModuleCat R}
@@ -110,9 +109,7 @@ def resInd₁AsFinsuppIso (φ : S →* G) (hφ : Function.Injective φ) (sec : G
   rintro g f
   simp
   ext s h
-  simp only [resInd₁AsFinsuppModuleIso_apply]
-  erw [ind₁AsFinsupp_ρ (G := S) (A := .of R (G ⧸ φ.range →₀ A)) (g := g), res_ρ_apply,
-    ind₁AsFinsupp_ρ, coe_mapDomainLinearEquiv, coe_mapDomainLinearEquiv]
+  erw [ind₁AsFinsupp_ρ, ind₁AsFinsupp_ρ, coe_mapDomainLinearEquiv, coe_mapDomainLinearEquiv]
   simp [resInd₁AsFinsuppModuleIso, mul_assoc]
 
 def resCoind₁AsPiIso (φ : S →* G) (hφ : Function.Injective φ) (sec : G ⧸ φ.range → G)
@@ -122,7 +119,6 @@ def resCoind₁AsPiIso (φ : S →* G) (hφ : Function.Injective φ) (sec : G �
   rintro g f
   simp
   ext s h
-  simp [resCoind₁AsPiModuleIso_apply]
   erw [coind₁AsPi_ρ, coind₁AsPi_ρ, LinearEquiv.coe_toLinearMap, LinearEquiv.coe_toLinearMap]
   simp [resCoind₁AsPiModuleIso, mul_assoc]
 
@@ -180,22 +176,22 @@ instance trivialTateCohomology_ind₁AsFinsupp : TrivialTateCohomology (ind₁As
     refine .of_cases ?_
     rintro H _ _ φ hφ
     have := Finite.of_injective φ hφ
-    have : (ind₁AsFinsupp G A ↓ φ) ≅ ind₁AsFinsupp H (.of R <| G ⧸ φ.range →₀ A) :=
+    let S := φ.range
+    have : (ind₁AsFinsupp G A ↓ φ) ≅ ind₁AsFinsupp H (.of R <| G ⧸ S →₀ A) :=
       resInd₁AsFinsuppIso φ hφ Quotient.out (fun g ↦ QuotientGroup.out_eq' g)
     dsimp
     constructor
-    · --refine IsZero.of_iso ?_ ((TateCohomology 0).mapIso this)
-      refine IsZero.of_iso ?_ (TateCohomology_zero_iso _)
+    · refine .of_iso ?_ (tateCohomology.zeroIso _)
       simp [Submodule.subsingleton_quotient_iff_eq_top]
       rw [SetLike.le_def]
       rintro f hf
-      have : Finite <| G ⧸ φ.range := Subgroup.finite_quotient_of_finiteIndex
-      have : Fintype <| G ⧸ φ.range := Fintype.ofFinite _
-      use ∑ x : G ⧸ φ.range, single (Quotient.out x) (f (Quotient.out x))
+      have : Finite <| G ⧸ S := Subgroup.finite_quotient_of_finiteIndex
+      have : Fintype <| G ⧸ S := .ofFinite _
+      use ∑ x : G ⧸ S, single (Quotient.out x) (f (Quotient.out x))
       ext g
       simp [Representation.norm]
       rw [← Finset.sum_comm]
-      simp_rw [Finsupp.coe_finset_sum, Finset.sum_apply]
+      stop
       calc ∑ g : G ⧸ S, ∑ s : S, (fun₀ | g.out * s => f g.out) x
         _ = ∑ g : G ⧸ S, ∑ s : S, if g.out * s = x then f g.out else 0 := by
           simp only [Finsupp.single_apply]
