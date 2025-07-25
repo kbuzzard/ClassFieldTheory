@@ -401,7 +401,8 @@ lemma periodicitySequence_exactAt_two [Fintype G] [DecidableEq G] :
   simp [linearEquivFunOnFinite]
 
 include instCyclic in
-def up_obj_iso_down_obj : up.obj M ≅ down.obj M :=
+/-- The up and down functors for a finite cyclic group are pointwise isomorphic. -/
+def upIsoDownObj : up.obj M ≅ down.obj M :=
   have := instCyclic
   /-
   `up.obj M` is the cokernel of the first map is `periodicitySequence`,
@@ -410,23 +411,21 @@ def up_obj_iso_down_obj : up.obj M ≅ down.obj M :=
   -/
   sorry
 
-def up_iso_down : up (R := R) (G := G) ≅ down where
-  hom := {
-    app M := (up_obj_iso_down_obj M).hom
-    naturality L N f := by
-      ext v
-      simp [up_obj_iso_down_obj]
-      sorry
-  }
-  inv := {
-    app M := (up_obj_iso_down_obj M).inv
-    naturality := sorry
-  }
+/-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
+def upIsoDown : up (R := R) (G := G) ≅ down where
+  hom.app M := (upIsoDownObj M).hom
+  hom.naturality L N f := by
+    ext v
+
+    simp [upIsoDownObj]
+    sorry
+  inv.app M := (upIsoDownObj M).inv
+  inv.naturality := sorry
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by
   apply Iso.trans (down_δiso_natTrans n)
-  apply Iso.trans (Functor.isoWhiskerRight up_iso_down.symm _)
+  apply Iso.trans (Functor.isoWhiskerRight upIsoDown.symm _)
   exact up_δiso_natTrans _
 
 def periodicCohomology' (n m : ℕ) :
