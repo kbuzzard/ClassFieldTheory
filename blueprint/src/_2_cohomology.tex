@@ -476,8 +476,8 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 
 \begin{lemma} \label{lem:norm naturality}
 	\uses{def:norm}
-	\lean{tateComplex.norm_comm,
-		tateComplex.norm'}
+	\lean{groupCohomology.tateComplex.norm_comm,
+		groupCohomology.tateComplex.normNatEnd}
 	\leanok
 	For every map $f : A \to B$ in $\Rep(R,G)$ we have a commuting square:
 	\[
@@ -971,7 +971,7 @@ This case is described again below.
 		Rep.coind₁'_ι,
 		Rep.dimensionShift.instMonoAppCoind₁'_ι,
 		Rep.dimensionShift.up,
-		Rep.dimensionShift.upSes,
+		Rep.dimensionShift.upShortComplex,
 		Rep.dimensionShift.up_shortExact,
 		Rep.dimensionShift.up_shortExact_res}
 	\uses{def:coind₁'}
@@ -1056,7 +1056,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 	\lean{
 		Representation.ind₁'_lequiv,
 		Representation.ind₁'_lequiv_comm,
-		Rep.ind₁'_obj_iso
+		Rep.ind₁'_obj_iso_ind₁
 		% Rep.ind₁'_iso_forget₂_ggg_ind₁
 	}
 	\uses{def:ind',
