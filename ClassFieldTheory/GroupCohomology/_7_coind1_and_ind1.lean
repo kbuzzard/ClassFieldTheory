@@ -253,7 +253,8 @@ between `ind₁' ρ` and `ind₁ R G V`.
       rw [map_add, map_add, h1, h2]
     · rename_i g v
       simp [ind₁'_invlmap, Submodule.quotEquivOfEqBot, Coinvariants.mk]
-      erw [Submodule.mkQ_apply, Submodule.liftQ_apply]
+      change (TensorProduct.lift ρ.ind₁'_invlmap_aux)
+        (LinearMap.id (R := R) ((fun₀ | g => (1 : R)) ⊗ₜ[R] (ρ g) v)) = fun₀ | g => v
       simp [ind₁'_invlmap_aux]
   right_inv f := by
     rw [LinearMap.toFun_eq_coe]
@@ -263,7 +264,8 @@ between `ind₁' ρ` and `ind₁ R G V`.
     · rename_i x y
       simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
         LinearEquiv.ofLinear_toLinearMap, LinearMap.coe_comp, Function.comp_apply]
-      erw [Submodule.liftQ_apply]
+      change ρ.ind₁'_lmap ((TensorProduct.lift ρ.ind₁'_invlmap_aux)
+        (LinearMap.id (R := R) (x ⊗ₜ[R] y))) = Submodule.Quotient.mk (x ⊗ₜ[R] y)
       simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul]
       induction x using Finsupp.induction_linear
       · simp
@@ -388,7 +390,7 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) 
       fun a ha ↦ by simp [Function.comp_assoc]
 
 --set_option trace.profiler true in
-set_option maxHeartbeats 800000 in
+set_option maxHeartbeats 550000 in
 def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
     (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
