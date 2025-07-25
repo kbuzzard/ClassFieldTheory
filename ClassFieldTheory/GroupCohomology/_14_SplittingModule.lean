@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
+import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
 import ClassFieldTheory.GroupCohomology._11_TrivialityCriterion
 import ClassFieldTheory.GroupCohomology._12_augmentationModule
 
