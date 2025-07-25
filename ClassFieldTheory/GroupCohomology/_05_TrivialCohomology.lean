@@ -1,7 +1,7 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._1_Basic
-import ClassFieldTheory.GroupCohomology._2_restriction
-import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
+import ClassFieldTheory.GroupCohomology._01_Basic
+import ClassFieldTheory.GroupCohomology._02_restriction
+import ClassFieldTheory.GroupCohomology._04_TateCohomology_def
 import ClassFieldTheory.Tactic.Dualize
 
 /-!

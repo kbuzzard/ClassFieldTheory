@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._8_DimensionShift
+import ClassFieldTheory.GroupCohomology._08_DimensionShift
 
 /-
 

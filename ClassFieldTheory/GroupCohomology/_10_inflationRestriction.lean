@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._3_inflation
-import ClassFieldTheory.GroupCohomology._8_DimensionShift
+import ClassFieldTheory.GroupCohomology._03_inflation
+import ClassFieldTheory.GroupCohomology._08_DimensionShift
 
 noncomputable section
 
