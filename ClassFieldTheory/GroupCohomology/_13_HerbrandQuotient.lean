@@ -11,6 +11,7 @@ open CategoryTheory
   groupCohomology
   Rep
   LinearMap
+  IsCyclic
 
 namespace Representation
 
