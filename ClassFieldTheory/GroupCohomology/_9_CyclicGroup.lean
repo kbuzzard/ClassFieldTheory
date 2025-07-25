@@ -402,14 +402,17 @@ lemma periodicitySequence_exactAt_two [Fintype G] [DecidableEq G] :
 
 include instCyclic in
 /-- The up and down functors for a finite cyclic group are pointwise isomorphic. -/
-def upIsoDownObj : up.obj M ≅ down.obj M :=
-  have := instCyclic
+def upIsoDownObj : up.obj M ≅ down.obj M := by
   /-
   `up.obj M` is the cokernel of the first map is `periodicitySequence`,
   so is isomorphic to the image of the second map. This in turn is isomorphic to the
   kernel of the last map, which is `down.obj M`.
   -/
-  sorry
+  calc
+        up.obj M
+      ≅ image (map₁.app M) := sorry
+    _ ≅ image (map₂.app M) := sorry
+    _ ≅ down.obj M := sorry
 
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
 def upIsoDown : up (R := R) (G := G) ≅ down where
