@@ -14,12 +14,15 @@ import ClassFieldTheory.GroupCohomology._11_TrivialityCriterion
 import ClassFieldTheory.GroupCohomology._12_augmentationModule
 import ClassFieldTheory.GroupCohomology._13_HerbrandQuotient
 import ClassFieldTheory.GroupCohomology._14_SplittingModule
+import ClassFieldTheory.GroupCohomology._15_corestriction
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.NonArchDef
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import ClassFieldTheory.Mathlib.Algebra.Module.Torsion
 import ClassFieldTheory.Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+import ClassFieldTheory.Mathlib.ModuleCatExact
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
