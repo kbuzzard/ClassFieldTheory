@@ -1,8 +1,8 @@
 /-
-Copyright (c) 2025 Yaël Dillies, Nailin Guan, Arend Mellendijk, Gareth Ma, Yannis Monbru,
+Copyright (c) 2025 Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru,
 Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Nailin Guan, Arend Mellendijk, Gareth Ma, Yannis Monbru, Michał Mrugała
+Authors: Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru, Michał Mrugała
 -/
 import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
 import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
