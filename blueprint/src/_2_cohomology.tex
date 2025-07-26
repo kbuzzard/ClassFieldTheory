@@ -618,7 +618,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \begin{definition} \label{def:trivial cohomology}
 	\lean{Rep.TrivialCohomology,
 		Rep.TrivialHomology,
-		Rep.TrivialtateCohomology}
+		Rep.TrivialTateCohomology}
 	\uses{def:group homology,
 		def:inflation restriction functors
 	}
@@ -824,6 +824,8 @@ This case is described again below.
 \end{lemma}
 
 \begin{proof}
+	\leanok
+
 	The restriction of $\ind_1(G,A)$ to a subgroup $S$ is
 	isomorphic to $\ind_1(S, R \to_0 A)$, where $R$ is a set of coset representatives for $S$ in $G$.
 	Hence by 	\ref{lem:Shapiro} we have
@@ -845,18 +847,22 @@ This case is described again below.
 \end{definition}
 
 \begin{lemma}	\label{lem:induced trivial Tate}
-	\lean{Rep.ind₁_trivialCohomology,
-		Rep.coind₁_trivialHomology,
-		Rep.ind₁_trivialtateCohomology}
+	\lean{Rep.trivialCohomology_ind₁,
+		Rep.trivialHomology_coind₁,
+		Rep.trivialTateCohomology_ind₁}
 	\uses{lem:Tate cohomology is cohomology or homology,
 		def:ind₁ to coind₁,
 		lem:coind₁ trivial cohomology,
 		lem:ind₁ trivial homology}
+	\leanok
+
 	If the group $G$ is finite then $\ind_1(G,A)$ and $\coind_1(G,A)$ have trivial
 	Tate cohomology.
 \end{lemma}
 
 \begin{proof}
+	\leanok
+
 	These representations are isomorphic, so it's
 	sufficient to prove that $\ind_1(G,A)$ has trivial Tate cohomology
 	(this is the more convenient case to prove).
@@ -1172,6 +1178,8 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \end{lemma}
 
 \begin{proof}
+	\leanok
+
 	This follows from \ref{lem:induced trivial Tate}
 	together with the isomorphisms \ref{def:ind₁ to coind₁},
 	\ref{lem:coind₁' iso coind₁} and \ref{lem:ind₁' iso ind₁}.
