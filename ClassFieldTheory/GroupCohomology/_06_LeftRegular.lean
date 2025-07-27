@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._1_Basic
-import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
+import ClassFieldTheory.GroupCohomology._01_Basic
+import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
 
 section Group
 

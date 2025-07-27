@@ -1,7 +1,7 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._6_LeftRegular
-import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
-import ClassFieldTheory.GroupCohomology._8_DimensionShift
+import ClassFieldTheory.GroupCohomology._06_LeftRegular
+import ClassFieldTheory.GroupCohomology._07_coind1_and_ind1
+import ClassFieldTheory.GroupCohomology._08_DimensionShift
 import ClassFieldTheory.Mathlib.ModuleCatExact
 
 /-!

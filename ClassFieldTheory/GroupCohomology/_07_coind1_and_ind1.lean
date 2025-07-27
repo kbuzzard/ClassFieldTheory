@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._3_inflation
-import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
+import ClassFieldTheory.GroupCohomology._03_inflation
+import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
 
 /-!
 Let `G` be a group. We define two functors:
@@ -715,7 +715,7 @@ noncomputable def iso_ind₁ :
     ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, RingHom.toMonoidHom_eq_coe,
     RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
     AlgEquiv.toLinearMapHom_apply]
-  rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, 
+  rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
     Finsupp.sum_fintype _ _ (fun i => by exact zero_smul K _),
     Finsupp.sum_fintype _ _ (fun i => by exact zero_smul K _)]
   -- For strange reasons, the simp lemma `ind₁AsFinsupp_ρ` doesn't work here, so

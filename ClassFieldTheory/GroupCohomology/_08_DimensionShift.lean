@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
-import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
+import ClassFieldTheory.GroupCohomology._04_TateCohomology_def
+import ClassFieldTheory.GroupCohomology._07_coind1_and_ind1
 
 /-!
 We define functors `up` and `down` from `Rep R G` to itself.
