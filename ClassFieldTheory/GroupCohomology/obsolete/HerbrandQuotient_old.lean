@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._6_CyclicGroup_v2
+import ClassFieldTheory.GroupCohomology._06_CyclicGroup_v2
 
 noncomputable section
 variable {R G : Type} [CommRing R] [Group G]

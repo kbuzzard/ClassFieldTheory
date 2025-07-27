@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._3_inflation
-import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
+import ClassFieldTheory.GroupCohomology._03_inflation
+import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
 
 /-!
 Let `G` be a group. We define two functors:
@@ -203,12 +203,8 @@ omit [Group G] in
 lemma ind₁'_π_comm (g : G) : ind₁'_π ∘ₗ ind₁' ρ g = ρ g ∘ₗ ind₁'_π := by
   ext; simp
 
-/--
-The linear automorphism of `G →₀ V`, which gives an isomorphism
-between `ind₁' ρ` and `ind₁ R G V`.
--/
-@[simps] def ind₁'_lequiv : (G →₀ V) ≃ₗ[R] Ind₁V R G V where
-  toFun f:= f.sum (fun x v ↦ Ind₁V.mk R G V x (ρ x v))
+@[simps] def ind₁'_lmap : (G →₀ V) →ₗ[R] Ind₁V R G V where
+  toFun f:= f.sum (fun g v ↦ Ind₁V.mk R G V g (ρ g v))
   map_add' _ _ := by
     rw [sum_add_index']
     · simp
@@ -219,9 +215,71 @@ between `ind₁' ρ` and `ind₁ R G V`.
     · simp only [map_smul, RingHom.id_apply, smul_sum]
     · intro
       simp only [map_zero]
-  invFun f := sorry
-  left_inv f := sorry
-  right_inv := sorry
+
+def ind₁'_invlmap_aux : (G →₀ R) →ₗ[R] V →ₗ[R] G →₀ V where
+  toFun f := {
+    toFun v := f.sum (fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
+    map_add' v1 v2 := by simp
+    map_smul' r v := by simp [Finsupp.smul_sum, smul_smul, mul_comm]}
+  map_add' f1 f2 := by
+    ext v g
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, sum_apply, LinearMap.add_apply, coe_add, coe_sum,
+      Pi.add_apply]
+    rw [Finsupp.sum_add_index' (f := f1) (g := f2) (by simp) (by simp [add_smul]),
+      Finsupp.sum_apply', Finsupp.sum_apply']
+  map_smul' r f := by
+    ext : 1
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_apply]
+    rw [Finsupp.sum_smul_index' (by simp), Finsupp.smul_sum]
+    simp [smul_smul]
+
+def ind₁'_invlmap : Ind₁V R G V →ₗ[R] (G →₀ V) :=
+  (TensorProduct.lift (ind₁'_invlmap_aux ρ)).comp ((Coinvariants.ker _).quotEquivOfEqBot (by
+    simpa [Coinvariants.ker, sub_eq_zero]
+     using fun a ↦ by exact LinearMap.congr_fun TensorProduct.map_id a)).toLinearMap
+
+/--
+The linear automorphism of `G →₀ V`, which gives an isomorphism
+between `ind₁' ρ` and `ind₁ R G V`.
+-/
+@[simps!] def ind₁'_lequiv : (G →₀ V) ≃ₗ[R] Ind₁V R G V where
+  toLinearMap := ind₁'_lmap ρ
+  invFun := ind₁'_invlmap ρ
+  left_inv f := by
+    rw [LinearMap.toFun_eq_coe]
+    induction f using Finsupp.induction_linear
+    · simp
+    · rename_i f g h1 h2
+      rw [map_add, map_add, h1, h2]
+    · rename_i g v
+      simp [ind₁'_invlmap, Submodule.quotEquivOfEqBot, Coinvariants.mk]
+      change (TensorProduct.lift ρ.ind₁'_invlmap_aux)
+        (LinearMap.id (R := R) ((fun₀ | g => (1 : R)) ⊗ₜ[R] (ρ g) v)) = fun₀ | g => v
+      simp [ind₁'_invlmap_aux]
+  right_inv f := by
+    rw [LinearMap.toFun_eq_coe]
+    induction' f using Submodule.Quotient.induction_on with f
+    induction' f using TensorProduct.induction_on
+    · simp
+    · rename_i x y
+      simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
+        LinearEquiv.ofLinear_toLinearMap, LinearMap.coe_comp, Function.comp_apply]
+      change ρ.ind₁'_lmap ((TensorProduct.lift ρ.ind₁'_invlmap_aux)
+        (LinearMap.id (R := R) (x ⊗ₜ[R] y))) = Submodule.Quotient.mk (x ⊗ₜ[R] y)
+      simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul]
+      induction x using Finsupp.induction_linear
+      · simp
+      · rename_i f g h1 h2
+        rw [map_add, LinearMap.add_apply, map_add, h1, h2, TensorProduct.add_tmul]
+        rfl
+      · rename_i g r
+        simp [ind₁'_invlmap_aux, Coinvariants.mk]
+        rw [← map_smul, ← Submodule.mkQ_apply]
+        congr
+        rw [TensorProduct.smul_tmul', Finsupp.smul_single, smul_eq_mul, mul_one]
+    · rename_i f g h1 h2
+      rw [← Submodule.mkQ_apply, map_add, map_add, map_add,
+        Submodule.mkQ_apply, Submodule.mkQ_apply, h1, h2]
 
 @[simp] lemma ind₁'_lequiv_comp_lsingle (x : G) :
     ρ.ind₁'_lequiv ∘ₗ lsingle x = Ind₁V.mk R G V x ∘ₗ ρ x := by ext; simp
@@ -268,6 +326,11 @@ lemma ind₁'_lequiv_coind₁'_comm' [Finite G] (g : G) :
   rw [ind₁'_lequiv_coind₁'_comm, LinearMap.comp_apply, LinearEquiv.coe_coe,
     LinearEquiv.apply_symm_apply]
 
+lemma coind₁'_ι_app_injective : Function.Injective (@coind₁'_ι R G _ V _ _) := by
+  intro _ _ h
+  change Function.const _ _ = Function.const _ _ at h
+  simpa using h
+
 end Representation
 
 namespace Rep
@@ -291,16 +354,71 @@ instance coind₁_trivialCohomology (A : ModuleCat R) : ((coind₁ G).obj A).Tri
 
 variable {G}
 
+def coind₁_quotientToInvariants_iso_aux1 {Q : Type} [Group Q] (φ : G →* Q) :
+    (invariants (MonoidHom.comp ((coind₁ G).obj A).ρ φ.ker.subtype)) ≃ₗ[R]
+    (coindV (⊥ : Subgroup (G ⧸ φ.ker)).subtype
+    ((trivialFunctor R (⊥ : Subgroup (G ⧸ φ.ker))).obj A).ρ) where
+  toFun x := ⟨Quotient.lift x.1.1 (fun a b hab ↦ by
+    nth_rw 1 [← x.2 ⟨a⁻¹ * b, QuotientGroup.leftRel_apply.mp hab⟩]
+    simp), by simp [coindV, trivialFunctor]⟩
+  map_add' x y := by
+    ext x
+    induction x using QuotientGroup.induction_on
+    simp
+  map_smul' r x := by
+    ext x
+    induction x using QuotientGroup.induction_on
+    simp
+  invFun x := ⟨⟨x.1.comp QuotientGroup.mk, by simp [coindV, trivialFunctor]⟩, fun a ↦ by
+    simpa [← Subtype.val_inj] using funext (by simp)⟩
+  left_inv := by simpa [Function.LeftInverse] using fun _ _ _ ↦ funext (by simp)
+  right_inv := by
+    simp only [Function.RightInverse, Function.LeftInverse, trivialFunctor_obj_V,
+      Functor.comp_obj, coindFunctor_obj, of_ρ, Subtype.forall, Subtype.mk.injEq]
+    intro _ _
+    ext x
+    induction x using QuotientGroup.induction_on
+    simp
+
+def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) :
+    (coindV (⊥ : Subgroup G).subtype
+    ((trivialFunctor R (⊥ : Subgroup G)).obj A).ρ) ≃ₗ[R]
+    ↥(coindV (⊥ : Subgroup H).subtype ((trivialFunctor R (⊥ : Subgroup H)).obj A).ρ) where
+  toFun x := ⟨x.1.comp φ.symm, by
+    simp [coindV, trivialFunctor]⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun y := ⟨y.1.comp φ, by simp [coindV, trivialFunctor]⟩
+  left_inv := by simpa [Function.LeftInverse] using fun a ha ↦ by simp [Function.comp_assoc]
+  right_inv := by
+    simpa [Function.RightInverse, Function.LeftInverse] using
+      fun a ha ↦ by simp [Function.comp_assoc]
+
 def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
-    (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A :=
-  /-
-  As an `R`-module, `(coind₁ G).obj A` is the function space `G → A`, the action of `G` is by
-  right translation on `G`. Let `K` be the kernel of a surjective homomorphism `φ : G →* Q`.
-  The `K`-invariants are just functions `G / K ⟶ M` with the action
-  of `G / K ≃* Q` by translation on `G / K`. This is exactly the right hand side.
-  -/
-  sorry
+    (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
+  refine Action.mkIso (LinearEquiv.toModuleIso ((coind₁_quotientToInvariants_iso_aux1 A φ).trans
+    (coind₁_quotientToInvariants_iso_aux2 A (QuotientGroup.quotientKerEquivOfSurjective φ surj))))
+    (fun q ↦ ?_)
+  simp only [Functor.comp_obj, coindFunctor_obj, quotientToInvariantsFunctor'_obj, Action.res_obj_V,
+    trivialFunctor_obj_V, of_ρ, Action.res_obj_ρ, RingHom.toMonoidHom_eq_coe,
+    RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
+    Function.comp_apply, LinearEquiv.toModuleIso_hom, coind_apply]
+  ext x q'
+  simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    Function.comp_apply, LinearEquiv.trans_apply, ModuleCat.endRingEquiv_symm_apply_hom _ _,
+    LinearMap.restrict_apply, LinearMap.funLeft_apply, coind₁_quotientToInvariants_iso_aux1,
+    coind₁_quotientToInvariants_iso_aux2, trivialFunctor_obj_V, Functor.comp_obj, coindFunctor_obj,
+    of_ρ, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_mul]
+  let r := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q
+  let r' := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q'
+  let s := Classical.choose (QuotientGroup.mk_surjective r)
+  let s' := Classical.choose (QuotientGroup.mk_surjective r')
+  have h1 : QuotientGroup.mk s = (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q :=
+    Classical.choose_spec (QuotientGroup.mk_surjective r)
+  have h2 : QuotientGroup.mk s' = (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q' :=
+    Classical.choose_spec (QuotientGroup.mk_surjective r')
+  simp [← h1, ← h2, ← QuotientGroup.mk_mul]
 
 /--
 The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` with trivial cohomology.
@@ -338,7 +456,18 @@ This map takes an element `m : M` to the constant function with value `M`.
     hom    := ofHom Representation.coind₁'_ι
     comm _ := by ext : 1; exact M.ρ.coind₁'_ι_comm _
   }
-  naturality := sorry
+  naturality _ _ _ := by simpa using by rfl
+
+instance : Mono (coind₁'_ι.app M) := by
+  refine (mono_iff_injective (coind₁'_ι.app M)).mpr ?_
+  intro x y eq
+  change Function.const G x 1 = Function.const G y 1
+  exact congrFun eq 1
+
+lemma LinearEquiv.symm_apply {R S M N : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
+    [AddCommMonoid N] [Module R M] [Module S N] {σ : R →+* S} {σ' : S →+* R}
+    {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ} (e : M ≃ₛₗ[σ] N) (n : N) :
+  e.symm n = e.invFun n := rfl
 
 @[simps] def coind₁'_obj_iso_coind₁ : coind₁'.obj M ≅ (coind₁ G).obj M.V where
   hom := {
@@ -351,7 +480,17 @@ This map takes an element `m : M` to the constant function with value `M`.
   }
   inv := {
     hom := ofHom M.ρ.coind₁'_lequiv_coind₁.symm.toLinearMap
-    comm g := sorry
+    comm g := by
+      ext f
+      simp only [Functor.comp_obj, coindFunctor_obj, trivialFunctor_obj_V,
+        RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp,
+        MonoidHom.coe_coe, RingHom.coe_coe, Function.comp_apply, coind_apply, ModuleCat.hom_comp,
+        ModuleCat.hom_ofHom, LinearMap.coe_comp, ρ_hom]
+      rw [ModuleCat.endRingEquiv_symm_apply_hom, LinearMap.restrict_apply]
+      simp only [coind₁', Representation.coind₁', coind₁'_lequiv_coind₁, LinearEquiv.coe_coe,
+        LinearEquiv.symm_apply, of_ρ, MonoidHom.coe_mk, OneHom.coe_mk, LinearMap.coe_mk,
+        AddHom.coe_mk, mul_inv_rev, map_mul, Module.End.mul_apply, self_inv_apply]
+      congr
   }
   hom_inv_id := by ext; simp
   inv_hom_id := by ext; simp
@@ -396,7 +535,7 @@ by `M.ρ` on `M.V`.
 def ind₁' : Rep R G ⥤ Rep R G where
   obj M := of M.ρ.ind₁'
   map f := {
-    hom := ofHom (Representation.ind₁'_map (ModuleCat.Hom.hom f.hom))
+    hom := ofHom (Representation.ind₁'_map f.hom.hom)
     comm g := by
       ext : 1
       apply ind₁'_map_comm
@@ -415,38 +554,29 @@ The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to 
 values of `f`.
 -/
 def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
-  app M := ofHom {
+  app M := ofHom (C := Rep R G) {
     val := Representation.ind₁'_π
     property g := by
       rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
       apply ind₁'_π_comm
   }
-  naturality _ _ _ := sorry
+  naturality _ _ x := by
+    ext z
+    change Representation.ind₁'_π ((ind₁'.map x).hom.hom z) =
+      x.hom.hom (Representation.ind₁'_π z)
+    simp [ind₁', sum_mapRange_index]
+    exact (map_finsuppSum x.hom.hom z _).symm
 
-instance : Epi (ind₁'_π.app M) :=
-  /-
-  This is because `ind₁'_π.app M` is surjective.
-  A pre-image of an element `m : M` is `single 1 m : G →₀ V`.
-  -/
-  sorry
+instance : Epi (ind₁'_π.app M) := by
+  refine (epi_iff_surjective (ind₁'_π.app M)).2 fun m ↦ ⟨single 1 m, ?_⟩
+  change Representation.ind₁'_π _ = _
+  simp only [Functor.id_obj, ind₁'_π_apply, Module.End.one_apply, sum_single_index]
 
 lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
-def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V where
-  hom := ofHom {
-      val := M.ρ.ind₁'_lequiv.toLinearMap
-      property g := by
-        rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
-        exact M.ρ.ind₁'_lequiv_comm g
-    }
-  inv := ofHom {
-    val := M.ρ.ind₁'_lequiv.symm.toLinearMap
-    property g := by
-      rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
-      sorry
-  }
-  hom_inv_id := sorry
-  inv_hom_id := sorry
+def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
+  Action.mkIso (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) (fun g ↦
+    ModuleCat.hom_ext (LinearMap.ext fun x ↦ LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x))
 
 instance ind₁'_trivialHomology : TrivialHomology (ind₁'.obj M) :=
   let _ := (ind₁_trivialHomology G M.V)
@@ -585,7 +715,7 @@ noncomputable def iso_ind₁ :
     ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, RingHom.toMonoidHom_eq_coe,
     RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
     AlgEquiv.toLinearMapHom_apply]
-  rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply, 
+  rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
     Finsupp.sum_fintype _ _ (fun i => by exact zero_smul K _),
     Finsupp.sum_fintype _ _ (fun i => by exact zero_smul K _)]
   -- For strange reasons, the simp lemma `ind₁AsFinsupp_ρ` doesn't work here, so
