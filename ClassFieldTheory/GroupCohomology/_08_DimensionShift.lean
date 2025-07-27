@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
-import ClassFieldTheory.GroupCohomology._7_coind1_and_ind1
+import ClassFieldTheory.GroupCohomology._04_TateCohomology_def
+import ClassFieldTheory.GroupCohomology._07_coind1_and_ind1
 
 /-!
 We define functors `up` and `down` from `Rep R G` to itself.
@@ -170,7 +170,7 @@ def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n 
        _ = _ := rfl
 
 /--
-The connecting homomorphism from `H^{n+1}(G,up M)` to `H^{n+2}(G,M)` is
+If S ⊆ G then the connecting homomorphism from `H^{0}(S,(up_G M)↓S)` to `H^{1}(S,M↓S)` is
 an epimorphism (i.e. surjective).
 -/
 instance up_δ_zero_epi_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
@@ -179,8 +179,8 @@ instance up_δ_zero_epi_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
   simpa only [ShortComplex.map_X₂, upShortComplex_obj_X₂, zero_add] using TrivialCohomology.isZero φ inj
 
 /--
-The connecting homomorphism from `H^{n+1}(G,up M)` to `H^{n+2}(G,M)` is an
-isomorphism.
+If `S ⊆ G` and `M` is a `G`-module then the connecting homomorphism
+from `H^{n+1}(S,(up_G M)↓S)` to `H^{n+2}(S,M↓S)` is an isomorphism.
 -/
 instance up_δ_isIso_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) (n : ℕ) :

@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._9_CyclicGroup
-import ClassFieldTheory.GroupCohomology._4_TateCohomology_def
+import ClassFieldTheory.GroupCohomology._09_CyclicGroup
+import ClassFieldTheory.GroupCohomology._04_TateCohomology_def
 
 noncomputable section
 
@@ -11,6 +11,7 @@ open CategoryTheory
   groupCohomology
   Rep
   LinearMap
+  IsCyclic
 
 namespace Representation
 

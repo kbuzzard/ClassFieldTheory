@@ -1,8 +1,8 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._5_TrivialCohomology
-import ClassFieldTheory.GroupCohomology._2_restriction
-import ClassFieldTheory.GroupCohomology._6_LeftRegular
-import ClassFieldTheory.GroupCohomology._8_DimensionShift
+import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
+import ClassFieldTheory.GroupCohomology._02_restriction
+import ClassFieldTheory.GroupCohomology._06_LeftRegular
+import ClassFieldTheory.GroupCohomology._08_DimensionShift
 
 
 /-!
