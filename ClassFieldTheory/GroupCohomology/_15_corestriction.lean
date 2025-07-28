@@ -63,7 +63,7 @@ lemma cores_aux₂ {X : Type} [Fintype X]
 
 /-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
 map on invariants. -/
-def cores₀_obj {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation R G V) :
+def _root_.Representation.cores₀_obj {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation R G V) :
     Representation.invariants (MonoidHom.comp ρ S.subtype) →ₗ[R] ρ.invariants where
   toFun x := ⟨∑ i : G ⧸ S, ρ i.out x.1, sorry⟩
   map_add' := by simp [Finset.sum_add_distrib]
@@ -73,7 +73,8 @@ def cores₀_obj {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation 
 /-- The corestriction functor on H^0 for S ⊆ G a finite index subgroup, as a
 functor `H^0(S,-) → H^0(G,-)`. -/
 def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
-  app M := (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (cores₀_obj M.ρ)) ≫ (H0Iso M).inv
+  app M :=
+    (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (Representation.cores₀_obj M.ρ)) ≫ (H0Iso M).inv
   naturality := by
     intro X Y f
     simp_rw [← Category.assoc]
@@ -83,34 +84,40 @@ def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
       functor_map, map_id_comp_H0Iso_hom_assoc, (H0Iso (X ↓ S.subtype)).cancel_iso_hom_left]
     ext x
     have comm := congr(∑ i : G ⧸ S, ModuleCat.Hom.hom $(f.comm i.out) x.val)
-    simpa [cores₀_obj] using comm.symm
+    simpa [Representation.cores₀_obj] using comm.symm
+
+/-- The morphism `H¹(S, M↓S) ⟶ H¹(G, M)`. -/
+def cores₁_obj [DecidableEq G] (M : Rep R G) :
+    -- defining H¹(S, M↓S) ⟶ H¹(G, M) by a diagram chase
+    (functor R S 1).obj (M ↓ S.subtype) ⟶ (functor R G 1).obj M := by
+  -- Recall we have 0 ⟶ M ⟶ coind₁'^G M ⟶ up_G M ⟶ 0 a short exact sequence
+  -- of `G`-modules which restricts to a short exact sequence of `S`-modules.
+  -- First I claim δ : H⁰(S,(up_G M)↓S) ⟶ H¹(S,M↓S) is surjective
+  have : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
+    -- because `coind₁'^G M` has trivial cohomology
+    up_δ_zero_epi_res (R := R) (φ := S.subtype) M S.subtype_injective
+  -- so it suffices to give a map H⁰(S,(up_G M)↓S) ⟶ H¹(G,M) such that the
+  -- image of H⁰(S,(coind₁'^G M)↓S) is in the kernel of that map
+  refine (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).desc ?_ ?_
+  · -- The map H⁰(S,up_G M)↓S) ⟶ H¹(G,M) is just the composite of
+    -- cores₀ : H⁰(S,up_G M↓S) ⟶ H⁰(G,up_G M) and δ : H⁰(G,up_G M) ⟶ H¹(G,M)
+    exact (cores₀.app _) ≫ (δ (up_shortExact M) 0 1 rfl)
+  · -- We now need to prove that the induced map
+    -- H⁰(S,(coind₁'^G M)↓S) ⟶ H¹(G,M) is 0
+    -- This is a diagram chase. The map is H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(S,(up_G M)↓S)
+    -- (functoriality of H⁰) followed by cores₀ : H⁰(S,(up_G M)↓S) ⟶ H⁰(G, up_G M)
+    -- followed by δ : H⁰(G, up_G M) ⟶ H¹(G, M). First put the brackets around
+    -- the first two terms.
+    rw [← Category.assoc]
+    -- now apply naturality of cores₀
+    --unfold mapShortComplex₃ HomologicalComplex.HomologySequence.snakeInput
+    -- cores₀ :  res S.subtype ⋙ functor R (↥S) 0 ⟶ functor R G 0
+    -- rw [cores₀.naturality]
+    sorry
 
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
 | M, 0 => cores₀.app M
-| M, 1 => by
-    -- WIP
-    let foo : (functor R S 0).obj (up.obj M ↓ S.subtype) ⟶ (functor R G 0).obj (up.obj M) := cores₀.app (up.obj M)
-    let bar : (functor R G 0).obj (up.obj M) ⟶ (functor R G 1).obj M := δ (up_shortExact M) 0 1 rfl
-    let bar' : (functor R S 0).obj (up.obj (M ↓ S.subtype)) ⟶ (functor R S 1).obj (M ↓ S.subtype) := δ (up_shortExact (M ↓ S.subtype)) 0 1 rfl
-    let f := foo ≫ bar
-    have baz := up_δ_zero_epi_res (R := R) (φ := S.subtype) M S.subtype_injective
-    let upsc_bottom := upShortComplex.obj M
-    let upsc_top := upsc_bottom.map (res S.subtype)
-    have hbottomexact : upsc_bottom.ShortExact := up_shortExact M
-    have htopexact : (upsc_bottom.map (res S.subtype)).ShortExact :=
-      up_shortExact_res M S.subtype
-    -- this is H^0(S,(coind₁'^G M)|S)->H^0(S,(up_G M)|S)->H^1(S,M|S)
-    let sc1 := mapShortComplex₃ htopexact (rfl : 0 + 1 = 1)
-    -- this is H^0(G,coind₁'^G M)->H^0(G,(up_G M))->H^1(G,M)
-    let sc2 := mapShortComplex₃ hbottomexact (rfl : 0 + 1 = 1)
-    -- this is the claim that `H^0(S,(up_G M)|S)->H^1(S,M|S)` is surjective
-    have hepi : Epi (mapShortComplex₃ htopexact (rfl : 0 + 1 = 1)).g := baz
-    -- the idea is to get a map `H^1(S,M|S) → H^1(G,M)` from a diagram chase.
-    refine (mapShortComplex₃_exact htopexact (rfl : 0 + 1 = 1)).desc ?_ ?_
-    · refine (cores₀.app _) ≫ ?_
-      change (functor R G 0).obj (up.obj M) ⟶ (functor R G 1).obj M
-      refine δ (up_shortExact M) 0 1 rfl
-    · sorry -- missing proof
+| M, 1 => cores₁_obj M
 | M, (d + 2) =>
   -- δ : H^{d+1}(G,up -) ≅ H^{d+2}(G,-)
   let up_δ_bottom_Iso := Rep.dimensionShift.up_δiso_natTrans (R := R) (G := G) d
