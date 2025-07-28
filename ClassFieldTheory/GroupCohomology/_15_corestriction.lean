@@ -99,15 +99,18 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).
     have hbottomexact : upsc_bottom.ShortExact := up_shortExact M
     have htopexact : (upsc_bottom.map (res S.subtype)).ShortExact :=
       up_shortExact_res M S.subtype
-    -- this is H^0(S,M|S)->H^0(S,(up_G M)|S)->H^1(S,M|S)
+    -- this is H^0(S,(coind₁'^G M)|S)->H^0(S,(up_G M)|S)->H^1(S,M|S)
     let sc1 := mapShortComplex₃ htopexact (rfl : 0 + 1 = 1)
-    -- this is H^0(G,M)->H^0(G,(up_G M))->H^1(G,M)
+    -- this is H^0(G,coind₁'^G M)->H^0(G,(up_G M))->H^1(G,M)
     let sc2 := mapShortComplex₃ hbottomexact (rfl : 0 + 1 = 1)
     -- this is the claim that `H^0(S,(up_G M)|S)->H^1(S,M|S)` is surjective
     have hepi : Epi (mapShortComplex₃ htopexact (rfl : 0 + 1 = 1)).g := baz
     -- the idea is to get a map `H^1(S,M|S) → H^1(G,M)` from a diagram chase.
-    -- We have the maps on the H^0 terms and that the square commutes.
-    sorry -- data -- see kmb question on Fri morning
+    refine (mapShortComplex₃_exact htopexact (rfl : 0 + 1 = 1)).desc ?_ ?_
+    · refine (cores₀.app _) ≫ ?_
+      change (functor R G 0).obj (up.obj M) ⟶ (functor R G 1).obj M
+      refine δ (up_shortExact M) 0 1 rfl
+    · sorry -- missing proof
 | M, (d + 2) =>
   -- δ : H^{d+1}(G,up -) ≅ H^{d+2}(G,-)
   let up_δ_bottom_Iso := Rep.dimensionShift.up_δiso_natTrans (R := R) (G := G) d
@@ -122,7 +125,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).
     have : upsc_top.X₂.TrivialCohomology := by
       change (of M.ρ.coind₁' ↓ S.subtype).TrivialCohomology
       -- ⊢ (of M.ρ.coind₁' ↓ S.subtype).TrivialCohomology
-      sorry
+      sorry -- missing proof
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
     all_goals simpa only [upShortComplex_obj_X₂] using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
