@@ -83,7 +83,7 @@ instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.T
     (down.obj M).TrivialCohomology := sorry
 
 instance Rep.tateCohomology_of_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
-    M.TrivialtateCohomology := sorry
+    M.TrivialTateCohomology := sorry
 
 instance Rep.trivialHomology_of_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialHomology := sorry

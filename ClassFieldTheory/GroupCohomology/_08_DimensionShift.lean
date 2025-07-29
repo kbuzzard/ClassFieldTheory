@@ -343,27 +343,27 @@ open Rep
   dimensionShift
 
 /--
-An explicit version of `isZero_of_trivialtateCohomology`
+An explicit version of `isZero_of_trivialTateCohomology`
 -/
-private lemma isZero_of_trivialtateCohomology' [DecidableEq G] (M : Rep R G)
-    [M.TrivialtateCohomology] (n : ℤ) : IsZero ((tateComplexFunctor.obj M).homology n) :=
-  TrivialtateCohomology.isZero (.id G) Function.injective_id
+private lemma isZero_of_trivialTateCohomology' [DecidableEq G] (M : Rep R G)
+    [M.TrivialTateCohomology] (n : ℤ) : IsZero ((tateComplexFunctor.obj M).homology n) :=
+  TrivialTateCohomology.isZero (.id G) Function.injective_id
 
 instance instIsIso_up_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
     IsIso (tateCohomology.δ (up_shortExact M) n) := by
-  have _ : TrivialtateCohomology (coind₁'.obj M) := inferInstance
+  have _ : TrivialTateCohomology (coind₁'.obj M) := inferInstance
   refine ShortComplex.ShortExact.isIso_δ
     (tateCohomology.map_tateComplexFunctor_shortExact (up_shortExact M))
-    n (n + 1) (by rfl) (by simp;exact isZero_of_trivialtateCohomology' (coind₁'.obj M) n)
-    (by simp;exact isZero_of_trivialtateCohomology' (coind₁'.obj M) (n + 1))
+    n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
+    (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
 
 instance instIsIso_down_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
     IsIso (tateCohomology.δ (down_shortExact M) n) := by
-  have _ : TrivialtateCohomology (ind₁'.obj M) := inferInstance
+  have _ : TrivialTateCohomology (ind₁'.obj M) := inferInstance
   refine ShortComplex.ShortExact.isIso_δ
     (tateCohomology.map_tateComplexFunctor_shortExact (down_shortExact M))
-    n (n + 1) (by rfl) (by simp;exact isZero_of_trivialtateCohomology' (ind₁'.obj M) n)
-    (by simp;exact isZero_of_trivialtateCohomology' (ind₁'.obj M) (n + 1))
+    n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
+    (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
 
 def upδiso_Tate (n : ℤ) [DecidableEq G] (M : Rep R G) :
     (tateCohomology n).obj (up.obj M) ≅ (tateCohomology (n + 1)).obj M :=
