@@ -27,7 +27,6 @@ Arguably this filename has too large a number.
 
 ## TODO
 
-Unsorry the data
 cores o res = multiplication by index
 -/
 
@@ -120,9 +119,8 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     change ((res S.subtype ⋙ functor R (↥S) 0).map bar ≫ (cores₀.app (up.obj M))) ≫ _ = 0
     change _ ≫ (cores₀.app (up.obj M)) = _ ≫ _ at baz
     rw [baz, Category.assoc]
-    clear baz
-    -- change ((mapShortComplex₃ _ _).f ≫ cores₀.app (upShortComplex.obj M).X₃) = _ at baz
-    sorry
+    convert comp_zero -- cancel first functor
+    exact (mapShortComplex₃ (up_shortExact M) (rfl : 0 + 1 = 1)).zero
 
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
 | M, 0 => cores₀.app M
