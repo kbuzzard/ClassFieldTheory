@@ -109,10 +109,19 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     -- followed by δ : H⁰(G, up_G M) ⟶ H¹(G, M). First put the brackets around
     -- the first two terms.
     rw [← Category.assoc]
-    -- now apply naturality of cores₀
-    --unfold mapShortComplex₃ HomologicalComplex.HomologySequence.snakeInput
-    -- cores₀ :  res S.subtype ⋙ functor R (↥S) 0 ⟶ functor R G 0
-    -- rw [cores₀.naturality]
+    -- now apply naturality of cores₀, because I want to change
+    -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(S,(up_G M)↓S) ⟶ H⁰(G, up_G M) to
+    -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(G,(coind₁'^G M)) ⟶ H⁰(G, up_G M)
+    let foo := ((upShortComplex.obj M).map (res S.subtype))
+    let bar := cokernel.π (coind₁'_ι.app M)
+    let moo := (res S.subtype ⋙ functor R (↥S) 0).map bar
+    -- cores₀ : res S.subtype ⋙ functor R (↥S) 0 ⟶ functor R G 0
+    have baz := cores₀.naturality (F := (res S.subtype ⋙ functor R (↥S) 0)) bar
+    change ((res S.subtype ⋙ functor R (↥S) 0).map bar ≫ (cores₀.app (up.obj M))) ≫ _ = 0
+    change _ ≫ (cores₀.app (up.obj M)) = _ ≫ _ at baz
+    rw [baz, Category.assoc]
+    clear baz
+    -- change ((mapShortComplex₃ _ _).f ≫ cores₀.app (upShortComplex.obj M).X₃) = _ at baz
     sorry
 
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
