@@ -666,15 +666,15 @@ instance coind₁_trivialHomology [Finite G] : TrivialHomology ((coind₁ G).obj
 instance coind₁'_trivialHomology [Finite G] : TrivialHomology (coind₁'.obj M) :=
   .of_iso (coind₁'_obj_iso_coind₁ M)
 
-instance ind₁_trivialtateCohomology [Finite G] : TrivialtateCohomology ((ind₁ G).obj A) := sorry
+instance ind₁_trivialtateCohomology [Finite G] : TrivialTateCohomology ((ind₁ G).obj A) := sorry
 
-instance coind₁_trivialTate [Finite G] : TrivialtateCohomology ((coind₁ G).obj A) :=
+instance coind₁_trivialTate [Finite G] : TrivialTateCohomology ((coind₁ G).obj A) :=
   .of_iso (ind₁_obj_iso_coind₁_obj A).symm
 
-instance coind₁'_trivialTate [Finite G] : TrivialtateCohomology (coind₁'.obj M) :=
+instance coind₁'_trivialTate [Finite G] : TrivialTateCohomology (coind₁'.obj M) :=
   .of_iso (coind₁'_obj_iso_coind₁ M)
 
-instance ind₁'_trivialTate [Finite G] : TrivialtateCohomology (ind₁'.obj M) :=
+instance ind₁'_trivialTate [Finite G] : TrivialTateCohomology (ind₁'.obj M) :=
   .of_iso (ind₁'_iso_coind₁'.app M)
 
 end FiniteGroup

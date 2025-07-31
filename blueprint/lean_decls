@@ -32,7 +32,7 @@ groupCohomology.TateComplexFunctor_preservesFiniteColimits
 groupCohomology.tateCohomology.δ
 Rep.TrivialCohomology
 Rep.TrivialHomology
-Rep.TrivialtateCohomology
+Rep.TrivialTateCohomology
 Representation.coind₁
 Rep.coind₁
 Rep.ind₁
@@ -43,7 +43,7 @@ Rep.ind₁_trivialHomology
 Rep.ind₁_obj_iso_coind₁_obj
 Rep.ind₁_trivialCohomology
 Rep.coind₁_trivialHomology
-Rep.ind₁_trivialtateCohomology
+Rep.ind₁_trivialTateCohomology
 Representation.coind₁'
 Rep.coind₁'
 Rep.coind₁'_obj_iso_coind₁
