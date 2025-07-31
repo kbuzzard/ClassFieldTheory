@@ -32,10 +32,20 @@ lemma norm_comm (g : G) : ρ g ∘ₗ ρ.norm = ρ.norm := LinearMap.ext fun a �
   simp_rw [← LinearMap.comp_apply, ← Module.End.mul_eq_comp, ← map_mul]
   exact Finset.sum_equiv (Equiv.mulLeft g) (by simp) <| by simp
 
+@[simp]
+lemma norm_comm_apply (g : G) (a : A) :
+    ρ g (ρ.norm a) = ρ.norm a := by
+  rw [← LinearMap.comp_apply, norm_comm ρ g]
+
 lemma norm_comm' (g : G) : ρ.norm ∘ₗ ρ g = ρ.norm := LinearMap.ext fun a ↦ by
   simp only [norm, LinearMap.coe_comp, coeFn_sum, Function.comp_apply, Finset.sum_apply]
   simp_rw [← LinearMap.comp_apply, ← Module.End.mul_eq_comp, ← map_mul]
   exact Finset.sum_equiv (Equiv.mulRight g) (by simp) <| by simp
+
+@[simp]
+lemma norm_comm_apply' (g : G) (a : A) :
+    ρ.norm (ρ g a) = ρ.norm a := by
+  rw [← LinearMap.comp_apply, norm_comm' ρ g]
 
 end Representation
 
@@ -45,10 +55,39 @@ namespace groupCohomology
   of `Representation.norm`. -/
 def _root_.Rep.norm (M : Rep R G) : M.V ⟶ M.V := ModuleCat.ofHom M.ρ.norm
 
+variable [Fintype G] (A : Rep R G) in
+/-- Given a representation `A` of a finite group `G`, this is the representation morphism `A ⟶ A`
+defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
+@[simps]
+def norm : A ⟶ A where
+  hom := ModuleCat.ofHom <| Representation.norm A.ρ
+  comm g := by ext; simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, ρ_hom, LinearMap.coe_comp,
+    Function.comp_apply]; rw [← LinearMap.comp_apply, Representation.norm_comm' A.ρ g,
+    ← LinearMap.comp_apply, Representation.norm_comm A.ρ g]
+
+@[reassoc, elementwise]
+lemma norm_comm {A B : Rep R G} (f : A ⟶ B) :
+    f ≫ norm B = norm A ≫ f := by
+  ext
+  simp [Representation.norm, hom_comm_apply]
+
 /-- This is the map from the coinvariants of `M : Rep R G` to the invariants, induced by the map
 `m ↦ ∑ g : G, M.ρ g m`. -/
 def tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
   (chainsIso₀ M).hom ≫ M.norm ≫ (cochainsIso₀ M).inv
+
+lemma tateNorm_eq (M : Rep R G) :
+    (ModuleCat.ofHom <| Finsupp.lsum R <| fun _ ↦ LinearMap.pi fun _ ↦ M.norm.hom) =
+    tateNorm M := by
+  ext
+  simp only [Rep.norm, ModuleCat.hom_ofHom, Finsupp.lsum_comp_lsingle, pi_apply, ChainComplex.of_x,
+    CochainComplex.of_x, chainsIso₀, LinearEquiv.toModuleIso_hom, cochainsIso₀,
+    LinearEquiv.toModuleIso_inv, ModuleCat.hom_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    LinearEquiv.funUnique_symm_apply, Function.comp_apply, Finsupp.lsingle_apply,
+    Finsupp.LinearEquiv.finsuppUnique_apply, uniqueElim_const, tateNorm]
+  congr
+  simp only [Finsupp.single_apply, left_eq_ite_iff]
+  exact fun h ↦ False.elim <| h <| Unique.eq_default _
 
 @[reassoc (attr := simp), elementwise]
 lemma norm_comp_d_eq_zero (M : Rep R G) : M.norm ≫ d₀₁ M = 0 := by
@@ -78,16 +117,27 @@ lemma d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ tateNorm
 @[simps]
 def tateComplexConnectData (M : Rep R G) :
     CochainComplex.ConnectData (inhomogeneousChains M) (inhomogeneousCochains M) where
-  d₀ := tateNorm M
-  comp_d₀ := d_comp_tateNorm M
-  d₀_comp := tateNorm_comp_d M
+  d₀ := ModuleCat.ofHom <| Finsupp.lsum R <| fun _ ↦ LinearMap.pi fun _ ↦ M.norm.hom
+  comp_d₀ := by
+    ext
+    simp [inhomogeneousChains.d_def, inhomogeneousChains.d, Finsupp.sum_add_index',
+      Finsupp.sum_neg_index, Pi.zero_apply (M := fun _ => M), Rep.norm]
+  d₀_comp := by
+    ext
+    simp [inhomogeneousCochains.d_def, inhomogeneousCochains.d,
+      Pi.zero_apply (M := fun _ => M), Rep.norm]
 
 /-- The Tate complex defined by connecting inhomogeneous chains and cochains with the Tate norm. -/
 @[simps! X]
 def tateComplex (M : Rep R G) : CochainComplex (ModuleCat R) ℤ :=
   CochainComplex.ConnectData.cochainComplex (tateComplexConnectData M)
 
-lemma tateComplex_d_neg_one (M : Rep R G) : (tateComplex M).d (-1) 0 = tateNorm M := rfl
+lemma tateComplex_d_neg_one (M : Rep R G) : (tateComplex M).d (-1) 0 = tateNorm M := by
+  rw [← tateNorm_eq]
+  rfl
+
+lemma tateComplexConnecDate_d₀_eq (M : Rep R G) :
+    (tateComplexConnectData M).d₀ = tateNorm M := by rw [← tateNorm_eq]; rfl
 
 lemma tateComplex_d_ofNat (M : Rep R G) (n : ℕ) :
     (tateComplex M).d n (n + 1) = (inhomogeneousCochains M).d n (n + 1) := rfl
@@ -108,8 +158,18 @@ def tateComplex.normNatEnd : End (forget₂ (Rep R G) (ModuleCat R)) where
 @[reducible]
 def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : (tateComplex X ⟶ tateComplex Y) :=
   CochainComplex.ConnectData.map _ _ (chainsMap (.id G) φ) (cochainsFunctor R G |>.map φ) <| by
-    simp [tateNorm, tateComplex.norm_comm_assoc (B := Y)]
-    rfl
+    simp only [ChainComplex.of_x, CochainComplex.of_x, chainsMap_f, MonoidHom.coe_id,
+      CompTriple.comp_eq, tateComplexConnectData_d₀, Category.assoc, cochainsFunctor_map,
+      cochainsMap_f]
+    ext1
+    simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom]
+    ext f1 x g1
+    simp only [LinearMap.coe_comp, Finsupp.coe_lsum, Function.comp_apply, Finsupp.lsingle_apply,
+      Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply,
+      Finsupp.mapRange_single, map_zero, Finsupp.sum_single_index, pi_apply, compLeft_apply,
+      funLeft_apply]
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, tateComplex.norm_comm φ ]
+    simp
 
 @[simp]
 lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by aesop_cat
@@ -270,7 +330,24 @@ variable (M : Rep R G)
   (tateComplex M).isoSc' (-2) (-1) 0 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (chainsIso₁ M) (chainsIso₀ M) (cochainsIso₀ M)
       (groupHomology.comp_d₁₀_eq M)
-      (by simp [sc, tateComplex, tateNorm])
+      (by
+        simp only [tateComplex, Int.reduceNeg, HomologicalComplex.shortComplexFunctor'_obj_X₂,
+          CochainComplex.ConnectData.cochainComplex_X, CochainComplex.ConnectData.X_negOne,
+          ChainComplex.of_x, sc_X₃, sc_X₂, chainsIso₀, LinearEquiv.toModuleIso_hom, sc_g,
+          HomologicalComplex.shortComplexFunctor'_obj_X₃, CochainComplex.ConnectData.X_zero,
+          CochainComplex.of_x, HomologicalComplex.shortComplexFunctor'_obj_g,
+          CochainComplex.ConnectData.cochainComplex_d, CochainComplex.ConnectData.d_sub_one_zero,
+          tateComplexConnectData_d₀, cochainsIso₀];
+        ext1
+        simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom]
+        ext f1 m
+        simp only [Rep.norm, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
+          Function.comp_apply, Finsupp.lsingle_apply, Finsupp.LinearEquiv.finsuppUnique_apply,
+          LinearEquiv.funUnique_apply, Finsupp.coe_lsum, Function.eval, map_zero,
+          Finsupp.sum_single_index, pi_apply]
+        congr 1
+        simp only [Finsupp.single_apply, ite_eq_left_iff]
+        exact fun h ↦ False.elim <| h <| Unique.eq_default _)
 
 end tateCohomology.negOneIso
 
