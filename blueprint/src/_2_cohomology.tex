@@ -942,6 +942,7 @@ This case is described again below.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	The map $f \mapsto (x \mapsto x \bullet f(x))$ is an isomorphism
 	from $\coind_1'(M)$ to $\coind_1(G,M)$.
 \end{proof}
@@ -955,6 +956,7 @@ This case is described again below.
 \end{corollary}
 
 \begin{proof}
+	\leanok
 	This follows directly from Lemmas \ref{lem:coind₁' iso coind₁}
 	and \ref{lem:coind₁ trivial cohomology}.
 	\leanok
@@ -965,11 +967,13 @@ This case is described again below.
 	\uses{lem:coind₁ invariants,
 		lem:coind₁' iso coind₁,
 		def:inflation restriction functors}
+	\leanok
 	Let $S$ be a normal subgroup of $G$. Then $\coind_1'(M)^S$ has trivial cohomology as a
 	representation of $G/S$.
 \end{corollary}
 
 \begin{proof}
+	\leanok
 	We've seen in Lemma \ref{lem:coind₁' iso coind₁} that $\coind_1'(M)$
 	is isomorphic to $\coind_1(M)$.
 	Applying the functor $\Invar$, we obtain an isomorphism between $\coind_1'(M)^S$ and $\coind_1(M)^S$.
@@ -985,6 +989,7 @@ This case is described again below.
 		Rep.dimensionShift.up_shortExact,
 		Rep.dimensionShift.up_shortExact_res}
 	\uses{def:coind₁'}
+	\leanok
 	There is an injective morphism $M \to \coind_1'(M)$ which takes a vector $m \in M$
 	to the constant function on $G$ with value $m$.
 	We define a representation $\up(M)$ to be the cokernel of this map, so that we have a short exact
@@ -1033,6 +1038,7 @@ This case is described again below.
 \end{corollary}
 
 \begin{proof}
+	\leanok
 	We have already shown in Corollary \ref{cor:coind₁' trivial cohomology}
 	that $\coind_1'(M)$ has trivial cohomology, so $H^{r}(S,\coind_1'(M))=0$
 	for all $r>0$. This implies that the connecting maps are isomorphisms.
@@ -1077,6 +1083,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	The data of the isomorphism is contained in the lean file; the isomorphism
 	takes $f : G \to_0 M$ to the finitely supported function
 	\[
@@ -1126,6 +1133,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 		Rep.dimensionShift.down_shortExact_res
 	}
 	\uses{def:ind'}
+	\leanok
 	For any representation $M$, there is a surjective morphism $\ind_1'(M) \to M$,
 	which takes a finitely supported function $f : G \to_0 M$ to the sum $\sum_{x \in G} f (x)$.
 	We define $\down(M)$ to be the kernel of this map.
@@ -1182,6 +1190,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	This follows from \ref{lem:induced trivial Tate}
 	together with the isomorphisms \ref{def:ind₁ to coind₁},
 	\ref{lem:coind₁' iso coind₁} and \ref{lem:ind₁' iso ind₁}.
@@ -1209,6 +1218,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \end{corollary}
 
 \begin{proof}
+	\leanok
 	These are the connecting homomorphisms from the
 	short exact sequences linking $\up(M)$ and $\down(M)$ to $M$.
 	They are isomorphisms because $\coind_1'(M)$ and $\ind_1'(M)$ have trivial Tate cohomology.
@@ -1263,7 +1273,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 	\[
 		\begin{matrix}
 			0 \to C^{-2}_{\Tate}(S,\aug(R,G)) & \to & C^{-2}_{\Tate}(S,RG) & \to &C^{-2}_{\Tate}(S,R) \to 0\\
-			\downarrow & &\downarrow & &\downarrow
+			\downarrow & &\downarrow & &\downarrow \\
 			0 \to C^{-1}_{\Tate}(S,\aug(R,G)) & \to & C^{-1}_{\Tate}(S,RG) & \to &C^{-1}_{\Tate}(S,R) \to 0
 		\end{matrix}
 	\]
@@ -1354,6 +1364,7 @@ goes in the other direction, i.e. $\cor : H^\bullet (S,-)$ to $H^\bullet(G,-)$.
 We define this now, and point out some easy consequences of the definition.
 
 \begin{definition} \label{def:corestriction}
+	\lean{}
 	\uses{cor:up iso}
 	Let $S$ be a subgroup of finite index in $G$ and let $\{r_i\}$
 	be a set of representatives for the cosets $r_i S$.
@@ -1502,13 +1513,16 @@ This is given by
 	\map_2(\single(x,m)) = \single(x,m) - \single(\gen \cdot x, m).
 \]
 \begin{lemma} \label{lem:map2 image}
+	\lean{map₂_range}
 	\uses{def:ind'}
+	\leanok
 	The image of $\map_2 : \ind_1'(M) \to \ind_1'(M)$ is precisely the set of functions $G \to_0 M$
 	which sum to zero. This is the kernel of the map $\ind_1'(M) \to M$,
 	which we are calling $\down(M)$.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	It's clear that the values of $\map_2(f)$ sum to $0$, so the image of $\map_2$ is contained in
 	the kernel.
 	Conversely suppose $h : G \to_0 M$ satisifies $\sum_{i=0}^{n-1} h(\gen^i) = 0$.

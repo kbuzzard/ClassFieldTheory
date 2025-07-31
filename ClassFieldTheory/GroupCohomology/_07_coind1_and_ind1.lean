@@ -569,7 +569,7 @@ def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
     simp [ind₁', sum_mapRange_index]
     exact (map_finsuppSum x.hom.hom z _).symm
 
-instance : Epi (ind₁'_π.app M) := by
+instance instEpiAppInd₁'_π : Epi (ind₁'_π.app M) := by
   refine (epi_iff_surjective (ind₁'_π.app M)).2 fun m ↦ ⟨single 1 m, ?_⟩
   change Representation.ind₁'_π _ = _
   simp only [Functor.id_obj, ind₁'_π_apply, Module.End.one_apply, sum_single_index]
