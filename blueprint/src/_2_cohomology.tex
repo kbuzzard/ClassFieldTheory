@@ -117,10 +117,13 @@ $G$-module $M$, and are written $H^n(G,M)$. These are defined in Mathlib as
 \end{example}
 
 \begin{lemma} \label{lem:Hn unit}
+	\lean{Rep.instTrivialCohomologyOfSubsingleton}
+	\leanok
 	If $G$ is the trivial group then for all $n>0$, $H^n(G,M)\cong 0$.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	Each of the modules $C^n(G,M)$ may be identified with $M$,
 	and the coboundary maps reduce to alternating sums of the form
 	$d^n(m) = \sum_{i=0}^{n+1} (-1)^i m$.
@@ -169,6 +172,7 @@ $G$-module $M$, and are written $H^n(G,M)$. These are defined in Mathlib as
 \begin{definition} \label{def:restriction map}
 	\lean{groupCohomology.rest}
 	\uses{def:inflation restriction functors}
+	\leanok
 	If $S$ is a subgroup of $G$, then we write $H^n(S,M)$ for the
 	cohomology groups of the restricted representation $M \downarrow S$.
 	If $f : G^n \to M$ is an element of $C^n(G,M)$, then we may restrict $f$ to
@@ -187,6 +191,7 @@ $G$-module $M$, and are written $H^n(G,M)$. These are defined in Mathlib as
 		groupCohomology.infl
 	}
 	\uses{def:inflation restriction functors}
+	\leanok
 	If $S$ is a normal subgroup of $G$, then we write $H^n(G/S,M^S)$ for the
 	cohomology groups of the representation $M^S$ of $G/S$.
 	If $f : (G/S)^n \to M^S$ is an element of $C^n(G/S,M^S)$, then we may ``inflate'' $f$ to
@@ -202,6 +207,7 @@ $G$-module $M$, and are written $H^n(G,M)$. These are defined in Mathlib as
 
 
 \begin{lemma} \label{lem:cochainsFunctor exact}
+	\lean{groupCohomology.map_cochainsFunctor_shortExact}
 	\mathlibok
   The functor taking $M$ to $C^\bullet (G,M)$ is exact.
   I.e. if $0 \to A \to B \to C \to 0$ is a short exact sequence in $\Rep(R,G)$.
@@ -284,6 +290,7 @@ As a consequence of this, we have the following (which is in Mathlib):
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	Most of the commuting squares have already been proved if
 	inflation and restriction are defined as morphisms of functors.
 	The remaining two squares are:
@@ -350,6 +357,7 @@ As a consequence of this, we have the following (which is in Mathlib):
 \end{example}
 
 \begin{lemma} \label{lem:homology 1 trivial}
+	\lean{groupHomology.H1AddEquivOfIsTrivial}
 	\uses{def:group homology}
 	\mathlibok
 	\leanok
