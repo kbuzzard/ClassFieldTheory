@@ -1,6 +1,8 @@
 import Mathlib
 import ClassFieldTheory.GroupCohomology._03_inflation
 import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
+import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
+import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis
 
 /-!
 Let `G` be a group. We define two functors:
@@ -677,34 +679,12 @@ instance ind₁'_trivialTate [Finite G] : TrivialtateCohomology (ind₁'.obj M) 
 
 end FiniteGroup
 
-namespace AlgEquiv
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-
-@[simp] lemma apply_inv_self (e : A ≃ₐ[R] A) (x : A) : e (e⁻¹ x) = x := e.toEquiv.apply_symm_apply _
-@[simp] lemma inv_apply_self (e : A ≃ₐ[R] A) (x : A) : e⁻¹ (e x) = x := e.toEquiv.symm_apply_apply _
-
-end AlgEquiv
-
--- Sorried version of normal basis theorem, see mathlib PR #27390
-namespace IsGalois
-
-open scoped CategoryTheory
-open scoped TensorProduct
-
 variable (K L : Type) [Field K] [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L]
-
-/-- Given a finite Galois extension `L/K`, `normalBasis K L` is a basis of `L` over `K`
-that is an orbit under the Galois group action. -/
-noncomputable def normalBasis : Basis (L ≃ₐ[K] L) K L := sorry
-
-variable {K L}
-
-theorem normalBasis_apply (e : L ≃ₐ[K] L) : normalBasis K L e = e (normalBasis K L 1) := sorry
 
 /-- For a finite Galois extension `L/K`, the isomorphism between `ind₁` of `K`
 and `L` in the category of `(L ≃ₐ[K] L)`-representations. -/
 noncomputable def iso_ind₁ :
-    (Rep.ind₁ (L ≃ₐ[K] L)).obj (.of K K) ≅ Rep.of (AlgEquiv.toLinearMapHom K L) := by
+    (Rep.ind₁ (L ≃ₐ[K] L)).obj (.of K K) ≅ .of (AlgEquiv.toLinearMapHom K L) := by
   refine (Rep.ind₁AsFinsuppIso (G := (L ≃ₐ[K] L)) (.of K K)).symm ≪≫
     Action.mkIso (LinearEquiv.toModuleIso
       ((IsGalois.normalBasis K L).reindex (Equiv.inv (L ≃ₐ[K] L))).repr.symm) ?_
@@ -733,8 +713,9 @@ noncomputable def iso_ind₁ :
   rw [Finsupp.mapDomain_mapRange _ _ _ _ (fun _ _ => rfl), Finsupp.mapRange_apply]
   simp only [Equiv.coe_mulRight, mul_inv_rev]
   rw [IsGalois.normalBasis_apply y⁻¹, IsGalois.normalBasis_apply (x⁻¹ * y⁻¹)]
-  simp only [AlgEquiv.mul_apply, AlgEquiv.toLinearMap_apply, AlgEquiv.apply_inv_self]
+  simp only [AlgEquiv.mul_apply, AlgEquiv.toLinearMap_apply, AlgEquiv.coe_inv]
   congr 1
   change Finsupp.mapDomain (Equiv.mulRight x).symm _ _ = _
   rw [← Finsupp.equivMapDomain_eq_mapDomain, Finsupp.equivMapDomain_apply]
-  simp only [Equiv.mulRight_symm, inv_inv, Equiv.coe_mulRight]
+  simp [Equiv.mulRight_symm, inv_inv, Equiv.coe_mulRight]
+  rw [AlgEquiv.apply_symm_apply]
