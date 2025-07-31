@@ -1,6 +1,6 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._03_inflation
-import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
+import ClassFieldTheory.GroupCohomology.«03_inflation»
+import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis
 

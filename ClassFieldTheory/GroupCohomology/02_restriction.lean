@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._01_Basic
+import ClassFieldTheory.GroupCohomology.«01_Basic»
 
 open
   Rep
