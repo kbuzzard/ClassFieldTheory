@@ -3,7 +3,7 @@ Copyright (c) 2025 Yaël Dillies, Aaron Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Aaron Liu
 -/
-import ClassFieldTheory.GroupCohomology._09_CyclicGroup
+import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
 import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
