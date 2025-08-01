@@ -1,7 +1,7 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
-import ClassFieldTheory.GroupCohomology._11_TrivialityCriterion
-import ClassFieldTheory.GroupCohomology._12_augmentationModule
+import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
+import ClassFieldTheory.GroupCohomology.«11_TrivialityCriterion»
+import ClassFieldTheory.GroupCohomology.«12_augmentationModule»
 
 open
   CategoryTheory

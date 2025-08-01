@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._03_LeftRegular
+import ClassFieldTheory.GroupCohomology.«03_LeftRegular»
 
 /-!
 We define two "coinduction" functors taking values in the acyclic objects of `Rep R G`.

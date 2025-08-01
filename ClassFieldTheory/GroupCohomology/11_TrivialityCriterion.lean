@@ -1,9 +1,9 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._04_TateCohomology_def
-import ClassFieldTheory.GroupCohomology._05_TrivialCohomology
-import ClassFieldTheory.GroupCohomology._08_DimensionShift
-import ClassFieldTheory.GroupCohomology._10_inflationRestriction
-import ClassFieldTheory.GroupCohomology._09_CyclicGroup
+import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
+import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
+import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
+import ClassFieldTheory.GroupCohomology.«10_inflationRestriction»
+import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
 
 /-
 Suppose `G` is a finite group, and there are positive integers `r` and `s`

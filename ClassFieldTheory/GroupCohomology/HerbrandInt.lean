@@ -1,5 +1,5 @@
 import Mathlib
-import ClassFieldTheory.GroupCohomology._13_HerbrandQuotient
+import ClassFieldTheory.GroupCohomology.«13_HerbrandQuotient»
 
 variable {G : Type} [Group G] [Finite G] [IsCyclic G]
 
