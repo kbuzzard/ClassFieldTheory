@@ -11,10 +11,7 @@ variable {M N : Type*}
     Monoid.IsTorsion (Multiplicative M) ↔ AddMonoid.IsTorsion M := .rfl
 
 @[simp] lemma isTorsion_zmod_iff {n : ℕ} : AddMonoid.IsTorsion (ZMod n) ↔ n ≠ 0 where
-  mp h := by
-    rintro rfl
-    simp [ZMod] at h
-    exact not_isTorsion_of_isAddTorsionFree h
+  mp h := by rintro rfl; exact not_isTorsion_of_isAddTorsionFree (G := ℤ) h
   mpr hn := by
     have : NeZero n := ⟨hn⟩
     simp [AddMonoid.IsTorsion, ← addOrderOf_ne_zero_iff, ZMod.natCast_zmod_surjective.forall,
