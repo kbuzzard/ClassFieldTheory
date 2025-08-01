@@ -32,8 +32,10 @@ import ClassFieldTheory.Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis
 import ClassFieldTheory.Mathlib.GroupTheory.OrderOfElement
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
+import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
