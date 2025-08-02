@@ -118,14 +118,8 @@ lemma d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ tateNorm
 def tateComplexConnectData (M : Rep R G) :
     CochainComplex.ConnectData (inhomogeneousChains M) (inhomogeneousCochains M) where
   d₀ := ModuleCat.ofHom <| Finsupp.lsum R <| fun _ ↦ LinearMap.pi fun _ ↦ M.norm.hom
-  comp_d₀ := by
-    ext
-    simp [inhomogeneousChains.d_def, inhomogeneousChains.d, Finsupp.sum_add_index',
-      Finsupp.sum_neg_index, Pi.zero_apply (M := fun _ => M), Rep.norm]
-  d₀_comp := by
-    ext
-    simp [inhomogeneousCochains.d_def, inhomogeneousCochains.d,
-      Pi.zero_apply (M := fun _ => M), Rep.norm]
+  comp_d₀ := tateNorm_eq M ▸ d_comp_tateNorm _
+  d₀_comp := tateNorm_eq M ▸ tateNorm_comp_d _
 
 /-- The Tate complex defined by connecting inhomogeneous chains and cochains with the Tate norm. -/
 @[simps! X]
