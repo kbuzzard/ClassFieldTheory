@@ -314,24 +314,7 @@ variable (M : Rep R G)
   (tateComplex M).isoSc' (-2) (-1) 0 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (chainsIso₁ M) (chainsIso₀ M) (cochainsIso₀ M)
       (groupHomology.comp_d₁₀_eq M)
-      (by
-        simp only [tateComplex, Int.reduceNeg, HomologicalComplex.shortComplexFunctor'_obj_X₂,
-          CochainComplex.ConnectData.cochainComplex_X, CochainComplex.ConnectData.X_negOne,
-          ChainComplex.of_x, sc_X₃, sc_X₂, chainsIso₀, LinearEquiv.toModuleIso_hom, sc_g,
-          HomologicalComplex.shortComplexFunctor'_obj_X₃, CochainComplex.ConnectData.X_zero,
-          CochainComplex.of_x, HomologicalComplex.shortComplexFunctor'_obj_g,
-          CochainComplex.ConnectData.cochainComplex_d, CochainComplex.ConnectData.d_sub_one_zero,
-          tateComplexConnectData_d₀, cochainsIso₀];
-        ext1
-        simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom]
-        ext f1 m
-        simp only [Rep.norm, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-          Function.comp_apply, Finsupp.lsingle_apply, Finsupp.LinearEquiv.finsuppUnique_apply,
-          LinearEquiv.funUnique_apply, Finsupp.coe_lsum, Function.eval, map_zero,
-          Finsupp.sum_single_index, pi_apply]
-        congr 1
-        simp only [Finsupp.single_apply, ite_eq_left_iff]
-        exact fun h ↦ False.elim <| h <| Unique.eq_default _)
+      (by simp [sc, tateComplex, tateNorm_eq, tateNorm])
 
 end tateCohomology.negOneIso
 
