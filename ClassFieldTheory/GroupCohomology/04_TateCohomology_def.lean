@@ -152,18 +152,8 @@ def tateComplex.normNatEnd : End (forget₂ (Rep R G) (ModuleCat R)) where
 @[reducible]
 def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : (tateComplex X ⟶ tateComplex Y) :=
   CochainComplex.ConnectData.map _ _ (chainsMap (.id G) φ) (cochainsFunctor R G |>.map φ) <| by
-    simp only [ChainComplex.of_x, CochainComplex.of_x, chainsMap_f, MonoidHom.coe_id,
-      CompTriple.comp_eq, tateComplexConnectData_d₀, Category.assoc, cochainsFunctor_map,
-      cochainsMap_f]
-    ext1
-    simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom]
-    ext f1 x g1
-    simp only [LinearMap.coe_comp, Finsupp.coe_lsum, Function.comp_apply, Finsupp.lsingle_apply,
-      Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply,
-      Finsupp.mapRange_single, map_zero, Finsupp.sum_single_index, pi_apply, compLeft_apply,
-      funLeft_apply]
-    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, tateComplex.norm_comm φ ]
-    simp
+    simp [tateComplexConnectData_d₀, tateNorm_eq, tateNorm, tateComplex.norm_comm_assoc (B := Y)]
+    rfl
 
 @[simp]
 lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by aesop_cat
