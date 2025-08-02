@@ -54,14 +54,10 @@ noncomputable def groupCohomology.mapIso {H : Type} [Fintype H] [Group H] [Finty
   inv := groupCohomology.map e ⟨e'.inv, by aesop (add simp [Iso.comp_inv_eq])⟩ n
   hom_inv_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    apply groupCohomology.map_congr
-    · simp
-    · simp
+    exact groupCohomology.map_congr _ _ _ _ (by simp) (by simp) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    apply groupCohomology.map_congr
-    · simp
-    · simp
+    exact groupCohomology.map_congr _ _ _ _ (by simp) (by simp) n
 
 noncomputable def res_iso_range_res (M : Rep R G) {H : Type} [Group H] (f : H →* G)
     (n : ℕ) (hf : Function.Injective f) :
@@ -70,16 +66,14 @@ noncomputable def res_iso_range_res (M : Rep R G) {H : Type} [Group H] (f : H �
   hom := groupCohomology.map f.rangeRestrict (𝟙 (M ↓ f)) _
   inv := groupCohomology.map (MonoidHom.ofInjective hf).symm.toMonoidHom ⟨𝟙 M.V, by simp⟩ _
   hom_inv_id := by
-    rw [← groupCohomology.map_comp]
-    erw [CategoryTheory.Functor.map_id, Category.id_comp] --andrew did this
-    rw [← groupCohomology.map_id]
+    rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
     exact groupCohomology.map_congr _ _ _ _ (by ext; simp) (by simp) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
     refine groupCohomology.map_congr _ _ _ _ (by
       ext x;
-      unfold MonoidHom.rangeRestrict
-      erw [(MonoidHom.ofInjective hf).symm_apply_apply, MonoidHom.id_apply]) (by simp) n
+      change (MonoidHom.ofInjective hf).symm (MonoidHom.ofInjective hf _) = x
+      exact MulEquiv.symm_apply_apply _ _) (by simp) n
 
 theorem istrivial_of_injective (M : Rep R G) {H : Type} [Group H] (f : H →* G) (n : ℕ) (hn : n ≠ 0)
     (hf : Function.Injective f) [M.TrivialCohomology] : IsZero (groupCohomology (M ↓ f) n) := by
@@ -201,7 +195,7 @@ noncomputable abbrev _root_.TateCohomology.cochainsmap {G H : Type} [Group G] [G
     enter [2]
     intro h
     rw[← LinearMap.comp_apply, ← this]
-  simp
+  simp only [LinearMap.coe_comp, Function.comp_apply]
   exact Finset.sum_equiv e.symm.toEquiv (fun _ ↦ by simp) <| fun i _ ↦ rfl
 
 noncomputable abbrev _root_.TateCohomology.map {G H : Type} [Group G] [Group H] [Fintype G] [Fintype H]
