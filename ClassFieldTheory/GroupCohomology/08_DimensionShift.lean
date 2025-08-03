@@ -176,7 +176,7 @@ an epimorphism (i.e. surjective).
 instance up_δ_zero_epi_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) : Epi (δ (up_shortExact_res M φ) 0 1 rfl) := by
   refine epi_δ_of_isZero (up_shortExact_res M φ) 0 ?_
-  simpa only [ShortComplex.map_X₂, upShortComplex_obj_X₂, zero_add] using TrivialCohomology.isZero φ inj
+  simpa only [ShortComplex.map_X₂, upShortComplex_obj_X₂, zero_add] using istrivial_of_injective _ φ _ (by omega) inj
 
 /--
 If `S ⊆ G` and `M` is a `G`-module then the connecting homomorphism
@@ -186,7 +186,7 @@ instance up_δ_isIso_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) (n : ℕ) :
     IsIso (δ (up_shortExact_res M φ) (n + 1) (n + 2) rfl) := by
   refine isIso_δ_of_isZero (up_shortExact_res M φ) (n + 1) ?_ ?_
-  all_goals simpa only [ShortComplex.map_X₂, upShortComplex_obj_X₂] using TrivialCohomology.isZero φ inj
+  all_goals simpa only [ShortComplex.map_X₂, upShortComplex_obj_X₂] using istrivial_of_injective _ φ _ (by omega) inj
 
 def up_δiso_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) (n : ℕ) :
@@ -275,7 +275,7 @@ The connecting homomorphism `H⁰(H,down.obj M ↓ H) ⟶ H¹(H, M ↓ H)` is an
 instance down_δ_zero_res_epi {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
     (inj : Function.Injective φ) : Epi (δ (down_shortExact_res M φ) 0 1 rfl) := by
   refine epi_δ_of_isZero (down_shortExact_res M φ) 0 ?_
-  simpa only [ShortComplex.map_X₂, zero_add] using TrivialCohomology.isZero φ inj
+  simpa only [ShortComplex.map_X₂, zero_add] using istrivial_of_injective _ φ _ (by omega) inj
 
 /--
 The connecting homomorphism `Hⁿ⁺¹(G,down.obj M) ⟶ Hⁿ⁺²(G, M)` is an isomorphism
@@ -324,7 +324,7 @@ def down_δiso_natTrans (n : ℕ) : functor R G (n + 1) ≅ down ⋙ functor R G
 instance down_δ_res_isIso (n : ℕ) {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
     (inj : Function.Injective φ) : IsIso (δ (down_shortExact_res M φ) (n + 1) (n + 2) rfl) := by
   refine isIso_δ_of_isZero (down_shortExact_res M φ) (n + 1) ?_ ?_
-  all_goals simpa only [ShortComplex.map_X₂] using TrivialCohomology.isZero φ inj
+  all_goals simpa only [ShortComplex.map_X₂] using istrivial_of_injective _ φ _ (by omega) inj
 
 def down_δiso_res {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
     (inj : Function.Injective φ) (n : ℕ) :
@@ -345,11 +345,12 @@ open Rep
 /--
 An explicit version of `isZero_of_trivialTateCohomology`
 -/
-private lemma isZero_of_trivialTateCohomology' [DecidableEq G] (M : Rep R G)
+private lemma isZero_of_trivialTateCohomology' (M : Rep R G)
     [M.TrivialTateCohomology] (n : ℤ) : IsZero ((tateComplexFunctor.obj M).homology n) :=
-  TrivialTateCohomology.isZero (.id G) Function.injective_id
+  haveI : Fintype G := Fintype.ofFinite G
+  TrivialTateCohomology.of_injective (.id G) _ Function.injective_id
 
-instance instIsIso_up_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
+instance instIsIso_up_shortExact (M : Rep R G) (n : ℤ) :
     IsIso (tateCohomology.δ (up_shortExact M) n) := by
   have _ : TrivialTateCohomology (coind₁'.obj M) := inferInstance
   refine ShortComplex.ShortExact.isIso_δ
@@ -357,7 +358,7 @@ instance instIsIso_up_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
     n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
     (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
 
-instance instIsIso_down_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
+instance instIsIso_down_shortExact (M : Rep R G) (n : ℤ) :
     IsIso (tateCohomology.δ (down_shortExact M) n) := by
   have _ : TrivialTateCohomology (ind₁'.obj M) := inferInstance
   refine ShortComplex.ShortExact.isIso_δ
@@ -365,13 +366,13 @@ instance instIsIso_down_shortExact (M : Rep R G) [DecidableEq G] (n : ℤ) :
     n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
     (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
 
-def upδiso_Tate (n : ℤ) [DecidableEq G] (M : Rep R G) :
+def upδiso_Tate (n : ℤ) (M : Rep R G) :
     (tateCohomology n).obj (up.obj M) ≅ (tateCohomology (n + 1)).obj M :=
 
   have := instIsIso_up_shortExact M n
   asIso (tateCohomology.δ (up_shortExact M) n)
 
-def downδiso_Tate (n : ℤ) [DecidableEq G] (M : Rep R G) :
+def downδiso_Tate (n : ℤ) (M : Rep R G) :
     (tateCohomology n).obj M ≅ (tateCohomology (n + 1)).obj (down.obj M) :=
   asIso (tateCohomology.δ (down_shortExact M) n)
 
