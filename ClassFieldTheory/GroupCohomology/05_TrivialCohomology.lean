@@ -138,10 +138,9 @@ noncomputable def res_iso_range_res_homology (M : Rep R G) {H : Type} [Group H] 
     exact groupHomology.map_congr _ _ _ _ (by ext; simp) (by simp) n
   inv_hom_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    refine groupHomology.map_congr _ _ _ _ (by
-      ext x;
-      unfold MonoidHom.rangeRestrict
-      erw [(MonoidHom.ofInjective hf).symm_apply_apply, MonoidHom.id_apply]) (by simp) n
+    exact groupHomology.map_congr _ _ _ _ (MonoidHom.ext_iff.2 <| fun x ↦ by
+      rw [MonoidHom.comp_apply]
+      exact (MonoidHom.ofInjective hf).symm_apply_apply _) (by simp) n
 
 lemma TrivialHomology.of_injective {M : Rep R G} {H : Type} [Group H] (f : H →* G) (n : ℕ)
     (hn : n ≠ 0) (hf : Function.Injective f) [M.TrivialHomology] :
