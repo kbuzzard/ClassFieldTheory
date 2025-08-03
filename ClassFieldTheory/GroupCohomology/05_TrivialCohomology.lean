@@ -184,7 +184,6 @@ noncomputable abbrev _root_.TateCohomology.cochainsmap {G H : Type} [Group G] [G
   (groupCohomology.cochainsMap e.symm ⟨φ.hom, fun h ↦ by simpa using φ.comm (e.symm h)⟩) <| by
   ext f0 (m : M) h0
   simp [cochainsMap_f, Rep.norm, Representation.norm]
-  have := φ.comm
   have (h : H) := ModuleCat.hom_ext_iff.1 (φ.comm (e.symm h))
   simp only [Action.res_obj_V, ModuleCat.hom_comp, ρ_hom, Action.res_obj_ρ, MonoidHom.coe_comp,
     MonoidHom.coe_coe, Function.comp_apply, MulEquiv.apply_symm_apply] at this
