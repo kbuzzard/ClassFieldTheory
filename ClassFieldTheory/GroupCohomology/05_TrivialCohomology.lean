@@ -70,10 +70,9 @@ noncomputable def res_iso_range_res (M : Rep R G) {H : Type} [Group H] (f : H �
     exact groupCohomology.map_congr _ _ _ _ (by ext; simp) (by simp) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    refine groupCohomology.map_congr _ _ _ _ (by
-      ext x;
-      change (MonoidHom.ofInjective hf).symm (MonoidHom.ofInjective hf _) = x
-      exact MulEquiv.symm_apply_apply _ _) (by simp) n
+    refine groupCohomology.map_congr _ _ _ _ (MonoidHom.ext_iff.2 fun x ↦ ?_) (by simp) n
+    rw [MonoidHom.comp_apply]
+    exact (MonoidHom.ofInjective hf).symm_apply_apply _
 
 theorem istrivial_of_injective (M : Rep R G) {H : Type} [Group H] (f : H →* G) (n : ℕ) (hn : n ≠ 0)
     (hf : Function.Injective f) [M.TrivialCohomology] : IsZero (groupCohomology (M ↓ f) n) := by
