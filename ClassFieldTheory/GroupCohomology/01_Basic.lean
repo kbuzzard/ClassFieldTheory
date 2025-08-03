@@ -104,7 +104,7 @@ end Rep
 If `M` is a trivial representation of a finite group `G` and `M` is torsion-free
 then `H¹(G,M) = 0`.
 -/
-lemma groupCohomology.H1_isZero_of_trivial [DecidableEq G] (M : Rep R G) [NoZeroSMulDivisors ℕ M]
+lemma groupCohomology.H1_isZero_of_trivial (M : Rep R G) [NoZeroSMulDivisors ℕ M]
     [M.IsTrivial] [Finite G] : IsZero (H1 M) := by
   /-
   Since `M` is a trivial representation, we can identify `H¹(G,M)` with `Hom(G,M)`,
