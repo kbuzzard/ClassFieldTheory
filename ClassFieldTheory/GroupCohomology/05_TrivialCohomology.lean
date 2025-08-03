@@ -291,14 +291,10 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
       aesop
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialCohomology where
-  isZero H n := by
-    letI : Subsingleton H := Function.Injective.subsingleton H.subtype_injective
-    apply isZero_groupCohomology_succ_of_subsingleton
+  isZero _ _ := isZero_groupCohomology_succ_of_subsingleton _ _
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialHomology where
-  isZero H n := by
-    letI : Subsingleton H := Function.Injective.subsingleton H.subtype_injective
-    apply isZero_groupHomology_succ_of_subsingleton
+  isZero _ _ := isZero_groupHomology_succ_of_subsingleton _ _
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
   haveI := Fintype.ofFinite G
