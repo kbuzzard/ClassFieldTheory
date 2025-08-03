@@ -1,9 +1,6 @@
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.AddTorsor.Defs
-import Mathlib.CategoryTheory.Limits.Shapes.Countable
-import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 
