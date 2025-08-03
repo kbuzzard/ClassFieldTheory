@@ -2,7 +2,6 @@ import Mathlib
 import ClassFieldTheory.GroupCohomology.«01_Basic»
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
-import ClassFieldTheory.Tactic.Dualize
 
 /-!
 # Trivial (Tate) (co)homology
