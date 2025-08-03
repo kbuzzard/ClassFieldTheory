@@ -178,7 +178,7 @@ lemma TrivialTateCohomology.of_iso [Finite G] {M N : Rep R G} (f : M ≅ N)
 --TODO : add simp lemma for Rep.norm.hom
 noncomputable abbrev _root_.TateCohomology.cochainsmap {G H : Type} [Group G] [Group H] [Fintype G]
     [Fintype H] {M : Rep R G} {N : Rep R H} (e : G ≃* H)
-    (φ : M ⟶ (Action.res (ModuleCat R) e).obj N) :=
+    (φ : M ⟶ N ↓ e) :=
   CochainComplex.ConnectData.map (tateComplexConnectData M) (tateComplexConnectData N)
   (groupHomology.chainsMap e φ)
   (groupCohomology.cochainsMap e.symm ⟨φ.hom, fun h ↦ by simpa using φ.comm (e.symm h)⟩) <| by
