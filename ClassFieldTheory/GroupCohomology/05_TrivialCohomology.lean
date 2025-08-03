@@ -230,7 +230,6 @@ noncomputable def TateCohomology.res_iso {H : Type} [Fintype H] [Group H] [Finty
       simp_rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, he',
         e.apply_symm_apply, implies_true]⟩ n
   hom_inv_id := by
-    unfold TateCohomology.map TateCohomology.cochainsmap;
     rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
@@ -239,7 +238,6 @@ noncomputable def TateCohomology.res_iso {H : Type} [Fintype H] [Group H] [Finty
     · rw [← groupCohomology.cochainsMap_comp, ← groupCohomology.cochainsMap_id]
       exact groupCohomology.cochainsMap_congr _ _ _ _ (by simp) (by simp)
   inv_hom_id := by
-    unfold TateCohomology.map TateCohomology.cochainsmap;
     rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
@@ -277,7 +275,6 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
         IsZero ((tateCohomology (-1)).obj (M ↓ φ : Rep R H))) :
     TrivialTateCohomology M where
   isZero H n := by
-    -- have := Finite.of_injective φ inj
     match n with
     | .ofNat (n + 1) =>
       letI := TrivialCohomology.res M (H := H)
