@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.GroupTheory.FiniteAbelian.Basic
+import Mathlib.GroupTheory.Solvable
 
 @[simp, norm_cast]
 theorem Pi.coe_evalMonoidHom.{u, v} {I : Type u} (f : I → Type v) [(i : I) → MulOneClass (f i)] (i : I) :
