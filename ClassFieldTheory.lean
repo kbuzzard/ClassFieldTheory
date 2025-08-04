@@ -21,6 +21,7 @@ import ClassFieldTheory.LocalCFT.NonArchDef
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
+import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
