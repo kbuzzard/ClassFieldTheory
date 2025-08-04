@@ -2,7 +2,6 @@ import Mathlib
 import ClassFieldTheory.GroupCohomology.«01_Basic»
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
-import ClassFieldTheory.Tactic.Dualize
 
 /-!
 # Trivial (Tate) (co)homology
@@ -54,14 +53,10 @@ noncomputable def groupCohomology.mapIso {H : Type} [Fintype H] [Group H] [Finty
   inv := groupCohomology.map e ⟨e'.inv, by aesop (add simp [Iso.comp_inv_eq])⟩ n
   hom_inv_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    apply groupCohomology.map_congr
-    · simp
-    · simp
+    exact groupCohomology.map_congr _ _ _ _ (by simp) (by simp) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    apply groupCohomology.map_congr
-    · simp
-    · simp
+    exact groupCohomology.map_congr _ _ _ _ (by simp) (by simp) n
 
 noncomputable def res_iso_range_res (M : Rep R G) {H : Type} [Group H] (f : H →* G)
     (n : ℕ) (hf : Function.Injective f) :
@@ -70,16 +65,13 @@ noncomputable def res_iso_range_res (M : Rep R G) {H : Type} [Group H] (f : H �
   hom := groupCohomology.map f.rangeRestrict (𝟙 (M ↓ f)) _
   inv := groupCohomology.map (MonoidHom.ofInjective hf).symm.toMonoidHom ⟨𝟙 M.V, by simp⟩ _
   hom_inv_id := by
-    rw [← groupCohomology.map_comp]
-    erw [CategoryTheory.Functor.map_id, Category.id_comp] --andrew did this
-    rw [← groupCohomology.map_id]
+    rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
     exact groupCohomology.map_congr _ _ _ _ (by ext; simp) (by simp) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    refine groupCohomology.map_congr _ _ _ _ (by
-      ext x;
-      unfold MonoidHom.rangeRestrict
-      erw [(MonoidHom.ofInjective hf).symm_apply_apply, MonoidHom.id_apply]) (by simp) n
+    refine groupCohomology.map_congr _ _ _ _ (MonoidHom.ext_iff.2 fun x ↦ ?_) (by simp) n
+    rw [MonoidHom.comp_apply]
+    exact (MonoidHom.ofInjective hf).symm_apply_apply _
 
 theorem istrivial_of_injective (M : Rep R G) {H : Type} [Group H] (f : H →* G) (n : ℕ) (hn : n ≠ 0)
     (hf : Function.Injective f) [M.TrivialCohomology] : IsZero (groupCohomology (M ↓ f) n) := by
@@ -145,10 +137,9 @@ noncomputable def res_iso_range_res_homology (M : Rep R G) {H : Type} [Group H] 
     exact groupHomology.map_congr _ _ _ _ (by ext; simp) (by simp) n
   inv_hom_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    refine groupHomology.map_congr _ _ _ _ (by
-      ext x;
-      unfold MonoidHom.rangeRestrict
-      erw [(MonoidHom.ofInjective hf).symm_apply_apply, MonoidHom.id_apply]) (by simp) n
+    exact groupHomology.map_congr _ _ _ _ (MonoidHom.ext_iff.2 <| fun x ↦ by
+      rw [MonoidHom.comp_apply]
+      exact (MonoidHom.ofInjective hf).symm_apply_apply _) (by simp) n
 
 lemma TrivialHomology.of_injective {M : Rep R G} {H : Type} [Group H] (f : H →* G) (n : ℕ)
     (hn : n ≠ 0) (hf : Function.Injective f) [M.TrivialHomology] :
@@ -187,13 +178,12 @@ lemma TrivialTateCohomology.of_iso [Finite G] {M N : Rep R G} (f : M ≅ N)
 --TODO : add simp lemma for Rep.norm.hom
 noncomputable abbrev _root_.TateCohomology.cochainsmap {G H : Type} [Group G] [Group H] [Fintype G]
     [Fintype H] {M : Rep R G} {N : Rep R H} (e : G ≃* H)
-    (φ : M ⟶ (Action.res (ModuleCat R) e).obj N) :=
+    (φ : M ⟶ N ↓ e) :=
   CochainComplex.ConnectData.map (tateComplexConnectData M) (tateComplexConnectData N)
   (groupHomology.chainsMap e φ)
   (groupCohomology.cochainsMap e.symm ⟨φ.hom, fun h ↦ by simpa using φ.comm (e.symm h)⟩) <| by
   ext f0 (m : M) h0
   simp [cochainsMap_f, Rep.norm, Representation.norm]
-  have := φ.comm
   have (h : H) := ModuleCat.hom_ext_iff.1 (φ.comm (e.symm h))
   simp only [Action.res_obj_V, ModuleCat.hom_comp, ρ_hom, Action.res_obj_ρ, MonoidHom.coe_comp,
     MonoidHom.coe_coe, Function.comp_apply, MulEquiv.apply_symm_apply] at this
@@ -201,7 +191,7 @@ noncomputable abbrev _root_.TateCohomology.cochainsmap {G H : Type} [Group G] [G
     enter [2]
     intro h
     rw[← LinearMap.comp_apply, ← this]
-  simp
+  simp only [LinearMap.coe_comp, Function.comp_apply]
   exact Finset.sum_equiv e.symm.toEquiv (fun _ ↦ by simp) <| fun i _ ↦ rfl
 
 noncomputable abbrev _root_.TateCohomology.map {G H : Type} [Group G] [Group H] [Fintype G] [Fintype H]
@@ -240,7 +230,6 @@ noncomputable def TateCohomology.res_iso {H : Type} [Fintype H] [Group H] [Finty
       simp_rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, he',
         e.apply_symm_apply, implies_true]⟩ n
   hom_inv_id := by
-    unfold TateCohomology.map TateCohomology.cochainsmap;
     rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
@@ -249,7 +238,6 @@ noncomputable def TateCohomology.res_iso {H : Type} [Fintype H] [Group H] [Finty
     · rw [← groupCohomology.cochainsMap_comp, ← groupCohomology.cochainsMap_id]
       exact groupCohomology.cochainsMap_congr _ _ _ _ (by simp) (by simp)
   inv_hom_id := by
-    unfold TateCohomology.map TateCohomology.cochainsmap;
     rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
@@ -287,7 +275,6 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
         IsZero ((tateCohomology (-1)).obj (M ↓ φ : Rep R H))) :
     TrivialTateCohomology M where
   isZero H n := by
-    -- have := Finite.of_injective φ inj
     match n with
     | .ofNat (n + 1) =>
       letI := TrivialCohomology.res M (H := H)
@@ -304,14 +291,10 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
       aesop
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialCohomology where
-  isZero H n := by
-    letI : Subsingleton H := Function.Injective.subsingleton H.subtype_injective
-    apply isZero_groupCohomology_succ_of_subsingleton
+  isZero _ _ := isZero_groupCohomology_succ_of_subsingleton _ _
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialHomology where
-  isZero H n := by
-    letI : Subsingleton H := Function.Injective.subsingleton H.subtype_injective
-    apply isZero_groupHomology_succ_of_subsingleton
+  isZero _ _ := isZero_groupHomology_succ_of_subsingleton _ _
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
   haveI := Fintype.ofFinite G
