@@ -1,4 +1,9 @@
-import Mathlib
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+import Mathlib.Algebra.Homology.HomologySequenceLemmas
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+import Mathlib.RepresentationTheory.Induced
 
 open
   Rep
@@ -8,8 +13,8 @@ open
   groupCohomology
   BigOperators
 
-variable {R : Type} [CommRing R]
-variable {G : Type} [Group G]
+universe u
+variable {R G H : Type u} [CommRing R] [Group G] [Group H]
 
 noncomputable section
 
@@ -18,7 +23,7 @@ namespace Rep
 /--
 The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
 -/
-abbrev res {H : Type} [Group H] (φ : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) φ
+abbrev res (φ : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) φ
 
 set_option quotPrecheck false in
 /--
@@ -33,27 +38,29 @@ notation3:60 M:60 " ↓ " φ:61 => (res φ).obj M
 /-
 `simp` lemmas for `Action.res` also work for `Rep.res` because it is an abbreviation:
 -/
-example (M : Rep R G) (H : Type) [Group H] (φ : H →* G) (h : H) :
+example (M : Rep R G) (H : Type u) [Group H] (φ : H →* G) (h : H) :
   (M ↓ φ).ρ h = M.ρ (φ h) := by simp
 
-example (M : Rep R G) (H : Type) [Group H] (φ : H →* G)  :
+example (M : Rep R G) (H : Type u) [Group H] (φ : H →* G)  :
   (M ↓ φ).V = M.V := by simp only [Action.res_obj_V]
 
-instance (H : Type) [Group H] (f : H →* G) : ReflectsLimits (Action.res (ModuleCat.{0} R) f) :=
+instance (H : Type u) [Group H] (f : H →* G) : ReflectsLimits (Action.res (ModuleCat.{u} R) f) :=
   reflectsLimits_of_reflectsIsomorphisms
 
-instance (H : Type) [Group H] (f : H →* G) : PreservesColimits (Action.res (ModuleCat.{0} R) f) :=
-  Action.preservesColimitsOfSize_of_preserves (Action.res (ModuleCat R) f) <|
-  Action.preservesColimits_forget (ModuleCat R) G
+instance (R G H : Type u) [CommRing R] [Group G] [Group H] (f : H →* G) :
+    PreservesColimits (Action.res (ModuleCat.{u} R) f) :=
+  Action.preservesColimitsOfSize_of_preserves (Action.res (ModuleCat.{u} R) f) <|
+    Action.preservesColimits_forget ..
 
-instance (H : Type) [Group H] (f : H →* G) : ReflectsColimits (Action.res (ModuleCat.{0} R) f) :=
+instance (R G H : Type u) [CommRing R] [Group G] [Group H] (f : H →* G) :
+   ReflectsColimits (Action.res (ModuleCat.{u} R) f) :=
   reflectsColimits_of_reflectsIsomorphisms
 
 /--
 The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
 preserves and reflects exactness.
 -/
-example (H : Type) [Group H] (φ : H →* G) (S : ShortComplex (Rep R G)) :
+example (H : Type u) [Group H] (φ : H →* G) (S : ShortComplex (Rep R G)) :
     (S.map (res φ)).Exact ↔ S.Exact := by
   rw [ShortComplex.exact_map_iff_of_faithful]
 
@@ -67,7 +74,7 @@ lemma isZero_iff (M : Rep R G) : IsZero M ↔ IsZero (M.V) := by
 /--
 An object of `Rep R G` is zero iff its restriction to `H` is zero.
 -/
-lemma isZero_res_iff (M : Rep R G) {H : Type} [Group H] [DecidableEq H] (φ : H →* G) :
+lemma isZero_res_iff (M : Rep R G) {H : Type u} [Group H] [DecidableEq H] (φ : H →* G) :
     IsZero (M ↓ φ) ↔ IsZero M := by
   rw [isZero_iff, isZero_iff, Action.res_obj_V]
 
@@ -75,7 +82,7 @@ lemma isZero_res_iff (M : Rep R G) {H : Type} [Group H] [DecidableEq H] (φ : H 
 The restriction functor `res φ : Rep R G ⥤ Rep R H` takes short exact sequences to short
 exact sequences.
 -/
-lemma res_respectsShortExact {H : Type} [Group H] (φ : H →* G) (S : ShortComplex (Rep R G)) :
+lemma res_respectsShortExact {H : Type u} [Group H] (φ : H →* G) (S : ShortComplex (Rep R G)) :
     (S.map (Rep.res φ)).ShortExact ↔ S.ShortExact := by
   constructor
   · intro h
@@ -101,20 +108,27 @@ lemma res_respectsShortExact {H : Type} [Group H] (φ : H →* G) (S : ShortComp
       epi_g := by simpa using h₃
     }
 
-lemma res_ofShortExact {H : Type} [Group H] (φ : H →* G) {S : ShortComplex (Rep R G)}
+lemma res_ofShortExact {H : Type u} [Group H] (φ : H →* G) {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) : (S.map (Rep.res φ)).ShortExact := by
   rwa [res_respectsShortExact]
+
+@[simp] lemma norm_hom_res [Finite G] [Finite H] (M : Rep R G) (e : H ≃* G) :
+    (M ↓ e.toMonoidHom).norm.hom = M.norm.hom := by
+  let := Fintype.ofFinite G
+  let := Fintype.ofFinite H
+  ext
+  simp [Representation.norm, ← e.toEquiv.sum_comp]
 
 end Rep
 
 namespace groupCohomology
 
 variable
-  {S : Type} [Group S] (φ : S →* G)
-  {S' : Type} [Group S'] (ψ : S' →* S)
+  {S : Type u} [Group S] (φ : S →* G)
+  {S' : Type u} [Group S'] (ψ : S' →* S)
 
 /--
-The restriction map `Hⁿ(G,M) ⟶ Hⁿ(H,M)`, defined as a forphism of functors:
+The restriction map `Hⁿ(G,M) ⟶ Hⁿ(H,M)`, defined as a morphism of functors
 -/
 def rest (n : ℕ) : functor R G n ⟶ Rep.res φ ⋙ functor R S n  where
   app M               := map φ (𝟙 (M ↓ φ)) n
@@ -155,7 +169,7 @@ For this, it would be sensible to define restriction as a natural transformation
 automatically commutes with the other maps. This requires us to first define cohomology as a functor.
 -/
 lemma rest_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
-    {H : Type} [Group H] [DecidableEq H] (φ : H →* G) (i j : ℕ) (hij : i + 1 = j) :
+    {H : Type u} [Group H] [DecidableEq H] (φ : H →* G) (i j : ℕ) (hij : i + 1 = j) :
     (δ hS i j hij) ≫ (rest φ j).app S.X₁ = (rest φ i).app S.X₃ ≫ δ (res_ofShortExact φ hS) i j hij
     := by
   let C₁ := S.map (cochainsFunctor R G)
@@ -171,6 +185,39 @@ lemma rest_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
   }
   exact HomologicalComplex.HomologySequence.δ_naturality this ses₁ ses₂ i j hij
 
+noncomputable def resSubtypeRangeIso (M : Rep R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ)
+    (hf : Function.Injective f) :
+    groupCohomology (M ↓ f.range.subtype) n ≅ groupCohomology (M ↓ f) n where
+  hom := groupCohomology.map f.rangeRestrict (𝟙 (M ↓ f)) _
+  inv := groupCohomology.map (MonoidHom.ofInjective hf).symm.toMonoidHom
+    ⟨by dsimp; exact 𝟙 M.V, by simp⟩ _
+  hom_inv_id := by
+    rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
+    exact groupCohomology.map_congr (by ext; simp) (by simp) n
+  inv_hom_id := by
+    rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
+    refine groupCohomology.map_congr (MonoidHom.ext fun x ↦ ?_) (by simp) n
+    rw [MonoidHom.comp_apply]
+    exact (MonoidHom.ofInjective hf).symm_apply_apply _
+
 end groupCohomology
+
+namespace groupHomology
+
+noncomputable def resSubtypeRangeIso (M : Rep R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ)
+    (hf : Function.Injective f) :
+    groupHomology (M ↓ f.range.subtype) n ≅ groupHomology (M ↓ f) n where
+  hom := groupHomology.map (MonoidHom.ofInjective hf).symm.toMonoidHom ⟨𝟙 M.V, by simp⟩ _
+  inv := groupHomology.map f.rangeRestrict ⟨𝟙 M.V, by simp⟩ _
+  hom_inv_id := by
+    rw [← groupHomology.map_comp, ← groupHomology.map_id]
+    exact groupHomology.map_congr (by ext; simp) (by simp) n
+  inv_hom_id := by
+    rw [← groupHomology.map_comp, ← groupHomology.map_id]
+    refine groupHomology.map_congr (MonoidHom.ext fun x ↦ ?_) (by simp) n
+    rw [MonoidHom.comp_apply]
+    exact (MonoidHom.ofInjective hf).symm_apply_apply _
+
+end groupHomology
 
 end

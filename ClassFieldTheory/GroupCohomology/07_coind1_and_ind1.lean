@@ -1,4 +1,3 @@
-import Mathlib
 import ClassFieldTheory.GroupCohomology.«03_inflation»
 import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv

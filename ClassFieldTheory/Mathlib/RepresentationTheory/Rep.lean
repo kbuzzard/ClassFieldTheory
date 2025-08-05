@@ -1,10 +1,14 @@
 import ClassFieldTheory.Mathlib.CategoryTheory.Action.Limits
+import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Rep
 
 open CategoryTheory Limits
 
+noncomputable section
+
 namespace Rep
-variable {R G : Type} [CommRing R] [Group G] {A B : Rep R G}
+universe u
+variable {R G H : Type u} [CommRing R] [Group G] {A B : Rep R G}
 
 -- TODO : add in mathlib, see GroupCohomology.IndCoind.TrivialCohomology
 --attribute [simps obj_ρ] trivialFunctor
@@ -21,7 +25,7 @@ instance richards : LinearMapClass (Action.HomSubtype _ _ A B) R A B where
   map_smulₛₗ f := map_smul f.val
 
 -- This hack instance will be removed after the relevant PR is merged.
-instance (H : Type) [MulAction G H] :
+instance [MulAction G H] :
     LinearMapClass (Action.HomSubtype _ _ A (ofMulAction R G H)) R A (ofMulAction R G H) := richards
 
 @[simp] lemma coe_hom (f : A ⟶ B) : ⇑f.hom = f := rfl
@@ -63,5 +67,29 @@ lemma exists_kernelι_eq {M₁ M₂ : Rep R G} (f : M₁ ⟶ M₂) (m : M₁) (h
   convert (leftRegularHomEquiv_apply M₁ g).symm
   change m = M₁.leftRegularHomEquiv (M₁.leftRegularHomEquiv.symm m)
   rw [LinearEquiv.apply_symm_apply]
+
+variable [Finite G] (A : Rep R G)
+
+/-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
+`A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
+@[simps! hom_hom]
+def norm : End A where
+  hom := ModuleCat.ofHom A.ρ.norm
+  comm g := by ext; simp
+
+@[reassoc, elementwise]
+lemma norm_comm {A B : Rep R G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
+  ext : 3
+  simp only [Action.comp_hom, ModuleCat.hom_comp, norm_hom_hom, Representation.norm, map_sum,
+    LinearMap.coe_comp, LinearMap.coeFn_sum, coe_hom, Function.comp_apply, Finset.sum_apply]
+  congr!
+  exact (hom_comm_apply _ _ _).symm
+
+/-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
+`x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
+@[simps]
+def normNatTrans : End (𝟭 (Rep R G)) where
+  app := norm
+  naturality _ _ := norm_comm
 
 end Rep
