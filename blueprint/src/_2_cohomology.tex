@@ -541,12 +541,12 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{definition}
 
 \begin{lemma}	\label{lem:Tate cohomology is cohomology or homology}
-  \lean{groupCohomology.tateCohomology.isoGroupCohomology,
-    groupCohomology.tateCohomology.isoGroupHomology,
-		groupCohomology.tateCohomology.zeroIso,
-		groupCohomology.tateCohomology.zeroIsoOfIsTrivial,
-		groupCohomology.tateCohomology.negOneIso,
-		groupCohomology.tateCohomology.negOneIsoOfIsTrivial}
+  \lean{groupCohomology.TateCohomology.isoGroupCohomology,
+    groupCohomology.TateCohomology.isoGroupHomology,
+		groupCohomology.TateCohomology.zeroIso,
+		groupCohomology.TateCohomology.zeroIsoOfIsTrivial,
+		groupCohomology.TateCohomology.negOneIso,
+		groupCohomology.TateCohomology.negOneIsoOfIsTrivial}
 	\uses{def:Tate cohomology}
 	\leanok
 	Let $G$ be a finite group and $M$ a representation of $G$.
@@ -593,7 +593,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \begin{definition}	\label{def:Tate long exact sequence}
   \lean{groupCohomology.preservesFiniteLimits_tateComplexFunctor,
     groupCohomology.preservesFiniteColimits_tateComplexFunctor,
-		groupCohomology.tateCohomology.δ}
+		groupCohomology.TateCohomology.δ}
 	\uses{def:Tate cohomology,
 		lem:cochainsFunctor exact}
 	\leanok

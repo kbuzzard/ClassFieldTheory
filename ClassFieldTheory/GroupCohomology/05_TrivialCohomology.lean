@@ -106,7 +106,7 @@ attribute [local instance] Fintype.ofFinite in
 lemma TrivialTateCohomology.of_injective [Fintype G] {M : Rep R G} {H : Type} [Fintype H]
     [Group H] (f : H →* G) (n : ℤ) (hf : Function.Injective f)
     [M.TrivialTateCohomology] : IsZero ((tateCohomology n).obj (M ↓ f)) :=
-  .of_iso (isZero (M := M) f.range (n := n)) <| tateCohomology.res_iso
+  .of_iso (isZero (M := M) f.range (n := n)) <| TateCohomology.res_iso
     (MonoidHom.ofInjective hf) (Iso.refl _) (by aesop) _
 
 lemma isZero_of_trivialTateCohomology [Fintype G] {M : Rep R G}
@@ -116,12 +116,12 @@ lemma isZero_of_trivialTateCohomology [Fintype G] {M : Rep R G}
 instance TrivialTateCohomology.to_trivialCohomology [Fintype G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialCohomology where
   isZero H n := (TrivialTateCohomology.isZero (M := M) H (n := Nat.cast n + 1)).of_iso <|
-    tateCohomology.isoGroupCohomology n|>.app (M ↓ H.subtype)|>.symm
+    TateCohomology.isoGroupCohomology n|>.app (M ↓ H.subtype)|>.symm
 
-instance TrivialtateCohomology.to_trivialHomology [Fintype G] {M : Rep R G}
+instance TrivialTateCohomology.to_trivialHomology [Fintype G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialHomology where
   isZero H n := (TrivialTateCohomology.isZero H (n := - n - 2)).of_iso <|
-    (tateCohomology.isoGroupHomology n|>.app (M ↓ H.subtype)).symm
+    (TateCohomology.isoGroupHomology n|>.app (M ↓ H.subtype)).symm
 
 lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
     [M.TrivialCohomology] [M.TrivialHomology]
@@ -134,12 +134,12 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
     | .ofNat (n + 1) =>
       letI := TrivialCohomology.res M (H := H)
       exact isZero_of_trivialCohomology.of_iso <|
-        (tateCohomology.isoGroupCohomology n).app (M ↓ H.subtype)
+        (TateCohomology.isoGroupCohomology n).app (M ↓ H.subtype)
     | .negSucc (n + 1) =>
       letI := TrivialHomology.res M (H := H) H.subtype_injective
       rw [show Int.negSucc (n + 1) = -n - 2 by grind]
       exact isZero_of_trivialHomology.of_iso <|
-        (tateCohomology.isoGroupHomology n).app (M ↓ H.subtype)
+        (TateCohomology.isoGroupHomology n).app (M ↓ H.subtype)
     | 0 =>
       aesop
     | .negSucc 0 =>
@@ -162,10 +162,10 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
   have : (M ↓ H.subtype).ρ.IsTrivial := by
     constructor; intro g; rw [Subsingleton.eq_one g, map_one]; rfl
   constructor
-  · refine IsZero.of_iso ?_ (tateCohomology.zeroIsoOfIsTrivial _)
+  · refine IsZero.of_iso ?_ (TateCohomology.zeroIsoOfIsTrivial _)
     rw [Nat.card_unique, Nat.cast_one, LinearMap.range_eq_top_of_cancel (by exact fun _ _ a ↦ a)]
     exact ModuleCat.isZero_of_subsingleton _
-  refine IsZero.of_iso ?_ (tateCohomology.negOneIsoOfIsTrivial _)
+  refine IsZero.of_iso ?_ (TateCohomology.negOneIsoOfIsTrivial _)
   rw [Nat.card_unique, Nat.cast_one, LinearMap.ker_eq_bot_of_cancel (by exact fun _ _ a ↦ a)]
   exact ModuleCat.isZero_of_subsingleton _
 

@@ -129,7 +129,7 @@ def tateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
 def tateCohomology (n : ℤ) : Rep R G ⥤ ModuleCat R :=
   tateComplexFunctor ⋙ HomologicalComplex.homologyFunctor _ _ n
 
-namespace tateCohomology
+namespace TateCohomology
 
 section Exact
 
@@ -257,7 +257,7 @@ variable (M : Rep R G)
 namespace zeroIso
 
 /-- The concrete short complex computing `0`-th Tate cohomology.-/
-@[simps] private def sc : ShortComplex (ModuleCat R) := 
+@[simps] private def sc : ShortComplex (ModuleCat R) :=
   .mk M.norm.hom (d₀₁ M) (norm_comp_d_eq_zero M)
 
 /-- The isomorphism between the concrete short complex computing `0`-th Tate cohomology
@@ -324,7 +324,7 @@ def negOneIso (M : Rep R G) : (tateCohomology (-1)).obj M ≅
 def zeroIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] : (tateCohomology 0).obj M ≅
     ModuleCat.of R (M.V ⧸ (range (Nat.card G : M.V →ₗ[R] M.V))) :=
   haveI eq1 : M.ρ.invariants = ⊤ := Representation.invariants_eq_top M.ρ
-  tateCohomology.zeroIso M ≪≫
+  TateCohomology.zeroIso M ≪≫
   (LinearEquiv.toModuleIso <| Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ eq1 |>.trans
     Submodule.topEquiv) <| by
   refine Submodule.ext fun x ↦ ⟨fun ⟨⟨m, hm1⟩, hm2, hm3⟩ ↦ ?_, fun ⟨k, hk⟩ ↦ ?_⟩
@@ -338,10 +338,10 @@ def zeroIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] : (tateCohomology 0).obj M
 /-- A concrete description of the `-1`-th Tate cohomology of a trivial representation. -/
 def negOneIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] :
     (tateCohomology (-1)).obj M ≅ ModuleCat.of R (ker (Nat.card G : M.V →ₗ[R] M.V)) :=
-  tateCohomology.negOneIso M ≪≫
+  TateCohomology.negOneIso M ≪≫
   (LinearEquiv.toModuleIso (Submodule.quotEquivOfEqBot _ (by
   ext m; simp [Submodule.submoduleOf, ← Module.End.one_eq_id, Representation.Coinvariants.ker]) ≪≫ₗ
   LinearEquiv.ofEq _ _ (by ext m; simp [Representation.norm, Fintype.card_eq_nat_card])))
 
-end groupCohomology.tateCohomology
+end groupCohomology.TateCohomology
 end

@@ -351,18 +351,18 @@ private lemma isZero_of_trivialTateCohomology' (M : Rep R G)
   TrivialTateCohomology.of_injective (.id G) _ Function.injective_id
 
 instance instIsIso_up_shortExact (M : Rep R G) (n : ℤ) :
-    IsIso (tateCohomology.δ (up_shortExact M) n) := by
+    IsIso (TateCohomology.δ (up_shortExact M) n) := by
   have _ : TrivialTateCohomology (coind₁'.obj M) := inferInstance
   refine ShortComplex.ShortExact.isIso_δ
-    (tateCohomology.map_tateComplexFunctor_shortExact (up_shortExact M))
+    (TateCohomology.map_tateComplexFunctor_shortExact (up_shortExact M))
     n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
     (by simp;exact isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
 
 instance instIsIso_down_shortExact (M : Rep R G) (n : ℤ) :
-    IsIso (tateCohomology.δ (down_shortExact M) n) := by
+    IsIso (TateCohomology.δ (down_shortExact M) n) := by
   have _ : TrivialTateCohomology (ind₁'.obj M) := inferInstance
   refine ShortComplex.ShortExact.isIso_δ
-    (tateCohomology.map_tateComplexFunctor_shortExact (down_shortExact M))
+    (TateCohomology.map_tateComplexFunctor_shortExact (down_shortExact M))
     n (n + 1) (by rfl) (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
     (by simp;exact isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
 
@@ -370,11 +370,11 @@ def upδiso_Tate (n : ℤ) (M : Rep R G) :
     (tateCohomology n).obj (up.obj M) ≅ (tateCohomology (n + 1)).obj M :=
 
   have := instIsIso_up_shortExact M n
-  asIso (tateCohomology.δ (up_shortExact M) n)
+  asIso (TateCohomology.δ (up_shortExact M) n)
 
 def downδiso_Tate (n : ℤ) (M : Rep R G) :
     (tateCohomology n).obj M ≅ (tateCohomology (n + 1)).obj (down.obj M) :=
-  asIso (tateCohomology.δ (down_shortExact M) n)
+  asIso (TateCohomology.δ (down_shortExact M) n)
 
 end groupCohomology
 
