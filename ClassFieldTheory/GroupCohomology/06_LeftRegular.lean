@@ -32,15 +32,6 @@ lemma of_apply (g h : G) : (of g) h = if (g = h) then (1 : R) else (0 : R) :=
 lemma of_apply_eq_one (g : G) : (of g) g = (1 : R) := by
   rw [of_apply, if_pos rfl]
 
--- example (g : G) : (of g) g = (1 : R) := by
---   rw [of_apply]
---   simp
-
--- example (v : leftRegular R G) :
---     v = v.sum (fun x s ↦ s • of x) :=
--- by
---   simp only [smul_single, smul_eq_mul, mul_one, sum_single]
-
 lemma eq_sum_smul_of (v : leftRegular R G) : v = ∑ x ∈ v.support, (v x) • (of x) := by
   change v = v.sum (fun x s ↦ s • of x)
   simp [of_def]

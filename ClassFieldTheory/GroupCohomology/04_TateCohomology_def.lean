@@ -8,7 +8,6 @@ import ClassFieldTheory.Mathlib.CategoryTheory.Action.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
--- import Mathlib
 
 open
   CategoryTheory
