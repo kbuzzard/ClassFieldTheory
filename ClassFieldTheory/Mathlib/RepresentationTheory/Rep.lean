@@ -68,28 +68,4 @@ lemma exists_kernelι_eq {M₁ M₂ : Rep R G} (f : M₁ ⟶ M₂) (m : M₁) (h
   change m = M₁.leftRegularHomEquiv (M₁.leftRegularHomEquiv.symm m)
   rw [LinearEquiv.apply_symm_apply]
 
-variable [Finite G] (A : Rep R G)
-
-/-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
-`A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/
-@[simps! hom_hom]
-def norm : End A where
-  hom := ModuleCat.ofHom A.ρ.norm
-  comm g := by ext; simp
-
-@[reassoc, elementwise]
-lemma norm_comm {A B : Rep R G} (f : A ⟶ B) : f ≫ norm B = norm A ≫ f := by
-  ext : 3
-  simp only [Action.comp_hom, ModuleCat.hom_comp, norm_hom_hom, Representation.norm, map_sum,
-    LinearMap.coe_comp, LinearMap.coeFn_sum, coe_hom, Function.comp_apply, Finset.sum_apply]
-  congr!
-  exact (hom_comm_apply _ _ _).symm
-
-/-- Given a representation `A` of a finite group `G`, the norm map `A ⟶ A` defined by
-`x ↦ ∑ A.ρ g x` for `g` in `G` defines a natural endomorphism of the identity functor. -/
-@[simps]
-def normNatTrans : End (𝟭 (Rep R G)) where
-  app := norm
-  naturality _ _ := norm_comm
-
 end Rep

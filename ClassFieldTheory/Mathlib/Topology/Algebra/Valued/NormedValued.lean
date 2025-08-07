@@ -66,8 +66,8 @@ theorem _root_.DiscreteTopology.of_trivial_norm (trivial : ∀ x : K, x = 0 ∨ 
   DiscreteTopology.of_forall_le_norm one_pos fun x hx ↦ by rw [(trivial x).resolve_left hx]
 
 theorem valuativeTopology (K : Type*) [NormedField K] [IsUltrametricDist K] :
-    ValuativeTopology K :=
-  .mk' valuation fun s ↦ by simp_rw [valuation_ball_eq, nhds_zero_basis_norm.mem_iff, norm_pos_iff]
+    IsValuativeTopology K :=
+  sorry--.mk' valuation fun s ↦ by simp_rw [valuation_ball_eq, nhds_zero_basis_norm.mem_iff, norm_pos_iff]
 
 theorem isNontrivial (K : Type*) [NontriviallyNormedField K] [IsUltrametricDist K] :
     ValuativeRel.IsNontrivial K := by

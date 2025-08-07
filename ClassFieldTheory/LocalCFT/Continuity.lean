@@ -70,9 +70,9 @@ lemma exists_valuation_algebraMap_le_valuation
     exact ⟨Units.mk0 x hx0, by rw [Units.val_mk0, hxy]; exact pow_le_of_le_one bot_le hy1 hn⟩
   · exact ⟨1, by rwa [Units.val_one, map_one, map_one]⟩
 
-variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [ValuativeTopology K]
+variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
   [IsTopologicalAddGroup K]
-  [Field L] [ValuativeRel L] [TopologicalSpace L] [ValuativeTopology L]
+  [Field L] [ValuativeRel L] [TopologicalSpace L] [IsValuativeTopology L]
   [IsTopologicalAddGroup L]
   [Algebra K L] [Algebra.IsAlgebraic K L] [ValuativeExtension K L]
 
@@ -81,8 +81,8 @@ variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [Valuativ
     Continuous (algebraMap K L) := by
   apply continuous_of_continuousAt_zero _ _
   simp only [ContinuousAt, map_zero]
-  have B₁ := ValuativeTopology.hasBasis_nhds_zero K
-  have B₂ := ValuativeTopology.hasBasis_nhds_zero L
+  have B₁ := IsValuativeTopology.hasBasis_nhds_zero K
+  have B₂ := IsValuativeTopology.hasBasis_nhds_zero L
   apply (Filter.HasBasis.tendsto_iff B₁ B₂).mpr
   simp only [Set.mem_setOf_eq, true_and, true_imp_iff]
   intro b
