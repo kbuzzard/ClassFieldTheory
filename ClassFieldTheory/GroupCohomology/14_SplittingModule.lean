@@ -333,7 +333,7 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
     IsZero (H2 (split σ ↓ φ)) := by
   have H : IsZero (H2 (aug R G ↓ φ)) := by
     have := aug.cohomology_aug_succ_iso' R G inj 0
-    refine .of_iso ?_ (asIso ((δ (aug.isShortExactSequence' R G φ) 1 2 rfl))).symm
+    refine .of_iso ?_ (asIso ((δ (aug.aug_isShortExact' R G φ) 1 2 rfl))).symm
     have : Finite H := .of_injective _ inj
     exact groupCohomology.H1_isZero_of_trivial (trivial R H R)
   let S := HomologicalComplex.HomologySequence.snakeInput
