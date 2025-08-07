@@ -101,7 +101,7 @@ The sequence in `Rep R G`:
 
 is a short exact sequence.
 -/
-lemma AugSEQ : (aug_shortExactSequence R G).ShortExact where
+lemma aug_isShortExact : (aug_shortExactSequence R G).ShortExact where
   exact := ShortComplex.exact_kernel _
   mono_f := equalizer.ι_mono
   epi_g := ε_epi
@@ -113,9 +113,9 @@ The sequence
 
 is a short exact sequence of `H`-modules for any `H →* G`.
 -/
-lemma isShortExactSequence' {H : Type} [Group H] (φ : H →* G) :
+lemma aug_isShortExact' {H : Type} [Group H] (φ : H →* G) :
     ((aug_shortExactSequence R G).map (res φ)).ShortExact :=
-  CategoryTheory.ShortComplex.ShortExact.map_of_exact (AugSEQ R G) _
+  CategoryTheory.ShortComplex.ShortExact.map_of_exact (aug_isShortExact R G) _
 
 open Finsupp
 
@@ -184,7 +184,7 @@ instance _root_.Rep.leftRegular.trivialCohomology [Finite G] :
 The connecting homomorphism from `Hⁿ⁺¹(G,R)` to `Hⁿ⁺²(G,aug R G)` is an isomorphism.
 -/
 lemma cohomology_aug_succ_iso [Finite G] (n : ℕ) :
-    IsIso (δ (AugSEQ R G) (n + 1) (n + 2) rfl) :=
+    IsIso (δ (aug_isShortExact R G) (n + 1) (n + 2) rfl) :=
   /-
   This connecting homomorphism is sandwiched between two modules H^{n+1}(G,R[G]) and H^{n+2}(G,R[G]),
   where P is the left regular representation.
@@ -197,7 +197,7 @@ lemma H2_aug_isZero [Finite G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
   /-
   This follows from `cohomology_aug_succ_iso` and `groupCohomology.H1_isZero_of_trivial`.
   -/
-  .of_iso (H1_isZero_of_trivial _) <| (@asIso _ _ _ _ (δ (AugSEQ R G) 1 2 rfl)
+  .of_iso (H1_isZero_of_trivial _) <| (@asIso _ _ _ _ (δ (aug_isShortExact R G) 1 2 rfl)
     (cohomology_aug_succ_iso R G 0)).symm
 
 /--
@@ -206,7 +206,7 @@ from `Hⁿ⁺¹(H,R)` to `Hⁿ⁺²(H,aug R G)` is an isomorphism.
 -/
 lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
     (inj : Function.Injective φ) (n : ℕ) :
-    IsIso (δ (isShortExactSequence' R G φ) (n + 1) (n + 2) rfl) :=
+    IsIso (δ (aug_isShortExact' R G φ) (n + 1) (n + 2) rfl) :=
   /-
   The proof is similar to that of `cohomology_aug_succ_iso` but uses
   `Rep.leftRegular.isZero_groupCohomology'` in place of `Rep.leftRegular.isZero_groupCohomology`.
