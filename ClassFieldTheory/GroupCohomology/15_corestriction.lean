@@ -122,7 +122,9 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     convert comp_zero -- cancel first functor
     exact (mapShortComplex₃ (up_shortExact M) (rfl : 0 + 1 = 1)).zero
 
-def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
+/-- Corestriction on objects in group cohomology. -/
+def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
+    (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
 | M, 0 => cores₀.app M
 | M, 1 => cores₁_obj M
 | M, (d + 2) =>
@@ -134,14 +136,46 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).
   have htopexact : upsc_top.ShortExact := up_shortExact_res M S.subtype
   -- so δ : H^{d+1}(S,up_G M) ≅ H^{d+2}(S,M)...
   let up_δ_top_isIso : IsIso (δ (htopexact) (d + 1) (d + 2) rfl) := by
-    -- ...because `coind₁'^G M` has trivial
-    -- cohomology as S-module (hopefully this is somewhere in the repo)
-    have : upsc_top.X₂.TrivialCohomology := by
-      change (of M.ρ.coind₁' ↓ S.subtype).TrivialCohomology
-      -- ⊢ (of M.ρ.coind₁' ↓ S.subtype).TrivialCohomology
-      have := M.coind₁'_trivialCohomology
-      apply Rep.TrivialCohomology.res (coind₁'.obj M)
+    -- ...because `coind₁'^G M` has trivial cohomology as S-module
+    have := M.coind₁'_trivialCohomology
+    have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res (coind₁'.obj M)
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
     all_goals simpa only [upShortComplex_obj_X₂] using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
   (asIso (δ (htopexact) (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
+
+variable (R) (S) in
+/-- Corestriction as a natural transformation. -/
+def coresNatTrans (n : ℕ) [DecidableEq G] : Rep.res S.subtype ⋙ functor R S n ⟶ functor R G n where
+  app M := (groupCohomology.cores_obj M n)
+  naturality X Y f := match n with
+    | 0 => cores₀.naturality f
+    | 1 => sorry
+    | (d + 2) => sorry
+
+lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
+    ((groupCohomology.resNatTrans.{0} R (S.subtype) n) ≫
+      (groupCohomology.coresNatTrans R S n) : functor R G n ⟶ functor R G n) =
+      S.index • (.id _) := sorry
+
+
+-- any element of H^n-hat (n ∈ ℤ) is |G|-torsion
+lemma tateCohomology_torsion {n : ℤ} [Finite G] (M : Rep R G) (x : (tateCohomology n).obj M) :
+    (Nat.card G) • x = 0 := sorry
+
+-- Should the above really be a statement about a functor?
+-- Something like this?
+
+-- instance (n : ℤ) [Finite G] : Functor.Additive (tateCohomology (R := R) (G := G) n) := sorry
+
+-- this doesn't work
+-- lemma tateCohomology_torsion' {n : ℤ} [Finite G] :
+--     (Nat.card G) • (CategoryTheory.NatTrans.id (tateCohomology (R := R) (G := G) n)) = 0 := sorry
+
+-- p^infty-torsion injects into H^(Sylow) (for group cohomology)
+lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
+    (x : groupCohomology M n) (p : ℕ) (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
+    (hx' : x ≠ 0) : (groupCohomology.rest (P.toSubgroup.subtype) n).app M x ≠ 0 := sorry
+
+-- Want an analogous statement for Tate cohomology but I can't find restriction
+-- in Tate cohomology
