@@ -147,7 +147,6 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialCohomology where
   isZero H n := by
-    letI : Subsingleton H := Function.Injective.subsingleton H.subtype_injective
     apply isZero_groupCohomology_succ_of_subsingleton
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialHomology where
