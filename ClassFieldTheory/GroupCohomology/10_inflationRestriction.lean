@@ -43,7 +43,7 @@ def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) wh
 
 theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
-    Mono (inflationRestriction surj (n + 1) M).f :=
+    Mono (inflationRestriction surj n M).f :=
   /-
   The proof is by induction on `n`. The `H¹` case (i.e. `n = 0`) is in Mathlib.
   For the inductive step, use the fact that the following square commutes by `infl_δ_naturality`.
@@ -58,7 +58,7 @@ theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
 
 theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
-    (inflationRestriction surj (n + 1) M).Exact :=
+    (inflationRestriction surj n M).Exact :=
   /-
   The proof is by induction on `n`. The `H¹` case (i.e. `n = 0`) is a current PR.
   For the inductive step, use the fact that the following diagram commutes by

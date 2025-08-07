@@ -4,6 +4,7 @@ import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.GroupCohomology.«10_inflationRestriction»
 import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
+import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 
 /-
 Suppose `G` is a finite group, and there are positive integers `r` and `s`
@@ -34,13 +35,44 @@ variable {G : Type} [Group G]
 /--
 If `H²ⁿ⁺²(H,M)` and `H²ᵐ⁺¹(H,M)` are both zero for every subgroup `H` of `G` then `M` is acyclic.
 -/
-theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Finite G] [IsSolvable G]
+theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G] [IsSolvable G]
     (M : Rep R G) (n m : ℕ)
-    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (inj : Function.Injective φ) [DecidableEq H],
+    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
       IsZero (groupCohomology (M ↓ φ) (2 * n + 2)))
-    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (inj : Function.Injective φ) [DecidableEq H],
+    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
       IsZero (groupCohomology (M ↓ φ) (2 * m + 1))) :
-    M.TrivialCohomology := by
+    M.TrivialCohomology where
+  isZero H := by
+    classical
+    induction H using solvable_ind with
+    | bot =>
+      intro n
+      exact isZero_groupCohomology_succ_of_subsingleton ..
+    | ind K H h12 h1 h2 h3 =>
+    have IH : ∀ i, IsZero (groupCohomology (M ↓ H.subtype ↓
+        (QuotientGroup.mk' (K.subgroupOf H)).ker.subtype) (i + 1)) := by
+      refine fun i ↦ .of_iso (h3 (n := i)) <| groupCohomology.mapIso ((MulEquiv.subgroupCongr <|
+        QuotientGroup.ker_mk' _).trans <| Subgroup.subgroupOfEquivOfLe h12)
+        (by exact Iso.refl _) (by simp) _
+    have : ∀ n, IsIso ((infl (QuotientGroup.mk'_surjective
+        (K.subgroupOf H)) (n + 1)).app (M ↓ H.subtype)) := by
+      intro n
+      apply (config := { allowSynthFailures := true }) isIso_of_mono_of_epi
+      · exact inflation_restriction_mono (R := R)
+          (QuotientGroup.mk'_surjective (K.subgroupOf H)) n (M := M ↓ H.subtype) (fun i _ ↦ IH i)
+      · exact (inflation_restriction_exact (R := R)
+          (QuotientGroup.mk'_surjective (K.subgroupOf H)) n (M := M ↓ H.subtype) (fun i _ ↦ IH i)).epi_f
+          (IsZero.eq_zero_of_tgt (IH _) _)
+    have : ∀ n : ℕ, groupCohomology ((M ↓ H.subtype) ↑
+      (QuotientGroup.mk'_surjective (K.subgroupOf H))) (n + 1) ≅
+      groupCohomology (M ↓ H.subtype) (n + 1) := fun n ↦ asIso ((infl (QuotientGroup.mk'_surjective
+        (K.subgroupOf H)) (n + 1)).app (M ↓ H.subtype))
+    specialize h_even H H.subtype_injective
+    specialize h_odd H H.subtype_injective
+    have zero1 := IsZero.of_iso h_even <| this (2 * n + 1)
+    have zero2 := IsZero.of_iso h_odd <| this (2 * m)
+    intro k
+    exact IsZero.of_iso (Rep.isZero_ofEven_Odd zero1 zero2 k) <| this k |>.symm
   /-
   This is proved by induction on `H`.
   If `H` is the trivial subgroup then the result is true.
@@ -57,7 +89,6 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Finite G] 
   By the periodicity of the cohomology of a cyclic group, `Hʳ(H/K,Mᴷ)` is zero for all `r > 0`.
   Therefore `Hʳ(H,M)=0` for all `r > 0`.
   -/
-  sorry
 
 theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (M : Rep R G) (n m : ℕ)
