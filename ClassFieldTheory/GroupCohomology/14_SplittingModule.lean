@@ -2,6 +2,7 @@ import Mathlib
 import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«11_TrivialityCriterion»
 import ClassFieldTheory.GroupCohomology.«12_augmentationModule»
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 open
   CategoryTheory
@@ -328,7 +329,7 @@ lemma TateTheorem_lemma_3 [FiniteClassFormation σ] :
   exact S.L₁'_exact.mono_g_iff.mp (inferInstanceAs (Mono (δ (res_isShortExact σ φ) 1 2 rfl)))
 
 include inj in
-lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] :
+lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
     IsZero (H2 (split σ ↓ φ)) := by
   have H : IsZero (H2 (aug R G ↓ φ)) := by
     have := aug.cohomology_aug_succ_iso' R G inj 0
@@ -343,7 +344,7 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] :
 /--
 The splitting module is has trivial cohomology.
 -/
-lemma trivialCohomology [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] :
+lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     (split σ).TrivialCohomology := by
   apply trivialCohomology_of_even_of_odd (split σ) 0 0
   · intro H _ φ inj _
@@ -354,7 +355,7 @@ lemma trivialCohomology [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] :
     rfl
 
 
-def tateCohomology_iso [FiniteClassFormation σ] [NoZeroSMulDivisors ℕ R] (n : ℤ) :
+def tateCohomology_iso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
     (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M := by
   sorry
 

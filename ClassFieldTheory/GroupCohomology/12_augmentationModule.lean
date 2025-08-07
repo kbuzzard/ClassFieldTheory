@@ -24,7 +24,7 @@ We also have isomorphisms
 
   `H¹(H,aug R G) ≅ R ⧸ |H|R`,
 
-  `H²(H,aug R G) ≅ 0`, assuming `NoZeroSMulDivisors ℕ R`.
+  `H²(H, aug R G) ≅ 0`, assuming `IsAddTorsionFree R`.
 
 -/
 
@@ -192,7 +192,7 @@ lemma cohomology_aug_succ_iso [Finite G] (n : ℕ) :
   groupCohomology.isIso_δ_of_isZero _ _ Rep.isZero_of_trivialCohomology
     Rep.isZero_of_trivialCohomology
 
-lemma H2_aug_isZero [Finite G] [NoZeroSMulDivisors ℕ R] : IsZero (H2 (aug R G)) :=
+lemma H2_aug_isZero [Finite G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
   /-
   This follows from `cohomology_aug_succ_iso` and `groupCohomology.H1_isZero_of_trivial`.
   -/

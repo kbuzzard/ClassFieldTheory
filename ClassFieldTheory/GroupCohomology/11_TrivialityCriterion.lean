@@ -4,6 +4,7 @@ import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.GroupCohomology.«10_inflationRestriction»
 import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
+import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 
 /-
 Suppose `G` is a finite group, and there are positive integers `r` and `s`
@@ -162,12 +163,6 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
   By the periodicity of the cohomology of a cyclic group, `Hʳ(H/K,Mᴷ)` is zero for all `r > 0`.
   Therefore `Hʳ(H,M)=0` for all `r > 0`.
   -/
-
-
-def _root_.groupCohomology.pTorsionEquivSylow (M : Rep R G) (n p : ℕ) (hp : p.Prime) :
-    ModuleCat.of R (Submodule.torsionBySet R (groupCohomology M (n + 1)) (Submonoid.powers (p : R)))
-    ≅ groupCohomology (M ↓ (Sylow.toSubgroup
-    (Classical.choice (α := Sylow p G) inferInstance)).subtype) (n + 1) := sorry
 
 theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (M : Rep R G) (n m : ℕ)
