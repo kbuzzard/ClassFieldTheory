@@ -109,7 +109,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
   have hx : Nat.card S • x = 0 := by
     apply ((TateCohomology.isoGroupCohomology u).app (M ↓ S.subtype)).toLinearEquiv.symm.injective
     simp [tateCohomology_torsion]
-  -- we aim to show it has no `p^∞`-torsion for any prime `p`
+  -- it suffices to show that for every prime `p`, it has no `p^∞` torsion
   have hk : 0 < Nat.card S := Nat.card_pos
   generalize Nat.card S = k at hx hk
   induction k using Nat.recOnPrimePow with
@@ -117,11 +117,10 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
   | h1 => simpa using hx
   | h a p c hp ha hc ih =>
     refine ih ?_ (Nat.pos_of_mul_pos_left hk)
-    -- let `v` be a Sylow-`p` subgroup of `S`
+    -- let `v` be an arbitrary Sylow-`p` subgroup of `S`
     obtain ⟨v⟩ : Nonempty (Sylow p S) := Sylow.nonempty
     rw [mul_smul] at hx
-    -- since the `p^∞` torsion injects into `Hᵘ⁺¹(v,M)`,
-    -- it suffices to check that `Hᵘ⁺¹(v,M)` is trivial
+    -- the `p^∞` torsion injects into `Hᵘ⁺¹(v,M)`, so it suffices that `Hᵘ⁺¹(v,M)` is trivial
     apply (groupCohomology_Sylow (Nat.add_one_pos u) (M ↓ S.subtype) (a • x) p v ⟨c, hx⟩).mtr
     refine @Subsingleton.eq_zero _ _ (ModuleCat.subsingleton_of_isZero
       (@isZero_of_trivialCohomology _ _ _ _ _ ?_ u)) _
@@ -130,16 +129,18 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     have : IsSolvable v := @IsNilpotent.to_isSolvable v _ v.isPGroup'.isNilpotent
     have : Fintype v := Fintype.ofFinite v
     classical
-    -- by the previous result, `Hᵘ⁺¹(v,M)` is trivial
+    -- therefore `Hᵘ⁺¹(v,M)` is trivial if it has an even and an odd trivial cohomology
     apply trivialCohomology_of_even_of_odd_of_solvable (M ↓ S.subtype ↓ v.toSubgroup.subtype) n m
-    · intro H  _ φ hφ
+    · -- the even trivial cohomology for `G` descends to `v`
+      intro H  _ φ hφ
       refine .of_iso (h_even H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
       apply (functor R H (2 * n + 2)).mapIso
       refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
       apply (res φ).mapIso
       exact (Action.resComp (ModuleCat R) _ S.subtype).app M
-    · intro H  _ φ hφ
+    · -- the odd trivial cohomology for `G` descends to `v`
+      intro H  _ φ hφ
       refine .of_iso (h_odd H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
       apply (functor R H (2 * m + 1)).mapIso
