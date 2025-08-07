@@ -472,7 +472,7 @@ def periodicTateCohomology (n : ℤ) :
 
 variable {n : ℤ} {N : ℕ} {G : Type} [Group G] [IsCyclic G] [Finite G] {M : Rep ℤ G} [M.IsTrivial]
 
-namespace tateCohomology
+namespace TateCohomology
 
 /-- The even Tate cohomology of a trivial representation of a finite cyclic group of order `N` is
 `ℤ/Nℤ`. -/
@@ -484,7 +484,7 @@ def evenTrivialInt [IsCyclic G] (hG : Nat.card G = N) (hn : Even n) :
 lemma isZero_odd_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
     (hn : Odd n) : IsZero ((tateCohomology n).obj <| trivial ℤ G M) := sorry
 
-end tateCohomology
+end TateCohomology
 
 namespace groupCohomology
 
@@ -494,8 +494,8 @@ def evenTrivialInt {n : ℕ} (hG : Nat.card G = N) (hn : Even n) (hn₀ : n ≠ 
     groupCohomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := by
   obtain _ | n := n
   · simp at hn₀
-  exact .trans ((tateCohomology.isoGroupCohomology n).app _).symm <|
-    tateCohomology.evenTrivialInt hG (mod_cast hn)
+  exact .trans ((TateCohomology.isoGroupCohomology n).app _).symm <|
+    TateCohomology.evenTrivialInt hG (mod_cast hn)
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial odd group
 cohomology. -/
@@ -503,8 +503,8 @@ lemma isZero_odd_trivial_of_isAddTorsionFree {n : ℕ} {M : Type} [AddCommGroup 
     [IsAddTorsionFree M] (hn : Odd n) : IsZero (groupCohomology (trivial ℤ G M) n) := by
   obtain _ | n := n
   · simp at hn
-  exact .of_iso (tateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| mod_cast hn) <|
-    (tateCohomology.isoGroupCohomology n).symm.app _
+  exact .of_iso (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| mod_cast hn) <|
+    (TateCohomology.isoGroupCohomology n).symm.app _
 
 end groupCohomology
 
@@ -516,8 +516,8 @@ def oddTrivialInt {n : ℕ} (hG : Nat.card G = N) (hn : Odd n) :
     groupHomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := by
   obtain _ | n := n
   · simp at hn
-  exact .trans ((tateCohomology.isoGroupHomology n).app _).symm <|
-    tateCohomology.evenTrivialInt hG <| by rw [← neg_add', even_neg]; exact mod_cast hn.add_one
+  exact .trans ((TateCohomology.isoGroupHomology n).app _).symm <|
+    TateCohomology.evenTrivialInt hG <| by rw [← neg_add', even_neg]; exact mod_cast hn.add_one
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial nonzero even group
 homology. -/
@@ -526,8 +526,8 @@ lemma isZero_even_trivial_of_isAddTorsionFree {n : ℕ} {M : Type} [AddCommGroup
     IsZero (groupHomology (trivial ℤ G M) n) := by
   obtain _ | n := n
   · simp at hn₀
-  exact .of_iso (tateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| by
+  exact .of_iso (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| by
     rw [← neg_add', odd_neg]; exact mod_cast hn.add_one) <|
-    (tateCohomology.isoGroupHomology n).symm.app _
+    (TateCohomology.isoGroupHomology n).symm.app _
 
 end groupHomology

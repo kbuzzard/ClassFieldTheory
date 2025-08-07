@@ -21,7 +21,7 @@ invariant as the isomorphism `H²(ℤ/nℤ, ℤ) ≅ ℤ/nℤ`.
 
 noncomputable section
 
-open groupCohomology tateCohomology CategoryTheory Limits
+open groupCohomology TateCohomology CategoryTheory Limits
 
 local notation3:1024 M:1024 "ᵐ" => Multiplicative M
 

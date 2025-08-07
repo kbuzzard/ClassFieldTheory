@@ -1,7 +1,6 @@
 import ClassFieldTheory.GroupCohomology.Examples.Examples
 import ClassFieldTheory.GroupCohomology.HerbrandInt
 import ClassFieldTheory.GroupCohomology.LocalInv
-import ClassFieldTheory.GroupCohomology.«01_Basic»
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«03_inflation»
 import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
@@ -29,12 +28,19 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.Torsion
 import ClassFieldTheory.Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+import ClassFieldTheory.Mathlib.CategoryTheory.Action.Basic
+import ClassFieldTheory.Mathlib.CategoryTheory.Action.Limits
 import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis
 import ClassFieldTheory.Mathlib.GroupTheory.OrderOfElement
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
+import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
