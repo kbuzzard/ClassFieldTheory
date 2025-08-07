@@ -228,7 +228,6 @@ def H1_iso [Finite G] :
   i.e. the sum of all elements of `G`. The image of the norm element in `H⁰(G,R)` is `|G|`,
   since every element of the group is mapped by `ε` to `1`.
   -/
-
   sorry
 
 def H1_iso' [Finite G] {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
