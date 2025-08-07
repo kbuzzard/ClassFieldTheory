@@ -94,6 +94,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
 
 theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (M : Rep R G) (n m : ℕ)
+    -- todo: don't quantify over all types
     (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
       IsZero (groupCohomology (M ↓ φ) (2 * n + 2)))
     (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
