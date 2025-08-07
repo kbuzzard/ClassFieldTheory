@@ -132,7 +132,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     classical
     -- therefore `M` has trivial cohomology if it has an even and an odd trivial cohomology
     apply trivialCohomology_of_even_of_odd_of_solvable (M ↓ S.subtype ↓ v.toSubgroup.subtype) n m
-    · -- the even trivial cohomology for `G` descends to `v`
+    · -- the even trivial cohomology for `G` lifts to `v`
       intro H  _ φ hφ
       refine .of_iso (h_even H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
@@ -140,7 +140,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
       refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
       apply (res φ).mapIso
       exact (Action.resComp (ModuleCat R) _ S.subtype).app M
-    · -- the odd trivial cohomology for `G` descends to `v`
+    · -- the odd trivial cohomology for `G` lifts to `v`
       intro H  _ φ hφ
       refine .of_iso (h_odd H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
