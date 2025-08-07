@@ -1,5 +1,5 @@
 import ClassFieldTheory.Mathlib.CategoryTheory.Action.Limits
-import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
+import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Rep
 
 open CategoryTheory Limits

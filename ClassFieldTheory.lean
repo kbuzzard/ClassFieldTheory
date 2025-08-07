@@ -37,7 +37,6 @@ import ClassFieldTheory.Mathlib.GroupTheory.OrderOfElement
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
-import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
