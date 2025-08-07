@@ -151,7 +151,6 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialCohomology where
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialHomology where
   isZero H n := by
-    letI : Subsingleton H := Function.Injective.subsingleton H.subtype_injective
     apply isZero_groupHomology_succ_of_subsingleton
 
 instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
