@@ -139,7 +139,8 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) → (functor R S n).
     have : upsc_top.X₂.TrivialCohomology := by
       change (of M.ρ.coind₁' ↓ S.subtype).TrivialCohomology
       -- ⊢ (of M.ρ.coind₁' ↓ S.subtype).TrivialCohomology
-      sorry -- missing proof
+      have := M.coind₁'_trivialCohomology
+      apply Rep.TrivialCohomology.res (coind₁'.obj M)
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
     all_goals simpa only [upShortComplex_obj_X₂] using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
