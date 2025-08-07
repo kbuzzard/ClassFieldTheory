@@ -109,7 +109,7 @@ instance trivialHomology_ind₁' : (ind₁'.obj M).TrivialHomology :=
 instance trivialCohomology_coind₁' : (coind₁'.obj M).TrivialCohomology :=
   .of_iso (coind₁'_obj_iso_coind₁ M)
 
-variable [Finite G]
+variable [Fintype G]
 
 instance trivialCohomology_ind₁ : TrivialCohomology ((ind₁ G).obj A) :=
   .of_iso (ind₁_obj_iso_coind₁_obj A)
@@ -128,7 +128,7 @@ instance trivialHomology_coind₁AsPi : TrivialHomology (coind₁AsPi G A) :=
 
 /-- `coind₁` considered as the concrete left-regular action on `G →₀ A` has trivial Tate cohomology.
 -/
-instance trivialTateCohomology_coind₁AsPi [Finite G] :
+instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     TrivialTateCohomology (Rep.coind₁AsPi G A) := by
   classical
   -- We already know it has trivial homology and cohomology, therefore we only need check the 0-th

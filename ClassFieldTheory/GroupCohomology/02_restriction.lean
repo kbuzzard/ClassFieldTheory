@@ -114,10 +114,8 @@ lemma res_ofShortExact {H : Type u} [Group H] (φ : H →* G) {S : ShortComplex 
     (hS : S.ShortExact) : (S.map (Rep.res φ)).ShortExact := by
   rwa [res_respectsShortExact]
 
-@[simp] lemma norm_hom_res [Finite G] [Finite H] (M : Rep R G) (e : H ≃* G) :
+@[simp] lemma norm_hom_res [Fintype G] [Fintype H] (M : Rep R G) (e : H ≃* G) :
     (M ↓ e.toMonoidHom).norm.hom = M.norm.hom := by
-  let := Fintype.ofFinite G
-  let := Fintype.ofFinite H
   ext
   simp [Representation.norm, ← e.toEquiv.sum_comp]
 

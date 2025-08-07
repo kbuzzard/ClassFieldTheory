@@ -260,7 +260,7 @@ lemma down_shortExact_res {H : Type} [Group H] (φ : H →* G) :
   rw [res_respectsShortExact]
   exact down_shortExact M
 
-variable [Finite G]
+variable [Fintype G]
 
 /--
 The connecting homomorphism `H⁰(G,down.obj M) ⟶ H¹(G, M)` is an epimorphism if `G` is finite.
@@ -339,7 +339,7 @@ end Rep
 
 namespace groupCohomology
 
-variable [Finite G]
+variable [Fintype G]
 open Rep
   dimensionShift
 
@@ -348,7 +348,6 @@ An explicit version of `isZero_of_trivialTateCohomology`
 -/
 private lemma isZero_of_trivialTateCohomology' (M : Rep R G)
     [M.TrivialTateCohomology] (n : ℤ) : IsZero ((tateComplexFunctor.obj M).homology n) :=
-  haveI : Fintype G := Fintype.ofFinite G
   TrivialTateCohomology.of_injective (.id G) _ Function.injective_id
 
 instance instIsIso_up_shortExact (M : Rep R G) (n : ℤ) :
