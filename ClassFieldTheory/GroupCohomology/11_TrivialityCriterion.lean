@@ -4,6 +4,7 @@ import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.GroupCohomology.«10_inflationRestriction»
 import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
+import ClassFieldTheory.GroupCohomology.«15_corestriction»
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 
 /-
@@ -92,20 +93,57 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
 
 theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (M : Rep R G) (n m : ℕ)
-    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (inj : Function.Injective φ) [DecidableEq H],
+    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
       IsZero (groupCohomology (M ↓ φ) (2 * n + 2)))
-    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (inj : Function.Injective φ) [DecidableEq H],
+    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
       IsZero (groupCohomology (M ↓ φ) (2 * m + 1))) :
     M.TrivialCohomology := by
-  /-
-  Let `p` be any prime number and let `S` be a subgroup of `G`.
-  The group `Hⁿ(S,M)[p^∞]` is isomorphic to a subgroup of `Hⁿ(Sₚ,M)` where
-  `Sₚ` is a Sylow `p`-subgroup of `S`.
-  Since `p`-groups are solvable, the previous theorem implies that `Hⁿ(Sₚ,M) ≅ 0`.
-  This shows that `Hⁿ(S,M)` has no elements of finite order.
-  Since `n > 0`, the cohomology groups are torsion.
-  -/
-  sorry
+  constructor
+  -- let `S` be a subgroup of `G`
+  intro S u
+  refine @ModuleCat.isZero_of_subsingleton R _ _
+    (@Unique.instSubsingleton _ ⟨⟨0⟩, fun x => (?_ : x = 0)⟩)
+  -- `Hᵘ⁺¹(S, M)` is torsion
+  have hx : Nat.card S • x = 0 := by
+    apply ((TateCohomology.isoGroupCohomology u).app (M ↓ S.subtype)).toLinearEquiv.symm.injective
+    simp [tateCohomology_torsion]
+  -- we aim to show it has no `p^∞`-torsion for any prime `p`
+  have hk : 0 < Nat.card S := Nat.card_pos
+  generalize Nat.card S = k at hx hk
+  induction k using Nat.recOnPrimePow with
+  | h0 => simp at hk
+  | h1 => simpa using hx
+  | h a p c hp ha hc ih =>
+    refine ih ?_ (Nat.pos_of_mul_pos_left hk)
+    -- let `v` be a Sylow-`p` subgroup of `S`
+    obtain ⟨v⟩ : Nonempty (Sylow p S) := Sylow.nonempty
+    rw [mul_smul] at hx
+    -- since the `p^∞` torsion injects into `Hᵘ⁺¹(v,M)`,
+    -- it suffices to check that `Hᵘ⁺¹(v,M)` is trivial
+    apply (groupCohomology_Sylow (Nat.add_one_pos u) (M ↓ S.subtype) (a • x) p v ⟨c, hx⟩).mtr
+    refine @Subsingleton.eq_zero _ _ (ModuleCat.subsingleton_of_isZero
+      (@isZero_of_trivialCohomology _ _ _ _ _ ?_ u)) _
+    -- `v` is a `p`-group, so it is solvable
+    have : Fact p.Prime := ⟨hp⟩
+    have : IsSolvable v := @IsNilpotent.to_isSolvable v _ v.isPGroup'.isNilpotent
+    have : Fintype v := Fintype.ofFinite v
+    classical
+    -- by the previous result, `Hᵘ⁺¹(v,M)` is trivial
+    apply trivialCohomology_of_even_of_odd_of_solvable (M ↓ S.subtype ↓ v.toSubgroup.subtype) n m
+    · intro H  _ φ hφ
+      refine .of_iso (h_even H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
+        ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
+      apply (functor R H (2 * n + 2)).mapIso
+      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
+      apply (res φ).mapIso
+      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
+    · intro H  _ φ hφ
+      refine .of_iso (h_odd H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
+        ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
+      apply (functor R H (2 * m + 1)).mapIso
+      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
+      apply (res φ).mapIso
+      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
 
 instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (up.obj M).TrivialCohomology := sorry
