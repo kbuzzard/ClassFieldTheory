@@ -71,8 +71,7 @@ lemma exists_kernelι_eq {M₁ M₂ : Rep R G} (f : M₁ ⟶ M₂) (m : M₁) (h
 end Rep
 
 lemma _root_.Representation.norm_ofIsTrivial (R M G : Type*) [Group G] [CommRing R] [AddCommGroup M]
-    [Module R M] [Finite G] (ρ : Representation R G M) [ρ.IsTrivial] : ρ.norm = Nat.card G := by
-  letI : Fintype G := .ofFinite _
+    [Module R M] [Fintype G] (ρ : Representation R G M) [ρ.IsTrivial] : ρ.norm = Nat.card G := by
   ext; simp [Representation.norm]
 
 theorem _root_.range_eq_span {R : Type*} [CommSemiring R] (n : ℕ) :

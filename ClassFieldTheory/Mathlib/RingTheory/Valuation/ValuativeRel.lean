@@ -74,22 +74,22 @@ lemma algebraMap_lt : valuation B (algebraMap A B a) < valuation B (algebraMap A
 end ValuativeExtension
 
 
-namespace ValuativeTopology
+-- namespace ValuativeTopology
 
-open Topology ValuativeRel
+-- open Topology ValuativeRel
 
-theorem mk_replace {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
-    (h : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : (ValueGroupWithZero R)ˣ, (valuation R).ball γ ⊆ s) :
-    IsValuativeTopology R where
-  mem_nhds_iff := sorry
+-- theorem mk_replace {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
+--     (h : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : (ValueGroupWithZero R)ˣ, (valuation R).ball γ ⊆ s) :
+--     IsValuativeTopology R where
+--   mem_nhds_iff := sorry
 
-theorem mk' {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F]
-    {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation F Γ₀) [v.Compatible]
-    (h : ∀ s : Set F, s ∈ 𝓝 (0 : F) ↔ ∃ x : F, x ≠ 0 ∧ v.ball (v x) ⊆ s) :
-    IsValuativeTopology F :=
-  mk_replace fun s ↦ by
-    rw [h s, Function.Surjective.exists (unitsMap_valuation_surjective)]
-    simp_rw [(isEquiv v (valuation F)).ball_eq_ball]
-    exact ⟨fun ⟨x, hx0, hx⟩ ↦ ⟨Units.mk0 x hx0, hx⟩, fun ⟨x, hx⟩ ↦ ⟨x.val, x.ne_zero, hx⟩⟩
+-- theorem mk' {F : Type*} [Field F] [ValuativeRel F] [TopologicalSpace F]
+--     {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation F Γ₀) [v.Compatible]
+--     (h : ∀ s : Set F, s ∈ 𝓝 (0 : F) ↔ ∃ x : F, x ≠ 0 ∧ v.ball (v x) ⊆ s) :
+--     IsValuativeTopology F :=
+--   mk_replace fun s ↦ by
+--     rw [h s, Function.Surjective.exists (unitsMap_valuation_surjective)]
+--     simp_rw [(isEquiv v (valuation F)).ball_eq_ball]
+--     exact ⟨fun ⟨x, hx0, hx⟩ ↦ ⟨Units.mk0 x hx0, hx⟩, fun ⟨x, hx⟩ ↦ ⟨x.val, x.ne_zero, hx⟩⟩
 
-end ValuativeTopology
+-- end ValuativeTopology

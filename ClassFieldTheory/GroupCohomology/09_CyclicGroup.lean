@@ -65,7 +65,7 @@ end IsCyclic
 
 open IsCyclic
 
-variable {G} [Finite G] [DecidableEq G]
+variable {G} [Fintype G]
 
 @[simp] lemma ofHom_sub (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
   (ofHom (f₁ - f₂) : A ⟶ B) = ofHom f₁ - ofHom f₂ := rfl
@@ -79,7 +79,7 @@ variable {G} [Finite G] [DecidableEq G]
 @[simp] lemma ofHom_one (A : ModuleCat R) :
   (ofHom 1 : A ⟶ A) = 𝟙 A := rfl
 
-omit [IsCyclic G] [Finite G] [DecidableEq G] in
+omit [IsCyclic G] [Fintype G] in
 @[simp] lemma Rep.ρ_mul_eq_comp (M : Rep R G) (x y : G) :
     Action.ρ M (x * y) = (Action.ρ M y) ≫ (Action.ρ M x) := map_mul (Action.ρ M) x y
 
@@ -87,7 +87,7 @@ namespace Representation
 
 variable {A : Type} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
 
-omit [Finite G] [DecidableEq G]
+omit [Fintype G] --[DecidableEq G]
 
 @[simps] def map₁ : (G → A) →ₗ[R] (G → A) where
   toFun f x := f x - f ((gen G)⁻¹ * x)
@@ -144,7 +144,7 @@ lemma map₁_ker :
 @[simps!] def map₂ : (G →₀ A) →ₗ[R] (G →₀ A) :=
   LinearMap.id - lmapDomain _ _ (fun x ↦ gen G * x)
 
-omit [Finite G] [DecidableEq G]
+omit [Fintype G] in
 lemma map₂_apply (f : G →₀ A) (x : G) :
     Representation.map₂ (R := R) f x = f x - f ((gen G)⁻¹ * x) := by
   simp [Representation.map₂]
@@ -153,7 +153,7 @@ lemma map₂_apply (f : G →₀ A) (x : G) :
   · intro x y h
     simpa using h
 
-omit [Finite G] [DecidableEq G] in
+omit [Fintype G] in
 @[simp] lemma map₂_comp_lsingle (x : G) :
     map₂ (R := R) (G := G) (A := A) ∘ₗ lsingle x = lsingle x - lsingle (gen G * x) := by
   ext
@@ -251,8 +251,6 @@ end Representation
 
 namespace Rep
 
-omit [DecidableEq G]
-
 /--
 The map `coind₁'.obj M ⟶ coind₁' M` which takes a function `f : G → M.V` to
 `x ↦ f x - f ((gen G)⁻¹ * x)`.
@@ -270,12 +268,12 @@ def map₁ : coind₁' (R := R) (G := G) ⟶ coind₁' where
     ext x
     simp
 
-omit [Finite G] [DecidableEq G] in
+omit [Fintype G] in
 lemma coind_ι_gg_map₁_app : coind₁'_ι.app M ≫ map₁.app M = 0 := by
   ext : 2
   exact Representation.map₁_comp_coind_ι
 
-omit [Finite G] [DecidableEq G] in
+omit [Fintype G] in
 lemma coind_ι_gg_map₁ : coind₁'_ι ≫ map₁ (R := R) (G := G) = 0 := by
   ext : 2
   exact coind_ι_gg_map₁_app _
@@ -295,12 +293,12 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
     ext g
     simp [ind₁', Representation.map₂_apply, -Representation.map₂_apply_toFun]
 
-omit [Finite G] in
+omit [Fintype G] in
 lemma map₂_app_gg_ind₁'_π_app :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
   exact Representation.ind₁'_π_comp_map₂
 
-omit [Finite G] in
+omit [Fintype G] in
 lemma map₂_gg_ind₁'_π : map₂ (R := R) (G := G) ≫ ind₁'_π = 0 := by
   ext : 2
   exact map₂_app_gg_ind₁'_π_app _
@@ -446,7 +444,6 @@ def periodicCohomology_mod2 (m n : ℕ) (h : m ≡ n [MOD 2]) :
   else
    (eqToIso (by grind [Nat.modEq_iff_dvd])).trans (periodicCohomology' n ((m - n) /2)).symm
 
-omit [DecidableEq G] in
 /--
 Let `M` be a representation of a finite cyclic group `G`. Suppose there are even
 and positive integers `e` and `o` with `e` even and `o` odd, such that
@@ -470,7 +467,7 @@ def periodicTateCohomology (n : ℤ) :
     tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 2) :=
   sorry
 
-variable {n : ℤ} {N : ℕ} {G : Type} [Group G] [IsCyclic G] [Finite G] {M : Rep ℤ G} [M.IsTrivial]
+variable {n : ℤ} {N : ℕ} {G : Type} [Group G] [IsCyclic G] [Fintype G] {M : Rep ℤ G} [M.IsTrivial]
 
 namespace TateCohomology
 

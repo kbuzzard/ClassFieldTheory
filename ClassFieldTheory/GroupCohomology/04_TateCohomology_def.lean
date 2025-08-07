@@ -8,6 +8,7 @@ import ClassFieldTheory.Mathlib.CategoryTheory.Action.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+import Mathlib
 
 open
   CategoryTheory
@@ -19,7 +20,7 @@ open
 
 universe u v w
 
-variable {R G H : Type u} [CommRing R] [Group G] [Finite G] [Group H] [Finite H]
+variable {R G H : Type u} [CommRing R] [Group G] [Fintype G] [Group H] [Fintype H]
 
 noncomputable section
 
@@ -59,7 +60,7 @@ lemma norm_comp_d_eq_zero (M : Rep R G) : M.norm.hom ≫ d₀₁ M = 0 := by
   rw [Representation.self_norm_apply]
 
 lemma tateNorm_comp_d (M : Rep R G) : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
-  simp [tateNorm]
+  simp [tateNorm, -norm_hom]
 
 @[simp]
 lemma comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.hom = 0 := by
@@ -69,7 +70,7 @@ lemma comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.hom = 0 := by
 lemma d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ tateNorm M = 0 := by
   simp only [ChainComplex.of_x, CochainComplex.of_x, tateNorm, ← Category.assoc,
     Preadditive.IsIso.comp_right_eq_zero]
-  simp [← comp_d₁₀_eq]
+  simp [← comp_d₁₀_eq, -norm_hom]
 
 /-- The Tate norm connecting complexes of inhomogeneous chains and cochains. -/
 @[simps]
@@ -95,8 +96,9 @@ lemma tateComplex_d_neg (M : Rep R G) (n : ℕ) :
 @[reassoc]
 lemma tateComplex.norm_comm {A B : Rep R G} (φ : A ⟶ B) : φ ≫ B.norm = A.norm ≫ φ := by
   ext
-  simp only [norm, Representation.norm, Action.comp_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
-    LinearMap.coe_comp, coeFn_sum, coe_hom, Function.comp_apply, Finset.sum_apply, map_sum]
+  simp only [Rep.norm, Representation.norm, Action.comp_hom, ModuleCat.hom_comp,
+    ModuleCat.hom_ofHom, LinearMap.coe_comp, coeFn_sum, coe_hom, Function.comp_apply,
+    Finset.sum_apply, map_sum]
   congr!
   exact (Rep.hom_comm_apply _ _ _).symm
 
@@ -331,8 +333,8 @@ def zeroIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] : (tateCohomology 0).obj M
     simp at hm2 hm3
     rw [hm3.symm]
     obtain ⟨k, hk⟩ := hm2
-    exact ⟨k, by simpa [Fintype.card_eq_nat_card, Representation.norm] using hk⟩
-  · simp [← hk, Submodule.submoduleOf, Representation.norm, Fintype.card_eq_nat_card])
+    exact ⟨k, by simpa [Representation.norm] using hk⟩
+  · simp [← hk, Submodule.submoduleOf, Representation.norm])
 
 /-- A concrete description of the `-1`-th Tate cohomology of a trivial representation. -/
 def negOneIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] :
@@ -340,7 +342,7 @@ def negOneIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] :
   TateCohomology.negOneIso M ≪≫
   (LinearEquiv.toModuleIso (Submodule.quotEquivOfEqBot _ (by
   ext m; simp [Submodule.submoduleOf, ← Module.End.one_eq_id, Representation.Coinvariants.ker]) ≪≫ₗ
-  LinearEquiv.ofEq _ _ (by ext m; simp [Representation.norm, Fintype.card_eq_nat_card])))
+  LinearEquiv.ofEq _ _ (by ext m; simp [Representation.norm])))
 
 end groupCohomology.TateCohomology
 end

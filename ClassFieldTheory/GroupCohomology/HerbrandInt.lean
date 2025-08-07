@@ -1,7 +1,7 @@
 import Mathlib
 import ClassFieldTheory.GroupCohomology.«13_HerbrandQuotient»
 
-variable {G : Type} [Group G] [Finite G] [IsCyclic G]
+variable {G : Type} [Group G] [Fintype G] [IsCyclic G]
 
 open groupCohomology
   Representation
@@ -12,11 +12,11 @@ omit [IsCyclic G] in
 @[simp] lemma norm_trivial_int_eq_card : (trivial ℤ G ℤ).norm = Nat.card G := by
   ext; simpa [Representation.norm, Nat.card_eq]
 
-omit [Finite G] in
+omit [Fintype G] in
 @[simp] lemma oneSubGen_trivial_int_eq_zero : (trivial ℤ G ℤ).oneSubGen = 0 := by
   ext; simp
 
-omit [Finite G] in
+omit [Fintype G] in
 @[simp] lemma herbrandZ0_trivial_int_eq_top : (trivial ℤ G ℤ).herbrandZ0 = ⊤ := by simp
 
 omit [IsCyclic G] in
