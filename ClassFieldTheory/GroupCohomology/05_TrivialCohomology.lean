@@ -167,4 +167,26 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
   rw [Nat.card_unique, Nat.cast_one, LinearMap.ker_eq_bot_of_cancel (by exact fun _ _ a ↦ a)]
   exact ModuleCat.isZero_of_subsingleton _
 
+section should_be_elsewhere
+
+lemma _root_.Representation.norm_ofIsTrivial (R M G : Type*) [Group G] [CommRing R] [AddCommGroup M]
+    [Module R M] [Finite G] (ρ : Representation R G M) [ρ.IsTrivial] : ρ.norm = Nat.card G := by
+  letI : Fintype G := .ofFinite _
+  ext; simp [Representation.norm]
+
+theorem _root_.range_eq_span {R : Type*} [CommSemiring R] (n : ℕ) :
+    LinearMap.range (n : R →ₗ[R] R) = Ideal.span {(n : R)} := by
+  ext x; simp [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_right, eq_comm]
+
+end should_be_elsewhere
+
+noncomputable def _root_.TrivialTateCohomology.zeroIso_ofTrivial
+    [Fintype G] (M : Rep R G) [M.IsTrivial] :
+    (tateCohomology 0).obj M ≅ ModuleCat.of R (M ⧸ LinearMap.range (Nat.card G : M →ₗ[R] M)) :=
+  groupCohomology.TateCohomology.zeroIso M|>.trans <| LinearEquiv.toModuleIso <|
+  Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ (by ext; simp) ≪≫ₗ Submodule.topEquiv) <| by
+    rw [Representation.norm_ofIsTrivial]
+    ext m
+    simp [Submodule.submoduleOf]
+
 end Rep

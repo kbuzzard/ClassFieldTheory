@@ -3,6 +3,7 @@ import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 
 /-!
@@ -144,7 +145,7 @@ lemma leftRegularToInd₁'_comm' (g : G) :
     leftRegularToInd₁'_comp_lsingle, ρ_comp_lsingle, mul_inv_rev, inv_inv]
 
 lemma leftRegularToInd₁'_comp_leftRegularToInd₁' :
-    leftRegularToInd₁' R G ∘ₗleftRegularToInd₁' R G = 1 := by
+    leftRegularToInd₁' R G ∘ₗ leftRegularToInd₁' R G = 1 := by
   ext : 1
   rw [LinearMap.comp_assoc, leftRegularToInd₁'_comp_lsingle, leftRegularToInd₁'_comp_lsingle,
     inv_inv]
@@ -196,10 +197,9 @@ lemma H2_aug_isZero [Finite G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
   /-
   This follows from `cohomology_aug_succ_iso` and `groupCohomology.H1_isZero_of_trivial`.
   -/
-  .of_iso (H1_isZero_of_trivial (trivial R G R)) <| @asIso _ _ _ _ (δ (AugSEQ R G) 1 2 rfl)
-    (cohomology_aug_succ_iso R G 0) |>.symm
+  .of_iso (H1_isZero_of_trivial _) <| (@asIso _ _ _ _ (δ (AugSEQ R G) 1 2 rfl)
+    (cohomology_aug_succ_iso R G 0)).symm
 
--- #check leftRegular.isZero_groupCohomology
 /--
 If `H` is a subgroup of a finite group `G` then the connecting homomorphism
 from `Hⁿ⁺¹(H,R)` to `Hⁿ⁺²(H,aug R G)` is an isomorphism.
@@ -211,8 +211,8 @@ lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
   The proof is similar to that of `cohomology_aug_succ_iso` but uses
   `Rep.leftRegular.isZero_groupCohomology'` in place of `Rep.leftRegular.isZero_groupCohomology`.
   -/
-  groupCohomology.isIso_δ_of_isZero _ _ (istrivial_of_injective _ φ _ (by omega) inj)
-    <| istrivial_of_injective _ φ _ (by omega) inj
+  groupCohomology.isIso_δ_of_isZero _ _ (isZero_of_injective _ _ _ (by omega) inj) <|
+    isZero_of_injective _ _ _ (by omega) inj
 
 def H1_iso [Finite G] :
     H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) := by
@@ -228,7 +228,6 @@ def H1_iso [Finite G] :
   i.e. the sum of all elements of `G`. The image of the norm element in `H⁰(G,R)` is `|G|`,
   since every element of the group is mapped by `ε` to `1`.
   -/
-
 
   sorry
 
