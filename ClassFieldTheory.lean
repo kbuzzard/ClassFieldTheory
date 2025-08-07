@@ -30,7 +30,6 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.Algebra.Module.Torsion
-import ClassFieldTheory.Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import ClassFieldTheory.Mathlib.CategoryTheory.Action.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Action.Limits
 import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis

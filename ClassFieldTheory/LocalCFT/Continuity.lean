@@ -1,4 +1,4 @@
-import ClassFieldTheory.Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
 import Mathlib.Topology.Algebra.Valued.ValuedField
