@@ -1,4 +1,5 @@
 import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
+import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
 # Trivial (Tate) (co)homology
@@ -166,19 +167,6 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
   refine IsZero.of_iso ?_ (TateCohomology.negOneIsoOfIsTrivial _)
   rw [Nat.card_unique, Nat.cast_one, LinearMap.ker_eq_bot_of_cancel (by exact fun _ _ a ↦ a)]
   exact ModuleCat.isZero_of_subsingleton _
-
-section should_be_elsewhere
-
-lemma _root_.Representation.norm_ofIsTrivial (R M G : Type*) [Group G] [CommRing R] [AddCommGroup M]
-    [Module R M] [Finite G] (ρ : Representation R G M) [ρ.IsTrivial] : ρ.norm = Nat.card G := by
-  letI : Fintype G := .ofFinite _
-  ext; simp [Representation.norm]
-
-theorem _root_.range_eq_span {R : Type*} [CommSemiring R] (n : ℕ) :
-    LinearMap.range (n : R →ₗ[R] R) = Ideal.span {(n : R)} := by
-  ext x; simp [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_right, eq_comm]
-
-end should_be_elsewhere
 
 noncomputable def _root_.TrivialTateCohomology.zeroIso_ofTrivial
     [Fintype G] (M : Rep R G) [M.IsTrivial] :
