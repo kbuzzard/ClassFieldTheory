@@ -210,7 +210,7 @@ lemma τ_property (g h : G) : (split σ).ρ g (τ σ h) - τ σ (g * h) + τ σ 
     rw [Rep.hom_comm_apply]
     simp [-equalizer_as_kernel]
     erw [Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec]
-    simp
+    simp [of_def]
   · simp [leftRegular.of, Finsupp.single_apply, sub_smul]
     have : (cocycle σ) (g, 1) = (M.ρ g) ((cocycle σ) (1, 1)) := by
       simpa [add_comm] using (mem_cocycles₂_iff (cocycle σ)).mp (cocycle σ).2 g 1 1
