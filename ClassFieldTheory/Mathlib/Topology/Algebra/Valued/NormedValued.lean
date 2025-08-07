@@ -65,9 +65,44 @@ theorem _root_.DiscreteTopology.of_trivial_norm (trivial : ∀ x : K, x = 0 ∨ 
     DiscreteTopology K :=
   DiscreteTopology.of_forall_le_norm one_pos fun x hx ↦ by rw [(trivial x).resolve_left hx]
 
-theorem valuativeTopology (K : Type*) [NormedField K] [IsUltrametricDist K] :
-    IsValuativeTopology K :=
-  sorry--.mk' valuation fun s ↦ by simp_rw [valuation_ball_eq, nhds_zero_basis_norm.mem_iff, norm_pos_iff]
+section IsValuativeTopology
+
+open NormedField Valued ValuativeRel
+
+def valuativeRel (K : Type*) [NormedField K] [IsUltrametricDist K] : ValuativeRel K :=
+  .ofValuation valuation
+attribute [local instance] valuativeRel
+
+@[simp] theorem _root_.NormedDivisionRing.norm_lt_one_iff_eq_zero_of_discrete
+    {𝕜 : Type*} [NormedDivisionRing 𝕜] [DiscreteTopology 𝕜] (x : 𝕜) :
+    ‖x‖ < 1 ↔ x = 0 := by
+  simp [lt_iff_le_and_ne, NormedDivisionRing.norm_le_one_of_discrete x,
+    NormedDivisionRing.norm_eq_one_iff_ne_zero_of_discrete]
+
+theorem isValuativeTopology (K : Type*) [NormedField K] [IsUltrametricDist K] :
+    IsValuativeTopology K where
+  mem_nhds_iff {s x} := by
+    have e := ValuativeRel.isEquiv (ValuativeRel.valuation K) valuation
+    obtain _ | ⟨_, rfl⟩ := NormedField.discreteTopology_or_nontriviallyNormedField K
+    · rw [mem_nhds_discrete]
+      refine ⟨fun hxs ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
+      · refine ⟨1, by simpa [e.lt_one_iff_lt_one, ← NNReal.coe_lt_coe]⟩
+      exact hγ ⟨0, by simp⟩
+    · obtain ⟨z, h0z, hz1⟩ := NormedField.exists_norm_lt_one K
+      refine ⟨fun hsx ↦ ?_, fun ⟨γ, hγ⟩ ↦ ?_⟩
+      · rw [(Metric.nhds_basis_ball_pow h0z hz1).mem_iff] at hsx
+        obtain ⟨n, -, hn⟩ := hsx
+        refine ⟨Units.mk0 (ValuativeRel.valuation K z) (by simpa using h0z) ^ n, ?_⟩
+        convert hn
+        ext
+        simp [← map_pow, e.lt_iff_lt, ← NNReal.coe_lt_coe, dist_eq_norm, sub_eq_neg_add]
+      · obtain ⟨y, rfl⟩ := unitsMap_valuation_surjective γ
+        refine Metric.mem_nhds_iff.mpr ⟨‖y.val‖, by simp, ?_⟩
+        convert hγ
+        ext
+        simp [e.lt_iff_lt, ← NNReal.coe_lt_coe, dist_eq_norm, sub_eq_neg_add]
+
+end IsValuativeTopology
 
 theorem isNontrivial (K : Type*) [NontriviallyNormedField K] [IsUltrametricDist K] :
     ValuativeRel.IsNontrivial K := by
@@ -77,4 +112,4 @@ theorem isNontrivial (K : Type*) [NontriviallyNormedField K] [IsUltrametricDist 
   · exact ne_of_gt <| by rwa [(isEquiv K).one_lt_iff_one_lt, valuation_apply,
       ← NNReal.coe_lt_coe, NNReal.coe_one, coe_nnnorm]
 
-scoped [NormedField] attribute [instance] valuativeTopology isNontrivial
+scoped [NormedField] attribute [instance] isValuativeTopology isNontrivial
