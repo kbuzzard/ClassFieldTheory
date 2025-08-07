@@ -210,7 +210,7 @@ lemma τ_property (g h : G) : (split σ).ρ g (τ σ h) - τ σ (g * h) + τ σ 
     rw [Rep.hom_comm_apply]
     simp [-equalizer_as_kernel]
     erw [Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec]
-    simp
+    simp [of_def]
   · simp [leftRegular.of, Finsupp.single_apply, sub_smul]
     have : (cocycle σ) (g, 1) = (M.ρ g) ((cocycle σ) (1, 1)) := by
       simpa [add_comm] using (mem_cocycles₂_iff (cocycle σ)).mp (cocycle σ).2 g 1 1
@@ -333,7 +333,7 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
     IsZero (H2 (split σ ↓ φ)) := by
   have H : IsZero (H2 (aug R G ↓ φ)) := by
     have := aug.cohomology_aug_succ_iso' R G inj 0
-    refine .of_iso ?_ (asIso ((δ (aug.isShortExactSequence' R G φ) 1 2 rfl))).symm
+    refine .of_iso ?_ (asIso ((δ (aug.aug_isShortExact' R G φ) 1 2 rfl))).symm
     have : Finite H := .of_injective _ inj
     exact groupCohomology.H1_isZero_of_trivial (trivial R H R)
   let S := HomologicalComplex.HomologySequence.snakeInput
