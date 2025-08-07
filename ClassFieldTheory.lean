@@ -1,5 +1,6 @@
 import ClassFieldTheory.GroupCohomology.Examples.Examples
 import ClassFieldTheory.GroupCohomology.HerbrandInt
+import ClassFieldTheory.GroupCohomology.IndCoind.TrivialCohomology
 import ClassFieldTheory.GroupCohomology.LocalInv
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«03_inflation»
@@ -27,6 +28,7 @@ import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
+import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.Algebra.Module.Torsion
 import ClassFieldTheory.Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import ClassFieldTheory.Mathlib.CategoryTheory.Action.Basic

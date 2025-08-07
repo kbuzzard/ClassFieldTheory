@@ -1,3 +1,4 @@
+import ClassFieldTheory.GroupCohomology.IndCoind.TrivialCohomology
 import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
 import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep

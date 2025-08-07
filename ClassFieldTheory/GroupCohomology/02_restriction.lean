@@ -14,7 +14,7 @@ open
   BigOperators
 
 universe u
-variable {R G H : Type u} [CommRing R] [Group G] [Group H]
+variable {R G H : Type u} [CommRing R] [Group G] [Group H] {M : Rep R G}
 
 noncomputable section
 
@@ -34,6 +34,8 @@ This is notation for `(Rep.res H).obj M`, which is an abbreviation of
 `(Action.res (ModuleCat R) H.subtype).obj M`
 -/
 notation3:60 M:60 " ↓ " φ:61 => (res φ).obj M
+
+@[simp] lemma ρ_res_apply (φ : H →* G) (h : H) : (M ↓ φ).ρ h = M.ρ (φ h) := rfl
 
 /-
 `simp` lemmas for `Action.res` also work for `Rep.res` because it is an abbreviation:

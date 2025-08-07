@@ -733,7 +733,7 @@ This case is described again below.
 \end{definition}
 
 \begin{lemma}	\label{lem:coind₁ trivial cohomology}
-	\lean{Rep.coind₁_trivialCohomology}
+	\lean{Rep.trivialCohomology_coind₁}
 	\uses{def:trivial cohomology,
 		def:induced,
 		lem:Shapiro,
@@ -743,6 +743,7 @@ This case is described again below.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	Let $S$ be a subgroup of $G$ and let $R$ be a set of representatives for the cosets $rS$
 	of $S$ in $G$.
 	There is an isomorphism of $S$-representations
@@ -818,6 +819,7 @@ This case is described again below.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	Let $f : G \to A$. Then $f$ is in the subspace $\coind_1(G,A)^S$ if $f$ is constant on
 	cosets of $S$, i.e. it descends to a function $G/S \to A$.
 	This gives a linear bijection $\coind_1(G,A)^S \cong \coind_1(G/S,A)$, and it's trivial to check
@@ -825,7 +827,7 @@ This case is described again below.
 \end{proof}
 
 \begin{lemma}	\label{lem:ind₁ trivial homology}
-	\lean{Rep.ind₁_trivialHomology}
+	\lean{Rep.trivialHomology_ind₁}
 	\uses{def:induced,
 		def:trivial cohomology,
 		lem:Shapiro}
@@ -834,6 +836,7 @@ This case is described again below.
 \end{lemma}
 
 \begin{proof}
+	\leanok
 	The restriction of $\ind_1(G,A)$ to a subgroup $S$ is
 	isomorphic to $\ind_1(S, R \to_0 A)$, where $R$ is a set of coset representatives for $S$ in $G$.
 	Hence by 	\ref{lem:Shapiro} we have
@@ -855,18 +858,21 @@ This case is described again below.
 \end{definition}
 
 \begin{lemma}	\label{lem:induced trivial Tate}
-	\lean{Rep.ind₁_trivialCohomology,
-		Rep.coind₁_trivialHomology,
-		Rep.ind₁_trivialtateCohomology}
+	\lean{Rep.trivialTateCohomology_coind₁,
+		Rep.trivialTateCohomology_ind₁}
 	\uses{lem:Tate cohomology is cohomology or homology,
 		def:ind₁ to coind₁,
 		lem:coind₁ trivial cohomology,
 		lem:ind₁ trivial homology}
+	\leanok
+
 	If the group $G$ is finite then $\ind_1(G,A)$ and $\coind_1(G,A)$ have trivial
 	Tate cohomology.
 \end{lemma}
 
 \begin{proof}
+	\leanok
+
 	These representations are isomorphic, so it's
 	sufficient to prove that $\ind_1(G,A)$ has trivial Tate cohomology
 	(this is the more convenient case to prove).
@@ -948,7 +954,7 @@ This case is described again below.
 \end{proof}
 
 \begin{corollary}	\label{cor:coind₁' trivial cohomology}
-	\lean{Rep.coind₁'_trivialCohomology}
+	\lean{Rep.trivialCohomology_coind₁'}
 	\uses{lem:coind₁' iso coind₁,
 		lem:coind₁ trivial cohomology}
 	\leanok
@@ -1093,7 +1099,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \end{proof}
 
 \begin{corollary}	\label{cor:ind₁' trivial homology}
-	\lean{Rep.ind₁'_trivialHomology}
+	\lean{Rep.trivialHomology_ind₁'}
 	\uses{lem:ind₁' iso ind₁,
 		lem:ind₁ trivial homology}
 	\leanok
@@ -1108,8 +1114,8 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 
 % \begin{corollary}	\label{cor:ind₁' iso coind₁'}
 % 	\lean{Rep.ind₁'_iso_coind₁',
-% 		Rep.ind₁'_trivialCohomology,
-% 		Rep.coind₁'_trivialHomology}
+% 		Rep.trivialCohomology_ind₁',
+% 		Rep.trivialHomology_coind₁'}
 % 	\uses{lem:ind₁' iso ind₁,
 % 		def:ind₁ to coind₁,
 % 		lem:coind₁' iso coind₁}
@@ -1178,9 +1184,9 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 % \end{proof}
 
 \begin{lemma} \label{lem:induced' trivial Tate}
-	\lean{Rep.coind₁_trivialTate,
-		Rep.coind₁'_trivialTate,
-		Rep.ind₁'_trivialTate}
+	\lean{Rep.trivialTateCohomology_coind₁,
+		Rep.trivialTateCohomology_coind₁',
+		Rep.trivialTateCohomology_ind₁'}
 	\uses{lem:induced trivial Tate,
 		lem:ind₁' iso ind₁,
 		lem:coind₁' iso coind₁}
