@@ -38,6 +38,7 @@ If `H²ⁿ⁺²(H,M)` and `H²ᵐ⁺¹(H,M)` are both zero for every subgroup `H
 -/
 theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G] [IsSolvable G]
     (M : Rep R G) (n m : ℕ)
+    -- todo: don't quantify over all types
     (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
       IsZero (groupCohomology (M ↓ φ) (2 * n + 2)))
     (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
@@ -146,10 +147,18 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
       exact (Action.resComp (ModuleCat R) _ S.subtype).app M
 
 instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
-    (up.obj M).TrivialCohomology := sorry
+    (up.obj M).TrivialCohomology := open scoped Classical in
+  trivialCohomology_of_even_of_odd (up.obj M) 37 9
+    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 77 (by decide) hφ) (up_δiso_res M hφ 75))
+    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 20 (by decide) hφ) (up_δiso_res M hφ 18))
 
 instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
-    (down.obj M).TrivialCohomology := sorry
+    (down.obj M).TrivialCohomology := open scoped Classical in
+  trivialCohomology_of_even_of_odd (down.obj M) 9 37
+    (fun H _ _ hφ _ ↦
+      .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (down_δiso_res M hφ 18).symm)
+    (fun H _ _ hφ _ ↦
+      .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (down_δiso_res M hφ 73).symm)
 
 instance Rep.tateCohomology_of_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialTateCohomology := sorry
