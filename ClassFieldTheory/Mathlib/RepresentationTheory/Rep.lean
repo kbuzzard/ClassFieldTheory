@@ -93,3 +93,12 @@ def normNatTrans : End (𝟭 (Rep R G)) where
   naturality _ _ := norm_comm
 
 end Rep
+
+lemma _root_.Representation.norm_ofIsTrivial (R M G : Type*) [Group G] [CommRing R] [AddCommGroup M]
+    [Module R M] [Finite G] (ρ : Representation R G M) [ρ.IsTrivial] : ρ.norm = Nat.card G := by
+  letI : Fintype G := .ofFinite _
+  ext; simp [Representation.norm]
+
+theorem _root_.range_eq_span {R : Type*} [CommSemiring R] (n : ℕ) :
+    LinearMap.range (n : R →ₗ[R] R) = Ideal.span {(n : R)} := by
+  ext x; simp [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_right, eq_comm]

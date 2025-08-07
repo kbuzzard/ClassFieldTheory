@@ -3,6 +3,7 @@ import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 
 /-!
@@ -58,13 +59,10 @@ abbrev ι : aug R G ⟶ leftRegular R G := kernel.ι (ε R G)
 
 lemma ε_comp_ι : ι R G ≫ ε R G = 0 := kernel.condition (ε R G)
 
-lemma ε_apply_ι (v : aug R G) : ε R G (ι R G v) = 0 :=
-  sorry
-  -- use the previous lemma.
+lemma ε_apply_ι (v : aug R G) : ε R G (ι R G v) = 0 := congr($(ε_comp_ι R G) v)
 
-lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, (ι R G v) g = 0 :=
-  sorry
-  -- use the previous lemma.
+lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, (ι R G v) g = 0 := by
+  rw [← ε_apply_ι R G v, ε_eq_sum]
 
 /--
 There is an element of `aug R G` whose image in the left regular representation is `of g - of 1`.
@@ -88,7 +86,7 @@ The short exact sequence
     `0 ⟶ aug R G ⟶ R[G] ⟶ R ⟶ 0`.
 
 -/
-def aug_shortExactSequence : ShortComplex (Rep R G) where
+abbrev aug_shortExactSequence : ShortComplex (Rep R G) where
   X₁ := aug R G
   X₂ := leftRegular R G
   X₃ := trivial R G R
@@ -103,7 +101,10 @@ The sequence in `Rep R G`:
 
 is a short exact sequence.
 -/
-lemma isShortExactSequence  : (aug_shortExactSequence R G).ShortExact := sorry
+lemma aug_isShortExact : (aug_shortExactSequence R G).ShortExact where
+  exact := ShortComplex.exact_kernel _
+  mono_f := equalizer.ι_mono
+  epi_g := ε_epi
 
 /--
 The sequence
@@ -112,17 +113,21 @@ The sequence
 
 is a short exact sequence of `H`-modules for any `H →* G`.
 -/
-lemma isShortExactSequence' {H : Type} [Group H] (φ : H →* G) :
-    ((aug_shortExactSequence R G).map (res φ)).ShortExact := by
-  sorry
+lemma aug_isShortExact' {H : Type} [Group H] (φ : H →* G) :
+    ((aug_shortExactSequence R G).map (res φ)).ShortExact :=
+  CategoryTheory.ShortComplex.ShortExact.map_of_exact (aug_isShortExact R G) _
 
 open Finsupp
 
 def leftRegularToInd₁' : (G →₀ R) →ₗ[R] G →₀ R := lmapDomain R R (fun x ↦ x⁻¹)
 
-lemma leftRegularToInd₁'_comp_lsingle (x : G) : leftRegularToInd₁' R G ∘ₗ lsingle x = lsingle x⁻¹
-    := by
-  sorry
+@[simp]
+lemma leftReugularToInd₁'_single (g : G) :
+    leftRegularToInd₁' R G (single g 1) = single g⁻¹ 1 := by
+  ext; simp [leftRegularToInd₁']
+
+lemma leftRegularToInd₁'_comp_lsingle (x : G) :
+    leftRegularToInd₁' R G ∘ₗ lsingle x = lsingle x⁻¹ := by ext; simp
 
 lemma leftRegularToInd₁'_comm (g : G) : leftRegularToInd₁' R G ∘ₗ (leftRegular R G).ρ g
     = (Representation.trivial R G R).ind₁' g ∘ₗ leftRegularToInd₁' R G := by
@@ -140,7 +145,7 @@ lemma leftRegularToInd₁'_comm' (g : G) :
     leftRegularToInd₁'_comp_lsingle, ρ_comp_lsingle, mul_inv_rev, inv_inv]
 
 lemma leftRegularToInd₁'_comp_leftRegularToInd₁' :
-    leftRegularToInd₁' R G ∘ₗleftRegularToInd₁' R G = 1 := by
+    leftRegularToInd₁' R G ∘ₗ leftRegularToInd₁' R G = 1 := by
   ext : 1
   rw [LinearMap.comp_assoc, leftRegularToInd₁'_comp_lsingle, leftRegularToInd₁'_comp_lsingle,
     inv_inv]
@@ -172,45 +177,45 @@ def _root_.Rep.leftRegular.iso_ind₁' : leftRegular R G ≅ ind₁'.obj (trivia
 /--
 For a finite group, the left regular representation is acyclic.
 -/
-instance _root_.Rep.leftRegular.trivialCohomology [Finite G] [DecidableEq G]:
-    (leftRegular R G).TrivialCohomology :=
-  .of_iso (iso_ind₁' R G)
+instance _root_.Rep.leftRegular.trivialCohomology [Finite G] :
+    (leftRegular R G).TrivialCohomology := .of_iso (iso_ind₁' R G)
 
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,R)` to `Hⁿ⁺²(G,aug R G)` is an isomorphism.
 -/
-lemma cohomology_aug_succ_iso [Finite G] [DecidableEq G] (n : ℕ) :
-    IsIso (δ (isShortExactSequence R G) (n + 1) (n + 2) rfl) :=
+lemma cohomology_aug_succ_iso [Finite G] (n : ℕ) :
+    IsIso (δ (aug_isShortExact R G) (n + 1) (n + 2) rfl) :=
   /-
   This connecting homomorphism is sandwiched between two modules H^{n+1}(G,R[G]) and H^{n+2}(G,R[G]),
   where P is the left regular representation.
   Then use `Rep.leftRegular.trivialCohomology` to show that both of these are zero.
   -/
-  sorry
+  groupCohomology.isIso_δ_of_isZero _ _ Rep.isZero_of_trivialCohomology
+    Rep.isZero_of_trivialCohomology
 
 lemma H2_aug_isZero [Finite G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
   /-
   This follows from `cohomology_aug_succ_iso` and `groupCohomology.H1_isZero_of_trivial`.
   -/
-  sorry
-
-
+  .of_iso (H1_isZero_of_trivial _) <| (@asIso _ _ _ _ (δ (aug_isShortExact R G) 1 2 rfl)
+    (cohomology_aug_succ_iso R G 0)).symm
 
 /--
 If `H` is a subgroup of a finite group `G` then the connecting homomorphism
 from `Hⁿ⁺¹(H,R)` to `Hⁿ⁺²(H,aug R G)` is an isomorphism.
 -/
 lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
-    (inj : Function.Injective φ) [DecidableEq H] (n : ℕ) :
-    IsIso (δ (isShortExactSequence' R G φ) (n + 1) (n + 2) rfl) :=
+    (inj : Function.Injective φ) (n : ℕ) :
+    IsIso (δ (aug_isShortExact' R G φ) (n + 1) (n + 2) rfl) :=
   /-
   The proof is similar to that of `cohomology_aug_succ_iso` but uses
   `Rep.leftRegular.isZero_groupCohomology'` in place of `Rep.leftRegular.isZero_groupCohomology`.
   -/
-  sorry
+  groupCohomology.isIso_δ_of_isZero _ _ (isZero_of_injective _ _ _ (by omega) inj) <|
+    isZero_of_injective _ _ _ (by omega) inj
 
 def H1_iso [Finite G] :
-    H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) :=
+    H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) := by
   /-
   If Tate cohomology is defined, then this is proved in the same way as the previous
   lemma. If not, then using usual cohomology we have a long exact sequence containing the
