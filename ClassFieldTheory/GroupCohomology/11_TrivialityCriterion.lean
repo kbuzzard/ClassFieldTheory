@@ -122,6 +122,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     rw [mul_smul] at hx
     -- the `p^∞` torsion injects into `Hᵘ⁺¹(v,M)`, so it suffices that `Hᵘ⁺¹(v,M)` is trivial
     apply (groupCohomology_Sylow (Nat.add_one_pos u) (M ↓ S.subtype) (a • x) p v ⟨c, hx⟩).mtr
+    -- `Hᵘ⁺¹(v,M)` is trivial if `M` has trivial cohomology
     refine @Subsingleton.eq_zero _ _ (ModuleCat.subsingleton_of_isZero
       (@isZero_of_trivialCohomology _ _ _ _ _ ?_ u)) _
     -- `v` is a `p`-group, so it is solvable
@@ -129,7 +130,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     have : IsSolvable v := @IsNilpotent.to_isSolvable v _ v.isPGroup'.isNilpotent
     have : Fintype v := Fintype.ofFinite v
     classical
-    -- therefore `Hᵘ⁺¹(v,M)` is trivial if it has an even and an odd trivial cohomology
+    -- therefore `M` has trivial cohomology if it has an even and an odd trivial cohomology
     apply trivialCohomology_of_even_of_odd_of_solvable (M ↓ S.subtype ↓ v.toSubgroup.subtype) n m
     · -- the even trivial cohomology for `G` descends to `v`
       intro H  _ φ hφ
