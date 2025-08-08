@@ -118,13 +118,13 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
   | h a p c hp ha hc ih =>
     refine ih ?_ (Nat.pos_of_mul_pos_left hk)
     -- let `v` be an arbitrary Sylow-`p` subgroup of `S`
-    obtain ⟨v⟩ : Nonempty (Sylow p S) := Sylow.nonempty
+    obtain ⟨v⟩ : Nonempty (Sylow p S) := inferInstance
     rw [mul_smul] at hx
     -- the `p^∞` torsion injects into `Hᵘ⁺¹(v,M)`, so it suffices that `Hᵘ⁺¹(v,M)` is trivial
     apply (groupCohomology_Sylow (Nat.add_one_pos u) (M ↓ S.subtype) (a • x) p v ⟨c, hx⟩).mtr
     -- `Hᵘ⁺¹(v,M)` is trivial if `M` has trivial cohomology
     refine @Subsingleton.eq_zero _ _ (ModuleCat.subsingleton_of_isZero
-      (@isZero_of_trivialCohomology _ _ _ _ _ ?_ u)) _
+      (@isZero_of_trivialCohomology R v _ _ _ ?_ u)) _
     -- `v` is a `p`-group, so it is solvable
     have : Fact p.Prime := ⟨hp⟩
     have : Group.IsNilpotent v := v.isPGroup'.isNilpotent -- todo: make this an instance?
