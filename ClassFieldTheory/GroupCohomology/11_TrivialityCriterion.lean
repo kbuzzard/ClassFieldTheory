@@ -127,7 +127,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
       (@isZero_of_trivialCohomology _ _ _ _ _ ?_ u)) _
     -- `v` is a `p`-group, so it is solvable
     have : Fact p.Prime := ⟨hp⟩
-    have : IsSolvable v := @IsNilpotent.to_isSolvable v _ v.isPGroup'.isNilpotent
+    have : Group.IsNilpotent v := v.isPGroup'.isNilpotent -- todo: make this an instance?
     have : Fintype v := Fintype.ofFinite v
     classical
     -- therefore `M` has trivial cohomology if it has an even and an odd trivial cohomology
