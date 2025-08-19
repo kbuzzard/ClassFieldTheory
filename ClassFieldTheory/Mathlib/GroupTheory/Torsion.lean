@@ -1,5 +1,5 @@
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
-import ClassFieldTheory.Mathlib.GroupTheory.OrderOfElement
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Torsion
 
 variable {M N : Type*}
@@ -14,8 +14,9 @@ variable {M N : Type*}
   mp h := by rintro rfl; exact not_isTorsion_of_isAddTorsionFree (G := ℤ) h
   mpr hn := by
     have : NeZero n := ⟨hn⟩
-    simp [AddMonoid.IsTorsion, ← addOrderOf_ne_zero_iff, ZMod.natCast_zmod_surjective.forall,
-      ZMod.addOrderOf_coe, hn, Nat.gcd_le_left, Nat.pos_iff_ne_zero.2 hn]
+    simp [AddMonoid.IsTorsion, ← addOrderOf_ne_zero_iff, -addOrderOf_eq_zero_iff,
+      ZMod.natCast_zmod_surjective.forall, ZMod.addOrderOf_coe, hn, Nat.gcd_le_left,
+      Nat.pos_iff_ne_zero.2 hn]
 
 variable [Monoid M] [Monoid N]
 
