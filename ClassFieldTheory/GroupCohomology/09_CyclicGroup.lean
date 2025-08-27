@@ -380,8 +380,7 @@ lemma periodicitySequence_exactAt_one : (periodicitySequence M).ExactAt 1 := by
   change w ∈ LinearMap.range Representation.coind₁'_ι
   simpa [← Representation.map₁_ker] using ((LinearEquiv.symm_apply_eq _).mp hw)
 
-lemma periodicitySequence_exactAt_two [Fintype G] [DecidableEq G] :
-    (periodicitySequence M).ExactAt 2 := by
+lemma periodicitySequence_exactAt_two [DecidableEq G] : (periodicitySequence M).ExactAt 2 := by
   rw [HomologicalComplex.ExactAt, HomologicalComplex.sc, HomologicalComplex.shortComplexFunctor,
     ComplexShape.prev_eq' _ (i := 1) (by simp), ComplexShape.next_eq' _ (j := 3) (by simp)]
   apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor

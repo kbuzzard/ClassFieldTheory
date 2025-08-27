@@ -1,4 +1,3 @@
-import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 

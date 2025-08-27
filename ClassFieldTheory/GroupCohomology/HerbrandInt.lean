@@ -10,7 +10,7 @@ attribute [-instance] NormedAddCommGroup.toENormedAddCommMonoid
 
 omit [IsCyclic G] in
 @[simp] lemma norm_trivial_int_eq_card : (trivial ℤ G ℤ).norm = Nat.card G := by
-  ext; simpa [Representation.norm, Nat.card_eq]
+  ext; simp [Representation.norm]
 
 omit [Fintype G] in
 @[simp] lemma oneSubGen_trivial_int_eq_zero : (trivial ℤ G ℤ).oneSubGen = 0 := by
