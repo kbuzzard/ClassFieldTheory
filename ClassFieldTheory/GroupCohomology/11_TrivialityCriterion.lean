@@ -107,8 +107,10 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (@Unique.instSubsingleton _ ⟨⟨0⟩, fun x => (?_ : x = 0)⟩)
   -- `Hᵘ⁺¹(S, M)` is torsion
   have hx : Nat.card S • x = 0 := by
+    have : Fintype S := Fintype.ofFinite S
     apply ((TateCohomology.isoGroupCohomology u).app (M ↓ S.subtype)).toLinearEquiv.symm.injective
-    simp [tateCohomology_torsion]
+    simp only [functor_obj, map_nsmul, map_zero]
+    exact tateCohomology_torsion (M ↓ S.subtype) _
   -- it suffices to show that for every prime `p`, it has no `p^∞` torsion
   have hk : 0 < Nat.card S := Nat.card_pos
   generalize Nat.card S = k at hx hk
@@ -157,6 +159,7 @@ instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.Tri
 
 instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (down.obj M).TrivialCohomology := open scoped Classical in
+  have : Fintype G := Fintype.ofFinite G
   trivialCohomology_of_even_of_odd (down.obj M) 9 37
     (fun H _ _ hφ _ ↦
       .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (down_δiso_res M hφ 18).symm)
