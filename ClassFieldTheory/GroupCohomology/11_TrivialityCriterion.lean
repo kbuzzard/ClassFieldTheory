@@ -163,7 +163,7 @@ instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.T
     (fun H _ _ hφ _ ↦
       .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (down_δiso_res M hφ 73).symm)
 
-instance Rep.tateCohomology_of_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
+instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialTateCohomology := sorry
 
 instance Rep.trivialHomology_of_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :

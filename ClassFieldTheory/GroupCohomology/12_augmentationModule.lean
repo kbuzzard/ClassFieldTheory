@@ -177,13 +177,13 @@ def _root_.Rep.leftRegular.iso_ind₁' : leftRegular R G ≅ ind₁'.obj (trivia
 /--
 For a finite group, the left regular representation is acyclic.
 -/
-instance _root_.Rep.leftRegular.trivialCohomology [Finite G] :
+instance _root_.Rep.leftRegular.trivialCohomology [Fintype G] :
     (leftRegular R G).TrivialCohomology := .of_iso (iso_ind₁' R G)
 
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,R)` to `Hⁿ⁺²(G,aug R G)` is an isomorphism.
 -/
-lemma cohomology_aug_succ_iso [Finite G] (n : ℕ) :
+lemma cohomology_aug_succ_iso [Fintype G] (n : ℕ) :
     IsIso (δ (aug_isShortExact R G) (n + 1) (n + 2) rfl) :=
   /-
   This connecting homomorphism is sandwiched between two modules H^{n+1}(G,R[G]) and H^{n+2}(G,R[G]),
@@ -193,7 +193,7 @@ lemma cohomology_aug_succ_iso [Finite G] (n : ℕ) :
   groupCohomology.isIso_δ_of_isZero _ _ Rep.isZero_of_trivialCohomology
     Rep.isZero_of_trivialCohomology
 
-lemma H2_aug_isZero [Finite G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
+lemma H2_aug_isZero [Fintype G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
   /-
   This follows from `cohomology_aug_succ_iso` and `groupCohomology.H1_isZero_of_trivial`.
   -/
@@ -204,7 +204,7 @@ lemma H2_aug_isZero [Finite G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
 If `H` is a subgroup of a finite group `G` then the connecting homomorphism
 from `Hⁿ⁺¹(H,R)` to `Hⁿ⁺²(H,aug R G)` is an isomorphism.
 -/
-lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
+lemma cohomology_aug_succ_iso' [Fintype G] {H : Type} [Group H] {φ : H →* G}
     (inj : Function.Injective φ) (n : ℕ) :
     IsIso (δ (aug_isShortExact' R G φ) (n + 1) (n + 2) rfl) :=
   /-

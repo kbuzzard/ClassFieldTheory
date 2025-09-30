@@ -7,7 +7,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] [IsGalois K L] [FiniteD
 variable (K L) in
 /-- Given a finite Galois extension `L/K`, `normalBasis K L` is a basis of `L` over `K`
 that is an orbit under the Galois group action. -/
-noncomputable def normalBasis : Basis (L ≃ₐ[K] L) K L := sorry
+noncomputable def normalBasis : Module.Basis (L ≃ₐ[K] L) K L := sorry
 
 theorem normalBasis_apply (e : L ≃ₐ[K] L) : normalBasis K L e = e (normalBasis K L 1) := sorry
 

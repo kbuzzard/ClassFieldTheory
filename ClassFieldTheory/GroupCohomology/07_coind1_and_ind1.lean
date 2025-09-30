@@ -637,10 +637,10 @@ noncomputable def iso_ind₁ :
   intro x
   ext f
   simp only [LinearEquiv.toModuleIso_hom,
-    Basis.coe_repr_symm, Basis.coe_reindex, Equiv.inv_symm, Equiv.inv_apply, ModuleCat.hom_comp,
-    ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply, RingHom.toMonoidHom_eq_coe,
-    RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
-    AlgEquiv.toLinearMapHom_apply]
+    Module.Basis.coe_repr_symm, Module.Basis.coe_reindex, Equiv.inv_symm, Equiv.inv_apply,
+    ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply,
+    RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
+    RingHom.coe_coe, AlgEquiv.toLinearMapHom]
   rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
     Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _,
     Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _]

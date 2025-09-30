@@ -4,7 +4,7 @@ import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
 
 noncomputable section
 
-variable {R G : Type} [CommRing R] [Group G] [Finite G] [DecidableEq G] [IsCyclic G]
+variable {R G : Type} [CommRing R] [Group G] [Fintype G] [DecidableEq G] [IsCyclic G]
 variable {A : Type} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
 
 open CategoryTheory
