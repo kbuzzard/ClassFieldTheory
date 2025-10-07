@@ -4,6 +4,7 @@ import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 
 
 /-!
@@ -214,8 +215,48 @@ lemma cohomology_aug_succ_iso' [Fintype G] {H : Type} [Group H] {φ : H →* G}
   groupCohomology.isIso_δ_of_isZero _ _ (isZero_of_injective _ _ _ (by omega) inj) <|
     isZero_of_injective _ _ _ (by omega) inj
 
-def H1_iso [Finite G] :
-    H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) := by
+lemma ModuleCat.Iso_comp_toLinearEquiv (A B C : ModuleCat R) (e1 : A ≅ B) (e2 : B ≅ C) :
+  (e1 ≪≫ e2).toLinearEquiv = e1.toLinearEquiv ≪≫ₗ e2.toLinearEquiv := rfl
+
+lemma ModuleCat.Iso_inv_hom (M N : ModuleCat R) (e : M ≅ N) : e.inv.hom = e.toLinearEquiv.symm := rfl
+
+def H1_iso [Fintype G] :
+    H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) :=
+  LinearEquiv.toModuleIso <| LinearEquiv.symm <| by
+  refine ?_ ≪≫ₗ LinearMap.quotKerEquivOfSurjective (δ (aug_isShortExact R G) 0 1 rfl).hom
+    (ModuleCat.epi_iff_surjective _|>.1 <| epi_δ_of_isZero _ 0 <| by
+    simpa using isZero_of_trivialCohomology)
+  · refine Submodule.Quotient.equiv _ _ (Submodule.topEquiv.symm ≪≫ₗ LinearEquiv.ofEq _ _
+      (by ext; simp) ≪≫ₗ (CategoryTheory.Iso.toLinearEquiv (H0Iso (trivial R G R))).symm) ?_
+    ext x
+    erw [← CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker <|
+      mapShortComplex₃_exact (aug_isShortExact R G) (rfl : 0 + 1 = 1)]
+    simp only [of_ρ, Nat.card_eq_fintype_card, Submodule.mem_map, LinearEquiv.trans_apply,
+      Nat.reduceAdd, ShortComplex.SnakeInput.L₁'_X₁,
+      HomologicalComplex.HomologySequence.snakeInput_L₀, Functor.mapShortComplex_obj,
+      ShortComplex.map_X₂, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj,
+      ShortComplex.SnakeInput.L₁'_X₂, ShortComplex.map_X₃, ShortComplex.SnakeInput.L₁'_f,
+      ShortComplex.map_g, cochainsFunctor_map, HomologicalComplex.homologyFunctor_map,
+      LinearMap.mem_range]
+    constructor
+    · rintro ⟨y, hy1, hy2⟩
+      obtain ⟨a, ha⟩ := Ideal.mem_span_singleton'.1 hy1
+      change ∃ (y : H0 _), _
+      refine ⟨(H0Iso (leftRegular R G)).toLinearEquiv.symm ⟨∑ g : G, MonoidAlgebra.single g a,
+      fun g ↦ by simpa using show ∑ x : G, MonoidAlgebra.single (g * x) a = _ from
+        Finset.sum_equiv (Equiv.mulLeft g) (by grind) <| fun _ _ ↦ rfl⟩, ?_⟩
+      rw [← hy2, ← ha, show a * (Fintype.card G : R) = ∑ g : G, a by simp [mul_comm]]
+      erw [← map.eq_1, ← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← RepresentationTheory.commSq1]
+      simp only [of_ρ, RepresentationTheory.Invariants.map, ModuleCat.hom_comp,
+        ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply]
+      change _ = (H0Iso (trivial R G R)).toLinearEquiv.symm.toLinearMap _
+      rw [ModuleCat.Iso_inv_hom]
+      congr 1
+      simp only [LinearMap.codRestrict, LinearMap.coe_comp, Submodule.coe_subtype,
+        Function.comp_apply, LinearMap.coe_mk, AddHom.coe_mk, map_sum]
+      ext ; simp [ε]
+    · rintro ⟨(y : H0 _), (hy : (groupCohomology.map _ _ 0).hom _ = _)⟩
+      sorry
   /-
   If Tate cohomology is defined, then this is proved in the same way as the previous
   lemma. If not, then using usual cohomology we have a long exact sequence containing the
@@ -228,7 +269,7 @@ def H1_iso [Finite G] :
   i.e. the sum of all elements of `G`. The image of the norm element in `H⁰(G,R)` is `|G|`,
   since every element of the group is mapped by `ε` to `1`.
   -/
-  sorry
+
 
 def H1_iso' [Finite G] {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
     (inj : Function.Injective φ) :
