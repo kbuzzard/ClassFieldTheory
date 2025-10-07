@@ -99,17 +99,9 @@ elab cmd:command tk:"#dualize" : command => do
   let cmd' := cmd.replaceNames dualizationRename
   elabCommand cmd
   let result : TSyntax `command ← `(command| dualized_to $cmd')
-  let σ ← get
-  let suggestionStyle : SuggestionStyle ← do
-    try do
-      elabCommand cmd'
-      pure .success
-    catch _ => pure .warning
-  set σ
   runTermElabM fun _ ↦ do
     TryThis.addSuggestion tk
       -- (origSpan? := ← getRef)
       (header := "Dualized result: ")
       (codeActionPrefix? := "Dualize: ")
-      { suggestion := result,
-        style? := some suggestionStyle }
+      { suggestion := result }
