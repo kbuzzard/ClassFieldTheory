@@ -1,7 +1,7 @@
 import ClassFieldTheory.GroupCohomology.«03_inflation»
 import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
-import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis
+import Mathlib.FieldTheory.Galois.NormalBasis
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
@@ -129,7 +129,8 @@ variable {R G V} (ρ : Representation R G V)
 @[simp]
 lemma ind₁AsFinsupp_apply (g : G) (f : G →₀ V) (x : G) :
     ind₁AsFinsupp R G V g f x = f (x * g) := by
-  simp [ind₁AsFinsupp, -toLinearMap_mapDomainLinearEquiv]
+  simp [ind₁AsFinsupp, ← mapDomain_apply (mul_left_injective g⁻¹) f (x * g),
+    ← eq_mul_inv_of_mul_eq rfl]
 
 @[simp]
 lemma coind₁AsPi_apply (g : G) (f : G → V) (x : G) : coind₁AsPi R G V g f x = f (x * g) := rfl
@@ -340,8 +341,8 @@ lemma ind₁'_lequiv_coind₁'_comm [Finite G] (g : G) :
   · rw [h, single_eq_same, ←h, mul_assoc, inv_mul_cancel, mul_one, single_eq_same]
   · rw [single_eq_of_ne, single_eq_of_ne, map_zero]
     · contrapose! h
-      rw [h, mul_inv_cancel_right]
-    · exact h
+      rw [← h, mul_inv_cancel_right]
+    · exact Ne.symm h
 
 lemma ind₁'_lequiv_coind₁'_comm' [Finite G] (g : G) :
     ind₁'_lequiv_coind₁'.symm.toLinearMap ∘ₗ ρ.coind₁' g
