@@ -1,5 +1,5 @@
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
-import Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 namespace ValuativeRel
 
@@ -38,12 +38,9 @@ theorem rel_zero_iff (x : F) : x ≤ᵥ 0 ↔ x = 0 := by
   · simp_rw [hy, rel_zero_iff]
   · rw [rel_iff_div_rel_one _ hy, @rel_iff_div_rel_one _ _ v x y hy, h]
 
-theorem valuation_surjective' : Function.Surjective (valuation F) :=
-  fun γ ↦ let ⟨x, y, hxy⟩ := valuation_surjective γ; ⟨x / y.val, by rw [map_div₀, hxy]⟩
-
 theorem unitsMap_valuation_surjective :
     Function.Surjective (Units.map (valuation F : F →* ValueGroupWithZero F)) :=
-  fun γ ↦ let ⟨x, hx⟩ := valuation_surjective' γ.val
+  fun γ ↦ let ⟨x, hx⟩ := valuation_surjective γ.val
   ⟨Units.mk0 x (mt (by rw [← hx, ·, map_zero]) γ.ne_zero),
     Units.ext <| by simpa using hx⟩
 

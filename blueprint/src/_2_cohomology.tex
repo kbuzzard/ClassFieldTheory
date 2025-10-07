@@ -425,8 +425,6 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{definition}
 
 \begin{lemma}	\label{lem:norm comm}
-	\lean{Representation.norm_comm,
-		Representation.norm_comm'}
 	\uses{def:norm}
 	\leanok
 	For any $g \in G$ and $m \in M$ we have $g \bullet N_G (m) = N_G (m)$
@@ -591,8 +589,8 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 \end{proof}
 
 \begin{definition}	\label{def:Tate long exact sequence}
-  \lean{groupCohomology.preservesFiniteLimits_tateComplexFunctor,
-    groupCohomology.preservesFiniteColimits_tateComplexFunctor,
+  \lean{groupCohomology.TateCohomology.preservesFiniteLimits_tateComplexFunctor,
+    groupCohomology.TateCohomology.preservesFiniteColimits_tateComplexFunctor,
 		groupCohomology.TateCohomology.δ}
 	\uses{def:Tate cohomology,
 		lem:cochainsFunctor exact}

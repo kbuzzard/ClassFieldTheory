@@ -1,4 +1,4 @@
-import ClassFieldTheory.Mathlib.CategoryTheory.Action.Limits
+import Mathlib.CategoryTheory.Action.Limits
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Rep
 

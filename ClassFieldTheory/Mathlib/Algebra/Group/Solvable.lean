@@ -1,10 +1,6 @@
 import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.GroupTheory.Solvable
 
-@[simp, norm_cast]
-theorem Pi.coe_evalMonoidHom.{u, v} {I : Type u} (f : I → Type v) [(i : I) → MulOneClass (f i)] (i : I) :
-    ⇑(Pi.evalMonoidHom f i) = Function.eval i := rfl
-
 theorem Subgroup.Quotient.nontrivial_of_ne_top {G : Type*} [Group G] {p : Subgroup G} (h : p ≠ ⊤) :
     Nontrivial (G ⧸ p) := by
   obtain ⟨x, -, notMem_s⟩ : ∃ x ∈ ⊤, x ∉ p := SetLike.exists_of_lt (lt_top_iff_ne_top.2 h)
