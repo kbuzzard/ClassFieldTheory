@@ -9,7 +9,7 @@ section defs
 variable (v : Valuation R Γ) (γ : Γ)
 
 /-- The "valuation ball" is a valuation version of the open balls centered at 0 in a metric
-topology. This is used in `ValuativeTopology` for the statement that a valuative relation is
+topology. This is used in `IsValuativeTopology` for the statement that a valuative relation is
 compatible with a given topology -/
 def ball : Set R :=
   { x | v x < γ }

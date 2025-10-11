@@ -1,10 +1,8 @@
 import ClassFieldTheory.GroupCohomology.«02_restriction»
-import Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Action.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
