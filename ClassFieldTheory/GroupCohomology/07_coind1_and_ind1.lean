@@ -129,8 +129,8 @@ variable {R G V} (ρ : Representation R G V)
 @[simp]
 lemma ind₁AsFinsupp_apply (g : G) (f : G →₀ V) (x : G) :
     ind₁AsFinsupp R G V g f x = f (x * g) := by
-  simp [ind₁AsFinsupp, ← mapDomain_apply (mul_left_injective g⁻¹) f (x * g),
-    ← eq_mul_inv_of_mul_eq rfl]
+  simp [ind₁AsFinsupp, -mapDomain.toLinearMap_linearEquiv, -mapDomain.coe_linearEquiv,
+    -toLinearMap_mapDomainLinearEquiv]
 
 @[simp]
 lemma coind₁AsPi_apply (g : G) (f : G → V) (x : G) : coind₁AsPi R G V g f x = f (x * g) := rfl

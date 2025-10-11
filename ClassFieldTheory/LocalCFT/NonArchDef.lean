@@ -14,7 +14,7 @@ We define non-archimedean local fields as a class `IsNonArchLF`.
 universe u v
 
 class IsNonarchLocalField (K : Type u) [Field K] [ValuativeRel K] [UniformSpace K] : Prop extends
-  ValuativeTopology K,
+  IsValuativeTopology K,
   IsUniformAddGroup K,
   LocallyCompactSpace K,
   ValuativeRel.IsNontrivial K
