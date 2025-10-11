@@ -4,6 +4,7 @@ import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.GroupCohomology.«10_inflationRestriction»
 import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
+import ClassFieldTheory.GroupCohomology.«15_corestriction»
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 
 /-
@@ -37,6 +38,7 @@ If `H²ⁿ⁺²(H,M)` and `H²ᵐ⁺¹(H,M)` are both zero for every subgroup `H
 -/
 theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G] [IsSolvable G]
     (M : Rep R G) (n m : ℕ)
+    -- todo: don't quantify over all types
     (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
       IsZero (groupCohomology (M ↓ φ) (2 * n + 2)))
     (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
@@ -92,26 +94,77 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
 
 theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (M : Rep R G) (n m : ℕ)
-    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (inj : Function.Injective φ) [DecidableEq H],
+    -- todo: don't quantify over all types
+    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
       IsZero (groupCohomology (M ↓ φ) (2 * n + 2)))
-    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (inj : Function.Injective φ) [DecidableEq H],
+    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
       IsZero (groupCohomology (M ↓ φ) (2 * m + 1))) :
     M.TrivialCohomology := by
-  /-
-  Let `p` be any prime number and let `S` be a subgroup of `G`.
-  The group `Hⁿ(S,M)[p^∞]` is isomorphic to a subgroup of `Hⁿ(Sₚ,M)` where
-  `Sₚ` is a Sylow `p`-subgroup of `S`.
-  Since `p`-groups are solvable, the previous theorem implies that `Hⁿ(Sₚ,M) ≅ 0`.
-  This shows that `Hⁿ(S,M)` has no elements of finite order.
-  Since `n > 0`, the cohomology groups are torsion.
-  -/
-  sorry
+  constructor
+  -- let `S` be a subgroup of `G`
+  intro S u
+  refine @ModuleCat.isZero_of_subsingleton R _ _
+    (@Unique.instSubsingleton _ ⟨⟨0⟩, fun x => (?_ : x = 0)⟩)
+  -- `Hᵘ⁺¹(S, M)` is torsion
+  have hx : Nat.card S • x = 0 := by
+    have : Fintype S := Fintype.ofFinite S
+    apply ((TateCohomology.isoGroupCohomology u).app (M ↓ S.subtype)).toLinearEquiv.symm.injective
+    simp only [functor_obj, map_nsmul, map_zero]
+    exact tateCohomology_torsion (M ↓ S.subtype) _
+  -- it suffices to show that for every prime `p`, it has no `p^∞` torsion
+  have hk : 0 < Nat.card S := Nat.card_pos
+  generalize Nat.card S = k at hx hk
+  induction k using Nat.recOnPrimePow with
+  | h0 => simp at hk
+  | h1 => simpa using hx
+  | h a p c hp ha hc ih =>
+    refine ih ?_ (Nat.pos_of_mul_pos_left hk)
+    -- let `v` be an arbitrary Sylow-`p` subgroup of `S`
+    obtain ⟨v⟩ : Nonempty (Sylow p S) := inferInstance
+    rw [mul_smul] at hx
+    -- the `p^∞` torsion injects into `Hᵘ⁺¹(v,M)`, so it suffices that `Hᵘ⁺¹(v,M)` is trivial
+    apply (groupCohomology_Sylow (Nat.add_one_pos u) (M ↓ S.subtype) (a • x) p v ⟨c, hx⟩).mtr
+    -- `Hᵘ⁺¹(v,M)` is trivial if `M` has trivial cohomology
+    refine @Subsingleton.eq_zero _ _ (ModuleCat.subsingleton_of_isZero
+      (@isZero_of_trivialCohomology R v _ _ _ ?_ u)) _
+    -- `v` is a `p`-group, so it is solvable
+    have : Fact p.Prime := ⟨hp⟩
+    have : Group.IsNilpotent v := v.isPGroup'.isNilpotent -- todo: make this an instance?
+    have : Fintype v := Fintype.ofFinite v
+    classical
+    -- therefore `M` has trivial cohomology if it has an even and an odd trivial cohomology
+    apply trivialCohomology_of_even_of_odd_of_solvable (M ↓ S.subtype ↓ v.toSubgroup.subtype) n m
+    · -- the even trivial cohomology for `G` lifts to `v`
+      intro H  _ φ hφ
+      refine .of_iso (h_even H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
+        ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
+      apply (functor R H (2 * n + 2)).mapIso
+      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
+      apply (res φ).mapIso
+      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
+    · -- the odd trivial cohomology for `G` lifts to `v`
+      intro H  _ φ hφ
+      refine .of_iso (h_odd H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
+        ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
+      apply (functor R H (2 * m + 1)).mapIso
+      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
+      apply (res φ).mapIso
+      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
 
 instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
-    (up.obj M).TrivialCohomology := sorry
+    (up.obj M).TrivialCohomology := open scoped Classical in
+  trivialCohomology_of_even_of_odd (up.obj M) 37 9
+    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 77 (by decide) hφ) (up_δiso_res M hφ 75))
+    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 20 (by decide) hφ) (up_δiso_res M hφ 18))
 
 instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
-    (down.obj M).TrivialCohomology := sorry
+    (down.obj M).TrivialCohomology := open scoped Classical in
+  have : Fintype G := Fintype.ofFinite G
+  trivialCohomology_of_even_of_odd (down.obj M) 9 37
+    (fun H _ _ hφ _ ↦
+      .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (down_δiso_res M hφ 18).symm)
+    (fun H _ _ hφ _ ↦
+      .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (down_δiso_res M hφ 73).symm)
 
 instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialTateCohomology := sorry
