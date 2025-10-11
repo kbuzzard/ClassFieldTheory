@@ -9,10 +9,12 @@ We define non-archimedean local fields as a class `IsNonArchLF`.
 
 -/
 
+/-
+
 universe u v
 
 class IsNonarchLocalField (K : Type u) [Field K] [ValuativeRel K] [UniformSpace K] : Prop extends
-  ValuativeTopology K,
+  IsValuativeTopology K,
   IsUniformAddGroup K,
   LocallyCompactSpace K,
   ValuativeRel.IsNontrivial K
@@ -266,3 +268,4 @@ theorem isNonarchLocalField_of_finiteDimensional :
 end make_finite_extension
 
 end IsNonarchLocalField
+-/

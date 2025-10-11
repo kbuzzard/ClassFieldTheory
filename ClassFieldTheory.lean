@@ -24,7 +24,6 @@ import ClassFieldTheory.GroupCohomology.«15_corestriction»
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.NonArchDef
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
-import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
@@ -34,11 +33,6 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
-import ClassFieldTheory.Mathlib.Algebra.Module.Torsion
-import ClassFieldTheory.Mathlib.CategoryTheory.Action.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Action.Limits
-import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis
-import ClassFieldTheory.Mathlib.GroupTheory.OrderOfElement
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact

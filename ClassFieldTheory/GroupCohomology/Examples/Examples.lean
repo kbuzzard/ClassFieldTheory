@@ -28,7 +28,8 @@ variable (G : Type u) [Group G]
     -- and let M be an R[G]-module in category theory land
     (M : Rep R G) (n : ℕ)
 
-#check groupCohomology M n -- ModuleCat R
+-- `groupCohomology` now spits out terms of type `ModuleCat R`.
+-- #check groupCohomology M n -- ModuleCat R
 
 -- this is the inhomogeneous cocycles so useful for computation
 example (n : ℕ) : cocycles M n ⟶ groupCohomology M n := groupCohomology.π M n
