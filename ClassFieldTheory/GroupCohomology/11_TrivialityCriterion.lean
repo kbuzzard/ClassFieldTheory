@@ -115,9 +115,9 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
   have hk : 0 < Nat.card S := Nat.card_pos
   generalize Nat.card S = k at hx hk
   induction k using Nat.recOnPrimePow with
-  | h0 => simp at hk
-  | h1 => simpa using hx
-  | h a p c hp ha hc ih =>
+  | zero => simp at hk
+  | one => simpa using hx
+  | prime_pow_mul a p c hp ha hc ih =>
     refine ih ?_ (Nat.pos_of_mul_pos_left hk)
     -- let `v` be an arbitrary Sylow-`p` subgroup of `S`
     obtain ⟨v⟩ : Nonempty (Sylow p S) := inferInstance
