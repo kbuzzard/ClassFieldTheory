@@ -2,11 +2,6 @@ import ClassFieldTheory.GroupCohomology.Examples.Examples
 import ClassFieldTheory.GroupCohomology.HerbrandInt
 import ClassFieldTheory.GroupCohomology.IndCoind.TrivialCohomology
 import ClassFieldTheory.GroupCohomology.LocalInv
-import ClassFieldTheory.GroupCohomology.obsolete.CyclicGroup
-import ClassFieldTheory.GroupCohomology.obsolete.HerbrandQuotient_old
-import ClassFieldTheory.GroupCohomology.obsolete._0_Current_PRs
-import ClassFieldTheory.GroupCohomology.obsolete._4_DimensionShift
-import ClassFieldTheory.GroupCohomology.obsolete.groupCohomology
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.GroupCohomology.«03_inflation»
 import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
@@ -36,12 +31,12 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
+import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
-import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
