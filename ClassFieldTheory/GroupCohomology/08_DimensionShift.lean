@@ -208,6 +208,14 @@ omit [DecidableEq G] in
 lemma ind₁'_π.app_apply (f : ind₁'.obj M) :
     (ind₁'_π.app M) f = Finsupp.sum f (fun _ ↦ LinearMap.id (R := R)) := rfl
 
+/--
+The functor taking `M : Rep R G` to `down.obj M`, defined by the short exact sequence
+
+  `0 ⟶ down.obj M ⟶ coind₁'.obj M ⟶ M ⟶ 0`..
+
+Since `coind₁'.obj M` is acyclic, the cohomology of `down.obj M` is a shift by one
+of the cohomology of `M`.
+-/
 def down : Rep R G ⥤ Rep R G where
   obj M := kernel (ind₁'_π.app M)
   map φ := kernel.lift _ (kernel.ι _ ≫ ind₁'.map φ) (by
