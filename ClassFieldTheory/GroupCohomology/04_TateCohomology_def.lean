@@ -2,10 +2,8 @@ import ClassFieldTheory.GroupCohomology.«02_restriction»
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 open
   CategoryTheory
@@ -157,13 +155,11 @@ instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) : (S.map tateComplexFunctor).ShortExact := by
   rw [HomologicalComplex.shortExact_iff_degreewise_shortExact]
-  intro i
-  rw [← ShortComplex.map_comp]
-  cases i
-  · apply ShortComplex.shortExact_map_of_natIso _ (tateComplex.eval_nonneg _).symm
-    exact map_cochainsFunctor_eval_shortExact _ hS
-  apply ShortComplex.shortExact_map_of_natIso _ (tateComplex.eval_neg _).symm
-  exact map_chainsFunctor_eval_shortExact _ hS
+  simp_rw [← ShortComplex.map_comp]
+  rintro (_ | _)
+  · exact .map_of_natIso _ (tateComplex.eval_nonneg _).symm <|
+      map_cochainsFunctor_eval_shortExact _ hS
+  · exact .map_of_natIso _ (tateComplex.eval_neg _).symm <| map_chainsFunctor_eval_shortExact _ hS
 
 instance : (tateComplexFunctor (R := R) (G := G)).Additive where
 
