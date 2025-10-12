@@ -4,7 +4,7 @@ import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.ModuleCatExact
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Images
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
@@ -28,6 +28,7 @@ open
   leftRegular
   dimensionShift
   CategoryTheory
+  Abelian
   ConcreteCategory
   Limits
   BigOperators
@@ -328,8 +329,8 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
     AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, equivFunOnFinite_symm_apply_toFun,
     map₂, Representation.map₂_apply]
 
-@[simps]
-def periodicitySequence₁ : ShortComplex (Rep R G) where
+/-- The first short complex in the periodicity sequence. -/
+@[simps] def periodSeq₁ : ShortComplex (Rep R G) where
   X₁ := M
   X₂ := coind₁'.obj M
   X₃ := ind₁'.obj M
@@ -337,8 +338,8 @@ def periodicitySequence₁ : ShortComplex (Rep R G) where
   g := map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv
   zero := by simp [reassoc_of% coind_ι_gg_map₁_app]
 
-@[simps]
-def periodicitySequence₂ : ShortComplex (Rep R G) where
+/-- The second short complex in the periodicity sequence. -/
+@[simps] def periodSeq₂ : ShortComplex (Rep R G) where
   X₁ := coind₁'.obj M
   X₂ := ind₁'.obj M
   X₃ := M
@@ -347,7 +348,17 @@ def periodicitySequence₂ : ShortComplex (Rep R G) where
   zero := by
     rw [ Category.assoc, reassoc_of% map₁_comp_ind₁'_iso_coind₁']; simp [map₂_app_gg_ind₁'_π_app]
 
-lemma exact_periodicitySequence₁ : (periodicitySequence₁ M).Exact := by
+/-- The first short complex in the periodicity sequence as a functor. -/
+@[simps] def periodSeq₁Functor : Rep R G ⥤ ShortComplex (Rep R G) where
+  obj := periodSeq₁
+  map {M N} f := ShortComplex.homMk f (coind₁'.map f) (ind₁'.map f) (by cat_disch) (by cat_disch)
+
+/-- The second short complex in the periodicity sequence as a functor. -/
+@[simps] def periodSeq₂Functor : Rep R G ⥤ ShortComplex (Rep R G) where
+  obj := periodSeq₂
+  map {M N} f := ShortComplex.homMk (coind₁'.map f) (ind₁'.map f) f (by cat_disch) (by cat_disch)
+
+lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   -- `S` is `ShortComplex (Rep R G)` here, but `Rep R G` is equivalent to `ModuleCat R[G]`.
   -- This step transfers our task to exactness in `ModuleCat R[G]`.
   apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
@@ -362,7 +373,7 @@ lemma exact_periodicitySequence₁ : (periodicitySequence₁ M).Exact := by
   change w ∈ LinearMap.range Representation.coind₁'_ι
   simpa [← Representation.map₁_ker] using (LinearEquiv.symm_apply_eq _).mp hw
 
-lemma exact_periodicitySequence₂ : (periodicitySequence₂ M).Exact := by
+lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
   classical
   apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
   apply ShortComplex.Exact.moduleCat_of_ker_le_range
@@ -378,90 +389,46 @@ lemma exact_periodicitySequence₂ : (periodicitySequence₂ M).Exact := by
   rw [Representation.map₂_apply]
   simp [linearEquivFunOnFinite]
 
-/--
-For a cyclic group `G`, this is the sequence of representations of a cyclic group:
+/-- `up M` is the cokernel of the first map in the periodicity sequence,
+so is isomorphic to the coimage of the second map. -/
+@[simps!]
+def upIsoCoimagePeriodSeq₁ : up.obj M ≅ Abelian.coimage (periodSeq₁ M).g :=
+  have := (exact_periodSeq₁ M).epi_kernelLift
+  cokernel.congr _ _ (by simp) ≪≫ cokernelEpiComp (kernel.lift _ _ (periodSeq₁ M).zero) _
 
-` 0 ⟶ M ⟶ coind₁'.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0 `.
+/-- `down M` is the kernel of the third map in the periodicity sequence,
+so is isomorphic to the image of the second map. -/
+def downIsoImagePeriodSeq₂ : down.obj M ≅ Abelian.image (periodSeq₂ M).f :=
+  have := (exact_periodSeq₂ M).mono_cokernelDesc
+  kernel.congr _ _ (by simp) ≪≫ kernelCompMono _ (cokernel.desc _ _ (periodSeq₂ M).zero)
 
-The middle map is `map₁ ≫ ind₁'_iso_coind₁'.inv`, which is
-equal to `ind₁'_iso_coind₁'.inv ≫ map₂`. The sequence is exact.
+/-- The up functor is isomorphic to the first periodicity sequence functor composed with the coimage
+functor. -/
+def upIsoCoimagePeriodSeq₁Functor :
+    up (R := R) (G := G) ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
+  NatIso.ofComponents upIsoCoimagePeriodSeq₁ <| fun f => by
+    simp [upIsoCoimagePeriodSeq₁]
+    sorry
 
-It might be sensible to make this into a functor.
--/
-@[simps]
-def periodicitySequence : CochainComplex (Rep R G) (Fin 4) where
-  X
-  | 0 => M
-  | 1 => coind₁'.obj M
-  | 2 => ind₁'.obj M
-  | 3 => M
-  d
-  | 0,1 => coind₁'_ι.app M
-  | 1,2 => map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv
-  | 2,3 => ind₁'_π.app M
-  | _,_ => 0
-  d_comp_d' i j k hij hjk := by
-    fin_cases i
-    all_goals
-      fin_cases j
-      try simp only [Fin.reduceFinMk, Fin.isValue, Fin.zero_eta, Iso.app_inv, zero_comp]
-      fin_cases k
-      all_goals
-        try simp only [Fin.reduceFinMk, Fin.isValue, Fin.zero_eta, Fin.mk_one, comp_zero,
-          Iso.app_inv, zero_comp]
-    · rw [← Category.assoc, coind_ι_gg_map₁_app, zero_comp]
-    · fin_cases k
-      all_goals try simp only [Fin.reduceFinMk, Fin.isValue, comp_zero]
-      rw [← Iso.app_inv _ _, map₁_comp_ind₁'_iso_coind₁', Category.assoc,
-        map₂_app_gg_ind₁'_π_app, comp_zero]
-
-lemma periodicitySequence_exactAt_one : (periodicitySequence M).ExactAt 1 := by
-  rw [HomologicalComplex.ExactAt, HomologicalComplex.sc, HomologicalComplex.shortComplexFunctor,
-    ComplexShape.prev_eq' _ (i := 0) (by simp), ComplexShape.next_eq' _ (j := 2) (by simp)]
-  exact exact_periodicitySequence₁ _
-
-lemma periodicitySequence_exactAt_two [DecidableEq G] :
-    (periodicitySequence M).ExactAt 2 := by
-  rw [HomologicalComplex.ExactAt, HomologicalComplex.sc, HomologicalComplex.shortComplexFunctor,
-    ComplexShape.prev_eq' _ (i := 1) (by simp), ComplexShape.next_eq' _ (j := 3) (by simp)]
-  apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
-  apply ShortComplex.Exact.moduleCat_of_ker_le_range
-  simp [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra, toModuleMonoidAlgebraMap,
-    ModuleCat.hom_ofHom]
-  intro w hw_ker
-  change w ∈ LinearMap.ker (Representation.ind₁'_π (R := R)) at hw_ker
-  rw [← Representation.map₂_range] at hw_ker
-  obtain ⟨y, rfl⟩ := hw_ker
-  use (y : G → M.V)
-  change (linearEquivFunOnFinite ..).symm (Representation.map₁ y) = Representation.map₂ (R := R) y
-  ext w
-  rw [Representation.map₂_apply]
-  simp [linearEquivFunOnFinite]
+/-- The down functor is isomorphic to the second periodicity sequence functor composed with the
+image functor. -/
+def downIsoImagePeriodSeq₂Functor :
+    down (R := R) (G := G) ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor :=
+  NatIso.ofComponents downIsoImagePeriodSeq₂ sorry
 
 /-- The up and down functors for a finite cyclic group are pointwise isomorphic. -/
-def upIsoDownObj : up.obj M ≅ down.obj M :=
-  /-
-  `up.obj M` is the cokernel of the first map is `periodicitySequence`,
-  so is isomorphic to the image of the second map. This in turn is isomorphic to the
-  kernel of the last map, which is `down.obj M`.
-  -/
-  have := (exact_periodicitySequence₁ M).epi_kernelLift
-  have := (exact_periodicitySequence₂ M).mono_cokernelDesc
-  calc
+@[simps! hom inv]
+def upIsoDownObj : up.obj M ≅ down.obj M := calc
     up.obj M
-    _ ≅ Abelian.coimage (periodicitySequence₁ M).g :=
-      cokernel.congr _ _ (by simp) ≪≫
-        cokernelEpiComp (kernel.lift _ _ (periodicitySequence₁ M).zero) _
-    _ ≅ Abelian.image (periodicitySequence₂ M).f := Abelian.coimageIsoImage _
-    _ ≅ down.obj M :=
-      (kernelCompMono _ (cokernel.desc _ _ (periodicitySequence₂ M).zero)).symm ≪≫
-        kernel.congr _ _ (by simp)
+      ≅ Abelian.coimage (periodSeq₁ M).g := upIsoCoimagePeriodSeq₁ _
+    _ ≅ Abelian.image (periodSeq₂ M).f := Abelian.coimageIsoImage _
+    _ ≅ down.obj M := (downIsoImagePeriodSeq₂ _).symm
 
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
 def upIsoDown : up (R := R) (G := G) ≅ down :=
-  NatIso.ofComponents upIsoDownObj fun {M N} f ↦ by
-    simp
-    sorry
+  upIsoCoimagePeriodSeq₁Functor ≪≫
+    NatIso.ofComponents (fun M ↦ Abelian.coimageIsoImage _) sorry
+    ≪≫ downIsoImagePeriodSeq₂Functor.symm
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by

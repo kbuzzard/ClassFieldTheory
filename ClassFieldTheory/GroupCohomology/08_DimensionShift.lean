@@ -208,7 +208,7 @@ omit [DecidableEq G] in
 lemma ind₁'_π.app_apply (f : ind₁'.obj M) :
     (ind₁'_π.app M) f = Finsupp.sum f (fun _ ↦ LinearMap.id (R := R)) := rfl
 
-def down : Rep R G ⥤ Rep R G where
+@[simps] def down : Rep R G ⥤ Rep R G where
   obj M := kernel (ind₁'_π.app M)
   map φ := kernel.lift _ (kernel.ι _ ≫ ind₁'.map φ) (by
     rw [Category.assoc, ind₁'_π.naturality, ←Category.assoc, kernel.condition, zero_comp])
