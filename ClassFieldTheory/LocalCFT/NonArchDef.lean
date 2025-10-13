@@ -141,7 +141,7 @@ noncomputable def rankOneOfIoo (ε : Set.Ioo (0 : ℝ) 1) : (valuation K).RankOn
   · exact coe_ne_zero.mp <| one_div_ne_zero ε.2.1.ne'
   · exact coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
 
-noncomputable def inhabitedIoo : Inhabited (Set.Ioo (0 : ℝ) 1) := ⟨0.67, by norm_num, by norm_num⟩
+noncomputable def inhabitedIoo : Inhabited (Set.Ioo (0 : ℝ) 1) := ⟨0.37, by norm_num, by norm_num⟩
 attribute [local instance] inhabitedIoo
 
 noncomputable example : (valuation K).RankOne := rankOneOfIoo K default
