@@ -1,6 +1,26 @@
 import ClassFieldTheory.LocalCFT.Continuity
-import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib
+import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
+import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import ClassFieldTheory.Mathlib.Data.Int.WithZero
+import ClassFieldTheory.Mathlib.RingTheory.DiscreteValuationRing.Basic
+import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
+import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
+import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
+import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
+import Mathlib.Algebra.Lie.OfAssociative
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.FieldTheory.Finite.GaloisField
+import Mathlib.NumberTheory.LocalField.Basic
+import Mathlib.NumberTheory.Padics.ProperSpace
+import Mathlib.NumberTheory.Padics.ValuativeRel
+import Mathlib.NumberTheory.RamificationInertia.Basic
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
+import Mathlib.RingTheory.Henselian
+import Mathlib.RingTheory.HopkinsLevitzki
+import Mathlib.RingTheory.PicardGroup
+import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # Definition of Non-Archimedean Local Fields
@@ -94,64 +114,7 @@ noncomputable def valuationOfIoo (ε : Set.Ioo (0 : ℝ) 1) : Valuation K ℝ≥
       (OrderMonoidIso.strictMono _).monotone
     exact coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
 
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def _root_.WithZero.expRecOn {M : Type*} {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰)
-    (zero : motive 0) (exp : ∀ a : M, motive (.exp a)) : motive x :=
-  Option.recOn x zero exp
-
-@[simp] lemma _root_.WithZero.expRecOn_zero {M : Type*} {motive : Mᵐ⁰ → Sort*}
-    (zero : motive 0) (exp : ∀ a : M, motive (.exp a)) :
-    @WithZero.expRecOn M motive 0 zero exp = zero := rfl
-
-@[simp] lemma _root_.WithZero.expRecOn_exp {M : Type*} {motive : Mᵐ⁰ → Sort*}
-    (x : M) (zero : motive 0) (exp : ∀ a : M, motive (.exp a)) :
-    @WithZero.expRecOn M motive (.exp x) zero exp = exp x := rfl
-
-@[simp] lemma _root_.WithZero.exp_lt_one_iff {M : Type*} [Preorder M] [Zero M] {x : M} :
-    WithZero.exp x < 1 ↔ x < 0 :=
-  WithZero.exp_lt_exp
-
-/-- The characterisation of `exp (-1) : ℤᵐ⁰`. -/
-theorem _root_.WithZero.exp_neg_one_def {x : ℤᵐ⁰} :
-    x = .exp (-1) ↔ x < 1 ∧ ∀ y < 1, y ≤ x := by
-  refine ⟨?_, fun h ↦ ?_⟩
-  · rintro rfl
-    refine ⟨by decide, fun y hy ↦ y.expRecOn (by decide) (fun y hy ↦ ?_) hy⟩
-    rw [exp_lt_one_iff] at hy
-    rw [exp_le_exp]
-    linarith
-  · cases x
-    · exact absurd (h.2 (exp (-1)) (by decide)) (by decide)
-    · refine le_antisymm ?_ (h.2 _ (by decide))
-      rw [exp_lt_one_iff] at h
-      rw [exp_le_exp]
-      linarith
-
-@[simp] lemma _root_.map_lt_one_iff {F α β : Type*} [Preorder α] [Preorder β]
-    [MulOneClass α] [MulOneClass β] [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β]
-    (f : F) {x : α} : f x < 1 ↔ x < 1 :=
-  map_one f ▸ map_lt_map_iff f
-
-lemma _root_.Valuation.Integers.associated_iff_eq {F Γ₀ O : Type*} [Field F]
-    [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation F Γ₀}
-    [CommRing O] [Algebra O F] (hv : v.Integers O) {x y : O} :
-    Associated x y ↔ v (algebraMap O F x) = v (algebraMap O F y) := by
-  have := hv.hom_inj.isDomain
-  rw [← dvd_dvd_iff_associated, le_antisymm_iff, hv.le_iff_dvd, hv.le_iff_dvd, and_comm]
-
 variable {K}
-
-omit [TopologicalSpace K] [IsNonarchimedeanLocalField K] in
-theorem le_valuation_irreducible_of_lt_one {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ)
-    {x} (hx : x < 1) : x ≤ valuation K ϖ := by
-  obtain ⟨x, rfl⟩ := valuation_surjective x
-  lift x to 𝒪[K] using hx.le
-  obtain h₁ | h₁ := ValuationRing.dvd_total x ϖ
-  · obtain h₂ | h₂ := hϖ.dvd_iff.mp h₁
-    · exact absurd ((Valuation.integer.integers (valuation K)).one_of_isUnit h₂) (ne_of_lt hx)
-    · rw [(Valuation.integer.integers (valuation K)).associated_iff_eq] at h₂
-      exact h₂.ge
-  · exact (Valuation.integer.integers (valuation K)).le_of_dvd h₁
 
 theorem valueGroupWithZeroIsoInt_irreducible {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) :
     valueGroupWithZeroIsoInt K (valuation K ϖ) = .exp (-1) := by
@@ -182,20 +145,6 @@ noncomputable def inhabitedIoo : Inhabited (Set.Ioo (0 : ℝ) 1) := ⟨0.67, by 
 attribute [local instance] inhabitedIoo
 
 noncomputable example : (valuation K).RankOne := rankOneOfIoo K default
-
-theorem _root_.Valuation.ext_lt_one {F Γ₀ : Type*} [Field F]
-    [LinearOrderedCommGroupWithZero Γ₀] {v₁ v₂ : Valuation F Γ₀} (equiv : v₁.IsEquiv v₂)
-    (h : ∀ ⦃x⦄, v₁ x < 1 → v₁ x = v₂ x) : v₁ = v₂ := by
-  ext x
-  obtain hx1 | hx1 | h1x := lt_trichotomy (v₁ x) 1
-  · exact h hx1
-  · rw [hx1, eq_comm]
-    exact equiv.eq_one_iff_eq_one.mp hx1
-  · refine inv_injective ?_
-    rw [← map_inv₀, ← map_inv₀]
-    refine h ?_
-    rw [map_inv₀]
-    exact inv_lt_one_of_one_lt₀ h1x
 
 theorem valuation_ext {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v₁ v₂ : Valuation K Γ₀}
     [v₁.Compatible] [v₂.Compatible] {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ)
@@ -247,21 +196,7 @@ local notation "iKL" => algebraMap K L
 local notation "vK" => valuation K
 local notation "vL" => valuation L
 
-omit [TopologicalSpace K] [IsNonarchimedeanLocalField K]
-  [TopologicalSpace L] [IsNonarchimedeanLocalField L] in
-theorem valuation_map_irreducible_lt_one {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) :
-    vL (iKL ϖ) < 1 := by
-  have : vK ↑ϖ < 1 := Valuation.integer.v_irreducible_lt_one hϖ
-  rw [← (vK).map_one, ← Valuation.Compatible.srel_iff_lt] at this
-  simpa using (Valuation.Compatible.srel_iff_lt (v := vL)).mp <|
-    (ValuativeExtension.srel_iff_srel (B := L) (ϖ : K) 1).mpr this
-
-instance _root_.Valuation.compatible_map {R Γ₀ : Type*} [CommRing R]
-    [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [ValuativeRel R]
-    {Γ₁ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] (f : Γ₀ →*₀ Γ₁) (hf : StrictMono f)
-    [v.Compatible] : (v.map f hf.monotone).Compatible :=
-  ⟨fun _ _ ↦ (Valuation.Compatible.rel_iff_le (v := v) _ _).trans hf.le_iff_le.symm⟩
-
+-- keep
 instance _root_.Valued.toNormedField.compatible (K : Type*) [Field K] [ValuativeRel K]
     [UniformSpace K] [IsUniformAddGroup K] [IsValuativeTopology K]
     [hv : (Valued.v : Valuation K (ValueGroupWithZero K)).RankOne] :
@@ -287,7 +222,7 @@ instance : FiniteDimensional K L := by
   letI : (Valued.v (R := L)).RankOne := rankOneOfIoo L default
   letI := Valued.toNontriviallyNormedField (L := L)
   have hϖ1 : ‖iKL ϖ‖ < 1 := Valued.toNormedField.norm_lt_one_iff.mpr
-    (valuation_map_irreducible_lt_one K L hϖ)
+    (valuation_map_irreducible_lt_one hϖ)
   -- pull back the norm on `L` to a norm on `K`
   letI : NormedField K :=
   { toUniformSpace := ‹UniformSpace K›
@@ -359,7 +294,7 @@ instance : Algebra 𝒪[K] 𝒪[L] where
 
 omit [TopologicalSpace K] [IsNonarchimedeanLocalField K]
   [TopologicalSpace L] [IsNonarchimedeanLocalField L] in
-theorem algebraMap_integers_apply_coe (x : 𝒪[K]) :
+@[simp] theorem algebraMap_integers_apply_coe (x : 𝒪[K]) :
     (algebraMap 𝒪[K] 𝒪[L]) x = algebraMap K L x := rfl
 
 -- done in `Continuity.lean` by Andrew and Maddy
@@ -369,6 +304,7 @@ instance : FaithfulSMul 𝒪[K] 𝒪[L] :=
   (faithfulSMul_iff_algebraMap_injective _ _).mpr fun _ _ h ↦ Subtype.ext <|
     FaithfulSMul.algebraMap_injective K L congr($h)
 
+-- some power series shenanigans
 instance (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
     (L : Type*) [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L] [Algebra K L] [ValuativeExtension K L] :
   Module.Finite 𝒪[K] 𝒪[L] :=
@@ -423,7 +359,7 @@ instance : 𝓂[L].LiesOver 𝓂[K] := by
   rw [← Ideal.map_le_iff_le_comap, hk, Ideal.map_span, Set.image_singleton,
     Ideal.span_singleton_le_iff_mem, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
     Valuation.Integer.not_isUnit_iff_valuation_lt_one, algebraMap_integers_apply_coe]
-  exact valuation_map_irreducible_lt_one K L hϖK
+  exact valuation_map_irreducible_lt_one hϖK
 
 instance : IsLocalHom (algebraMap 𝒪[K] 𝒪[L]) := by
   refine ⟨fun x hx ↦ ?_⟩
@@ -434,44 +370,7 @@ instance : IsLocalHom (algebraMap 𝒪[K] 𝒪[L]) := by
 -- bad instance, it has the wrong smul
 attribute [-instance] IsLocalRing.ResidueField.instAlgebra
 
-attribute [-instance] IsLocalRing.ResidueField.field in
-instance _root_.IsLocalRing.ResidueField.instAlgebra' {R S : Type*}
-    [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S] [Algebra R S]
-    [IsLocalHom (algebraMap R S)] :
-    Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-  Ideal.Quotient.algebraQuotientOfLEComap <|
-    ((IsLocalRing.local_hom_TFAE (algebraMap R S)).out 0 3).mp <| by infer_instance
-  -- __ := Module.IsTorsionBySet.module fun x c ↦ by
-  --   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  --   refine (Submodule.Quotient.mk_eq_zero _).mpr (?_ : (c : R) • x ∈ _)
-  --   rw [Algebra.smul_def]
-  --   exact Ideal.mul_mem_right _ _ <| map_nonunit _ _ c.2
-  -- algebraMap := IsLocalRing.ResidueField.map (algebraMap R S)
-  -- commutes' _ _ := mul_comm _ _
-  -- smul_def' c x := by
-  --   obtain ⟨c, rfl⟩ := Ideal.Quotient.mk_surjective c
-  --   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  --   exact congr(Ideal.Quotient.mk _ $(Algebra.smul_def c x))
-
-@[simp] lemma _root_.IsLocalRing.ResidueField.algebraMap_residue {R S : Type*}
-    [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S] [Algebra R S]
-    [IsLocalHom (algebraMap R S)] (x : R) :
-    (algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S))
-      (IsLocalRing.residue R x) = IsLocalRing.residue S (algebraMap R S x) := rfl
-
-instance _root_.IsLocalRing.ResidueField.instIsScalarTower' {R S : Type*}
-    [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S] [Algebra R S]
-    [IsLocalHom (algebraMap R S)] :
-    IsScalarTower R (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-  .of_algebraMap_eq' rfl
-
 noncomputable instance : Algebra 𝓀[K] 𝓀[L] := inferInstance
-  -- Ideal.Quotient.algebraQuotientOfLEComap
-  --   (IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal 𝓂[L])).ge
-
-example : (inferInstanceAs (Algebra 𝓀[K] 𝓀[L])) = Ideal.Quotient.algebraQuotientOfLEComap
-    (IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal 𝓂[L])).ge :=
-  rfl
 
 instance : FiniteDimensional 𝓀[K] 𝓀[L] := inferInstance
 
@@ -498,75 +397,6 @@ theorem e_pos : 0 < e K L := by
 
 theorem f_pos : 0 < f K L := Ideal.inertiaDeg_pos 𝓂[K] 𝓂[L]
 
-section
-
-theorem _root_.Ideal.IsMaximal.irreducible_of_ne_bot {R : Type*} [CommRing R] [IsDedekindDomain R]
-    {I : Ideal R} [hI : I.IsMaximal] (ne_bot : I ≠ ⊥) : Irreducible I := by
-  refine ⟨Ideal.isUnit_iff.not.mpr hI.ne_top, fun x y hxy ↦ ?_⟩
-  rw [Ideal.isUnit_iff, Ideal.isUnit_iff]
-  by_cases hx : x = ⊤
-  · tauto
-  by_cases hy : y = ⊤
-  · tauto
-  refine absurd hxy <| ne_of_gt ?_
-  rw [← hI.eq_of_le hx (hxy ▸ Ideal.mul_le_right), ← hI.eq_of_le hy (hxy ▸ Ideal.mul_le_left)]
-  simpa [sq] using Ideal.pow_right_strictAnti _ ne_bot hI.ne_top (by decide : 1 < 2)
-
-@[simp] theorem _root_.IsDiscreteValuationRing.irreducible_maximalIdeal
-    {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
-    Irreducible (IsLocalRing.maximalIdeal R) :=
-  Ideal.IsMaximal.irreducible_of_ne_bot IsDiscreteValuationRing.not_a_field'
-
-theorem _root_.UniqueFactorizationMonoid.factors_irreducible_of_subsingleton_units
-    {M : Type*} [CancelCommMonoidWithZero M] [UniqueFactorizationMonoid M] [Subsingleton Mˣ]
-    {x : M} (hx : Irreducible x) (hx₀ : x ≠ 0) :
-    UniqueFactorizationMonoid.factors x = {x} := by
-  obtain ⟨p, hp, hpx⟩ := UniqueFactorizationMonoid.exists_mem_factors_of_dvd hx₀ hx dvd_rfl
-  replace hpx := associated_iff_eq.mp hpx; subst hpx
-  obtain ⟨m, hm⟩ := Multiset.exists_cons_of_mem hp
-  have assoc := UniqueFactorizationMonoid.factors_prod hx₀
-  rw [hm, Multiset.prod_cons, associated_iff_eq, mul_eq_left₀ hx₀] at assoc
-  suffices m = 0 by rw [hm, this, Multiset.cons_zero]
-  induction m using Multiset.induction with
-  | empty => rfl
-  | cons y m ih =>
-    rw [Multiset.prod_cons] at assoc
-    have := eq_one_of_mul_right assoc; subst this
-    have : 1 ∈ UniqueFactorizationMonoid.factors x := by rw [hm]; aesop
-    exact ((UniqueFactorizationMonoid.irreducible_of_factor 1 this).not_isUnit (by simp)).elim
-
-theorem _root_.UniqueFactorizationMonoid.factors_spec_of_subsingleton_units
-    {M : Type*} [CancelCommMonoidWithZero M] [UniqueFactorizationMonoid M] [Subsingleton Mˣ]
-    {x : M} {m : Multiset M} (h₀ : 0 ∉ m) (h₁ : Associated x m.prod) (h₂ : ∀ y ∈ m, Irreducible y) :
-    UniqueFactorizationMonoid.factors x = m := by
-  rw [associated_iff_eq] at h₁; subst h₁
-  obtain _ | _ := subsingleton_or_nontrivial M
-  · simp [Multiset.eq_zero_of_forall_notMem (s := m) (fun x ↦ by rwa [Subsingleton.elim x 0])]
-  induction m using Multiset.induction with
-  | empty => simp
-  | cons x m ih =>
-    have := UniqueFactorizationMonoid.factors_mul (by aesop : x ≠ 0)
-      (Multiset.prod_ne_zero (mt Multiset.mem_cons_of_mem h₀))
-    rw [associated_eq_eq, Multiset.rel_eq] at this
-    rw [Multiset.prod_cons, this,
-      UniqueFactorizationMonoid.factors_irreducible_of_subsingleton_units (by aesop) (by aesop),
-      ih (by aesop) (by aesop), Multiset.singleton_add]
-
-theorem _root_.IsDiscreteValuationRing.factors_maximalIdeal_pow
-    {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] {n : ℕ} :
-    UniqueFactorizationMonoid.factors (IsLocalRing.maximalIdeal R ^ n) =
-    Multiset.replicate n (IsLocalRing.maximalIdeal R) :=
-  UniqueFactorizationMonoid.factors_spec_of_subsingleton_units
-    (Multiset.mem_replicate.not.mpr <| mt And.right IsDiscreteValuationRing.not_a_field'.symm)
-    (by simp; rfl) (by simp [Multiset.mem_replicate])
-
-theorem _root_.IsDiscreteValuationRing.factors_maximalIdeal
-    {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
-    UniqueFactorizationMonoid.factors (IsLocalRing.maximalIdeal R) = {IsLocalRing.maximalIdeal R} :=
-  by simpa using IsDiscreteValuationRing.factors_maximalIdeal_pow (n := 1)
-
-end
-
 lemma factors_map_maximalIdeal :
     UniqueFactorizationMonoid.factors (Ideal.map (algebraMap 𝒪[K] 𝒪[L]) 𝓂[K]) =
     Multiset.replicate (e K L) 𝓂[L] := by
@@ -587,10 +417,6 @@ theorem e_mul_f_eq_n : e K L * f K L = Module.finrank K L := by
 @[mk_iff] class IsUnramified : Prop where
   e_eq_one : e K L = 1
 
-lemma _root_.Algebra.unramified_iff (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :
-    Algebra.Unramified R A ↔ Algebra.FormallyUnramified R A ∧ Algebra.FiniteType R A :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
-
 -- by Chenyi Yang
 theorem isUnramified_iff_map_maximalIdeal :
     IsUnramified K L ↔ Ideal.map (algebraMap 𝒪[K] 𝒪[L]) 𝓂[K] = 𝓂[L] := by
@@ -598,66 +424,6 @@ theorem isUnramified_iff_map_maximalIdeal :
   refine ⟨(· ▸ pow_one _), fun h ↦ ?_⟩
   exact (Ideal.pow_right_strictAnti (IsLocalRing.maximalIdeal 𝒪[L])
     IsDiscreteValuationRing.not_a_field' Ideal.IsPrime.ne_top').injective (by simpa)
-
-lemma Ideal.map_injective {R S : Type*} [CommSemiring R] [CommSemiring S]
-    {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E) :
-    Function.Injective (Ideal.map e) := fun x y h ↦ by
-  rw [← Ideal.comap_map_of_bijective e (EquivLike.bijective e) (I := x), h,
-    Ideal.comap_map_of_bijective e (EquivLike.bijective e)]
-
-theorem _root_.Algebra.IsSeparable.iff_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*}
-    [Field A₁] [Ring B₁] [Field A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂]
-    (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
-    (he : (algebraMap A₂ B₂).comp e₁ = (e₂ : B₁ →+* B₂).comp (algebraMap A₁ B₁)) :
-    Algebra.IsSeparable A₁ B₁ ↔ Algebra.IsSeparable A₂ B₂ :=
-  ⟨(·.of_equiv_equiv e₁ e₂ he), (·.of_equiv_equiv e₁.symm e₂.symm <| by
-    rw [← (algebraMap A₂ B₂).comp_id, ← RingEquiv.comp_symm e₁, ← RingHom.comp_assoc,
-      ← RingHom.comp_assoc, RingHom.comp_assoc _ (algebraMap A₂ B₂), he,
-      ← RingHom.comp_assoc, e₂.symm_comp, RingHom.id_comp])⟩
-
-/-- Extra flexibility in the choice of:
-1. A localisation `R'` of `R` at `p`.
-2. A localisation `S'` of `S` at `q`. -/
-lemma Algebra.isUnramifiedAt_iff_map_eq' {R : Type*} {S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] [Algebra.EssFiniteType R S] (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime]
-    [q.LiesOver p]
-    (R' : Type*) [CommRing R'] [Algebra R R'] [IsLocalization.AtPrime R' p] [IsLocalRing R']
-    (S' : Type*) [CommRing S'] [Algebra S S'] [IsLocalization.AtPrime S' q] [IsLocalRing S']
-    [Algebra R S'] [IsScalarTower R S S']
-    [Algebra R' S'] [IsScalarTower R R' S']
-    [IsLocalHom (algebraMap R' S')] :
-    Algebra.IsUnramifiedAt R q ↔
-    Algebra.IsSeparable (IsLocalRing.ResidueField R') (IsLocalRing.ResidueField S') ∧
-    Ideal.map (algebraMap R S') p = IsLocalRing.maximalIdeal S' := by
-  rw [Algebra.isUnramifiedAt_iff_map_eq R p]
-  refine and_congr ?_ ?_
-  · refine Algebra.IsSeparable.iff_of_equiv_equiv
-      (IsLocalRing.ResidueField.mapEquiv <| Localization.algEquiv p.primeCompl R')
-      (IsLocalRing.ResidueField.mapEquiv <| Localization.algEquiv q.primeCompl S') ?_
-    refine IsLocalization.ringHom_ext (nonZeroDivisors (R ⧸ p)) <| Ideal.Quotient.ringHom_ext <|
-      RingHom.ext fun x ↦ ?_
-    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, algebraMap_mk,
-      IsLocalRing.ResidueField.mapEquiv_apply, AlgEquiv.toRingEquiv_toRingHom]
-    rw [← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_eq R (Localization.AtPrime p) p.ResidueField,
-      RingHom.comp_apply, IsLocalRing.ResidueField.algebraMap_eq,
-      IsLocalRing.ResidueField.map_residue, IsLocalRing.ResidueField.algebraMap_residue,
-      RingHom.coe_coe, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply,
-      IsScalarTower.algebraMap_apply R (Localization.AtPrime q) q.ResidueField,
-      IsLocalRing.ResidueField.algebraMap_eq, IsLocalRing.ResidueField.map_residue,
-      RingHom.coe_coe, IsScalarTower.algebraMap_apply R S (Localization.AtPrime q),
-      AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
-  · rw [← (Ideal.map_injective (Localization.algEquiv q.primeCompl S')).eq_iff,
-      IsLocalRing.eq_maximalIdeal (Ideal.map_isMaximal_of_equiv _ (p := IsLocalRing.maximalIdeal _)),
-      ← Ideal.map_coe, Ideal.map_map, ← AlgEquiv.toAlgHom_toRingHom,
-      IsScalarTower.algebraMap_eq R S, ← RingHom.comp_assoc, AlgHom.comp_algebraMap,
-      ← IsScalarTower.algebraMap_eq]
-
-instance _root_.isLocalization_self (R : Type*) [CommSemiring R] [IsLocalRing R] :
-    IsLocalization.AtPrime R (IsLocalRing.maximalIdeal R) where
-  map_units x := of_not_not x.2
-  surj x := ⟨(x, 1), by simp⟩
-  exists_of_eq h := ⟨1, by simpa⟩
 
 instance : Algebra.IsSeparable 𝓀[K] 𝓀[L] :=
   Algebra.IsAlgebraic.isSeparable_of_perfectField
@@ -725,12 +491,6 @@ section make_finite_extension
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 variable (L : Type*) [Field L] [Algebra K L]
 
-/-
-open scoped Valued in
-#check (inferInstance : NormedField K)
-#check (inferInstance : Valuation.RankOne (Valued.v (R := K)))
--/
-
 attribute [local instance] inhabitedIoo
 
 theorem isNonarchimedeanLocalField_of_valuativeExtension [FiniteDimensional K L]
@@ -745,7 +505,7 @@ theorem isNonarchimedeanLocalField_of_valuativeExtension [FiniteDimensional K L]
   have : LocallyCompactSpace L := .of_finiteDimensional_of_complete K L
   obtain ⟨ϖK, hϖK⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
   have : IsNontrivial L := ⟨(valuation L).comap (algebraMap K L) ϖK,
-    (map_ne_zero _).mpr hϖK.ne_zero', ne_of_lt <| valuation_map_irreducible_lt_one K L hϖK⟩
+    (map_ne_zero _).mpr hϖK.ne_zero', ne_of_lt <| valuation_map_irreducible_lt_one hϖK⟩
   exact ⟨inferInstance, ⟨⟩⟩
 
 open scoped NormedField in

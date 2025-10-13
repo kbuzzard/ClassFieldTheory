@@ -14,6 +14,12 @@ variable [ValuativeRel R]
 theorem posSubmonoid.ne_zero (x : posSubmonoid R) : x.val ≠ 0 :=
   mt (· ▸ rel_rfl) x.2
 
+instance _root_.Valuation.compatible_map {R Γ₀ : Type*} [CommRing R]
+    [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [ValuativeRel R]
+    {Γ₁ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] (f : Γ₀ →*₀ Γ₁) (hf : StrictMono f)
+    [v.Compatible] : (v.map f hf.monotone).Compatible :=
+  ⟨fun _ _ ↦ (Valuation.Compatible.rel_iff_le (v := v) _ _).trans hf.le_iff_le.symm⟩
+
 end Ring
 
 
