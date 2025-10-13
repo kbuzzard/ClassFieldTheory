@@ -225,7 +225,6 @@ abbrev leftRegular.norm' [Fintype G] : (leftRegular R G).ρ.invariants :=
     simpa [leftRegular.of] using show ∑ x : G, leftRegular.of (g * x) = _ from
     Finset.sum_equiv (Equiv.mulLeft g) (by grind) <| fun _ _ ↦ rfl⟩
 
-attribute [local simp] leftRegular.of in
 def leftRegular.norm [Fintype G] : H0 (leftRegular R G) :=
   (H0Iso (leftRegular R G)).toLinearEquiv.symm (leftRegular.norm' R G)
 
