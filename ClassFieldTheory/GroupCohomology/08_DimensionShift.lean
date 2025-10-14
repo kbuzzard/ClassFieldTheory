@@ -211,7 +211,7 @@ lemma ind₁'_π.app_apply (f : ind₁'.obj M) :
 /--
 The functor taking `M : Rep R G` to `down.obj M`, defined by the short exact sequence
 
-  `0 ⟶ down.obj M ⟶ coind₁'.obj M ⟶ M ⟶ 0`..
+  `0 ⟶ down.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0`..
 
 Since `coind₁'.obj M` is acyclic, the cohomology of `down.obj M` is a shift by one
 of the cohomology of `M`.
