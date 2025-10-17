@@ -79,4 +79,18 @@ theorem sphere_eq_sphere : v.sphere (v x) = v'.sphere (v' x) := by
 
 end IsEquiv
 
+theorem ext_lt_one {F Γ₀ : Type*} [Field F]
+    [LinearOrderedCommGroupWithZero Γ₀] {v₁ v₂ : Valuation F Γ₀} (equiv : v₁.IsEquiv v₂)
+    (h : ∀ ⦃x⦄, v₁ x < 1 → v₁ x = v₂ x) : v₁ = v₂ := by
+  ext x
+  obtain hx1 | hx1 | h1x := lt_trichotomy (v₁ x) 1
+  · exact h hx1
+  · rw [hx1, eq_comm]
+    exact equiv.eq_one_iff_eq_one.mp hx1
+  · refine inv_injective ?_
+    rw [← map_inv₀, ← map_inv₀]
+    refine h ?_
+    rw [map_inv₀]
+    exact inv_lt_one_of_one_lt₀ h1x
+
 end Valuation
