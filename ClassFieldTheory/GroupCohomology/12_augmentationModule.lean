@@ -245,7 +245,6 @@ open RepresentationTheory.groupCohomology
 
 lemma leftRegular.zeroι_norm [Fintype G] :
     zeroι _ (norm R G) = ∑ g : G, leftRegular.of g := by
-  delta zeroι leftRegular.norm
   have := (H0Iso (leftRegular R G)).toLinearEquiv.apply_symm_apply
     ⟨∑ g : G, MonoidAlgebra.of _ _ g,
     fun g ↦ by simpa using show ∑ x : G, MonoidAlgebra.of _ _ (g * x) = _ from
