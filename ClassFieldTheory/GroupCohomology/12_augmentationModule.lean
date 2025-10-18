@@ -347,8 +347,10 @@ lemma leftRegular.res_span_norm [Fintype G] {H : Type} [Group H] (φ : H →* G)
     (inj : φ.toFun.Injective) :
     letI : Fintype H := Fintype.ofInjective _ inj
     Submodule.span R (Set.range (res_norm R G φ inj)) = ⊤ := by
-
-  sorry
+  erw [Set.range_comp]
+  rw [← Submodule.map_span]
+  erw [leftRegular.res_span_norm']
+  simp
 
 def H0trivial : H0 (trivial R G R) ≅ ModuleCat.of R R :=
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| (Submodule.topEquiv.symm ≪≫ₗ LinearEquiv.ofEq _ _
