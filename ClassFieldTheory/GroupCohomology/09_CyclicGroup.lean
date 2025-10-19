@@ -2,9 +2,10 @@ import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
 import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
-import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
-import ClassFieldTheory.Mathlib.ModuleCatExact
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Basic
+import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
+import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
+import ClassFieldTheory.Mathlib.ModuleCatExact
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
