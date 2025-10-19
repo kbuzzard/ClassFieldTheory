@@ -417,13 +417,6 @@ def downIsoImagePeriodSeq₂Functor :
   NatIso.ofComponents downIsoImagePeriodSeq₂ <| fun {X Y} f => by
     sorry
 
-def periodSeq₁FunctorIsoPeriodSeq₂Functor :
-    periodSeq₁Functor (R := R) (G := G) ⋙ ShortComplex.gFunctor ⋙ coimageFunctor ≅
-      periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor :=
-  NatIso.ofComponents (fun M ↦ Abelian.coimageIsoImage _) fun {M N} f => by
-    simp
-    sorry
-
 /-- The up and down functors for a finite cyclic group are pointwise isomorphic. -/
 @[simps! hom inv]
 def upIsoDownObj : up.obj M ≅ down.obj M := calc
