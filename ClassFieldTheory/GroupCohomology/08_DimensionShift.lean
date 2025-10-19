@@ -158,7 +158,7 @@ def up_δiso_natTrans (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n 
         upShortComplex_obj_g, upShortComplex_map_τ₃, up_map]
       have : coind₁'.map f ≫ cokernel.π (coind₁'_ι.app Y) = cokernel.π (coind₁'_ι.app X) ≫
         cokernel.desc (coind₁'_ι.app X) ((coind₁'.map f) ≫ cokernel.π (coind₁'_ι.app Y))
-        (up._proof_2 f) :=(cokernel.π_desc _ _ _).symm
+        (up._proof_2 f) := (cokernel.π_desc _ _ _).symm
       ext a b c
       simp only [CochainComplex.of_x, HomologicalComplex.comp_f, ModuleCat.hom_comp,
         cochainsMap_id_f_hom_eq_compLeft, LinearMap.coe_comp, Function.comp_apply,
@@ -225,7 +225,7 @@ abbrev down_ses : ShortComplex (Rep R G) where
 
 @[simps] def downShortComplex : Rep R G ⥤ ShortComplex (Rep R G) where
   obj M := {
-    X₁ :=down.obj M
+    X₁ := down.obj M
     X₂ := ind₁'.obj M
     X₃ := M
     f := kernel.ι (ind₁'_π.app M)
@@ -233,12 +233,12 @@ abbrev down_ses : ShortComplex (Rep R G) where
     zero := kernel.condition (ind₁'_π.app M)
   }
   map {X Y} f := {
-    τ₁ :=down.map f
+    τ₁ := down.map f
     τ₂ := ind₁'.map f
-    τ₃ :=  f
-    comm₁₂ :=by
+    τ₃ := f
+    comm₁₂ := by
      simp only [down, Functor.id_obj, kernel.lift_ι]
-    comm₂₃ :=by
+    comm₂₃ := by
       simp only [Functor.id_obj, naturality, Functor.id_map]
   }
   map_comp f g := by
@@ -319,7 +319,7 @@ def down_δiso_natTrans (n : ℕ) : functor R G (n + 1) ≅ down ⋙ functor R G
     calc
       _ = (hom ((ind₁'.map f) ≫ (ind₁'_π.app Y))) (b c) := rfl
       _ = (hom (ind₁'_π.app X ≫ (𝟭 (Rep R G)).map f)) (b c) := by
-        rw [(ind₁'_π (G:=G) (R:=R)).naturality f]
+        rw [(ind₁'_π (G:= G) (R:= R)).naturality f]
       _ = _ := rfl
 
 instance down_δ_res_isIso (n : ℕ) {H : Type} [Group H] [DecidableEq H] {φ : H →* G}

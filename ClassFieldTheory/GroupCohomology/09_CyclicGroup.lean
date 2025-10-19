@@ -406,7 +406,7 @@ def downIsoImagePeriodSeq₂ : down.obj M ≅ Abelian.image (periodSeq₂ M).f :
 functor. -/
 def upIsoCoimagePeriodSeq₁Functor :
     up (R := R) (G := G) ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
-  NatIso.ofComponents upIsoCoimagePeriodSeq₁ <| fun f => by
+  NatIso.ofComponents upIsoCoimagePeriodSeq₁ fun {M N} f => by
     simp [upIsoCoimagePeriodSeq₁]
     sorry
 
@@ -415,6 +415,13 @@ image functor. -/
 def downIsoImagePeriodSeq₂Functor :
     down (R := R) (G := G) ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor :=
   NatIso.ofComponents downIsoImagePeriodSeq₂ sorry
+
+def periodSeq₁FunctorIsoPeriodSeq₂Functor :
+    periodSeq₁Functor (R := R) (G := G) ⋙ ShortComplex.gFunctor ⋙ coimageFunctor ≅
+      periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor :=
+  NatIso.ofComponents (fun M ↦ Abelian.coimageIsoImage _) fun {M N} f => by
+    simp
+    sorry
 
 /-- The up and down functors for a finite cyclic group are pointwise isomorphic. -/
 @[simps! hom inv]
@@ -426,9 +433,8 @@ def upIsoDownObj : up.obj M ≅ down.obj M := calc
 
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
 def upIsoDown : up (R := R) (G := G) ≅ down :=
-  upIsoCoimagePeriodSeq₁Functor ≪≫
-    NatIso.ofComponents (fun M ↦ Abelian.coimageIsoImage _) sorry
-    ≪≫ downIsoImagePeriodSeq₂Functor.symm
+  upIsoCoimagePeriodSeq₁Functor ≪≫ periodSeq₁FunctorIsoPeriodSeq₂Functor ≪≫
+    downIsoImagePeriodSeq₂Functor.symm
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by
