@@ -426,9 +426,19 @@ def upIsoDownObj : up.obj M ≅ down.obj M := calc
     _ ≅ down.obj M := (downIsoImagePeriodSeq₂ _).symm
 
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
-def upIsoDown : up (R := R) (G := G) ≅ down :=
-  upIsoCoimagePeriodSeq₁Functor ≪≫ Functor.isoWhiskerLeft _ coimageFunctorIsoImageFunctor ≪≫
-    downIsoImagePeriodSeq₂Functor.symm
+def upIsoDown : up (R := R) (G := G) ≅ down := calc
+    up (R := R) (G := G)
+      ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
+      sorry
+      -- Functor.isoWhiskerRight _ _
+    _ ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
+      (Functor.associator ..).symm
+    _ ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ imageFunctor :=
+      Functor.isoWhiskerLeft _ coimageFunctorIsoImageFunctor
+    _ ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor := Functor.associator ..
+    _ ≅ down :=
+      sorry
+      -- Functor.isoWhiskerRight _ _
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by
