@@ -24,6 +24,7 @@ import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs

@@ -1,7 +1,5 @@
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
-noncomputable section
-
 namespace CategoryTheory.ShortComplex
 open Limits
 
