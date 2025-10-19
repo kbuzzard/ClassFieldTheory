@@ -358,56 +358,17 @@ lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
   rw [Representation.map₂_apply]
   simp [linearEquivFunOnFinite]
 
-/-- `up M` is the cokernel of the first map in the periodicity sequence,
-so is isomorphic to the coimage of the second map. -/
-@[simps!]
-def upIsoCoimagePeriodSeq₁ : up.obj M ≅ Abelian.coimage (periodSeq₁ M).g := by
-  dsimp [up]
-  -- have := (exact_periodSeq₁ M).epi_kernelLift
-  -- cokernel.congr _ _ (by simp) ≪≫ cokernelEpiComp (kernel.lift _ _ (periodSeq₁ M).zero) _
-
-/-- `down M` is the kernel of the third map in the periodicity sequence,
-so is isomorphic to the image of the second map. -/
-def downIsoImagePeriodSeq₂ : down.obj M ≅ Abelian.image (periodSeq₂ M).f :=
-  have := (exact_periodSeq₂ M).mono_cokernelDesc
-  kernel.congr _ _ (by simp) ≪≫ kernelCompMono _ (cokernel.desc _ _ (periodSeq₂ M).zero)
-
-/-- The up functor is isomorphic to the first periodicity sequence functor composed with the coimage
-functor. -/
-def upIsoCoimagePeriodSeq₁Functor :
-    up (R := R) (G := G) ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
-  NatIso.ofComponents upIsoCoimagePeriodSeq₁ fun {M N} f => by
-    sorry
-
-/-- The down functor is isomorphic to the second periodicity sequence functor composed with the
-image functor. -/
-def downIsoImagePeriodSeq₂Functor :
-    down (R := R) (G := G) ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ imageFunctor :=
-  NatIso.ofComponents downIsoImagePeriodSeq₂ <| fun {X Y} f => by
-    sorry
-
-/-- The up and down functors for a finite cyclic group are pointwise isomorphic. -/
-@[simps! hom inv]
-def upIsoDownObj : up.obj M ≅ down.obj M := calc
-    up.obj M
-      ≅ Abelian.coimage (periodSeq₁ M).g := upIsoCoimagePeriodSeq₁ _
-    _ ≅ Abelian.image (periodSeq₂ M).f := Abelian.coimageIsoImage _
-    _ ≅ down.obj M := (downIsoImagePeriodSeq₂ _).symm
-
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
 def upIsoDown : up (R := R) (G := G) ≅ down := calc
     up (R := R) (G := G)
       ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
-      sorry
-      -- Functor.isoWhiskerRight _ _
+      ShortComplex.cokernelIsoCoimage periodSeq₁Functor exact_periodSeq₁
     _ ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
       (Functor.associator ..).symm
     _ ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ imageFunctor :=
       Functor.isoWhiskerLeft _ coimageFunctorIsoImageFunctor
     _ ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor := Functor.associator ..
-    _ ≅ down :=
-      sorry
-      -- Functor.isoWhiskerRight _ _
+    _ ≅ down := (ShortComplex.kernelIsoImage periodSeq₂Functor exact_periodSeq₂).symm
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by
