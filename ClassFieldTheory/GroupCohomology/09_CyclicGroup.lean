@@ -4,7 +4,7 @@ import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.ModuleCatExact
-import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Images
+import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
@@ -405,7 +405,7 @@ def downIsoImagePeriodSeq₂ : down.obj M ≅ Abelian.image (periodSeq₂ M).f :
 /-- The up functor is isomorphic to the first periodicity sequence functor composed with the coimage
 functor. -/
 def upIsoCoimagePeriodSeq₁Functor :
-    up (R := R) (G := G) ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
+    up (R := R) (G := G) ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
   NatIso.ofComponents upIsoCoimagePeriodSeq₁ fun {M N} f => by
     simp [upIsoCoimagePeriodSeq₁]
     sorry
@@ -413,7 +413,7 @@ def upIsoCoimagePeriodSeq₁Functor :
 /-- The down functor is isomorphic to the second periodicity sequence functor composed with the
 image functor. -/
 def downIsoImagePeriodSeq₂Functor :
-    down (R := R) (G := G) ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor :=
+    down (R := R) (G := G) ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ imageFunctor :=
   NatIso.ofComponents downIsoImagePeriodSeq₂ <| fun {X Y} f => by
     sorry
 
@@ -427,7 +427,7 @@ def upIsoDownObj : up.obj M ≅ down.obj M := calc
 
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
 def upIsoDown : up (R := R) (G := G) ≅ down :=
-  upIsoCoimagePeriodSeq₁Functor ≪≫ periodSeq₁FunctorIsoPeriodSeq₂Functor ≪≫
+  upIsoCoimagePeriodSeq₁Functor ≪≫ Functor.isoWhiskerLeft _ coimageFunctorIsoImageFunctor ≪≫
     downIsoImagePeriodSeq₂Functor.symm
 
 def periodicCohomology (n : ℕ) :
