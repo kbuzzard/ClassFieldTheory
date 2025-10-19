@@ -2,6 +2,7 @@ import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
 import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -32,7 +33,6 @@ open
   Abelian
   ConcreteCategory
   Limits
-  BigOperators
   groupCohomology
 
 -- TODO: add universes
@@ -42,50 +42,18 @@ variable (M : Rep R G)
 
 noncomputable section
 
-namespace IsCyclic
-/--
-`gen G` is a generator of the cyclic group `G`.
--/
-def gen : G := IsCyclic.exists_generator.choose
-
-variable {G} in
-lemma gen_generate (x : G) : x ∈ Subgroup.zpowers (gen G) :=
-  IsCyclic.exists_generator.choose_spec x
-
-theorem unique_gen_zpow_zmod [Fintype G] (x : G) :
-    ∃! n : ZMod (Fintype.card G), x = gen G ^ n.val :=
-  IsCyclic.unique_zpow_zmod gen_generate x
-
-theorem unique_gen_pow [Fintype G] (x : G) :
-    ∃! n < Fintype.card G, x = gen G ^ n := by
-  obtain ⟨k, hk, hk_unique⟩ := unique_gen_zpow_zmod G x
-  refine ⟨k.val, ⟨⟨ZMod.val_lt _, hk⟩, ?_⟩⟩
-  intro y ⟨hy_lt, hy⟩
-  rw [← hk_unique y]
-  · rw [ZMod.val_natCast, Nat.mod_eq_of_lt hy_lt]
-  · simp [hy]
-
-end IsCyclic
-
 open IsCyclic
 
 variable {G} [Fintype G] (M : Rep R G)
 
 @[simp] lemma ofHom_sub (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
-  (ofHom (f₁ - f₂) : A ⟶ B) = ofHom f₁ - ofHom f₂ := rfl
+    (ofHom (f₁ - f₂) : A ⟶ B) = ofHom f₁ - ofHom f₂ := rfl
 
 @[simp] lemma ofHom_add (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
-  (ofHom (f₁ + f₂) : A ⟶ B) = ofHom f₁ + ofHom f₂ := rfl
+    (ofHom (f₁ + f₂) : A ⟶ B) = ofHom f₁ + ofHom f₂ := rfl
 
-@[simp] lemma ofHom_zero (A B : ModuleCat R) :
-  (ofHom 0 : A ⟶ B) = 0 := rfl
-
-@[simp] lemma ofHom_one (A : ModuleCat R) :
-  (ofHom 1 : A ⟶ A) = 𝟙 A := rfl
-
-omit [IsCyclic G] [Fintype G] in
-@[simp] lemma Rep.ρ_mul_eq_comp (M : Rep R G) (x y : G) :
-    Action.ρ M (x * y) = (Action.ρ M y) ≫ (Action.ρ M x) := map_mul (Action.ρ M) x y
+@[simp] lemma ofHom_zero (A B : ModuleCat R) : (ofHom 0 : A ⟶ B) = 0 := rfl
+@[simp] lemma ofHom_one (A : ModuleCat R) : (ofHom 1 : A ⟶ A) = 𝟙 A := rfl
 
 namespace Representation
 
@@ -185,12 +153,12 @@ lemma map₂_range [Fintype G] [DecidableEq G] :
     apply_fun (· y) at this
     exact this
   · intro hw_ker
-    let f : G → A := fun g ↦ ∑ i ∈ Finset.Icc 0 (unique_gen_pow G g).choose, w (gen G ^ i)
+    let f : G → A := fun g ↦ ∑ i ∈ Finset.Icc 0 (unique_gen_pow g).choose, w (gen G ^ i)
     have hf_apply (k : ℤ) : f (gen G ^ k) = ∑ i ∈ Finset.Icc 0 (k.natMod (Fintype.card G)),
         w (gen G ^ i) := by
       simp only [f]
       congr
-      rw [((unique_gen_pow G (gen G ^ k)).choose_spec.right (k.natMod (Fintype.card G))
+      rw [((unique_gen_pow (gen G ^ k)).choose_spec.right (k.natMod (Fintype.card G))
         ⟨?_, ?_⟩).symm]
       · exact  Int.natMod_lt Fintype.card_ne_zero
       · simp [← zpow_natCast, Int.natMod, Int.ofNat_toNat, Int.emod_nonneg]
@@ -208,7 +176,7 @@ lemma map₂_range [Fintype G] [DecidableEq G] :
     ext g
     rw [map₂_apply]
     change f g - f ((gen G)⁻¹ * g) = w g
-    obtain ⟨k, ⟨hk_lt, rfl⟩, hk_unique⟩ := unique_gen_pow G g
+    obtain ⟨k, ⟨hk_lt, rfl⟩, hk_unique⟩ := unique_gen_pow g
     by_cases hk : k = 0
     · rw [hk, hf_apply_of_lt, pow_zero, mul_one]
       · have : (gen G)⁻¹ = gen G ^ (Fintype.card G - 1 : ℕ) := by
@@ -228,16 +196,16 @@ lemma map₂_range [Fintype G] [DecidableEq G] :
             intro x hx y hy h
             simp only [Nat.Ico_zero_eq_range, Finset.coe_range, Set.mem_Iio] at hx hy h
             simp only at hk_unique
-            have := (unique_gen_pow G (gen G ^ x)).choose_spec.right
+            have := (unique_gen_pow (gen G ^ x)).choose_spec.right
             rw [this x, this y]
             · simp only [hy, h, and_self]
             · simp only [hx, and_self]
-          _ = ∑ x ∈ (Finset.univ : Finset G), w x := by
+          _ = ∑ x, w x := by
             congr
             rw [Finset.eq_univ_iff_forall]
             intro x
             simp only [Nat.Ico_zero_eq_range, Finset.mem_image, Finset.mem_range]
-            obtain ⟨a, ha, ha'⟩ := unique_gen_pow G x
+            obtain ⟨a, ha, ha'⟩ := unique_gen_pow x
             use a, ha.left, ha.right.symm
           _ = 0 := by
             simpa [Finsupp.sum_fintype] using hw_ker

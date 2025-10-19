@@ -9,6 +9,9 @@ namespace Rep
 universe u
 variable {R G H : Type u} [CommRing R] [Group G] {A B : Rep R G}
 
+@[simp] lemma ρ_mul_eq_comp (M : Rep R G) (x y : G) :
+    Action.ρ M (x * y) = Action.ρ M y ≫ Action.ρ M x := map_mul (Action.ρ M) x y
+
 -- TODO : add in mathlib, see GroupCohomology.IndCoind.TrivialCohomology
 --attribute [simps obj_ρ] trivialFunctor
 
