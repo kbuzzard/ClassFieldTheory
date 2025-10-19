@@ -393,9 +393,10 @@ lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
 /-- `up M` is the cokernel of the first map in the periodicity sequence,
 so is isomorphic to the coimage of the second map. -/
 @[simps!]
-def upIsoCoimagePeriodSeq₁ : up.obj M ≅ Abelian.coimage (periodSeq₁ M).g :=
-  have := (exact_periodSeq₁ M).epi_kernelLift
-  cokernel.congr _ _ (by simp) ≪≫ cokernelEpiComp (kernel.lift _ _ (periodSeq₁ M).zero) _
+def upIsoCoimagePeriodSeq₁ : up.obj M ≅ Abelian.coimage (periodSeq₁ M).g := by
+  dsimp [up]
+  -- have := (exact_periodSeq₁ M).epi_kernelLift
+  -- cokernel.congr _ _ (by simp) ≪≫ cokernelEpiComp (kernel.lift _ _ (periodSeq₁ M).zero) _
 
 /-- `down M` is the kernel of the third map in the periodicity sequence,
 so is isomorphic to the image of the second map. -/
@@ -408,7 +409,6 @@ functor. -/
 def upIsoCoimagePeriodSeq₁Functor :
     up (R := R) (G := G) ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
   NatIso.ofComponents upIsoCoimagePeriodSeq₁ fun {M N} f => by
-    simp [upIsoCoimagePeriodSeq₁]
     sorry
 
 /-- The down functor is isomorphic to the second periodicity sequence functor composed with the
