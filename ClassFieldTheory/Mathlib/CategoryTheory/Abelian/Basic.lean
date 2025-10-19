@@ -5,34 +5,26 @@ noncomputable section
 namespace CategoryTheory.Abelian
 open Limits
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category C] [Abelian C] {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z}
 
-lemma ι_comp_eq_zero_of_comp_eq_zero {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (H : f ≫ g = 0) :
-    Abelian.image.ι f ≫ g = 0 :=
-  Epi.left_cancellation (f := Abelian.factorThruImage f) _ _ (by simp [← Category.assoc, H])
+@[simp] lemma image.ι_comp_eq_zero : image.ι f ≫ g = 0 ↔ f ≫ g = 0 := by
+  simp [← cancel_epi (Abelian.factorThruImage _)]
+
+@[simp] lemma coimage.comp_π_eq_zero : f ≫ coimage.π g = 0 ↔ f ≫ g = 0 := by
+  simp [← cancel_mono (Abelian.factorThruCoimage _)]
 
 /-- `Abelian.image` as a functor from the arrow category. -/
 @[simps]
 def imageFunctor : Arrow C ⥤ C where
   obj f := Abelian.image f.hom
-  map {f g} u := by
-    apply kernel.lift _ (Abelian.image.ι f.hom ≫ u.right)
-    rw [Category.assoc]
-    apply ι_comp_eq_zero_of_comp_eq_zero
-    calc
-      f.hom ≫ u.right ≫ cokernel.π g.hom = (u.left ≫ g.hom) ≫ cokernel.π g.hom := by
-        simp [←Category.assoc]
-      _ = u.left ≫ (g.hom ≫ cokernel.π g.hom) := by rw [←Category.assoc]
-      _ = 0 := by simp
+  map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
 
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
 def coimageFunctor : Arrow C ⥤ C where
   obj f := Abelian.coimage f.hom
-  map {f g} u := by
-    apply cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom)
-    rw [← Category.assoc]
-    sorry -- should be similar to the above.
+  map {f g} u := cokernel.desc _ (u.left ≫ Abelian.coimage.π g.hom) <| by
+    simp [← Category.assoc, coimage.comp_π_eq_zero]; simp
 
 /-- The image and coimage of an arrow are naturally isomorphic. -/
 @[simps!]
