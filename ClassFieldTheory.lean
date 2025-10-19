@@ -29,6 +29,7 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
+import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Images
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion

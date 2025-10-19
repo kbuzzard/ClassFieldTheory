@@ -8,10 +8,9 @@ open Limits
 
 variable {C : Type*} [Category C] [Abelian C]
 
-/-- The image and coimage of an arrow are naturally isomorphic -/
+/-- The image and coimage of an arrow are naturally isomorphic. -/
+@[simps!]
 def coimageFunctorIsoImageFunctor : coimageFunctor (C := C) ≅ imageFunctor :=
-  NatIso.ofComponents (fun M ↦ Abelian.coimageIsoImage _) fun {M N} f => by
-    simp
-    sorry
+  NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
 
 end CategoryTheory.Abelian
