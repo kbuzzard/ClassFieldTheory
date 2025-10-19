@@ -414,7 +414,8 @@ def upIsoCoimagePeriodSeq₁Functor :
 image functor. -/
 def downIsoImagePeriodSeq₂Functor :
     down (R := R) (G := G) ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor :=
-  NatIso.ofComponents downIsoImagePeriodSeq₂ sorry
+  NatIso.ofComponents downIsoImagePeriodSeq₂ <| fun {X Y} f => by
+    sorry
 
 def periodSeq₁FunctorIsoPeriodSeq₂Functor :
     periodSeq₁Functor (R := R) (G := G) ⋙ ShortComplex.gFunctor ⋙ coimageFunctor ≅
