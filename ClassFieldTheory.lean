@@ -32,6 +32,8 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Images
+import ClassFieldTheory.Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+import ClassFieldTheory.Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
