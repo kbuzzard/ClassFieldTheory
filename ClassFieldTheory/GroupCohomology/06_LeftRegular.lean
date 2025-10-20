@@ -233,7 +233,7 @@ lemma res_span_norm' [Fintype G] {H : Type} [Group H] (φ : H →* G) (inj : φ.
       obtain ⟨⟨_, ⟨h, rfl⟩⟩, hhh⟩ := Quotient.eq.1 <| hσ ⟦a⟧
       use h⁻¹
       ext h'
-      simp
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_singleton]
       constructor
       · intro final
         simp only [← hhh] at final
