@@ -1,5 +1,4 @@
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Limits.Shapes.Kernels
 

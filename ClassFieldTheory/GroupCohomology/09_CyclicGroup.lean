@@ -3,7 +3,6 @@ import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
-import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.ModuleCatExact
