@@ -32,13 +32,13 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
-import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
-import ClassFieldTheory.Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
+import ClassFieldTheory.Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import ClassFieldTheory.Mathlib.Data.Int.WithZero
 import ClassFieldTheory.Mathlib.FieldTheory.Separable
+import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
