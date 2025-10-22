@@ -410,8 +410,10 @@ lemma toFinset_factors_map_maximalIdeal [DecidableEq (Ideal 𝒪[L])] :
 -- by Chenyi Yang
 theorem e_mul_f_eq_n : e K L * f K L = Module.finrank K L := by
   classical
-  rw [← Ideal.sum_ramification_inertia 𝒪[L] 𝓂[K] _ _ IsDiscreteValuationRing.not_a_field',
-    primesOverFinset, toFinset_factors_map_maximalIdeal, Finset.sum_singleton]; rfl
+  rw [← Ideal.sum_ramification_inertia (K := K) (L := L) (p := 𝓂[K]) 𝒪[L]
+          IsDiscreteValuationRing.not_a_field',
+      primesOverFinset, toFinset_factors_map_maximalIdeal, Finset.sum_singleton]
+  rfl
 
 -- TODO: generalise to extensions of DVRs.
 @[mk_iff] class IsUnramified : Prop where
