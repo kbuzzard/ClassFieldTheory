@@ -16,9 +16,9 @@ lemma coimage.ext (f : A ⟶ B) {g h : C ⟶ Abelian.coimage f}
     (w : g ≫ Abelian.factorThruCoimage f = h ≫ Abelian.factorThruCoimage f) : g = h :=
   (cancel_mono <| Abelian.factorThruCoimage f).1 w
 
-/-- Any short complex with maps `f : B ⟶ C` and `g : A ⟶ B` gives rise to a map from the cokernel
-of `g` to the kernel of `f`. -/
-def cokernelToCoimage (f : B ⟶ C) (g : A ⟶ B) (w : g ≫ f = 0) : cokernel g ⟶ Abelian.coimage f :=
-  cokernel.desc g (coimage.π f) <| by ext; simpa using w
+/-- Any short complex with maps `f : A ⟶ B` and `g : B ⟶ C` gives rise to a map from the cokernel
+of `f` to the kernel of `g`. -/
+def cokernelToCoimage (f : A ⟶ B) (g : B ⟶ C) (w : f ≫ g = 0) : cokernel f ⟶ Abelian.coimage g :=
+  cokernel.desc f (coimage.π g) <| by ext; simpa using w
 
 end CategoryTheory.Abelian
