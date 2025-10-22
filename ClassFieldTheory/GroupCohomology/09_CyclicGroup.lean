@@ -13,6 +13,14 @@ We construct an exact sequence
 
   `0 ⟶ M ⟶ coind₁'.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0`.
 
+In fact, we construct this as two exact short complexes
+
+`periodSeq₁Functor : Rep R G ⥤ ShortComplex (Rep R G)`
+sending `M` to the exact complex `periodSeq₁ M : M ⟶ coind₁'.obj M ⟶ ind₁'.obj M`
+and
+`periodSeq₂Functor : Rep R G ⥤ ShortComplex (Rep R G)`
+sending `M` to the exact complex `periodSeq₂ M : coind₁'.obj M ⟶ ind₁'.obj M ⟶ M`
+
 Using this sequence, we construct an isomorphism
 
   `dimensionShift.up.obj M ≅ dimensionShift.down.obj M`.
