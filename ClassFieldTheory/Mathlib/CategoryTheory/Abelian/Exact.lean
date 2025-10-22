@@ -18,10 +18,9 @@ lemma Exact.isIso_imageToKernel (hS : S.Exact) : IsIso (imageToKernel S.f S.g S.
 lemma Exact.isIso_imageToKernel' (hS : S.Exact) : IsIso (imageToKernel' S.f S.g S.zero) :=
   S.exact_iff_isIso_imageToKernel'.1 hS
 
-lemma exact_iff_isIso_cokernelToCoimage : S.Exact ↔ IsIso (cokernelToCoimage S.f S.g S.zero) := by
-  sorry
+proof_wanted exact_iff_isIso_cokernelToCoimage : S.Exact ↔ IsIso (cokernelToCoimage S.f S.g S.zero)
 
-alias ⟨Exact.isIso_cokernelToCoimage, _⟩ := exact_iff_isIso_cokernelToCoimage
+-- alias ⟨Exact.isIso_cokernelToCoimage, _⟩ := exact_iff_isIso_cokernelToCoimage
 
 lemma Exact.mono_cokernelDesc (hS : S.Exact) : Mono (Limits.cokernel.desc S.f S.g S.zero) :=
   S.exact_iff_mono_cokernel_desc.1 hS
