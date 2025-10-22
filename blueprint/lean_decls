@@ -97,7 +97,7 @@ Representation.map₂_range
 Representation.map₁
 Representation.map₁_ker
 Representation.map₂_range
-Rep.up_iso_down
+Rep.upIsoDown
 Rep.periodicCohomology
 groupCohomology.evenTrivialInt
 groupCohomology.isZero_odd_trivial_of_isAddTorsionFree

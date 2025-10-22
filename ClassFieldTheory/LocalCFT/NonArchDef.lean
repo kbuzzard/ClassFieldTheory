@@ -112,7 +112,7 @@ noncomputable def valuationOfIoo (ε : Set.Ioo (0 : ℝ) 1) : Valuation K ℝ≥
   · simp only [MonoidWithZeroHom.coe_comp]
     refine (WithZeroMulInt.toNNReal_strictMono ?_).monotone.comp
       (OrderMonoidIso.strictMono _).monotone
-    exact coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
+    exact NNReal.coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
 
 variable {K}
 
@@ -139,7 +139,7 @@ noncomputable def rankOneOfIoo (ε : Set.Ioo (0 : ℝ) 1) : (valuation K).RankOn
     strictMono' := (WithZeroMulInt.toNNReal_strictMono ?_).comp (OrderMonoidIso.strictMono _) }
   · exact one_div_nonneg.mpr ε.2.1.le
   · exact coe_ne_zero.mp <| one_div_ne_zero ε.2.1.ne'
-  · exact coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
+  · exact NNReal.coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
 
 noncomputable def inhabitedIoo : Inhabited (Set.Ioo (0 : ℝ) 1) := ⟨0.37, by norm_num, by norm_num⟩
 attribute [local instance] inhabitedIoo
