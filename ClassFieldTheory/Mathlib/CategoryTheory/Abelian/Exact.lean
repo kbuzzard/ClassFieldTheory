@@ -8,7 +8,7 @@ variable {C : Type u₁} [Category.{v₁} C] [Abelian C] {S : ShortComplex C}
 open Abelian
 
 lemma exact_iff_isIso_imageToKernel' : S.Exact ↔ IsIso (imageToKernel' S.f S.g S.zero) := by
-  simp [S.exact_iff_epi_imageToKernel', isIso_iff_mono_and_epi]
+  simp only [S.exact_iff_epi_imageToKernel', isIso_iff_mono_and_epi, iff_and_self]
   intro
   apply CategoryTheory.Limits.kernel.lift_mono
 
