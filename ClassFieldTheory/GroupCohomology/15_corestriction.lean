@@ -40,29 +40,32 @@ open
   Limits
 
 variable {R : Type} [CommRing R]
-variable {G : Type} [Group G] {S : Subgroup G} [S.FiniteIndex]
+variable {G : Type} [Group G] {S : Subgroup G}
 
 attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
 namespace groupCohomology
 
 lemma cores_aux₁ {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation R G V)
-    (v : V) (hv : ∀ s ∈ S, (ρ s) v = v)
-    (g₁ g₂ : G) (h : (QuotientGroup.mk g₁ : G ⧸ S) = QuotientGroup.mk g₂) :
-    ρ g₁ v = ρ g₂ v := by
-  sorry
+    (v : V) (hv : ∀ s ∈ S, (ρ s) v = v) (g₁ g₂ : G)
+    (h : (QuotientGroup.mk g₁ : G ⧸ S) = QuotientGroup.mk g₂) : ρ g₁ v = ρ g₂ v := by
+  rw [show g₂ = g₁ * (g₁⁻¹ * g₂) by simp, map_mul, Module.End.mul_apply,
+  hv _ (QuotientGroup.eq.1 h)]
+
+variable [S.FiniteIndex]
 
 lemma cores_aux₂ {X : Type} [Fintype X]
     (s₁ : X → G) (hs₁ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₁ x) : X → G ⧸ S))
     (s₂ : X → G) (hs₂ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₁ x) : X → G ⧸ S))
-    {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation R G V)
+    {V : Type} [AddCommGroup V] [Module R V] (ρ : Representation R G V)
     (v : V) (hv : ∀ s ∈ S, (ρ s) v = v) :
     ∑ x : X, ρ (s₁ x) v = ∑ x : X, ρ (s₂ x) v := by
+
   sorry
 
 /-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
 map on invariants. -/
-def _root_.Representation.cores₀_obj {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation R G V) :
+def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] (ρ : Representation R G V) :
     Representation.invariants (MonoidHom.comp ρ S.subtype) →ₗ[R] ρ.invariants where
   toFun x := ⟨∑ i : G ⧸ S, ρ i.out x.1, sorry⟩
   map_add' := by simp [Finset.sum_add_distrib]
@@ -121,6 +124,12 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     rw [baz, Category.assoc]
     convert comp_zero -- cancel first functor
     exact (mapShortComplex₃ (up_shortExact M) (rfl : 0 + 1 = 1)).zero
+
+theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
+    (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
+    cores₁_obj X ≫ (functor R G 1).map f := by
+  rw [functor_map, Functor.comp_map]
+  sorry
 
 /-- Corestriction on objects in group cohomology. -/
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
