@@ -175,10 +175,22 @@ def _root_.Rep.leftRegular.iso_ind₁' : leftRegular R G ≅ ind₁'.obj (trivia
     apply leftRegularToInd₁'_comp_leftRegularToInd₁'
 
 /--
-For a finite group, the left regular representation is acyclic.
+For a finite group, the left regular representation is acyclic for cohomology.
 -/
 instance _root_.Rep.leftRegular.trivialCohomology [Fintype G] :
     (leftRegular R G).TrivialCohomology := .of_iso (iso_ind₁' R G)
+
+/--
+The left regular representation is acyclic for homology.
+-/
+instance _root_.Rep.leftRegular.trivialHomology :
+    (leftRegular R G).TrivialHomology := .of_iso (iso_ind₁' R G)
+
+/--
+For a finite group, the left regular representation is acyclic for Tate cohomology.
+-/
+instance _root_.Rep.leftRegular.trivialTateCohomology [Fintype G] :
+    (leftRegular R G).TrivialTateCohomology := .of_iso (iso_ind₁' R G)
 
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,R)` to `Hⁿ⁺²(G,aug R G)` is an isomorphism.
