@@ -265,7 +265,7 @@ def H1_iso [Fintype G] :
   since every element of the group is mapped by `ε` to `1`.
   -/
 
-def H1_iso' [Fintype G] {H : Type} [Group H] [DecidableEq H] [Fintype H] {φ : H →* G}
+def H1_iso' [Fintype G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
     (inj : Function.Injective φ) :
     H1 (aug R G ↓ φ) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| by
