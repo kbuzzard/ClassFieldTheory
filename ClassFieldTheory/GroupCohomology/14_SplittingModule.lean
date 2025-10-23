@@ -233,7 +233,9 @@ abbrev _root_.groupCohomology.H2res {H : Type} [Group H] (φ : H →* G) :
 notation σ "↡" φ => H2res σ φ
 
 /--
-Given an element `σ : H²(G,M)`, the
+If `M` is an `R[G]`-module and `σ : H²(G,M)`, we say `σ` is a *finite class formation* if
+1) `H¹(H,M|H)=0` for all subgroups `H` of `G`;
+2) `
 -/
 class FiniteClassFormation where
   hypothesis₁ {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) : IsZero (H1 (M ↓ φ))
