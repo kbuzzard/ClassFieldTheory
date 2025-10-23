@@ -610,7 +610,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 	\]
 	The exactness statements are in Mathlib in the namespace
 	\texttt{HomologicalComplex.HomologySequence}.
-	The connecting maps $\delta : H^n_{\Tate}(G,C) \to H^n_{\Tate}(G,A)$
+	The connecting maps $\delta : H^n_{\Tate}(G,C) \to H^{n+1}_{\Tate}(G,A)$
 	coincide with those for cohomology for $n \ge 1$ and with those for homology for $n \le -3$.
 \end{definition}
 
@@ -742,22 +742,22 @@ This case is described again below.
 
 \begin{proof}
 	\leanok
-	Let $S$ be a subgroup of $G$ and let $R$ be a set of representatives for the cosets $rS$
+	Let $S$ be a subgroup of $G$ and let $C$ be a set of representatives for the cosets $cS$
 	of $S$ in $G$.
 	There is an isomorphism of $S$-representations
 	\[
 		\coind_1(G,M) \downarrow S
 		\cong
-		\coind_1(S,R \to M).
+		\coind_1(S,C \to M).
 	\]
-	This isomorphism takes a function $f : G \to M$ to function $S \to (R \to M)$
-	defined by $s \mapsto (r \mapsto f(rs))$.
+	This isomorphism takes a function $f : G \to M$ to function $S \to (C \to M)$
+	defined by $s \mapsto (c \mapsto f(cs))$.
 
 	The isomorphism, together with \ref{lem:Shapiro} and \ref{lem:Hn unit} implies for $n >0$:
 	\[
 		H^n(S,\coind_1(G,M)) \cong
-		H^n(S,\coind_1(S,R \to M)) \cong
-		H^n(1,R \to M) \cong 0.
+		H^n(S,\coind_1(S,C \to M)) \cong
+		H^n(1,C \to M) \cong 0.
 	\]
 \end{proof}
 
@@ -836,10 +836,10 @@ This case is described again below.
 \begin{proof}
 	\leanok
 	The restriction of $\ind_1(G,A)$ to a subgroup $S$ is
-	isomorphic to $\ind_1(S, R \to_0 A)$, where $R$ is a set of coset representatives for $S$ in $G$.
+	isomorphic to $\ind_1(S, C \to_0 A)$, where $C$ is a set of coset representatives for the cosets $cS$ of $S$ in $G$.
 	Hence by 	\ref{lem:Shapiro} we have
 	\[
-		H^n(S,\ind_1(G,A)) \cong H^n(1,R \to_0 A).
+		H_n(S,\ind_1(G,A)) \cong H_n(S,\ind_1(S,C\to_0 A)\cong H_n(1,C \to_0 A).
 	\]
 	The result now follows from \ref{eg:homology unit}.
 \end{proof}
