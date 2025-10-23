@@ -145,7 +145,7 @@ by
     simpa [of_def] using hxy
 
 lemma ε_epi : Epi (ε R G) := CategoryTheory.ConcreteCategory.epi_of_surjective _ <| fun r ↦
-  ⟨r • of 1, by erw [map_smul, ε_of_one, smul_eq_mul, mul_one]⟩
+  ⟨r • of 1, by rw [map_smul, ε_of_one, smul_eq_mul, mul_one]⟩
 
 noncomputable section
 
@@ -207,7 +207,7 @@ lemma H0Iso_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G
 lemma zeroι_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
     zeroι _ (res_norm R φ g) = ∑ h : H, leftRegular.of (φ h * g) := by
   dsimp [zeroι]
-  erw [leftRegular.H0Iso_res_norm] -- `erw?` now does something
+  exact congr(Subtype.val $(leftRegular.H0Iso_res_norm R G φ g))
 
 lemma span_norm' [Fintype G] :
     Submodule.span R {norm' R G} = ⊤ := by
@@ -272,10 +272,9 @@ lemma span_norm [Fintype G] : Submodule.span R {leftRegular.norm R G} = ⊤ := b
 
 lemma res_span_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
     (inj : φ.toFun.Injective) : Submodule.span R (Set.range (res_norm R φ)) = ⊤ := by
-  erw [Set.range_comp]
-  rw [← Submodule.map_span]
-  erw [leftRegular.res_span_norm' R φ inj]
-  simp
+  change Submodule.span R (Set.range (_ ∘ _)) = _
+  rw [Set.range_comp, ← Submodule.map_span]
+  exact Submodule.map_eq_top_iff.2 <| leftRegular.res_span_norm' R φ inj
 
 
 /-- The 0th group cohomology of the trivial `R[G]`-module `R` is the trivial module. -/
@@ -299,8 +298,9 @@ lemma groupCoh_map_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H
     groupCohomology.map (.id _) ((res φ).map (ε R G)) 0 (res_norm R φ g) =
       (groupCohomology.H0trivial R H).toLinearEquiv.symm (Fintype.card H : R) := by
   apply (groupCohomology.H0trivial R H).toLinearEquiv.eq_symm_apply.mpr
-  erw [groupCohomology.map_comp_H0trivial_apply]
-  rw [leftRegular.zeroι_res_norm]
+  change (groupCohomology.H0trivial R H).hom.hom ((groupCohomology.map _ _ 0).hom _) = _
+  rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, groupCohomology.map_comp_H0trivial,
+    ModuleCat.hom_comp, LinearMap.comp_apply, leftRegular.zeroι_res_norm]
   simp [ε, leftRegular.of]
 
 end
