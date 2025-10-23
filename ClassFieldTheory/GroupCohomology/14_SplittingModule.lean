@@ -342,7 +342,7 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
   exact Limits.IsZero.of_epi_eq_zero S.L₃.f (TateTheorem_lemma_1 _ inj)
 
 /--
-The splitting module is has trivial cohomology.
+The splitting module has trivial cohomology.
 -/
 lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     (split σ).TrivialCohomology := by
@@ -363,7 +363,9 @@ def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
     (tateCohomology 0).obj N ≅ ModuleCat.of ℤ (Additive (Abelianization G)) := by
   symm
   apply Iso.trans (Y := (tateCohomology (-2)).obj (trivial ℤ G ℤ))
-  · sorry -- current PR.
+  · let := groupHomology.H1AddEquivOfIsTrivial (trivial ℤ G ℤ)
+    -- Richard suggests a variant of this with A=ℤ where you don't `(· ⊗[ℤ] ℤ)`
+    sorry
   · apply tateCohomology_iso τ
 
 end Rep.split
