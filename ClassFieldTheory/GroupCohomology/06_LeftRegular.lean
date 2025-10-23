@@ -151,14 +151,25 @@ noncomputable section
 
 variable (R G)
 
+/--
+`norm' R G` for `G` finite, is the element `∑ g` in the `invariants` subtyoe of
+`R[G]`, the `leftRegular` representation of `G`.-/
 abbrev norm' [Fintype G] : (leftRegular R G).ρ.invariants :=
   ⟨∑ g : G, leftRegular.of g, fun g ↦ by
     simpa [leftRegular.of] using show ∑ x : G, leftRegular.of (g * x) = _ from
     Finset.sum_equiv (Equiv.mulLeft g) (by grind) <| fun _ _ ↦ rfl⟩
 
+/--
+`norm R G` for `G` finite, is the element `∑ g` in `H0 (leftRegular R G)`.
+-/
 def norm [Fintype G] : groupCohomology.H0 (leftRegular R G) :=
   (groupCohomology.H0Iso (leftRegular R G)).toLinearEquiv.symm (norm' R G)
 
+/--
+If `φ : H →* G` is an injective map between finite groups, and `g ; G`, then
+`res_norm' R G g φ` is the element `∑ h*g` in the `H`-invariants of the left regular
+representation `R[G]`, the sum being over `h : H`.
+-/
 abbrev res_norm' [Fintype G] {H : Type} [Group H] (g : G) (φ : H →* G)
     (inj : φ.toFun.Injective) : (leftRegular R G ↓ φ).ρ.invariants :=
   letI : Fintype H := Fintype.ofInjective _ inj
@@ -167,6 +178,11 @@ abbrev res_norm' [Fintype G] {H : Type} [Group H] (g : G) (φ : H →* G)
       simpa [← mul_assoc, ← leftRegular.of_def] using Finset.sum_equiv (Equiv.mulLeft h) (by grind)
         (by simp)⟩
 
+/--
+If `φ : H →* G` is an injective map between finite groups, and `g ; G`, then
+`res_norm' R G g φ` is the element `∑ h*g` in `H0(H,R[G])`,
+the sum being over `h : H`.
+-/
 def res_norm [Fintype G] {H : Type} [Group H] (φ : H →* G) (inj : φ.toFun.Injective) (g : G) :
     groupCohomology.H0 ((leftRegular R G) ↓ φ) :=
   (groupCohomology.H0Iso ((leftRegular R G) ↓ φ)).toLinearEquiv.symm <|
@@ -266,6 +282,7 @@ lemma res_span_norm [Fintype G] {H : Type} [Group H] (φ : H →* G)
   erw [leftRegular.res_span_norm']
   simp
 
+/-- The 0th group cohomology of the trivial `R[G]`-module `R` is the trivial module. -/
 def _root_.groupCohomology.H0trivial : groupCohomology.H0 (trivial R G R) ≅ ModuleCat.of R R :=
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| Submodule.topEquiv.symm ≪≫ₗ LinearEquiv.ofEq _ _
   (by ext; simp) ≪≫ₗ (CategoryTheory.Iso.toLinearEquiv (groupCohomology.H0Iso (trivial R G R))).symm
