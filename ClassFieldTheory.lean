@@ -19,6 +19,7 @@ import ClassFieldTheory.GroupCohomology.«15_corestriction»
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.NonArchDef
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
+import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
@@ -37,12 +38,12 @@ import ClassFieldTheory.Mathlib.FieldTheory.Separable
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
-import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 import ClassFieldTheory.Mathlib.RingTheory.DiscreteValuationRing.Basic
