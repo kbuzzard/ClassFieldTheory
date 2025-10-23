@@ -269,7 +269,6 @@ def H1_iso' [Fintype G] {H : Type} [Group H] [DecidableEq H] [Fintype H] {φ : H
     (inj : Function.Injective φ) :
     H1 (aug R G ↓ φ) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| by
-  letI : Fintype H := Fintype.ofInjective (⇑φ) inj
   refine ?_ ≪≫ₗ LinearMap.quotKerEquivOfSurjective (δ (aug_isShortExact' R G φ) 0 1 rfl).hom
     (ModuleCat.epi_iff_surjective _|>.1 <| epi_δ_of_isZero _ 0 <| by
     simpa using @isZero_of_trivialCohomology R H _ _ _
