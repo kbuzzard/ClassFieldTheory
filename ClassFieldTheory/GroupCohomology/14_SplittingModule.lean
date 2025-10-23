@@ -224,7 +224,7 @@ lemma splits : ι σ ∘ cocycle σ ∈ coboundaries₂ (split σ) := by
   rw [d₁₂_hom_apply, Function.comp_apply, τ_property]
 
 /--
-The restriction of `σ` to a subgroup `H`.
+The restriction of the 2-cohomology class `σ : H²(G,M)` to a subgroup `H`.
 -/
 abbrev _root_.groupCohomology.H2res {H : Type} [Group H] (φ : H →* G) :
     H2 (M ↓ φ) :=
@@ -233,7 +233,14 @@ abbrev _root_.groupCohomology.H2res {H : Type} [Group H] (φ : H →* G) :
 notation σ "↡" φ => H2res σ φ
 
 /--
-Given an element `σ : H²(G,M)`, the
+If `M` is an `R[G]`-module and `σ : H²(G,M)`, we say `σ` is a *finite class formation* if
+for all subgroups `H` of `G`,
+1) `H¹(H,M|H)=0`;
+2) The `R`-module `H²(H,M|H)` is spanned as an `R`-module by `Res(σ)`;
+3) The kernel of `R → H²(H,M|H)` is `|H|R`
+
+In other words, for all subgroups H of G, H¹(H,M)=0 and H²(H,M)=R/|H|R
+with the isomorphism given by sending 1 ∈ R/|H|R to σ.
 -/
 class FiniteClassFormation where
   hypothesis₁ {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) : IsZero (H1 (M ↓ φ))
@@ -342,7 +349,7 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
   exact Limits.IsZero.of_epi_eq_zero S.L₃.f (TateTheorem_lemma_1 _ inj)
 
 /--
-The splitting module is has trivial cohomology.
+The splitting module has trivial cohomology.
 -/
 lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     (split σ).TrivialCohomology := by
@@ -357,14 +364,17 @@ lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
 
 def tateCohomology_iso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
     (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M := by
+  have := aug.cohomology_aug_succ_iso R G -- no good, it's for naturals.
   sorry
 
 def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
     (tateCohomology 0).obj N ≅ ModuleCat.of ℤ (Additive (Abelianization G)) := by
   symm
   apply Iso.trans (Y := (tateCohomology (-2)).obj (trivial ℤ G ℤ))
-  · sorry -- current PR.
-  · apply tateCohomology_iso τ
+  · let := groupHomology.H1AddEquivOfIsTrivial (trivial ℤ G ℤ)
+    -- Richard suggests a variant of this with A=ℤ where you don't `(· ⊗[ℤ] ℤ)`
+    sorry
+  · exact tateCohomology_iso τ (-2)
 
 end Rep.split
 
