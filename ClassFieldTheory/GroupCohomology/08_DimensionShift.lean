@@ -214,7 +214,7 @@ The functor taking `M : Rep R G` to `down.obj M`, defined by the short exact seq
   `0 ⟶ down.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0`..
 
 Since `ind₁'.obj M` is acyclic, the homology of `down.obj M` is a shift by one
-of the cohomology of `M`.
+of the homology of `M`.
 -/
 def down : Rep R G ⥤ Rep R G where
   obj M := kernel (ind₁'_π.app M)
