@@ -213,7 +213,7 @@ The functor taking `M : Rep R G` to `down.obj M`, defined by the short exact seq
 
   `0 ⟶ down.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0`..
 
-Since `coind₁'.obj M` is acyclic, the cohomology of `down.obj M` is a shift by one
+Since `ind₁'.obj M` is acyclic, the cohomology of `down.obj M` is a shift by one
 of the cohomology of `M`.
 -/
 def down : Rep R G ⥤ Rep R G where
