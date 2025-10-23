@@ -8,7 +8,6 @@ We define functors `up` and `down` from `Rep R G` to itself.
 `up.obj M` is defined to be the cokernel of the injection `coind₁'_ι : M ⟶ coind₁'.obj M` and
 `down.obj M` is defined to be the kernel of the surjection `ind₁'_π : ind₁'.obj M → M`.
 Hence for any `M : Rep R G` we construct two short exact sequences
-(the second defined only for finite `G`):
 
   `0 ⟶ M ⟶ coind₁'.obj M ⟶ up.obj M ⟶ 0` and
   `0 ⟶ down.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0`.
