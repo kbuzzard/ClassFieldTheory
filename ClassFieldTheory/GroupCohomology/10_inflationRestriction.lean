@@ -17,8 +17,48 @@ variable {Q : Type} [Group Q] [DecidableEq Q] {φ : G →* Q} (surj : Function.S
 
 namespace groupCohomology
 
+#check ShortComplex.ShortExact
+
 /--
-Suppose we have a short exact sewuence `0 ⟶ A ⟶ B ⟶ C ⟶ 0` in `Rep R G`.
+Let `0 ⟶ A ⟶ B ⟶ C ⟶ 0` be a SES of `G`-reps. Let `K` be a subgroup.
+`0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact as `K`-reps
+-/
+lemma fact1 {S : ShortComplex (Rep R G)}
+    (hS : S.ShortExact) : (S.map (res φ.ker.subtype)).ShortExact :=
+  hS.map_of_exact _
+
+def thebadasscomplex {S : ShortComplex (Rep R G)} : ShortComplex (ModuleCat R) :=
+  mapShortComplex₂ (S.map (res φ.ker.subtype)) 0
+
+-- TODO: a
+lemma mapShortComplex₁_shortExact₀ {k} [CommRing k] [Group G] {X : ShortComplex (Rep k G)}
+  (hX : X.ShortExact)
+  (hX : IsZero <| H1 X.1)
+  :
+    (mapShortComplex₂ X 0).ShortExact :=
+  sorry
+
+lemma mapShortComplex₁_shortExact {k} [CommRing k] [Group G] {X : ShortComplex (Rep k G)}
+  (hX : X.ShortExact)  {i j : ℕ} (hij : j + 1 = i) :
+    (mapShortComplex₁ hX hij).Exact :=
+  sorry
+
+#check groupHomology.mapShortComplex₁_exact
+
+
+
+lemma fact2 {S : ShortComplex (Rep R G)}
+    (hS : S.ShortExact) (hS' : IsZero (H1 (S.X₁ ↓ φ.ker.subtype))) :
+
+  -- have : (res φ.ker.subtype)
+  -- If `H¹(K, A) = 0` then we have a SES of `K`-reps `0 ⟶ Aᴷ ⟶ Bᴷ ⟶ Cᴷ ⟶ 0`.
+  -- Fact 2: we have the usual cohomology LES. meh
+  -- Fact 3: `0 ⟶ H0(K, A) ⟶ H0(K, B) ⟶ H0(K, C) ⟶ 0` : meh
+  -- Fact 4: above implies `0 ⟶ Aᴷ ⟶ Bᴷ ⟶ Cᴷ ⟶ 0` : alright
+
+/--
+Consider a surjective group hom `φ : G →* Q`, with kernel `K`.
+Suppose we have a short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0` in `Rep R G`.
 If `H¹(K,A) = 0` then the `K`-invariants form a short exact sequence in `Rep R Q`:
 
   `0 ⟶ Aᴷ ⟶ Bᴷ ⟶ Cᴷ ⟶ 0`, where `K = φ.ker`.
