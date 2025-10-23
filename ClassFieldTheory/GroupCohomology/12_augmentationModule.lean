@@ -213,6 +213,7 @@ lemma cohomology_aug_succ_iso' [Fintype G] {H : Type} [Group H] {φ : H →* G}
   groupCohomology.isIso_δ_of_isZero _ _ (isZero_of_injective _ _ _ (by omega) inj) <|
     isZero_of_injective _ _ _ (by omega) inj
 
+set_option maxHeartbeats 400000 in
 def H1_iso [Fintype G] :
     H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) :=
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| by
@@ -220,8 +221,9 @@ def H1_iso [Fintype G] :
     (ModuleCat.epi_iff_surjective _|>.1 <| epi_δ_of_isZero _ 0 <| by
     simpa using by exact isZero_of_trivialCohomology)
   refine Submodule.Quotient.equiv _ _ (H0trivial R G).symm.toLinearEquiv ?_
-  erw [← CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker <|
-    (mapShortComplex₃_exact) (aug_isShortExact R G) (rfl : 0 + 1 = 1)]
+  have : LinearMap.range _ = LinearMap.ker (δ (aug_isShortExact R G) 0 1 rfl).hom :=
+    (groupCohomology.mapShortComplex₃_exact (aug_isShortExact R G) rfl).moduleCat_range_eq_ker
+  rw [← this]
   apply le_antisymm
   · simp only [Nat.card_eq_fintype_card, Nat.reduceAdd]
     intro (x : H0 _)
@@ -230,9 +232,16 @@ def H1_iso [Fintype G] :
     rintro a rfl
     refine ⟨a • leftRegular.norm R G, ?_⟩
     apply (H0trivial R G).toLinearEquiv.injective
-    erw [ModuleCat.Iso_symm_iso, LinearEquiv.apply_symm_apply, map_comp_H0trivial_apply]
-    simp only [map_smul, smul_eq_mul]
-    rw [leftRegular.zeroι_norm, map_sum]
+    rw [ModuleCat.Iso_symm_iso, LinearEquiv.apply_symm_apply]
+    change (H0trivial R G).hom.hom _ = _
+    rw [show (mapShortComplex₃ ..).f = map (.id G) (ε R G) 0 by simp, ← LinearMap.comp_apply,
+      ← ModuleCat.hom_comp, map_comp_H0trivial]
+    simp only [ShortComplex.SnakeInput.L₁'_X₁, HomologicalComplex.HomologySequence.snakeInput_L₀,
+      Functor.mapShortComplex_obj, ShortComplex.map_X₂, cochainsFunctor_obj,
+      HomologicalComplex.homologyFunctor_obj, ModuleCat.hom_comp, map_smul, LinearMap.coe_comp,
+      Function.comp_apply, smul_eq_mul]
+    conv_lhs => enter [2, 2]; tactic => convert leftRegular.zeroι_norm R G
+    rw [map_sum]
     conv => enter [1, 2, 2, x]; erw [ε_of]
     simp
   · erw [Submodule.map_equiv_eq_comap_symm]
@@ -249,8 +258,7 @@ def H1_iso [Fintype G] :
     erw [leftRegular.zeroι_norm]
     convert_to (hom (ε R G).hom) (∑ g, leftRegular.of g) ∈ Ideal.span {(Fintype.card G : R)}
     rw [map_sum]
-    conv => enter [2, 2, x]; tactic => erw [ε_of]
-    simpa [Ideal.mem_span_singleton'] using ⟨1, one_mul _⟩
+    simpa [ε, leftRegular.of, Ideal.mem_span_singleton'] using ⟨1, one_mul _⟩
 
   /-
   If Tate cohomology is defined, then this is proved in the same way as the previous

@@ -192,7 +192,7 @@ def res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G
 open RepresentationTheory.groupCohomology
 
 lemma zeroι_norm [Fintype G] :
-    zeroι _ (leftRegular.norm R G) = ∑ g : G, leftRegular.of g := by
+    (zeroι _).hom (leftRegular.norm R G) = ∑ g : G, leftRegular.of g := by
   have := (groupCohomology.H0Iso (leftRegular R G)).toLinearEquiv.apply_symm_apply
     ⟨∑ g : G, MonoidAlgebra.of _ _ g,
     fun g ↦ by simpa using show ∑ x : G, MonoidAlgebra.of _ _ (g * x) = _ from
