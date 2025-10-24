@@ -266,7 +266,7 @@ variable (M : Rep R G)
 
 namespace zeroIso
 
-/-- The concrete short complex computing `0`-th Tate cohomology.-/
+/-- The concrete short complex computing `0`-th Tate cohomology. -/
 @[simps] private def sc : ShortComplex (ModuleCat R) :=
   .mk M.norm.hom (d₀₁ M) (norm_comp_d_eq_zero M)
 
@@ -281,7 +281,7 @@ namespace zeroIso
 end zeroIso
 
 /-- A concrete description of `0`-th Tate cohomology
-  as the quotient of invariants by the image of the norm.-/
+  as the quotient of invariants by the image of the norm. -/
 def zeroIso (M : Rep R G) : (tateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := calc
   (tateCohomology 0).obj M
@@ -299,11 +299,11 @@ namespace negOneIso
 
 variable (M : Rep R G)
 
-/-- The concrete short complex computing `-1`-th Tate cohomology.-/
+/-- The concrete short complex computing `-1`-st Tate cohomology. -/
 @[simps] private def sc : ShortComplex (ModuleCat R) := .mk (d₁₀ M) M.norm.hom (comp_eq_zero M)
 
-/-- The isomorphism between the concrete short complex computing `-1`-th Tate cohomology
-  and the corresponding parts of the Tate complex. -/
+/-- The isomorphism between the concrete short complex computing `-1`-st Tate cohomology
+and the corresponding parts of the Tate complex. -/
 @[simps!] private def isoShortComplexHneg1 :
     (tateComplex M).sc (-1) ≅ sc M :=
   (tateComplex M).isoSc' (-2) (-1) 0 (by simp) (by simp) ≪≫
@@ -313,8 +313,8 @@ variable (M : Rep R G)
 
 end negOneIso
 
-/-- A concrete description of `0`-th Tate cohomology
-  as the quotient of the kernel of the norm by the kernel of the coinvariants.-/
+/-- A concrete description of the `-1`-st Tate cohomology group
+as the quotient of the kernel of the norm by the kernel of the coinvariants. -/
 def negOneIso (M : Rep R G) : (tateCohomology (-1)).obj M ≅
     ModuleCat.of R (ker M.ρ.norm ⧸
       (Representation.Coinvariants.ker M.ρ).submoduleOf (ker M.ρ.norm)) := calc
@@ -347,7 +347,7 @@ def zeroIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] : (tateCohomology 0).obj M
     exact ⟨k, by simpa [Representation.norm] using hk⟩
   · simp [← hk, Submodule.submoduleOf, Representation.norm])
 
-/-- A concrete description of the `-1`-th Tate cohomology of a trivial representation. -/
+/-- A concrete description of the `-1`-st Tate cohomology of a trivial representation. -/
 def negOneIsoOfIsTrivial (M : Rep R G) [M.ρ.IsTrivial] :
     (tateCohomology (-1)).obj M ≅ ModuleCat.of R (ker (Nat.card G : M.V →ₗ[R] M.V)) :=
   TateCohomology.negOneIso M ≪≫

@@ -1,4 +1,6 @@
 import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+import ClassFieldTheory.Mathlib.LinearAlgebra.Isomorphisms
+import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
 
 /-!
 # Herbrand quotient of a finite representation
@@ -22,12 +24,17 @@ lemma herbrandQuotient_of_finite [Finite A] : ρ.herbrandQuotient = 1 := by
 
   The result follows because `|ker f| * |range f| = |M|` for any function `f : M → M`.
   -/
-  sorry
+  simp only [herbrandQuotient, Submodule.natCard_quotient, tateB0_le_tateZ0,
+    Submodule.natCard_submoduleOf, tateBNeg1_le_tateZNeg1, div_div_div_eq]
+  norm_cast
+  rw [mul_comm]
+  simp [tateZ0, tateZNeg1, tateB0, tateBNeg1, -LinearMap.mem_range, -LinearMap.mem_ker]
 
 end Representation
 
 namespace Rep
 
-lemma herbrandQuotient_of_finite (M : Rep R G) [Finite M] : M.herbrandQuotient = 1 := sorry
+lemma herbrandQuotient_of_finite (M : Rep R G) [Finite M] : M.herbrandQuotient = 1 := by
+  simpa using M.ρ.herbrandQuotient_of_finite
 
 end Rep
