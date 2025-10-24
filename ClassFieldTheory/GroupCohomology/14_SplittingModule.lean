@@ -1,4 +1,3 @@
-import Mathlib
 import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.GroupCohomology.«11_TrivialityCriterion»
 import ClassFieldTheory.GroupCohomology.«12_augmentationModule»

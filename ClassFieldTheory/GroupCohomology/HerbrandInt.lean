@@ -1,12 +1,10 @@
-import Mathlib
 import ClassFieldTheory.GroupCohomology.«13_HerbrandQuotient»
+import Mathlib.Data.ZMod.QuotientRing
 
 variable {G : Type} [Group G] [Fintype G] [IsCyclic G]
 
 open groupCohomology
   Representation
-
-attribute [-instance] NormedAddCommGroup.toENormedAddCommMonoid
 
 omit [IsCyclic G] in
 @[simp] lemma norm_trivial_int_eq_card : (trivial ℤ G ℤ).norm = Nat.card G := by
