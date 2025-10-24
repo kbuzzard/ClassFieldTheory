@@ -205,6 +205,11 @@ lemma cohomology_aug_succ_iso [Fintype G] (n : ℕ) :
   groupCohomology.isIso_δ_of_isZero _ _ Rep.isZero_of_trivialCohomology
     Rep.isZero_of_trivialCohomology
 
+lemma tateCohomology_auc_succ_iso [Fintype G] (n : ℤ) :
+    IsIso (TateCohomology.δ (aug_isShortExact R G) n) := by
+  have : TrivialTateCohomology (leftRegular R G) := inferInstance
+  exact TateCohomology.isIso_δ _ this _
+
 lemma H2_aug_isZero [Fintype G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
   /-
   This follows from `cohomology_aug_succ_iso` and `groupCohomology.H1_isZero_of_trivial`.

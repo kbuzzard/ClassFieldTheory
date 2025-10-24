@@ -361,11 +361,23 @@ lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     apply IsZero.of_iso (TateTheorem_lemma_3 σ inj)
     rfl
 
+lemma isIso_δ [Fintype G] (n : ℤ) :
+    IsIso (TateCohomology.δ (Rep.split.isShortExact σ) n) := by
+  have : TrivialTateCohomology (split σ) := sorry
+  exact TateCohomology.isIso_δ _ this _
 
 def tateCohomology_iso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
-    (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M := by
-  have := aug.cohomology_aug_succ_iso R G -- no good, it's for naturals.
-  sorry
+    (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M :=
+  -- first go from H^n(trivial) to H^{n+1}(aug)
+  have first_iso := Rep.aug.tateCohomology_auc_succ_iso R G n
+  -- now go from H^{n+1}(aug) to H^{n+2}(M)
+  have second_iso := Rep.split.isIso_δ σ (n + 1)
+  -- map starts here
+  (CategoryTheory.asIso (TateCohomology.δ (aug.aug_isShortExact R G) n)) ≪≫
+  (CategoryTheory.asIso (TateCohomology.δ (Rep.split.isShortExact σ) (n + 1))) ≪≫
+  eqToIso (by
+    congr 2
+    ring)
 
 def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
     (tateCohomology 0).obj N ≅ ModuleCat.of ℤ (Additive (Abelianization G)) := by

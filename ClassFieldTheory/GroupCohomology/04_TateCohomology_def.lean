@@ -184,6 +184,22 @@ noncomputable abbrev δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : �
     (tateCohomology n).obj S.X₃ ⟶ (tateCohomology (n + 1)).obj S.X₁ :=
   (map_tateComplexFunctor_shortExact hS).δ n (n + 1) rfl
 
+lemma map_δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    (tateCohomology n).map S.g ≫ δ hS n = 0 :=
+  (map_tateComplexFunctor_shortExact hS).comp_δ _ _ _
+
+lemma δ_map {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    δ hS n ≫ (tateCohomology (n + 1)).map S.f = 0 :=
+  (map_tateComplexFunctor_shortExact hS).δ_comp _ _ _
+
+lemma exact₃ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    (ShortComplex.mk _ _ (map_δ hS n)).Exact :=
+  (map_tateComplexFunctor_shortExact hS).homology_exact₃ ..
+
+lemma exact₁ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    (ShortComplex.mk _ _ (δ_map hS n)).Exact :=
+  (map_tateComplexFunctor_shortExact hS).homology_exact₁ ..
+
 /-- The isomorphism between `n+1`-th Tate cohomology and `n+1`-th group cohomology for `n : ℕ`. -/
 def isoGroupCohomology (n : ℕ)  :
     tateCohomology.{u} (n + 1) ≅ groupCohomology.functor.{u} R G (n + 1) :=
