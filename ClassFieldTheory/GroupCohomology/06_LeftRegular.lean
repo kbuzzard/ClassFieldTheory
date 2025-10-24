@@ -2,7 +2,7 @@ import Mathlib
 import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 
 /-!
-# helper lemmas concerning the object `leftRegular R G` of `Rep R G`.
+# Helper lemmas about the left regular representation
 -/
 
 section Group
