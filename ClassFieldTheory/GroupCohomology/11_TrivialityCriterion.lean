@@ -7,7 +7,7 @@ import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
 import ClassFieldTheory.GroupCohomology.«15_corestriction»
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 
-/-
+/-!
 Suppose `G` is a finite group, and there are positive integers `r` and `s`
 with `r` even and `s` odd, such that `Hʳ(S,M) ≅ Hˢ(S,M) ≅ 0` for all subgroup `S` of `G`.
 Then we prove that `M` has trivial cohomology.

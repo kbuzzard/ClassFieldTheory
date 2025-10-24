@@ -13,7 +13,7 @@ open
 open Rep hiding of
 open scoped CategoryTheory BigOperators
 
-/-
+/-!
 # helper lemmas concerning the object `leftRegular R G` of `Rep R G`.
 -/
 namespace Rep.leftRegular
