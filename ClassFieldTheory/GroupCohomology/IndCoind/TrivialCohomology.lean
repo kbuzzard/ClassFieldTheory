@@ -132,6 +132,13 @@ instance trivialHomology_coind₁AsPi : TrivialHomology (coind₁AsPi G A) :=
 instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     TrivialTateCohomology (Rep.coind₁AsPi G A) := by
   classical
+  -- have := Rep.tateCohomology_of_trivialCohomology
+  -- infer_instance
+  -- **TODO** We have a sorried theorem proving
+  -- that if G is finite and M has trivial cohomology then M has
+  -- trivial Tate cohomology.
+  -- https://kbuzzard.github.io/ClassFieldTheory/docs/ClassFieldTheory/GroupCohomology/11_TrivialityCriterion.html#Rep.tateCohomology_of_trivialCohomology
+  -- Why is this not being used here? (answer: import cycle)
   -- We already know it has trivial homology and cohomology, therefore we only need check the 0-th
   -- and -1-st cohomology groups are trivial.
   refine .of_cases fun H ↦ ?_
