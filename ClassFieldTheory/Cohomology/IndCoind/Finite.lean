@@ -1,6 +1,8 @@
-import ClassFieldTheory.GroupCohomology.«03_inflation»
+import ClassFieldTheory.Cohomology.Functors.Inflation
+import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
+import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.FieldTheory.Galois.NormalBasis
 import Mathlib.RepresentationTheory.FiniteIndex

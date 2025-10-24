@@ -1,4 +1,4 @@
-import ClassFieldTheory.GroupCohomology.«02_restriction»
+import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact

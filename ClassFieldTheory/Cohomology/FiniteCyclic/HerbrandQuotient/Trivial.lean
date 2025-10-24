@@ -1,14 +1,19 @@
-import ClassFieldTheory.GroupCohomology.«13_HerbrandQuotient»
+import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 import Mathlib.Data.ZMod.QuotientRing
+
+/-!
+# Herbrand quotient of the trivial representation
+
+In this file, we show the Herbrand quotient of a trivial representation is `1`.
+-/
 
 variable {G : Type} [Group G] [Fintype G] [IsCyclic G]
 
 open groupCohomology
   Representation
 
-omit [IsCyclic G] in
-@[simp] lemma norm_trivial_int_eq_card : (trivial ℤ G ℤ).norm = Nat.card G := by
-  ext; simp [Representation.norm]
+namespace Representation
 
 omit [Fintype G] in
 @[simp] lemma oneSubGen_trivial_int_eq_zero : (trivial ℤ G ℤ).oneSubGen = 0 := by
@@ -22,8 +27,8 @@ omit [IsCyclic G] in
     (trivial ℤ G ℤ).herbrandB0 = Ideal.span {(Nat.card G : ℤ)} := by
   ext; simp [herbrandB0, Ideal.mem_span_singleton', mul_comm]
 
-def herbrandH0TrivIntAddEquivQuotCard : (trivial ℤ G ℤ).herbrandH0 ≃ₗ[ℤ]
-    ℤ ⧸ Ideal.span {(Nat.card G : ℤ)} :=
+def herbrandH0TrivIntAddEquivQuotCard :
+    (trivial ℤ G ℤ).herbrandH0 ≃ₗ[ℤ] ℤ ⧸ Ideal.span {(Nat.card G : ℤ)} :=
   Submodule.Quotient.equiv _ _
     (LinearEquiv.ofEq _ _ herbrandZ0_trivial_int_eq_top ≪≫ₗ Submodule.topEquiv) <| by
       simp only [Submodule.submoduleOf, herbrandB0_trivial_int_eq_span_card]
@@ -42,12 +47,11 @@ instance : Subsingleton (trivial ℤ G ℤ).herbrandZ1 := by
   rw [norm_trivial_int_eq_card]
   constructor
   rintro ⟨a, ha⟩ ⟨b, hb⟩
-  have : a = 0 := by simpa [ne_of_gt (Nat.card_pos (α := G))] using ha
-  have : b = 0 := by simpa [ne_of_gt (Nat.card_pos (α := G))] using hb
-  simp [*]
+  obtain rfl : a = 0 := by simpa [ne_of_gt (Nat.card_pos (α := G))] using ha
+  obtain rfl : b = 0 := by simpa [ne_of_gt (Nat.card_pos (α := G))] using hb
+  simp
 
-instance : Subsingleton (trivial ℤ G ℤ).herbrandH1 :=
-  Quot.Subsingleton
+instance : Subsingleton (trivial ℤ G ℤ).herbrandH1 := Quot.Subsingleton
 
 variable (G) in
 theorem herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
@@ -55,7 +59,8 @@ theorem herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G �
   rw [card_herbrandH0_trivial_int, Nat.card_of_subsingleton (0 : (trivial ℤ G ℤ).herbrandH1)]
   simp only [Nat.cast_one, div_one]
 
+end Representation
+
 variable (G) in
-theorem Rep.herbrandQuotient_trivial_int_eq_card :
-    Rep.herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
-  classical rw [trivial, herbrandQuotient_of, _root_.herbrandQuotient_trivial_int_eq_card]
+lemma Rep.herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
+  classical rw [trivial, herbrandQuotient_of, Representation.herbrandQuotient_trivial_int_eq_card]

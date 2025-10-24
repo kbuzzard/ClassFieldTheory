@@ -1,6 +1,5 @@
-import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
-import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
-import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
+import ClassFieldTheory.Cohomology.Functors.UpDown
+import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
