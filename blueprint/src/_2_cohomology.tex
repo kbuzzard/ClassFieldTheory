@@ -1675,8 +1675,11 @@ very precisely here:
 
 \section{Herbrand quotients}
 
-\begin{definition} \label{def:herbrand quotient}
-	\uses{def:Tate cohomology}
+\begin{definition}
+  \label{def:herbrand quotient}
+  \uses{def:Tate cohomology}
+	\lean{Representation.herbrandQuotient, Rep.herbrandQuotient}
+  \leanok
 	Let $G$ be a finite cyclic group and $M$ a representation of $G$.
 	Recall that there are isomorphisms $H^n_{\Tate}(G,M) \cong H^{n+2}_{\Tate}(G,M)$.
 	We define the Herbrand quotient of $M$ to be
@@ -1686,15 +1689,22 @@ very precisely here:
 	If either of the two cohomology groups are infinite then $h(G,M)$ defaults to $0$.
 \end{definition}
 
-\begin{example} \label{eg:herbrand Z}
+\begin{example}
+  \label{eg:herbrand Z}
 	\uses{lem:H2 cyclic Z}
+  \lean{Representation.herbrandQuotient_trivial_int_eq_card,
+    Rep.herbrandQuotient_trivial_int_eq_card}
+  \leanok
 	If $G$ is a cyclic group and $\Z$ has the trivial action of $G$ then $h(G,\Z) = |G|$.
 	This follow immediately from \ref{lem:H2 cyclic Z}.
 \end{example}
 
 
-\begin{lemma} \label{lem:herbrand finite}
+\begin{lemma}
+  \label{lem:herbrand finite}
 	\uses{lem:Tate cohomology is cohomology or homology}
+  \lean{Representation.herbrandQuotient_of_finite, Rep.herbrandQuotient_of_finite}
+  \leanok
 	If $M$ is finite then $h(G,M)=1$.
 \end{lemma}
 
