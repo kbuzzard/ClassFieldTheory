@@ -1,4 +1,3 @@
-import Mathlib
 import ClassFieldTheory.GroupCohomology.«09_CyclicGroup»
 import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
 
