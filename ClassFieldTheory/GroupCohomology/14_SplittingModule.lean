@@ -296,7 +296,7 @@ For any subgroup H of `G`, the connecting hommorphism in the splitting module lo
 
 is an isomorphism.
 -/
-lemma TateTheorem_lemma_2 [FiniteClassFormation σ] :
+lemma TateTheorem_lemma_2 [FiniteClassFormation σ] [Fintype H] :
     IsIso (δ (res_isShortExact σ φ) 1 2 rfl) := by
   let e₁ : groupCohomology (aug R G ↓ φ) 1 ≅ .of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
     Rep.aug.H1_iso' R G inj
@@ -324,7 +324,7 @@ lemma TateTheorem_lemma_2 [FiniteClassFormation σ] :
   exact S.L₂'_exact.epi_f_iff.mpr (TateTheorem_lemma_1 _ inj)
 
 include inj in
-lemma TateTheorem_lemma_3 [FiniteClassFormation σ] :
+lemma TateTheorem_lemma_3 [FiniteClassFormation σ] [Fintype H] :
     IsZero (H1 (split σ ↓ φ)) := by
   let S := HomologicalComplex.HomologySequence.snakeInput
     (map_cochainsFunctor_shortExact <| res_isShortExact (R := R) σ φ) 1 2 rfl
@@ -357,6 +357,7 @@ lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     apply IsZero.of_iso (TateTheorem_lemma_4 σ inj)
     rfl
   · intro H _ φ inj _
+    let : Fintype H := Fintype.ofInjective φ inj
     apply IsZero.of_iso (TateTheorem_lemma_3 σ inj)
     rfl
 
