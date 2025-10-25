@@ -1,6 +1,8 @@
 import ClassFieldTheory.Cohomology.AugmentationModule
 import ClassFieldTheory.Cohomology.Examples.Examples
 import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Finite
+import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
 import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Trivial
 import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
 import ClassFieldTheory.Cohomology.Functors.Corestriction
@@ -10,7 +12,6 @@ import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
-import ClassFieldTheory.Cohomology.LeftRegular
 import ClassFieldTheory.Cohomology.LocalInv
 import ClassFieldTheory.Cohomology.SplittingModule
 import ClassFieldTheory.Cohomology.TateCohomology
@@ -36,12 +37,14 @@ import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
+import ClassFieldTheory.Mathlib.Data.Finsupp.Single
 import ClassFieldTheory.Mathlib.Data.Int.WithZero
 import ClassFieldTheory.Mathlib.FieldTheory.Separable
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
+import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
