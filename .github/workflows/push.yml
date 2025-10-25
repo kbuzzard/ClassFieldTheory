@@ -23,11 +23,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      # TODO: Enforce
-      # - name: Don't 'import Mathlib', use precise imports
-      #   if: always()
-      #   run: |
-      #     ! (find ClassFieldTheory -name "*.lean" -type f -print0 | xargs -0 grep -E -n '^import Mathlib$')
+      - name: Don't 'import Mathlib', use precise imports
+        if: always()
+        run: |
+          ! (find ClassFieldTheory -name "*.lean" -type f -print0 | xargs -0 grep -E -n '^import Mathlib$')
 
       - name: Files in ClassFieldTheory.Mathlib can't import ClassFieldTheory files outside ClassFieldTheory.Mathlib
         run: |

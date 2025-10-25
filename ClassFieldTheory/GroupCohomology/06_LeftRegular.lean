@@ -1,7 +1,10 @@
-import Mathlib
 import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
 import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
+
+/-!
+# Helper lemmas about the left regular representation
+-/
 
 section Group
 
@@ -15,9 +18,6 @@ open
 open Rep hiding of
 open scoped CategoryTheory BigOperators
 
-/-
-# helper lemmas concerning the object `leftRegular R G` of `Rep R G`.
--/
 namespace Rep.leftRegular
 
 /--
@@ -41,13 +41,7 @@ lemma eq_sum_smul_of (v : leftRegular R G) : v = ∑ x ∈ v.support, (v x) • 
 lemma ρ_apply (g : G) : (leftRegular R G).ρ g = lmapDomain R R (g * ·) := rfl
 
 lemma ρ_apply₃_self_mul (g : G) (v : leftRegular R G) (x : G) :
-    ((leftRegular R G).ρ g v) (g * x) = v x := by
-  rw [ρ_apply, lmapDomain_apply]
-  have : Function.Injective (g * ·)
-  · intro x y hxy
-    dsimp at hxy
-    simpa using hxy
-  exact mapDomain_apply this v x
+    (leftRegular R G).ρ g v (g * x) = v x := mapDomain_apply (mul_right_injective _) v x
 
 lemma ρ_apply₃ (g : G) (v : leftRegular R G) (x : G) :
     ((leftRegular R G).ρ g v) x = v (g⁻¹ * x) := by
@@ -101,8 +95,7 @@ lemma ε_comp_ρ_apply (g : G) (v : (leftRegular R G).V) :
 
 @[simp]
 lemma ε_of (g : G) : ε R G (of g) = (1 : R) := by
-  have : of g = (leftRegular R G).ρ g (of 1)
-  · rw [ρ_apply_of, mul_one]
+  have : of g = (leftRegular R G).ρ g (of 1) := by rw [ρ_apply_of, mul_one]
   rw [this, ε_comp_ρ_apply, ε_of_one]
 
 instance : AddMonoidHomClass (Action.HomSubtype (ModuleCat R) G (leftRegular R G) (trivial R G R))

@@ -9,6 +9,8 @@ import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 
 /-!
 # (Co)induced modules have trivial (co)homology
@@ -212,8 +214,8 @@ instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : 
 instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
   have iso := (quotientToInvariantsFunctor' surj).mapIso (coind₁'_obj_iso_coind₁ M)
-  have _ : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
-  · exact coind₁_quotientToInvariants_trivialCohomology M.V surj
+  have : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology :=
+    coind₁_quotientToInvariants_trivialCohomology M.V surj
   exact .of_iso iso
 
 end Rep

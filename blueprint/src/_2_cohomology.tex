@@ -610,7 +610,7 @@ may both be regarded as part of a bigger cohomology theory, which is called Tate
 	\]
 	The exactness statements are in Mathlib in the namespace
 	\texttt{HomologicalComplex.HomologySequence}.
-	The connecting maps $\delta : H^n_{\Tate}(G,C) \to H^n_{\Tate}(G,A)$
+	The connecting maps $\delta : H^n_{\Tate}(G,C) \to H^{n+1}_{\Tate}(G,A)$
 	coincide with those for cohomology for $n \ge 1$ and with those for homology for $n \le -3$.
 \end{definition}
 
@@ -742,22 +742,22 @@ This case is described again below.
 
 \begin{proof}
 	\leanok
-	Let $S$ be a subgroup of $G$ and let $R$ be a set of representatives for the cosets $rS$
+	Let $S$ be a subgroup of $G$ and let $C$ be a set of representatives for the cosets $cS$
 	of $S$ in $G$.
 	There is an isomorphism of $S$-representations
 	\[
 		\coind_1(G,M) \downarrow S
 		\cong
-		\coind_1(S,R \to M).
+		\coind_1(S,C \to M).
 	\]
-	This isomorphism takes a function $f : G \to M$ to function $S \to (R \to M)$
-	defined by $s \mapsto (r \mapsto f(rs))$.
+	This isomorphism takes a function $f : G \to M$ to function $S \to (C \to M)$
+	defined by $s \mapsto (c \mapsto f(cs))$.
 
 	The isomorphism, together with \ref{lem:Shapiro} and \ref{lem:Hn unit} implies for $n >0$:
 	\[
 		H^n(S,\coind_1(G,M)) \cong
-		H^n(S,\coind_1(S,R \to M)) \cong
-		H^n(1,R \to M) \cong 0.
+		H^n(S,\coind_1(S,C \to M)) \cong
+		H^n(1,C \to M) \cong 0.
 	\]
 \end{proof}
 
@@ -836,10 +836,10 @@ This case is described again below.
 \begin{proof}
 	\leanok
 	The restriction of $\ind_1(G,A)$ to a subgroup $S$ is
-	isomorphic to $\ind_1(S, R \to_0 A)$, where $R$ is a set of coset representatives for $S$ in $G$.
+	isomorphic to $\ind_1(S, C \to_0 A)$, where $C$ is a set of coset representatives for the cosets $cS$ of $S$ in $G$.
 	Hence by 	\ref{lem:Shapiro} we have
 	\[
-		H^n(S,\ind_1(G,A)) \cong H^n(1,R \to_0 A).
+		H_n(S,\ind_1(G,A)) \cong H_n(S,\ind_1(S,C\to_0 A)\cong H_n(1,C \to_0 A).
 	\]
 	The result now follows from \ref{eg:homology unit}.
 \end{proof}
@@ -1378,7 +1378,7 @@ We define this now, and point out some easy consequences of the definition.
 	\[
 		N_{G/S}(m) = \sum_i r_i \bullet m.
 	\]
-	This map does not depend on the choince of coset representatives.
+	This map does not depend on the choice of coset representatives.
 	Also, the map $N_{G/S}$ is a morphism of functors, i.e. for every map $f : A \to B$ in
 	$\Rep(R,G)$ we have a commuting square in $\Mod(R)$:
 	\[
@@ -1549,12 +1549,13 @@ This is given by
 	\lean{Representation.map₁,
 		Representation.map₁_ker,
 		Representation.map₂_range,
-		Rep.up_iso_down}
+		Rep.upIsoDown}
 	\uses{def:up,
 		def:down,
 		lem:map2 image
 	}
-We have a commutative square with vertical isomorphisms:
+  \leanok
+  We have a commutative square with vertical isomorphisms:
 	\[
 		\begin{matrix}
 			\ind_1'(M) & \stackrel{\map_2}\to & \ind_1'(M) \\
@@ -1674,8 +1675,11 @@ very precisely here:
 
 \section{Herbrand quotients}
 
-\begin{definition} \label{def:herbrand quotient}
-	\uses{def:Tate cohomology}
+\begin{definition}
+  \label{def:herbrand quotient}
+  \uses{def:Tate cohomology}
+	\lean{Representation.herbrandQuotient, Rep.herbrandQuotient}
+  \leanok
 	Let $G$ be a finite cyclic group and $M$ a representation of $G$.
 	Recall that there are isomorphisms $H^n_{\Tate}(G,M) \cong H^{n+2}_{\Tate}(G,M)$.
 	We define the Herbrand quotient of $M$ to be
@@ -1685,15 +1689,22 @@ very precisely here:
 	If either of the two cohomology groups are infinite then $h(G,M)$ defaults to $0$.
 \end{definition}
 
-\begin{example} \label{eg:herbrand Z}
+\begin{example}
+  \label{eg:herbrand Z}
 	\uses{lem:H2 cyclic Z}
+  \lean{Representation.herbrandQuotient_trivial_int_eq_card,
+    Rep.herbrandQuotient_trivial_int_eq_card}
+  \leanok
 	If $G$ is a cyclic group and $\Z$ has the trivial action of $G$ then $h(G,\Z) = |G|$.
 	This follow immediately from \ref{lem:H2 cyclic Z}.
 \end{example}
 
 
-\begin{lemma} \label{lem:herbrand finite}
+\begin{lemma}
+  \label{lem:herbrand finite}
 	\uses{lem:Tate cohomology is cohomology or homology}
+  \lean{Representation.herbrandQuotient_of_finite, Rep.herbrandQuotient_of_finite}
+  \leanok
 	If $M$ is finite then $h(G,M)=1$.
 \end{lemma}
 
