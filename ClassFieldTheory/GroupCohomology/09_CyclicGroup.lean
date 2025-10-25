@@ -369,13 +369,13 @@ lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
 def upIsoDown : up (R := R) (G := G) ≅ down := calc
     up (R := R) (G := G)
       ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
-      ShortComplex.cokernelIsoCoimage periodSeq₁Functor exact_periodSeq₁
+      ShortComplex.cokerIsoCoimage periodSeq₁Functor exact_periodSeq₁
     _ ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
       (Functor.associator ..).symm
     _ ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ imageFunctor :=
       Functor.isoWhiskerLeft _ coimageFunctorIsoImageFunctor
     _ ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor := Functor.associator ..
-    _ ≅ down := (ShortComplex.kernelIsoImage periodSeq₂Functor exact_periodSeq₂).symm
+    _ ≅ down := (ShortComplex.kerIsoImage periodSeq₂Functor exact_periodSeq₂).symm
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by

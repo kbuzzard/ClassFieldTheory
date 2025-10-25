@@ -270,7 +270,8 @@ def zeroIso (M : Rep R G) : (tateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := calc
   (tateCohomology 0).obj M
     ≅ (zeroIso.sc M).homology := ShortComplex.homologyMapIso (zeroIso.isoShortComplexH0 M)
-  _ ≅ ModuleCat.of R (ker (groupCohomology.d₀₁ M).hom ⧸ _) := ShortComplex.moduleCatHomologyIso _
+  _ ≅ ModuleCat.of R (LinearMap.ker (groupCohomology.d₀₁ M).hom ⧸ _) :=
+    ShortComplex.moduleCatHomologyIso _
   _ ≅ ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := by
     refine (Submodule.Quotient.equiv _ _
       (LinearEquiv.ofEq _ _ (d₀₁_ker_eq_invariants M)) ?_).toModuleIso
@@ -306,7 +307,8 @@ def negOneIso (M : Rep R G) : (tateCohomology (-1)).obj M ≅
   _ ≅ ModuleCat.of R (LinearMap.ker M.ρ.norm ⧸ _) := ShortComplex.moduleCatHomologyIso _
   _ ≅ _ := by
     refine (Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ rfl) ?_).toModuleIso
-    apply Submodule.map_injective_of_injective (f := (ker _).subtype) Subtype.val_injective
+    apply Submodule.map_injective_of_injective (f := (LinearMap.ker _).subtype)
+      Subtype.val_injective
     rw [← range_d₁₀_eq_coinvariantsKer, Submodule.submoduleOf, Submodule.map_comap_eq_of_le,
       ← Submodule.map_coe_toLinearMap (F := _ ≃ₗ[R] _), ← Submodule.map_comp,
       ← LinearMap.range_comp]
