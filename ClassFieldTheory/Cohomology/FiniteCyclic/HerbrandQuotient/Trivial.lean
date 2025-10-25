@@ -1,4 +1,4 @@
-import ClassFieldTheory.GroupCohomology.«13_HerbrandQuotient»
+import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
 import Mathlib.Data.ZMod.QuotientRing
 
 variable {G : Type} [Group G] [Fintype G] [IsCyclic G]

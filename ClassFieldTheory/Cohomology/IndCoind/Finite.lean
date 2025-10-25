@@ -1,4 +1,4 @@
-import ClassFieldTheory.GroupCohomology.«03_inflation»
+import ClassFieldTheory.Cohomology.Functors.Inflation
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import Mathlib.Data.Finsupp.Notation

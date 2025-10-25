@@ -4,8 +4,8 @@ Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru, Michał Mrugała
 -/
-import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
-import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
+import ClassFieldTheory.Cohomology.IndCoind.Finite
+import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep

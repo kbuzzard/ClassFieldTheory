@@ -1,6 +1,6 @@
-import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
-import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
+import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
+import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Helper lemmas about the left regular representation

@@ -1,9 +1,8 @@
-import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
-import ClassFieldTheory.GroupCohomology.«02_restriction»
-import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
-import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
+import ClassFieldTheory.Cohomology.Functors.Restriction
+import ClassFieldTheory.Cohomology.Functors.UpDown
+import ClassFieldTheory.Cohomology.LeftRegular
+import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-
 
 /-!
 Let `R` be a commutative ring and `G` a group.

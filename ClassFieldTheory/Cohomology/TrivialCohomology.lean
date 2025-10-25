@@ -1,4 +1,4 @@
-import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
+import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
