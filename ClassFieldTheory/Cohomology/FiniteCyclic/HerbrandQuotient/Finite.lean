@@ -13,7 +13,7 @@ namespace Representation
 
 lemma herbrandQuotient_of_finite [Finite A] : ρ.herbrandQuotient = 1 := by
   /-
-  Consider the linear maps `oneSubGen norm : M → M` defined to be multiplication by `1 - gen G`
+  Consider the linear maps `oneSubGen` and `norm : M → M` defined to be multiplication by `1 - gen G`
   and norm respectively. The kernel of `oneSubGen` is the submodule of `G`-invariants, and the
   cokernel of `oneSubGen` is the quotient module of coinvariants. We therefore have (for Tate
   groups):
