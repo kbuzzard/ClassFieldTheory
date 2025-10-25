@@ -1,4 +1,4 @@
-import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
+import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
@@ -114,7 +114,7 @@ lemma TrivialTateCohomology.of_injective [Fintype G] {M : Rep R G} {H : Type} [F
     (MonoidHom.ofInjective hf) (Iso.refl _) (by aesop) _
 
 lemma isZero_of_trivialTateCohomology [Fintype G] {M : Rep R G}
-    [M.TrivialTateCohomology] {n : ℕ} : IsZero ((tateCohomology n).obj M) :=
+    [M.TrivialTateCohomology] {n : ℤ} : IsZero ((tateCohomology n).obj M) :=
   TrivialTateCohomology.of_injective (.id G) n Function.injective_id
 
 instance TrivialTateCohomology.to_trivialCohomology [Fintype G] {M : Rep R G}
@@ -186,5 +186,11 @@ noncomputable def _root_.TrivialTateCohomology.zeroIso_ofTrivial
     rw [Representation.norm_ofIsTrivial]
     ext m
     simp [Submodule.submoduleOf]
+
+theorem _root_.TateCohomology.isIso_δ [Fintype G] {S : ShortComplex (Rep R G)}
+    (hS : S.ShortExact) (hS2 : TrivialTateCohomology S.X₂) (n : ℤ) :
+    IsIso (TateCohomology.δ hS n) :=
+  (TateCohomology.map_tateComplexFunctor_shortExact hS).isIso_δ _ _ _
+    isZero_of_trivialTateCohomology isZero_of_trivialTateCohomology
 
 end Rep

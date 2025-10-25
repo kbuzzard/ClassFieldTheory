@@ -1,11 +1,9 @@
-import ClassFieldTheory.GroupCohomology.«02_restriction»
+import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 open
   CategoryTheory
@@ -157,13 +155,11 @@ instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) : (S.map tateComplexFunctor).ShortExact := by
   rw [HomologicalComplex.shortExact_iff_degreewise_shortExact]
-  intro i
-  rw [← ShortComplex.map_comp]
-  cases i
-  · apply ShortComplex.shortExact_map_of_natIso _ (tateComplex.eval_nonneg _).symm
-    exact map_cochainsFunctor_eval_shortExact _ hS
-  apply ShortComplex.shortExact_map_of_natIso _ (tateComplex.eval_neg _).symm
-  exact map_chainsFunctor_eval_shortExact _ hS
+  simp_rw [← ShortComplex.map_comp]
+  rintro (_ | _)
+  · exact .map_of_natIso _ (tateComplex.eval_nonneg _).symm <|
+      map_cochainsFunctor_eval_shortExact _ hS
+  · exact .map_of_natIso _ (tateComplex.eval_neg _).symm <| map_chainsFunctor_eval_shortExact _ hS
 
 instance : (tateComplexFunctor (R := R) (G := G)).Additive where
 
@@ -187,6 +183,22 @@ end Exact
 noncomputable abbrev δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
     (tateCohomology n).obj S.X₃ ⟶ (tateCohomology (n + 1)).obj S.X₁ :=
   (map_tateComplexFunctor_shortExact hS).δ n (n + 1) rfl
+
+lemma map_δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    (tateCohomology n).map S.g ≫ δ hS n = 0 :=
+  (map_tateComplexFunctor_shortExact hS).comp_δ _ _ _
+
+lemma δ_map {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    δ hS n ≫ (tateCohomology (n + 1)).map S.f = 0 :=
+  (map_tateComplexFunctor_shortExact hS).δ_comp _ _ _
+
+lemma exact₃ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    (ShortComplex.mk _ _ (map_δ hS n)).Exact :=
+  (map_tateComplexFunctor_shortExact hS).homology_exact₃ ..
+
+lemma exact₁ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
+    (ShortComplex.mk _ _ (δ_map hS n)).Exact :=
+  (map_tateComplexFunctor_shortExact hS).homology_exact₁ ..
 
 /-- The isomorphism between `n+1`-th Tate cohomology and `n+1`-th group cohomology for `n : ℕ`. -/
 def isoGroupCohomology (n : ℕ)  :
@@ -274,7 +286,8 @@ def zeroIso (M : Rep R G) : (tateCohomology 0).obj M ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := calc
   (tateCohomology 0).obj M
     ≅ (zeroIso.sc M).homology := ShortComplex.homologyMapIso (zeroIso.isoShortComplexH0 M)
-  _ ≅ ModuleCat.of R (ker (groupCohomology.d₀₁ M).hom ⧸ _) := ShortComplex.moduleCatHomologyIso _
+  _ ≅ ModuleCat.of R (LinearMap.ker (groupCohomology.d₀₁ M).hom ⧸ _) :=
+    ShortComplex.moduleCatHomologyIso _
   _ ≅ ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := by
     refine (Submodule.Quotient.equiv _ _
       (LinearEquiv.ofEq _ _ (d₀₁_ker_eq_invariants M)) ?_).toModuleIso
@@ -310,7 +323,8 @@ def negOneIso (M : Rep R G) : (tateCohomology (-1)).obj M ≅
   _ ≅ ModuleCat.of R (LinearMap.ker M.ρ.norm ⧸ _) := ShortComplex.moduleCatHomologyIso _
   _ ≅ _ := by
     refine (Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ rfl) ?_).toModuleIso
-    apply Submodule.map_injective_of_injective (f := (ker _).subtype) Subtype.val_injective
+    apply Submodule.map_injective_of_injective (f := (LinearMap.ker _).subtype)
+      Subtype.val_injective
     rw [← range_d₁₀_eq_coinvariantsKer, Submodule.submoduleOf, Submodule.map_comap_eq_of_le,
       ← Submodule.map_coe_toLinearMap (F := _ ≃ₗ[R] _), ← Submodule.map_comp,
       ← LinearMap.range_comp]

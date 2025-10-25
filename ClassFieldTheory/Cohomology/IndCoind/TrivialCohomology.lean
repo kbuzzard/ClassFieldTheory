@@ -4,11 +4,13 @@ Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru, Michał Mrugała
 -/
-import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
-import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
+import ClassFieldTheory.Cohomology.IndCoind.Finite
+import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 
 /-!
 # (Co)induced modules have trivial (co)homology
@@ -130,8 +132,6 @@ instance trivialHomology_coind₁AsPi : TrivialHomology (coind₁AsPi G A) :=
 instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     TrivialTateCohomology (Rep.coind₁AsPi G A) := by
   classical
-  -- We already know it has trivial homology and cohomology, therefore we only need check the 0-th
-  -- and -1-st cohomology groups are trivial.
   refine .of_cases fun H ↦ ?_
   -- Let's collect some trivialities.
   letI : Fintype G := .ofFinite _
@@ -212,8 +212,8 @@ instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : 
 instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
   have iso := (quotientToInvariantsFunctor' surj).mapIso (coind₁'_obj_iso_coind₁ M)
-  have _ : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology
-  · exact coind₁_quotientToInvariants_trivialCohomology M.V surj
+  have : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology :=
+    coind₁_quotientToInvariants_trivialCohomology M.V surj
   exact .of_iso iso
 
 end Rep

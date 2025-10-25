@@ -1,9 +1,9 @@
-import ClassFieldTheory.GroupCohomology.«03_inflation»
-import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
+import ClassFieldTheory.Cohomology.Functors.Inflation
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
-import Mathlib.FieldTheory.Galois.NormalBasis
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+import Mathlib.Data.Finsupp.Notation
+import Mathlib.FieldTheory.Galois.NormalBasis
+import Mathlib.RepresentationTheory.FiniteIndex
 
 /-!
 Let `G` be a group. We define two functors:
@@ -287,28 +287,28 @@ between `ind₁' ρ` and `ind₁ R G V`.
       simp [ind₁'_invlmap_aux]
   right_inv f := by
     rw [LinearMap.toFun_eq_coe]
-    induction' f using Submodule.Quotient.induction_on with f
-    induction' f using TensorProduct.induction_on
-    · simp
-    · rename_i x y
-      simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
-        LinearEquiv.ofLinear_toLinearMap, LinearMap.coe_comp, Function.comp_apply]
-      change ρ.ind₁'_lmap ((TensorProduct.lift ρ.ind₁'_invlmap_aux)
-        (LinearMap.id (R := R) (x ⊗ₜ[R] y))) = Submodule.Quotient.mk (x ⊗ₜ[R] y)
-      simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul]
-      induction x using Finsupp.induction_linear
-      · simp
-      · rename_i f g h1 h2
-        rw [map_add, LinearMap.add_apply, map_add, h1, h2, TensorProduct.add_tmul]
-        rfl
-      · rename_i g r
-        simp [ind₁'_invlmap_aux, Coinvariants.mk]
-        rw [← map_smul, ← Submodule.mkQ_apply]
-        congr
-        rw [TensorProduct.smul_tmul', Finsupp.smul_single, smul_eq_mul, mul_one]
-    · rename_i f g h1 h2
+    induction f using Submodule.Quotient.induction_on with | H f
+    induction f using TensorProduct.induction_on with
+    | zero => simp
+    | add f g h1 h2 =>
       rw [← Submodule.mkQ_apply, map_add, map_add, map_add,
         Submodule.mkQ_apply, Submodule.mkQ_apply, h1, h2]
+    | tmul x y =>
+    simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
+      LinearEquiv.ofLinear_toLinearMap, LinearMap.coe_comp, Function.comp_apply]
+    change ρ.ind₁'_lmap (TensorProduct.lift ρ.ind₁'_invlmap_aux (LinearMap.id (R := R) (x ⊗ₜ[R] y)))
+      = Submodule.Quotient.mk (x ⊗ₜ[R] y)
+    simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul]
+    induction x using Finsupp.induction_linear with
+    | zero => simp
+    | add f g h1 h2 =>
+      rw [map_add, LinearMap.add_apply, map_add, h1, h2, TensorProduct.add_tmul]
+      rfl
+    | single g r =>
+      simp [ind₁'_invlmap_aux, Coinvariants.mk]
+      rw [← map_smul, ← Submodule.mkQ_apply]
+      congr
+      rw [TensorProduct.smul_tmul', Finsupp.smul_single, smul_eq_mul, mul_one]
 
 @[simp] lemma ind₁'_lequiv_comp_lsingle (x : G) :
     ρ.ind₁'_lequiv ∘ₗ lsingle x = Ind₁V.mk R G V x ∘ₗ ρ x := by ext; simp

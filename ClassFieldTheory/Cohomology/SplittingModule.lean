@@ -1,7 +1,6 @@
-import Mathlib
-import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
-import ClassFieldTheory.GroupCohomology.«11_TrivialityCriterion»
-import ClassFieldTheory.GroupCohomology.«12_augmentationModule»
+import ClassFieldTheory.Cohomology.AugmentationModule
+import ClassFieldTheory.Cohomology.TrivialCohomology
+import ClassFieldTheory.Cohomology.TrivialityCriterion
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 open
@@ -224,7 +223,7 @@ lemma splits : ι σ ∘ cocycle σ ∈ coboundaries₂ (split σ) := by
   rw [d₁₂_hom_apply, Function.comp_apply, τ_property]
 
 /--
-The restriction of `σ` to a subgroup `H`.
+The restriction of the 2-cohomology class `σ : H²(G,M)` to a subgroup `H`.
 -/
 abbrev _root_.groupCohomology.H2res {H : Type} [Group H] (φ : H →* G) :
     H2 (M ↓ φ) :=
@@ -233,7 +232,14 @@ abbrev _root_.groupCohomology.H2res {H : Type} [Group H] (φ : H →* G) :
 notation σ "↡" φ => H2res σ φ
 
 /--
-Given an element `σ : H²(G,M)`, the
+If `M` is an `R[G]`-module and `σ : H²(G,M)`, we say `σ` is a *finite class formation* if
+for all subgroups `H` of `G`,
+1) `H¹(H,M|H)=0`;
+2) The `R`-module `H²(H,M|H)` is spanned as an `R`-module by `Res(σ)`;
+3) The kernel of `R → H²(H,M|H)` is `|H|R`
+
+In other words, for all subgroups H of G, H¹(H,M)=0 and H²(H,M)=R/|H|R
+with the isomorphism given by sending 1 ∈ R/|H|R to σ.
 -/
 class FiniteClassFormation where
   hypothesis₁ {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) : IsZero (H1 (M ↓ φ))
@@ -290,7 +296,7 @@ For any subgroup H of `G`, the connecting hommorphism in the splitting module lo
 
 is an isomorphism.
 -/
-lemma TateTheorem_lemma_2 [FiniteClassFormation σ] :
+lemma TateTheorem_lemma_2 [FiniteClassFormation σ] [Fintype H] :
     IsIso (δ (res_isShortExact σ φ) 1 2 rfl) := by
   let e₁ : groupCohomology (aug R G ↓ φ) 1 ≅ .of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
     Rep.aug.H1_iso' R G inj
@@ -318,7 +324,7 @@ lemma TateTheorem_lemma_2 [FiniteClassFormation σ] :
   exact S.L₂'_exact.epi_f_iff.mpr (TateTheorem_lemma_1 _ inj)
 
 include inj in
-lemma TateTheorem_lemma_3 [FiniteClassFormation σ] :
+lemma TateTheorem_lemma_3 [FiniteClassFormation σ] [Fintype H] :
     IsZero (H1 (split σ ↓ φ)) := by
   let S := HomologicalComplex.HomologySequence.snakeInput
     (map_cochainsFunctor_shortExact <| res_isShortExact (R := R) σ φ) 1 2 rfl
@@ -342,29 +348,47 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
   exact Limits.IsZero.of_epi_eq_zero S.L₃.f (TateTheorem_lemma_1 _ inj)
 
 /--
-The splitting module is has trivial cohomology.
+The splitting module has trivial cohomology.
 -/
-lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
+instance trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     (split σ).TrivialCohomology := by
   apply trivialCohomology_of_even_of_odd (split σ) 0 0
   · intro H _ φ inj _
     apply IsZero.of_iso (TateTheorem_lemma_4 σ inj)
     rfl
   · intro H _ φ inj _
+    let : Fintype H := Fintype.ofInjective φ inj
     apply IsZero.of_iso (TateTheorem_lemma_3 σ inj)
     rfl
 
+lemma isIso_δ [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
+    IsIso (TateCohomology.δ (Rep.split.isShortExact σ) n) := by
+  have : TrivialTateCohomology (split σ) := inferInstance
+  exact TateCohomology.isIso_δ _ this _
 
 def tateCohomology_iso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
-    (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M := by
-  sorry
+    (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M :=
+  -- first go from H^n(trivial) to H^{n+1}(aug)
+  have first_iso := Rep.aug.tateCohomology_auc_succ_iso R G n
+  -- now go from H^{n+1}(aug) to H^{n+2}(M)
+  have second_iso := Rep.split.isIso_δ σ (n + 1)
+  -- map starts here
+  (CategoryTheory.asIso (TateCohomology.δ (aug.aug_isShortExact R G) n)) ≪≫
+  (CategoryTheory.asIso (TateCohomology.δ (Rep.split.isShortExact σ) (n + 1))) ≪≫
+  eqToIso (by
+    congr 2
+    ring)
 
 def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
     (tateCohomology 0).obj N ≅ ModuleCat.of ℤ (Additive (Abelianization G)) := by
   symm
   apply Iso.trans (Y := (tateCohomology (-2)).obj (trivial ℤ G ℤ))
-  · sorry -- current PR.
-  · apply tateCohomology_iso τ
+  · let := groupHomology.H1AddEquivOfIsTrivial (trivial ℤ G ℤ)
+    -- the sorry is now basically `this` modulo isomorphisms which mathematicians
+    -- would say were trivial. In fact perhaps we should prove a variant of
+    -- `groupHomology.H1AddEquivOfIsTrivial` for Z where we don't tensor_Z Z.
+    sorry
+  · exact tateCohomology_iso τ (-2)
 
 end Rep.split
 
