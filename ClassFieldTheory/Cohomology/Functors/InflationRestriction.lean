@@ -17,7 +17,7 @@ variable {Q : Type} [Group Q] [DecidableEq Q] {φ : G →* Q} (surj : Function.S
 namespace groupCohomology
 
 /--
-Suppose we have a short exact sewuence `0 ⟶ A ⟶ B ⟶ C ⟶ 0` in `Rep R G`.
+Suppose we have a short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0` in `Rep R G`.
 If `H¹(K,A) = 0` then the `K`-invariants form a short exact sequence in `Rep R Q`:
 
   `0 ⟶ Aᴷ ⟶ Bᴷ ⟶ Cᴷ ⟶ 0`, where `K = φ.ker`.

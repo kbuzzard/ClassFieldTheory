@@ -350,7 +350,7 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
 /--
 The splitting module has trivial cohomology.
 -/
-lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
+instance trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     (split σ).TrivialCohomology := by
   apply trivialCohomology_of_even_of_odd (split σ) 0 0
   · intro H _ φ inj _
@@ -361,9 +361,9 @@ lemma trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     apply IsZero.of_iso (TateTheorem_lemma_3 σ inj)
     rfl
 
-lemma isIso_δ [Fintype G] (n : ℤ) :
+lemma isIso_δ [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
     IsIso (TateCohomology.δ (Rep.split.isShortExact σ) n) := by
-  have : TrivialTateCohomology (split σ) := sorry
+  have : TrivialTateCohomology (split σ) := inferInstance
   exact TateCohomology.isIso_δ _ this _
 
 def tateCohomology_iso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
@@ -384,7 +384,8 @@ def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
   symm
   apply Iso.trans (Y := (tateCohomology (-2)).obj (trivial ℤ G ℤ))
   · let := groupHomology.H1AddEquivOfIsTrivial (trivial ℤ G ℤ)
-    -- Richard suggests a variant of this with A=ℤ where you don't `(· ⊗[ℤ] ℤ)`
+    -- the sorry is now basically `this` modulo isomorphisms which mathematicians
+    -- would say were trivial.
     sorry
   · exact tateCohomology_iso τ (-2)
 
