@@ -5,8 +5,7 @@ Authors: Kevin Buzzard, Aaron Liu
 -/
 import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
 
-/-
-
+/-!
 # Corestriction
 
 If `S` is a finite index subgroup of `G` and `M` is a `G`-module

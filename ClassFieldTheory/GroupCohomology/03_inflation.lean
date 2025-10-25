@@ -1,6 +1,6 @@
 import ClassFieldTheory.GroupCohomology.«02_restriction»
 
-/-
+/-!
 In this file we have a group homomorphism `φ : G →* Q` satisfying the condition
 
   `surj : Function.Surjective φ`.
