@@ -52,22 +52,38 @@ lemma cores_aux₁ {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representatio
   rw [show g₂ = g₁ * (g₁⁻¹ * g₂) by simp, map_mul, Module.End.mul_apply,
   hv _ (QuotientGroup.eq.1 h)]
 
-variable [S.FiniteIndex]
-
-lemma cores_aux₂ {X : Type} [Fintype X]
-    (s₁ : X → G) (hs₁ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₁ x) : X → G ⧸ S))
-    (s₂ : X → G) (hs₂ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₁ x) : X → G ⧸ S))
-    {V : Type} [AddCommGroup V] [Module R V] (ρ : Representation R G V)
-    (v : V) (hv : ∀ s ∈ S, (ρ s) v = v) :
+lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R V] (s₁ : X → G)
+    (ρ : Representation R G V) (s₂ : X → G) (v : V) (hv : ∀ s ∈ S, (ρ s) v = v)
+    (hs₁ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₁ x) : X → G ⧸ S))
+    (hs₂ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₂ x) : X → G ⧸ S)) :
     ∑ x : X, ρ (s₁ x) v = ∑ x : X, ρ (s₂ x) v := by
+  let e1 : X ≃ G ⧸ S := Equiv.ofBijective (QuotientGroup.mk ∘ s₁) hs₁
+  let e2 : X ≃ G ⧸ S := Equiv.ofBijective (QuotientGroup.mk ∘ s₂) hs₂
+  exact Finset.sum_equiv (e1.trans e2.symm) (by simp) fun i _ ↦ cores_aux₁ ρ v hv _ _ <| by
+    change _ = (QuotientGroup.mk ∘ _) _
+    rw [Equiv.trans_apply]
+    change _ = e2 (e2.symm _)
+    rw [Equiv.apply_symm_apply]
+    rfl
 
-  sorry
-
+variable [S.FiniteIndex]
+#check QuotientGroup.mk
+#check Function.Injective.of_comp_iff
 /-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
 map on invariants. -/
 def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] (ρ : Representation R G V) :
     Representation.invariants (MonoidHom.comp ρ S.subtype) →ₗ[R] ρ.invariants where
-  toFun x := ⟨∑ i : G ⧸ S, ρ i.out x.1, sorry⟩
+  toFun x := ⟨∑ i : G ⧸ S, ρ i.out x.1, fun g ↦ by
+    simp only [map_sum, ← LinearMap.comp_apply, ← Module.End.mul_eq_comp, ← map_mul]
+    letI : Fintype (G ⧸ S) := Subgroup.fintypeQuotientOfFiniteIndex
+    refine eq_comm.1 <| cores_aux₂ (R := R) (S := S) Quotient.out ρ (fun x : G ⧸ S ↦ g * x.out) x.1
+      (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_
+    simp only
+    refine Fintype.bijective_iff_surjective_and_card _ |>.2 ⟨?_, rfl⟩
+    -- change Function.Surjective (QuotientGroup.mk ∘ Equiv.mulLeft g ∘ Quotient.out)
+    -- have := Function.Surjective.of_comp_iff
+    -- refine Function.Surjective.of_comp_iff'_surjective
+    sorry⟩
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' := by simp [Finset.smul_sum]
 
@@ -159,7 +175,7 @@ def coresNatTrans (n : ℕ) [DecidableEq G] : Rep.res S.subtype ⋙ functor R S 
   app M := (groupCohomology.cores_obj M n)
   naturality X Y f := match n with
     | 0 => cores₀.naturality f
-    | 1 => sorry
+    | 1 => cores₁_naturality _ _ _
     | (d + 2) => sorry
 
 lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
