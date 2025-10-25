@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Combinatorics.Quiver.ReflQuiver
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 namespace RepresentationTheory
 
