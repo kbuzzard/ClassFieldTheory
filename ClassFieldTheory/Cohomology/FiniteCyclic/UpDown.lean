@@ -33,7 +33,6 @@ Using this, construct isomorphisms
 open
   Finsupp
   Rep
-  leftRegular
   dimensionShift
   CategoryTheory
   Abelian
