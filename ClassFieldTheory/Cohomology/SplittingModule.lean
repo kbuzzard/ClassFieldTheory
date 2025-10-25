@@ -385,7 +385,8 @@ def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
   apply Iso.trans (Y := (tateCohomology (-2)).obj (trivial ℤ G ℤ))
   · let := groupHomology.H1AddEquivOfIsTrivial (trivial ℤ G ℤ)
     -- the sorry is now basically `this` modulo isomorphisms which mathematicians
-    -- would say were trivial.
+    -- would say were trivial. In fact perhaps we should prove a variant of
+    -- `groupHomology.H1AddEquivOfIsTrivial` for Z where we don't tensor_Z Z.
     sorry
   · exact tateCohomology_iso τ (-2)
 
