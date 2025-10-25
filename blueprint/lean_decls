@@ -113,4 +113,3 @@ Rep.dimensionShift.up_trivialCohomology
 Rep.dimensionShift.down_trivialCohomology
 Rep.tateCohomology_of_trivialCohomology
 Rep.trivialHomology_of_trivialCohomology
-NumberField.Units.dirichletUnitTheorem.unitLattice_span_eq_top
