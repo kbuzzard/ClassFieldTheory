@@ -61,6 +61,6 @@ jobs:
       - if: github.ref == 'refs/heads/main'
         name: Build project documentation
         id: build-docgen
-        uses: leanprover-community/docgen-action@main
+        uses: leanprover-community/docgen-action@1417dc7f90338c875da5e5870c03a287d8348896 # docgen-action#11
         with:
           blueprint: true
