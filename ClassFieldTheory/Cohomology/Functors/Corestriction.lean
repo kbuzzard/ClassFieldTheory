@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Aaron Liu
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
+import Mathlib
 
 /-!
 # Corestriction
@@ -65,8 +66,10 @@ lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R 
     rfl
 
 variable [S.FiniteIndex]
-#check QuotientGroup.mk
-#check Function.Injective.of_comp_iff
+
+theorem QuotientGroup.mk_mul' {G : Type} [Group G] {S : Subgroup G} (g x : G) :
+  QuotientGroup.mk (s := S) (g * x) = g • QuotientGroup.mk x := rfl
+
 /-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
 map on invariants. -/
 def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] (ρ : Representation R G V) :
@@ -76,15 +79,11 @@ def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] 
     letI : Fintype (G ⧸ S) := Subgroup.fintypeQuotientOfFiniteIndex
     refine eq_comm.1 <| cores_aux₂ (R := R) (S := S) Quotient.out ρ (fun x : G ⧸ S ↦ g * x.out) x.1
       (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_
-    simp only
-    refine Fintype.bijective_iff_surjective_and_card _ |>.2 ⟨?_, rfl⟩
-    -- change Function.Surjective (QuotientGroup.mk ∘ Equiv.mulLeft g ∘ Quotient.out)
-    -- have := Function.Surjective.of_comp_iff
-    -- refine Function.Surjective.of_comp_iff'_surjective
-    sorry⟩
+    change Function.Bijective (fun x ↦ QuotientGroup.mk (s := S) (g * x.out) : G ⧸ S → G ⧸ S)
+    convert @MulAction.bijective G (G ⧸ S) _ (MulAction.quotient G S) g
+    rw [QuotientGroup.mk_mul', QuotientGroup.out_eq']⟩
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' := by simp [Finset.smul_sum]
-
 
 /-- The corestriction functor on H^0 for S ⊆ G a finite index subgroup, as a
 functor `H^0(S,-) → H^0(G,-)`. -/
