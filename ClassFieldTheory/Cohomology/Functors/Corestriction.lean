@@ -59,11 +59,8 @@ lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R 
   let e1 : X ≃ G ⧸ S := Equiv.ofBijective (QuotientGroup.mk ∘ s₁) hs₁
   let e2 : X ≃ G ⧸ S := Equiv.ofBijective (QuotientGroup.mk ∘ s₂) hs₂
   exact Finset.sum_equiv (e1.trans e2.symm) (by simp) fun i _ ↦ cores_aux₁ ρ v hv _ _ <| by
-    change _ = (QuotientGroup.mk ∘ _) _
     rw [Equiv.trans_apply]
-    change _ = e2 (e2.symm _)
-    rw [Equiv.apply_symm_apply]
-    rfl
+    exact (e2.apply_symm_apply _).symm
 
 variable [S.FiniteIndex]
 
@@ -74,10 +71,8 @@ def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] 
   toFun x := ⟨∑ i : G ⧸ S, ρ i.out x.1, fun g ↦ by
     simp only [map_sum, ← LinearMap.comp_apply, ← Module.End.mul_eq_comp, ← map_mul]
     letI : Fintype (G ⧸ S) := Subgroup.fintypeQuotientOfFiniteIndex
-    refine eq_comm.1 <| cores_aux₂ ρ x.1 (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_
-    change Function.Bijective (fun x ↦ QuotientGroup.mk (s := S) (g * x.out) : G ⧸ S → G ⧸ S)
-    simp_rw [QuotientGroup.mk_mul', QuotientGroup.out_eq']
-    exact MulAction.bijective _⟩
+    refine (cores_aux₂ ρ x.1 (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_).symm
+    simp_rw [QuotientGroup.mk_mul', QuotientGroup.out_eq', MulAction.bijective]⟩
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' := by simp [Finset.smul_sum]
 
