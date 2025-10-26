@@ -186,6 +186,7 @@ theorem ext_maximalIdeal {x y : 𝒪[K]} (h : ∀ n, x - y ∈ 𝓂[K] ^ n) : x 
 theorem ext_maximalIdeal' {x y : 𝒪[K]} (h : ∀ n, x - y ∈ 𝓂[K] ^ (n + 1)) : x = y :=
   ext_maximalIdeal fun n ↦ n.casesOn (by simp) h
 
+variable (K) in
 /-- The Teichmüller character `𝓀[K] →* 𝒪[K]`. -/
 noncomputable def teichmuller' : 𝓀[K] →* 𝒪[K] where
   toFun x := Quotient.liftOn x (limUnder .atTop <| teichmullerSeq ·) fun x₁ x₂ hx ↦ by
@@ -204,6 +205,22 @@ noncomputable def teichmuller' : 𝓀[K] →* 𝒪[K] where
     rw [map_mul]
     exact Filter.Tendsto.limUnder_eq <| .mul
       (cauchySeq_teichmuller x).tendsto_limUnder (cauchySeq_teichmuller y).tendsto_limUnder
+
+@[simp] theorem teichmuller'_def (x : 𝒪[K]) :
+    Filter.Tendsto (teichmullerSeq x) .atTop (nhds <| teichmuller' K <| Ideal.Quotient.mk _ x) := by
+  letI := IsTopologicalAddGroup.toUniformSpace K
+  haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  exact (cauchySeq_teichmuller x).tendsto_limUnder
+
+variable (K) in
+/-- The Teichmüller character `𝓀[K] →* K`. -/
+noncomputable def teichmuller : 𝓀[K] →* K :=
+  (algebraMap 𝒪[K] K : 𝒪[K] →* K).comp <| teichmuller' K
+
+@[simp] theorem teichmuller_def (x : 𝒪[K]) :
+    Filter.Tendsto (fun n ↦ (teichmullerSeq x n : K)) .atTop
+      (nhds <| teichmuller K <| Ideal.Quotient.mk _ x) :=
+  (continuous_subtype_val.tendsto _).comp <| teichmuller'_def x
 
 end TopologicalSpace
 
