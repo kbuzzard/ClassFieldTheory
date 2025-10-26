@@ -1,6 +1,5 @@
-import ClassFieldTheory.GroupCohomology.«06_LeftRegular»
-import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
-import ClassFieldTheory.GroupCohomology.«08_DimensionShift»
+import ClassFieldTheory.Cohomology.Functors.UpDown
+import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
@@ -34,7 +33,6 @@ Using this, construct isomorphisms
 open
   Finsupp
   Rep
-  leftRegular
   dimensionShift
   CategoryTheory
   Abelian
@@ -369,13 +367,13 @@ lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
 def upIsoDown : up (R := R) (G := G) ≅ down := calc
     up (R := R) (G := G)
       ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
-      ShortComplex.cokernelIsoCoimage periodSeq₁Functor exact_periodSeq₁
+      ShortComplex.cokerIsoCoimage periodSeq₁Functor exact_periodSeq₁
     _ ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
       (Functor.associator ..).symm
     _ ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ imageFunctor :=
       Functor.isoWhiskerLeft _ coimageFunctorIsoImageFunctor
     _ ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor := Functor.associator ..
-    _ ≅ down := (ShortComplex.kernelIsoImage periodSeq₂Functor exact_periodSeq₂).symm
+    _ ≅ down := (ShortComplex.kerIsoImage periodSeq₂Functor exact_periodSeq₂).symm
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by

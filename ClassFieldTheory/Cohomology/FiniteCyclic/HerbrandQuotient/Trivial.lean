@@ -1,12 +1,10 @@
-import Mathlib
-import ClassFieldTheory.GroupCohomology.«13_HerbrandQuotient»
+import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+import Mathlib.Data.ZMod.QuotientRing
 
 variable {G : Type} [Group G] [Fintype G] [IsCyclic G]
 
 open groupCohomology
   Representation
-
-attribute [-instance] NormedAddCommGroup.toENormedAddCommMonoid
 
 omit [IsCyclic G] in
 @[simp] lemma norm_trivial_int_eq_card : (trivial ℤ G ℤ).norm = Nat.card G := by
@@ -52,7 +50,8 @@ instance : Subsingleton (trivial ℤ G ℤ).herbrandH1 :=
   Quot.Subsingleton
 
 variable (G) in
-theorem herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
+theorem Representation.herbrandQuotient_trivial_int_eq_card :
+    herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
   unfold herbrandQuotient
   rw [card_herbrandH0_trivial_int, Nat.card_of_subsingleton (0 : (trivial ℤ G ℤ).herbrandH1)]
   simp only [Nat.cast_one, div_one]
@@ -60,4 +59,5 @@ theorem herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G �
 variable (G) in
 theorem Rep.herbrandQuotient_trivial_int_eq_card :
     Rep.herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
-  classical rw [trivial, herbrandQuotient_of, _root_.herbrandQuotient_trivial_int_eq_card]
+  classical rw [trivial, herbrandQuotient_of,
+    Representation.herbrandQuotient_trivial_int_eq_card]

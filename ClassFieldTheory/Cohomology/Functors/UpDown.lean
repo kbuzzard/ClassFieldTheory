@@ -1,6 +1,6 @@
-import ClassFieldTheory.GroupCohomology.IndCoind.TrivialCohomology
-import ClassFieldTheory.GroupCohomology.«04_TateCohomology_def»
-import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
+import ClassFieldTheory.Cohomology.IndCoind.Finite
+import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
+import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
@@ -8,10 +8,9 @@ We define functors `up` and `down` from `Rep R G` to itself.
 `up.obj M` is defined to be the cokernel of the injection `coind₁'_ι : M ⟶ coind₁'.obj M` and
 `down.obj M` is defined to be the kernel of the surjection `ind₁'_π : ind₁'.obj M → M`.
 Hence for any `M : Rep R G` we construct two short exact sequences
-(the second defined only for finite `G`):
 
   `0 ⟶ M ⟶ coind₁'.obj M ⟶ up.obj M ⟶ 0` and
-  `0 ⟶ down.obj M ⟶ coind₁'.obj M ⟶ M ⟶ 0`.
+  `0 ⟶ down.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0`.
 
 These can be used for dimension-shifting because `coind₁'.obj M` has trivial cohomology and
 `ind₁'.obj M` has trivial homology. I.e. for all `n > 0` we have (for every subgroup `S` of `G`):
@@ -208,6 +207,14 @@ omit [DecidableEq G] in
 lemma ind₁'_π.app_apply (f : ind₁'.obj M) :
     (ind₁'_π.app M) f = Finsupp.sum f (fun _ ↦ LinearMap.id (R := R)) := rfl
 
+/--
+The functor taking `M : Rep R G` to `down.obj M`, defined by the short exact sequence
+
+  `0 ⟶ down.obj M ⟶ ind₁'.obj M ⟶ M ⟶ 0`..
+
+Since `ind₁'.obj M` is acyclic, the homology of `down.obj M` is a shift by one
+of the homology of `M`.
+-/
 @[simps] def down : Rep R G ⥤ Rep R G where
   obj M := kernel (ind₁'_π.app M)
   map φ := kernel.lift _ (kernel.ι _ ≫ ind₁'.map φ) (by

@@ -23,11 +23,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      # TODO: Enforce
-      # - name: Don't 'import Mathlib', use precise imports
-      #   if: always()
-      #   run: |
-      #     ! (find ClassFieldTheory -name "*.lean" -type f -print0 | xargs -0 grep -E -n '^import Mathlib$')
+      - name: Don't 'import Mathlib', use precise imports
+        if: always()
+        run: |
+          ! (find ClassFieldTheory -name "*.lean" -type f -print0 | xargs -0 grep -E -n '^import Mathlib$')
 
       - name: Files in ClassFieldTheory.Mathlib can't import ClassFieldTheory files outside ClassFieldTheory.Mathlib
         run: |
@@ -62,6 +61,6 @@ jobs:
       - if: github.ref == 'refs/heads/main'
         name: Build project documentation
         id: build-docgen
-        uses: leanprover-community/docgen-action@main
+        uses: leanprover-community/docgen-action@1417dc7f90338c875da5e5870c03a287d8348896 # docgen-action#11
         with:
           blueprint: true

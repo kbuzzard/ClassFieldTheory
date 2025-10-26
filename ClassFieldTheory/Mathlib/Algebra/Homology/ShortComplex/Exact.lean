@@ -1,6 +1,6 @@
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
-import ClassFieldTheory.Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 noncomputable section
 
@@ -16,8 +16,8 @@ variable [Abelian C]
 to the coimage of the second map.
 
 Note that we use the extra functor `F` to avoid talking about the category of exact complex. -/
-@[simps!] def kernelIsoImage (F : D ⥤ ShortComplex C) (hF : ∀ d, (F.obj d).Exact) :
-    F ⋙ gFunctor ⋙ kernelFunctor ≅ F ⋙ fFunctor ⋙ imageFunctor :=
+@[simps!] def kerIsoImage (F : D ⥤ ShortComplex C) (hF : ∀ d, (F.obj d).Exact) :
+    F ⋙ gFunctor ⋙ ker C ≅ F ⋙ fFunctor ⋙ imageFunctor :=
   NatIso.ofComponents fun X ↦
     have := (hF X).mono_cokernelDesc
     kernel.congr _ _ (by simp) ≪≫
@@ -27,8 +27,8 @@ Note that we use the extra functor `F` to avoid talking about the category of ex
 to the coimage of the second map.
 
 Note that we use the extra functor `F` to avoid talking about the category of exact complex. -/
-@[simps!] def cokernelIsoCoimage (F : D ⥤ ShortComplex C) (hF : ∀ d, (F.obj d).Exact) :
-    F ⋙ fFunctor ⋙ cokernelFunctor ≅ F ⋙ gFunctor ⋙ coimageFunctor :=
+@[simps!] def cokerIsoCoimage (F : D ⥤ ShortComplex C) (hF : ∀ d, (F.obj d).Exact) :
+    F ⋙ fFunctor ⋙ coker C ≅ F ⋙ gFunctor ⋙ coimageFunctor :=
   NatIso.ofComponents fun X ↦
     have := (hF X).epi_kernelLift
     cokernel.congr _ _ (by simp) ≪≫
