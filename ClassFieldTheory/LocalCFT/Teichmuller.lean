@@ -5,6 +5,12 @@ Authors: Kenny Lau
 -/
 
 import ClassFieldTheory.LocalCFT.NonArchDef
+import ClassFieldTheory.Mathlib.Algebra.CharP.Lemmas
+import ClassFieldTheory.Mathlib.Algebra.CharP.Quotient
+import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
+import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
+import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
+import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-! # Teichmüller character
 
@@ -13,129 +19,6 @@ Teichmüller character `k →* R` (a monoid homomorphism, i.e. preserves only mu
 
 ... but we don't have CDVR so we will just do it for local fields.
 -/
-
-section Lemmas
-
-theorem Filter.HasBasis.comp_dense {β ι ι' : Type*} [Preorder ι]
-    {F : Filter β} {p : ι → Prop} {p' : ι' → Prop} {g : ι → Set β} (b : F.HasBasis p g)
-    (hg : Antitone g) (f : ι' → ι) (hp : ∀ ⦃i'⦄, p' i' → p (f i'))
-    (dense : ∀ ⦃i⦄, p i → ∃ i', p' i' ∧ i ≤ f i') :
-    F.HasBasis p' (g ∘ f) := by
-  refine ⟨fun t ↦ ?_⟩
-  rw [b.mem_iff]
-  refine ⟨fun ⟨i, hi1, hi2⟩ ↦ ?_, by aesop⟩
-  obtain ⟨i', hi'1, hi'2⟩ := dense hi1
-  exact ⟨i', hi'1, (hg hi'2).trans hi2⟩
-
-theorem Filter.HasBasis.comp_dense' {β ι ι' : Type*} [Preorder ι]
-    {F : Filter β} {p : ι → Prop} {p' : ι' → Prop} {g : ι → Set β} (b : F.HasBasis p g)
-    (hg : Monotone g) (f : ι' → ι) (hp : ∀ ⦃i'⦄, p' i' → p (f i'))
-    (dense : ∀ ⦃i⦄, p i → ∃ i', p' i' ∧ f i' ≤ i) :
-    F.HasBasis p' (g ∘ f) := by
-  refine ⟨fun t ↦ ?_⟩
-  rw [b.mem_iff]
-  refine ⟨fun ⟨i, hi1, hi2⟩ ↦ ?_, by aesop⟩
-  obtain ⟨i', hi'1, hi'2⟩ := dense hi1
-  exact ⟨i', hi'1, (hg hi'2).trans hi2⟩
-
-namespace WithZero
-
-theorem exp_surj' {M : Type*} {y : Mᵐ⁰} (hy : y ≠ 0) :
-    ∃ x, exp x = y := by
-  cases y <;> tauto
-
-theorem exp_zero' {M : Type*} [Zero M] : exp (0 : M) = 1 := rfl
-
-theorem exp_le_exp' {M : Type*} [LE M] {x y : M} : exp x ≤ exp y ↔ x ≤ y := WithZero.coe_le_coe
-
-@[simp] theorem exp_le_one_iff {M : Type*} [LE M] [Zero M] {x : M} : exp x ≤ 1 ↔ x ≤ 0 :=
-  exp_zero' (M := M) ▸ exp_le_exp'
-
-@[simp] theorem one_le_exp_iff {M : Type*} [LE M] [Zero M] {x : M} : 1 ≤ exp x ↔ 0 ≤ x :=
-  exp_zero' (M := M) ▸ exp_le_exp'
-
-theorem lt_exp_iff {x : ℤᵐ⁰} {n : ℤ} : x < exp n ↔ x ≤ exp (n - 1) := by
-  cases x
-  · simp
-  · simp [-exp_sub, Int.le_sub_one_iff]
-
-end WithZero
-
-namespace OrderMonoidIso
-
-variable {α β : Type*} [Preorder α] [Preorder β] [Mul α] [Mul β] (e : α ≃*o β)
-
-nonrec theorem surjective : (⇑e).Surjective :=
-  e.surjective
-
-@[simp] theorem le_symm_apply {x y} : x ≤ e.symm y ↔ e x ≤ y :=
-  e.toOrderIso.le_symm_apply
-
-@[simp] theorem symm_apply_le {x y} : e.symm x ≤ y ↔ x ≤ e y :=
-  e.toOrderIso.symm_apply_le
-
-@[simp] theorem lt_symm_apply {x y} : x < e.symm y ↔ e x < y :=
-  e.toOrderIso.lt_symm_apply
-
-@[simp] theorem symm_apply_lt {x y} : e.symm x < y ↔ x < e y :=
-  e.toOrderIso.symm_apply_lt
-
-end OrderMonoidIso
-
-@[simp] theorem Valuation.algebraMap_integer_coe {R Γ₀ : Type*} [CommRing R]
-    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) :
-    ⇑(algebraMap v.integer R) = (↑) :=
-  rfl
-
-instance IsUniformAddGroup.addSubgroupClass {α S : Type*} [UniformSpace α] [AddGroup α]
-    [SetLike S α] [AddSubgroupClass S α] [IsUniformAddGroup α] (s : S) :
-    IsUniformAddGroup s :=
-  AddSubgroup.isUniformAddGroup <| .ofClass s
-
-protected theorem Commute.add_pow_prime_pow_eq'
-    {R : Type*} [Semiring R] {p : ℕ} (hp : Nat.Prime p) {x y : R} (h : Commute x y) (n : ℕ) :
-    (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * x * y * ∑ k ∈ Finset.Ioo 0 (p ^ n),
-      x ^ (k - 1) * y ^ (p ^ n - k - 1) * ((p ^ n).choose k / p :) := by
-  rw [h.add_pow_prime_pow_eq hp]
-  congr 1
-  simp_rw [mul_assoc, Finset.mul_sum]
-  refine Finset.sum_congr rfl fun i hi ↦ ?_
-  rw [Finset.mem_Ioo] at hi
-  rw [h.left_comm, ← mul_assoc x, ← pow_succ', (h.symm.pow_right _).left_comm, ← mul_assoc y,
-    ← pow_succ', Nat.sub_add_cancel (by omega), Nat.sub_add_cancel (by omega)]
-
-theorem add_pow_prime_pow_eq'
-    {R : Type*} [CommSemiring R] {p : ℕ} (hp : Nat.Prime p) (x y : R) (n : ℕ) :
-    (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * x * y * ∑ k ∈ Finset.Ioo 0 (p ^ n),
-      x ^ (k - 1) * y ^ (p ^ n - k - 1) * ((p ^ n).choose k / p :) :=
-  (Commute.all x y).add_pow_prime_pow_eq' hp _
-
-theorem exists_add_pow_prime_pow_eq'
-    {R : Type*} [CommSemiring R] {p : ℕ} (hp : Nat.Prime p) (x y : R) (n : ℕ) :
-    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * x * y * r :=
-  ⟨_, add_pow_prime_pow_eq' hp x y n⟩
-
-theorem CharP.mem {R : Type*} [CommRing R] (p : ℕ) (I : Ideal R) [CharP (R ⧸ I) p] :
-    (p : R) ∈ I :=
-  Ideal.Quotient.eq_zero_iff_mem.mp <| by simp
-
-theorem FiniteField.pow_natCard {K : Type*} [GroupWithZero K] [Finite K] (a : K) :
-    a ^ Nat.card K = a := by
-  have := Fintype.ofFinite K
-  rw [Nat.card_eq_fintype_card, pow_card]
-
-namespace IsValuativeTopology
-
-variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
-
-open ValuativeRel
-
-
-end IsValuativeTopology
-
-end Lemmas
-
-
 
 namespace IsNonarchimedeanLocalField
 

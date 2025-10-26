@@ -23,6 +23,8 @@ import ClassFieldTheory.LocalCFT.NonArchDef
 import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
+import ClassFieldTheory.Mathlib.Algebra.CharP.Lemmas
+import ClassFieldTheory.Mathlib.Algebra.CharP.Quotient
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
@@ -38,14 +40,17 @@ import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.Data.Finsupp.Single
 import ClassFieldTheory.Mathlib.Data.Int.WithZero
+import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 import ClassFieldTheory.Mathlib.FieldTheory.Separable
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.ModuleCatExact
+import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
 import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
@@ -65,6 +70,7 @@ import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel

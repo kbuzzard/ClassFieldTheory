@@ -15,4 +15,10 @@ def expRecOn {M : Type*} {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰)
     (x : M) (zero : motive 0) (exp : ∀ a : M, motive (.exp a)) :
     @WithZero.expRecOn M motive (.exp x) zero exp = exp x := rfl
 
+theorem exp_surj' {M : Type*} {y : Mᵐ⁰} (hy : y ≠ 0) :
+    ∃ x, exp x = y := by
+  cases y <;> tauto
+
+theorem exp_zero' {M : Type*} [Zero M] : exp (0 : M) = 1 := rfl
+
 end WithZero
