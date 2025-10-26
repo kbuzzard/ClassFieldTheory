@@ -1,8 +1,6 @@
 \chapter{Local Class Field Theory}
 
-In this chapter we shall consider finite Galois extensions of non-archimedean local fields $l/k$
-of characteristic zero (the characteristic zero assumption is used when discussing the exponential
-map).
+In this chapter we shall consider finite Galois extensions of non-archimedean local fields $l/k$.
 We shall regard the multiplicative group $l^\times$
 as a representation of $\Gal(l/k)$ over the ring $\Z$, where
 addition in the module is the operation which is usually written as multiplication.
@@ -107,6 +105,8 @@ The following result (called Hilbert's theorem 90) is already in Mathlib.
 \end{proof}
 
 \begin{theorem}\label{thm:additive field trivial}
+	\lean{Rep.iso_ind₁}
+	\leanok
 	\uses{lem:induced trivial Tate}
 	Let $l/k$ be a finite Galois extension of fields.
 	Then there is an isomorphism of $\Gal(l/k)$-representations:
@@ -117,6 +117,7 @@ The following result (called Hilbert's theorem 90) is already in Mathlib.
 \end{theorem}
 
 \begin{proof}
+	\leanok
 	Recall from Galois theory that there is a normal basis for $l$ over $k$, i.e. a basis of the
 	form
 	\[
@@ -144,99 +145,117 @@ The following result (called Hilbert's theorem 90) is already in Mathlib.
 \section{The Herbrand quotient of \texorpdfstring{$l^{\times}$}{l*}}
 
 In this section we'll prove that for a cyclic extension $l/k$
-of local fields of characteristic zero,
-$h(l/k,l^\times) = [l:k]$.
+of local fields, $h(l/k,l^\times) = [l:k]$. We first establish
+that $h(l/k, \cO_l^\times) = 1$ using an approximation argument
+in Serre's Local Class Field Theory section of Cassels--Froehlich.
 
-\begin{lemma}
-	\label{lem:exists additive trivial}
-	\uses{lem:induced trivial Tate}
-	Let $l/k$ be a Galois extension of local fields and
-	let $U$ be any neighbourhood of $0$ in $l$.
-	There is a Galois-invariant compact open subgroup $L \subseteq U$
-	which has trivial Tate cohomology.
+Note: in the Oxford lectures we only proved this result in the
+characteristic zero case, which is slightly easier. Here we deal
+with the general case.
+
+% \begin{lemma}
+% 	\label{lem:exists additive trivial}
+% 	\uses{lem:induced trivial Tate}
+% 	Let $l/k$ be a Galois extension of local fields and
+% 	let $U$ be any neighbourhood of $0$ in $l$.
+% 	There is a Galois-invariant compact open subgroup $L \subseteq U$
+% 	which has trivial Tate cohomology.
+% \end{lemma}
+
+% \begin{proof}
+% 	Let $P$ be the maximal ideal of $\cO_l$.
+% 	Choose $n$ such that $P^n \subseteq U$.
+% 	Choose a normal basis for $l$ over $k$ contained in $P^n$
+% 	and let $L$ be the span of that basis over $\cO_k$.
+% 	We therefore have an isomorphism of Galois modules $L \cong \ind_1(\cO_k)$,
+% 	and induced representations have trivial Tate cohomology.
+% \end{proof}
+
+% \begin{lemma} \label{lem:herbrand compact open additive}
+% 	\uses{def:herbrand quotient,
+% 		lem:exists additive trivial,
+% 		lem:herbrand finite,
+% 		lem:herbrand ses}
+% 	Suppose $l/k$ is a cyclic extension.
+% 	Let $M \subset l$ be a compact open subrepresentation.
+% 	Then $h(l/k,M)=1$.
+% \end{lemma}
+
+% \begin{proof}
+% 	Choose $L \subseteq M$ as in lemma \ref{lem:exists additive trivial}.
+% 	Since $L$ has finite index in $M$ we have $h(M) = h(L) = 1$.
+% \end{proof}
+
+\begin{lemma}\label{lem:serre_approx}
+	Let $G$ be a finite group and let $M$ be a $G$-module. Say we have
+	a decreasing sequence $M=M_0\supseteq M_1\supseteq M_2\supseteq \cdots$
+	of $G$-submodules with the property that the natural map $M\to\varprojlim(M/M_i)$
+	is an isomorphism.
+	Assume for some natural $q$ that the group cohomology $H^{q+1}(G,M_i/M_{i+1})=0$
+	for all $i$. Then $H^{q+1}(G,M)=0.$
 \end{lemma}
-
 \begin{proof}
-	Let $P$ be the maximal ideal of $\cO_l$.
-	Choose $n$ such that $P^n \subseteq U$.
-	Choose a normal basis for $l$ over $k$ contained in $P^n$
-	and let $L$ be the span of that basis over $\cO_k$.
-	We therefore have an isomorphism of Galois modules $L \cong \ind_1(\cO_k)$,
-	and induced representations have trivial Tate cohomology.
+	Let $f_0$ be a $q+1$-cocycle with values in $M=M_0$. Since $H^{q+1}(G,M/M_1)=0$ we can
+	find a $q$-cochain $\psi_0$ of $G$ with values in $M$ such that $f_0=\delta\psi_0+f_1$
+	where now $f_1$ is a $q+1$-cocycle in $M_1$. In general given the $q+1$-cocycle $f_n$ with
+	values in $M_n$ we recursively define a $q$-chain $\psi_n$ with values in $M_n$ such
+	that $f_n=\delta\psi_n+f_{n+1}$
+	with $f_{n+1}$ a $q+1$-cocycle taking values in $M_{n+1}$. Now set $\psi:=\psi_0+\psi_1+\cdots$,
+	which converges by our hypothesis $M=\varprojlim(M/M_i)$, defining a $q$-cochain of $G$
+	with values in $M$; an elementary calculation now shows $f_0=\delta\psi$ and thus $f_0$ is
+	a coboundary.
 \end{proof}
 
-\begin{lemma} \label{lem:herbrand compact open additive}
-	\uses{def:herbrand quotient,
-		lem:exists additive trivial,
-		lem:herbrand finite,
-		lem:herbrand ses}
-	Suppose $l/k$ is a cyclic extension.
-	Let $M \subset l$ be a compact open subrepresentation.
-	Then $h(l/k,M)=1$.
+\begin{lemma}\label{lem:serre_cor}
+	Let $l/k$ be a finite Galois extension of local fields.
+	There is a Galois-invariant open subgroup $M \subseteq \cO_l^\times$
+	such that $H^{q+1}(l/k,M)=0$ for all naturals $q$.
 \end{lemma}
-
 \begin{proof}
-	Choose $L \subseteq M$ as in lemma \ref{lem:exists additive trivial}.
-	Since $L$ has finite index in $M$ we have $h(M) = h(L) = 1$.
+  We know that $l\cong k[G]$ by the normal basis theorem so we may choose $\alpha\in L$
+	such that $\{g\alpha:g\in G\}$ forms a $k$-basis for $l$. If $\pi_k$ denotes a uniformiser of $k$
+	then by multiplying $\alpha$ by an appropriate power of $\pi_k$ we may assume
+	$\alpha\in\cO_l$. Set $A=\oplus_{g\in G}\cO_k g\alpha\subseteq\cO_l$. This is an
+	open additive subgroup of $l$
+	so there exists some natural $N$ such that $\pi_k^N\cO_l\subseteq A$. Set
+	$B=\pi_k^{N+1}A\subseteq\pi_k\cO_l$ and set $M=1+B\subseteq \cO_l^\times$. We claim that this
+	$M$ works. It is clearly open and $G$-stable, so what remains is $H^{q+1}(l/k,M)=0$
+	for all naturals $q$.
+
+	First observe that $B\cdot B\subseteq \pi_kB$, as $B\cdot B\subseteq\pi_k^{2N+2}A\cdot A
+	\subseteq \pi_k^{2N+2}\cO_l\subseteq \pi_k^{N+2}A=\pi_kB.$ Now define subgroups
+	$M_i=1+\pi_k^iB$; we claim that lemma~\ref{lem:serre_approx} applies for all $q$.
+	To check this, we need to show that $H^{q+1}(G,M_i/M_{i+1})=0$ for all $i$. But
+	it is not difficult
+	to check that the map $M_i\to B$ sending $1+\pi_k^ib$ to $b$ induces a $G$-equivariant
+	isomorphism $M_i/M_{i+1}=B/\pi_kB$ (the case $i=0$ needs $B\cdot B\subseteq \pi_kB$),
+	and the latter has trivial cohomology because it is isomorphic to $(\cO_k/\pi_k)[G]$
+	and thus induced.
 \end{proof}
-
-
-\begin{lemma}\label{lem:local isomorphism}
-	Assume $k$ and $l$ have characteristic zero.
-	For $n \in \N$ sufficiently large, the
-	exponential map gives an isomorphism
-	\[
-		(P^n,+) \cong (1 + P^n, \times).
-	\]
-	This isomorphism commutes with the action of the Galois group, so is an
-	isomorphism of representations.
-\end{lemma}
-
-\begin{proof}
-	Choose $n$ large enough so that $\exp(x)$ converges for all $x \in P^n$,
-	and such that all the terms $x^r/r!$ are in $P^n$ for $r \ge 1$
-	and all the terms $x^r / r!$ with $r \ge 2$ have strictly larger valuation than that of $x$.
-	It is already proved in Mathlib that $\exp(x+y)=\exp(x)\exp(y)$, and the fact that $\exp$ commutes
-	with the Galois action is straightforward.
-	We'll show that the map is a bijection from $P^n$ to $1+P^n$.
-
-	Suppose $\exp(x)=1$ with $x \in P^n$.
-	If $x \ne 0$ then $x = \pi^mu$ for some unit $u$.
-	By assumption on $n$, $\exp(x) = 1 + \pi^m u + O(\pi^{m+1})$; this gives a contradcition.
-	Therefore the map $\exp : P^n \to 1+P^n$ is injective.
-
-	One can show that the map $P^n \to 1+P^n$ is surjective using Hensel's lemma as follows.
-	Choose $y \in 1+P^n$. Then $x_0 = y-1$ is in $P^n$ and $\exp(x) \equiv y \bmod P^{n+1}$.
-	Furthermore $\exp'(x_0) = \exp(x_0) \not\equiv 0 \bmod P$. Hensel's lemma shows that there exists
-	a solution to $\exp(x)=y$ with $x \equiv x_0 \bmod P^{n+1}$.
-	In particular $x \in P^n$.
-\end{proof}
-
 
 \begin{lemma}\label{lem:herbrand local units}
-	\uses{lem:local isomorphism,
-		lem:herbrand compact open additive,
+	\uses{lem:serre_cor,
 		lem:herbrand finite,
 		lem:herbrand ses}
-	If $l/k$ is a cyclic extension and $l,k$ have characteristic zero,
-	then $h(l/k, \cO_l^\times) = 1$.
+	If $l/k$ is a cyclic extension then $h(l/k, \cO_l^\times) = 1$.
 \end{lemma}
 
 \begin{proof}
-	Choose a subgroup $1+P^n$ as in the \ref{lem:local isomorphism}.
-	Since $\cO_l^\times / (1+P^n)$ is finite we have
-	(using \ref{lem:herbrand finite} and \ref{lem:herbrand ses})
+	Choose a subgroup $M\subseteq \cO_l^\times$ as in Lemma~\ref{lem:serre_cor}.
+	Since $\cO_l^\times / M$ is finite (because $M$ is open and $\cO_l^\times$ is compact)
+	we have
+	(using lemmas~\ref{lem:herbrand finite} and \ref{lem:herbrand ses})
 	\[
-		h(\cO_l^\times) = h(1+P^n) = h(P^n).
+		h(\cO_l^\times) = h(M).
 	\]
-	The right hand side is $1$ by \ref{lem:herbrand compact open additive}.
+	The right hand side is $1$ by \ref{lem:serre_cor}.
 \end{proof}
 
 \begin{lemma} \label{lem:herbrand local l*}
 	\uses{lem:herbrand local units,
 		eg:herbrand Z,
 		lem:herbrand ses}
-	If $l/k$ is a cyclic extension of local fields of characteristic zero
+	If $l/k$ is a cyclic extension of local fields
 	then $h(l/k, l^\times)= [l:k]$.
 \end{lemma}
 
@@ -255,7 +274,7 @@ $h(l/k,l^\times) = [l:k]$.
 \begin{lemma} \label{lem:local H2 l*}
 	\uses{lem:herbrand local l*,
 		thm:hilbert 90}
-	If $l/k$ is a cyclic extension of local fields of characteristic zero
+	If $l/k$ is a cyclic extension of local fields
 	then $|H^2(l/k,l^\times)| = [l:k]$.
 \end{lemma}
 
@@ -268,8 +287,11 @@ $h(l/k,l^\times) = [l:k]$.
 
 \section{An upper bound for \texorpdfstring{$H^2(l/k,l^\times)$}{H2(l/k,l*)}}
 
-From now on $k$ and $l$ have characteristic zero.
-
+We have just seen that $|H^2(l/k,l^\times)|=[l:k]$ in the case where $Gal(l/k)$ is
+cyclic. In this section, using the usual d\'evissage, we will deduce an
+inequality $|H^2(l/k,l^\times)|\leq[l:k]$ in the general case. It is actually
+true that $|H^2(l/k,l^\times)|=[l:k]$ in the general case, but we prove this
+equality by proving inequalities in both directions, and this is the first.
 \begin{theorem} \label{lem:local H2 upper bound}
 	\uses{thm:hilbert 90,
 		thm:inflation restriction sequence,
@@ -277,7 +299,7 @@ From now on $k$ and $l$ have characteristic zero.
 		cor:cohomology G-torsion,
 		cor:cohomology sub Sylow,
 		lem:Hn unit}
-	Let $l/k$ be a Galois extenion of local fields.
+	Let $l/k$ be a Galois extension of local fields.
 	Then $|H^2(l/k,l^\times)| \le [l:k]$.
 \end{theorem}
 
@@ -305,12 +327,6 @@ From now on $k$ and $l$ have characteristic zero.
 	order at most $[l:k]$ by the inductive hypothesis.
 	Thereofore $H^2( l/k_0, l^\times)$ has order at most $[l:k] \times [k : k_0] = [l: k_0]$.
 \end{proof}
-
-
-
-
-
-
 
 \section{Fundamental classes in unramified extensions}
 
@@ -364,40 +380,21 @@ then $\pi_k$ is also a uniformizer in $l$, so we may identify $\F_l$ with $\cO_l
 
 
 \begin{lemma}	\label{lem:unramified units trivial}
-	\uses{lem:local isomorphism,
-		lem:unramified additive trivial,
+	\uses{lem:serre_approx,
 		lem:finite field trivial}
-	If $l/k$ is unramified then $\cO_l^\times$ has trivial cohomology.
+	If $l/k$ is unramified then $\cO_l^\times$ has trivial group cohomology.
 \end{lemma}
 
 \begin{proof}
-	Recall (\ref{lem:local isomorphism}) that for $n$ sufficiently large we have isomorphisms of
-	Galois modules:
-	\[
-		1 + P^n \cong P^n \cong \cO_l,
-	\]
-	where the first map is the logarithm and the second map is multiplication by $\pi_k^{-n}$.
-	Hence by \ref{lem:unramified additive trivial}, the multiplictive subgroup $1+P^n$ has trivial
-	cohomology.
-	The long exact sequence now gives isomorphisms
-	\[
-		H^r(l/k,\cO_l^\times) \cong H^r(l/k,\cO_l^\times / (1+P^n)).
-	\]
-	We'll prove by induction on $n$ that $\cO_l^\times / (1+P^n)$ has trivial cohomology.
-	In the case $n = 1$ we have
-	\[
-		\cO_l^\times / (1+P) \cong \F_l^\times.
-	\]
-	In this case the result follows from \ref{lem:finite field trivial}.
-
-	For the inductive step we note that there is a short exact sequence of Galois modules
-	\[
-		0 \to \F_l \to  \cO_l^\times / (1+P^{n+1})  \to\cO_l^\times / (1+P^n)  \to  0,
-	\]
-	where we have identified $P^n / P^{n+1}$ with $\F_l$.
-	By the inductive hypothesis, we assume that $\cO_l^\times / (1+P^n)$ has tivial cohomology.
-	By \ref{lem:finite field trivial} $\F_l$ has trivial cohomology.
-	Hence by the long exact seqeunce, $\cO_l^\times / (1+P^{n+1})$ has trivial cohomology.
+	Because replacing $Gal(l/k)$ with a subgroup is the same as replacing $k$ with an extension,
+	it suffices to prove that $H^{q+1}(l/k,\cO_l^\times)=0$ for all local fields $k$,
+	unramified extensions $l$ and naturals $q$. Filter $\cO_l^\times$ as
+	$\cO_l^\times\supset 1+\pi_k\cO_l\supset 1+\pi_k^2\cO_l\supset\cdots$.
+	By lemma~\ref{lem:serre_approx} it suffices to prove that all the subquotients have
+	trivial cohomology. However the first subquotient is $\F_l^\times$ and all the others
+	are $\F_l$, so it suffices to prove that $H^q(G,\F_l^\times)\cong H^q(G,\F_l)\cong 0$
+	for all $q\geq1$.
+	But these follow from lemma~\ref{lem:finite field trivial}.
 \end{proof}
 
 
@@ -716,6 +713,43 @@ Since the inflation map is injective $\sigma_{l/k}$ also has order $[l:k]$.
 	The result follows from this.
 \end{proof}
 
+\section{Consequences for $\Q_p$ and $\Q$.}
+
+We start with a general result valid for local fields of characteristic zero, although
+we will only use the case $l=k=\Q_p$ in the application.
+
+\begin{lemma}\label{lem:local isomorphism}
+	Assume $l/k$ is a finite Galois extension of characteristic zero local fields, and let $P$ be the maximal
+	ideal of $\cO_l$.
+
+	For $n \in \N$ sufficiently large, the
+	exponential map gives an isomorphism
+	\[
+		(P^n,+) \cong (1 + P^n, \times).
+	\]
+	This isomorphism commutes with the action of the Galois group, so is an
+	isomorphism of representations.
+\end{lemma}
+
+\begin{proof}
+	Choose $n$ large enough so that $\exp(x)$ converges for all $x \in P^n$,
+	and such that all the terms $x^r/r!$ are in $P^n$ for $r \ge 1$
+	and all the terms $x^r / r!$ with $r \ge 2$ have strictly larger valuation than that of $x$.
+	It is already proved in Mathlib that $\exp(x+y)=\exp(x)\exp(y)$, and the fact that $\exp$ commutes
+	with the Galois action is straightforward.
+	We'll show that the map is a bijection from $P^n$ to $1+P^n$.
+
+	Suppose $\exp(x)=1$ with $x \in P^n$.
+	If $x \ne 0$ then $x = \pi^mu$ for some unit $u$.
+	By assumption on $n$, $\exp(x) = 1 + \pi^m u + O(\pi^{m+1})$; this gives a contradcition.
+	Therefore the map $\exp : P^n \to 1+P^n$ is injective.
+
+	One can show that the map $P^n \to 1+P^n$ is surjective using Hensel's lemma as follows.
+	Choose $y \in 1+P^n$. Then $x_0 = y-1$ is in $P^n$ and $\exp(x) \equiv y \bmod P^{n+1}$.
+	Furthermore $\exp'(x_0) = \exp(x_0) \not\equiv 0 \bmod P$. Hensel's lemma shows that there exists
+	a solution to $\exp(x)=y$ with $x \equiv x_0 \bmod P^{n+1}$.
+	In particular $x \in P^n$.
+\end{proof}
 
 \begin{lemma} \label{lem:local cyclotomic norms}
 	\uses{thm:local fund class,
@@ -744,7 +778,7 @@ Since the inflation map is injective $\sigma_{l/k}$ also has order $[l:k]$.
 	\begin{itemize}
 		\item
 		Suppose $p$ is an odd prime, so that $\exp(pz)$ converges for all $z\in \Z_p$.
-		If $a \in 1 +p^n\Z_p^\times$ then by \ref{lem:local isomorphism}
+		If $a \in 1 +p^n\Z_p^\times$ then by \ref{lem:local isomorphism} (with $l=k=\Q_p$)
 		there is an expression of $a$ of the form
 		\[
 			a = \exp(p^n y), \qquad y \in \Z_p.

@@ -4,8 +4,8 @@ Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru, Michał Mrugała
 -/
-import ClassFieldTheory.GroupCohomology.«05_TrivialCohomology»
-import ClassFieldTheory.GroupCohomology.«07_coind1_and_ind1»
+import ClassFieldTheory.Cohomology.IndCoind.Finite
+import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
@@ -132,8 +132,6 @@ instance trivialHomology_coind₁AsPi : TrivialHomology (coind₁AsPi G A) :=
 instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     TrivialTateCohomology (Rep.coind₁AsPi G A) := by
   classical
-  -- We already know it has trivial homology and cohomology, therefore we only need check the 0-th
-  -- and -1-st cohomology groups are trivial.
   refine .of_cases fun H ↦ ?_
   -- Let's collect some trivialities.
   letI : Fintype G := .ofFinite _
