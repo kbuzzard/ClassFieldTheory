@@ -1,8 +1,6 @@
 \chapter{Local Class Field Theory}
 
-In this chapter we shall consider finite Galois extensions of non-archimedean local fields $l/k$
-of characteristic zero (the characteristic zero assumption is used when discussing the exponential
-map).
+In this chapter we shall consider finite Galois extensions of non-archimedean local fields $l/k$.
 We shall regard the multiplicative group $l^\times$
 as a representation of $\Gal(l/k)$ over the ring $\Z$, where
 addition in the module is the operation which is usually written as multiplication.
@@ -107,6 +105,8 @@ The following result (called Hilbert's theorem 90) is already in Mathlib.
 \end{proof}
 
 \begin{theorem}\label{thm:additive field trivial}
+	\lean{Rep.iso_ind₁}
+	\leanok
 	\uses{lem:induced trivial Tate}
 	Let $l/k$ be a finite Galois extension of fields.
 	Then there is an isomorphism of $\Gal(l/k)$-representations:
@@ -117,6 +117,7 @@ The following result (called Hilbert's theorem 90) is already in Mathlib.
 \end{theorem}
 
 \begin{proof}
+	\leanok
 	Recall from Galois theory that there is a normal basis for $l$ over $k$, i.e. a basis of the
 	form
 	\[
