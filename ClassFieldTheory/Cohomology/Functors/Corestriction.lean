@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Aaron Liu
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
-import Mathlib
+import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Corestriction
@@ -66,9 +66,6 @@ lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R 
     rfl
 
 variable [S.FiniteIndex]
-
-theorem QuotientGroup.mk_mul' {G : Type} [Group G] {S : Subgroup G} (g x : G) :
-  QuotientGroup.mk (s := S) (g * x) = g • QuotientGroup.mk x := rfl
 
 /-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
 map on invariants. -/
@@ -141,7 +138,7 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
-  rw [functor_map, Functor.comp_map]
+  -- rw [functor_map, Functor.comp_map]
   sorry
 
 /-- Corestriction on objects in group cohomology. -/
