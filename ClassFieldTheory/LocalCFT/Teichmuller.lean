@@ -212,6 +212,18 @@ theorem teichmuller'_def (x : 𝒪[K]) :
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   exact (cauchySeq_teichmuller x).tendsto_limUnder
 
+theorem mk_teichmuller' (x : 𝓀[K]) :
+    Ideal.Quotient.mk _ (teichmuller' K x) = x :=
+  Quotient.inductionOn x fun x ↦ (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr <| by
+    convert limUnder_teichmullerSeq_mem x 0 <;> simp
+
+theorem mk_comp_teichmuller' :
+    (MonoidHomClass.toMonoidHom (Ideal.Quotient.mk 𝓂[K])).comp (teichmuller' K) = .id _ :=
+  MonoidHom.ext mk_teichmuller'
+
+theorem teichmuller'_injective : Function.Injective (teichmuller' K) :=
+  Function.LeftInverse.injective mk_teichmuller'
+
 variable (K) in
 /-- The Teichmüller character `𝓀[K] →* K`. -/
 noncomputable def teichmuller : 𝓀[K] →* K :=
@@ -225,6 +237,9 @@ theorem teichmuller_def (x : 𝒪[K]) :
 theorem teichmuller_eq_teichmuller' (x : 𝓀[K]) :
     teichmuller K x = teichmuller' K x :=
   rfl
+
+theorem teichmuller_injective : Function.Injective (teichmuller K) :=
+  fun _ _ h ↦ teichmuller'_injective <| Subtype.ext h
 
 end TopologicalSpace
 
