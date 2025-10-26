@@ -119,3 +119,4 @@ Rep.dimensionShift.up_trivialCohomology
 Rep.dimensionShift.down_trivialCohomology
 Rep.tateCohomology_of_trivialCohomology
 Rep.trivialHomology_of_trivialCohomology
+Rep.iso_ind₁
