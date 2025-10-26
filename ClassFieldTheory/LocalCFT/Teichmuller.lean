@@ -206,7 +206,7 @@ noncomputable def teichmuller' : 𝓀[K] →* 𝒪[K] where
     exact Filter.Tendsto.limUnder_eq <| .mul
       (cauchySeq_teichmuller x).tendsto_limUnder (cauchySeq_teichmuller y).tendsto_limUnder
 
-@[simp] theorem teichmuller'_def (x : 𝒪[K]) :
+theorem teichmuller'_def (x : 𝒪[K]) :
     Filter.Tendsto (teichmullerSeq x) .atTop (nhds <| teichmuller' K <| Ideal.Quotient.mk _ x) := by
   letI := IsTopologicalAddGroup.toUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
@@ -217,10 +217,14 @@ variable (K) in
 noncomputable def teichmuller : 𝓀[K] →* K :=
   (algebraMap 𝒪[K] K : 𝒪[K] →* K).comp <| teichmuller' K
 
-@[simp] theorem teichmuller_def (x : 𝒪[K]) :
+theorem teichmuller_def (x : 𝒪[K]) :
     Filter.Tendsto (fun n ↦ (teichmullerSeq x n : K)) .atTop
       (nhds <| teichmuller K <| Ideal.Quotient.mk _ x) :=
   (continuous_subtype_val.tendsto _).comp <| teichmuller'_def x
+
+theorem teichmuller_eq_teichmuller' (x : 𝓀[K]) :
+    teichmuller K x = teichmuller' K x :=
+  rfl
 
 end TopologicalSpace
 
