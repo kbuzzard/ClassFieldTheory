@@ -18,6 +18,9 @@ variable {Q : Type} [Group Q] [DecidableEq Q] {φ : G →* Q} (surj : Function.S
 namespace groupCohomology
 
 #check ShortComplex.ShortExact
+#check quotientToInvariants
+#check quotientToInvariants
+
 
 /--
 Let `0 ⟶ A ⟶ B ⟶ C ⟶ 0` be a SES of `G`-reps. Let `K` be a subgroup.
@@ -27,28 +30,80 @@ lemma fact1 {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) : (S.map (res φ.ker.subtype)).ShortExact :=
   hS.map_of_exact _
 
-def thebadasscomplex {S : ShortComplex (Rep R G)} : ShortComplex (ModuleCat R) :=
+#check Functor
+
+#check NatIso.ofComponents
+
+def test : Rep R G ⥤ ModuleCat R := (res φ.ker.subtype) ⋙ (groupCohomology.functor R _ 0)
+
+theorem commutative_diagram : ((res φ.ker.subtype) ⋙ (groupCohomology.functor R _ 0)) =
+    (quotientToInvariantsFunctor' surj) ⋙ (forget₂ (Rep R _) (ModuleCat R))
+    := by
+  sorry
+
+section MissingPrereqs
+
+-- theorem Action.res_forget₂ (V G H : Type*) [Category V]  [HasForget V] [Monoid G]
+--   [Monoid H] (f : G →* H) : sorry := sorry
+
+end MissingPrereqs
+
+
+-- theorem hello : (res φ.ker.subtype) ⋙ (forget₂ (Rep R _) (ModuleCat R))
+--     ≅  (forget₂ (Rep R _) (ModuleCat R)) := by
+--   apply NatIso.ofComponents
+--   swap
+--   · intro X
+--     rw [Functor.comp_obj]
+
+
+-- theorem attempt_1 :
+--     (quotientToInvariantsFunctor' surj) ⋙ (forget₂ (Rep R _) (ModuleCat R))
+--     ≅ invariantsFunctor R _ := by
+--   apply NatIso.ofComponents
+--   swap
+--   · intro X
+--     simp
+--     unfold res
+--     rw [quotientToInvariants, Representation.quotientToInvariants]
+--     sorry
+
+
+--   · intro X Y f
+
+variable (φ) in
+def thebadasscomplex (S : ShortComplex (Rep R G)) : ShortComplex (ModuleCat R) :=
   mapShortComplex₂ (S.map (res φ.ker.subtype)) 0
 
--- TODO: a
-lemma mapShortComplex₁_shortExact₀ {k} [CommRing k] [Group G] {X : ShortComplex (Rep k G)}
-  (hX : X.ShortExact)
-  (hX : IsZero <| H1 X.1)
-  :
-    (mapShortComplex₂ X 0).ShortExact :=
-  sorry
-
-lemma mapShortComplex₁_shortExact {k} [CommRing k] [Group G] {X : ShortComplex (Rep k G)}
-  (hX : X.ShortExact)  {i j : ℕ} (hij : j + 1 = i) :
-    (mapShortComplex₁ hX hij).Exact :=
-  sorry
-
-#check groupHomology.mapShortComplex₁_exact
+lemma mono_mapShortComplex₁₀_f {k} [CommRing k] {X : ShortComplex (Rep k G)} (hX : X.ShortExact) :
+    Mono (groupCohomology.mapShortComplex₂ X 0).f := by
+  have : Mono X.f := hX.mono_f
+  apply mono_map_0_of_mono
 
 
+lemma epi_mapShortComplex₁_g {k} [CommRing k] {X : ShortComplex (Rep k G)} (hX : X.ShortExact)
+    (i : ℕ) (hX' : IsZero <| groupCohomology X.1 (i + 1)) :
+    Epi (groupCohomology.mapShortComplex₂ X i).g := by
+  have : (groupCohomology.mapShortComplex₃ hX (show i + 1 = i + 1 by rfl)).f
+    = (groupCohomology.mapShortComplex₂ X i).g := rfl
+  rw [←this, ←ShortComplex.exact_iff_epi]
+  · apply mapShortComplex₃_exact
+  · apply IsZero.eq_of_tgt hX'
 
-lemma fact2 {S : ShortComplex (Rep R G)}
-    (hS : S.ShortExact) (hS' : IsZero (H1 (S.X₁ ↓ φ.ker.subtype))) :
+lemma mapShortComplex₁_shortExact₀ {k} [CommRing k] {X : ShortComplex (Rep k G)}
+    (hX : X.ShortExact) (hX' : IsZero <| H1 X.1) :
+    (groupCohomology.mapShortComplex₂ X 0).ShortExact := by
+  apply ShortComplex.ShortExact.mk'
+  · apply groupCohomology.mapShortComplex₂_exact hX 0
+  · apply mono_mapShortComplex₁₀_f hX
+  · apply epi_mapShortComplex₁_g hX 0 hX'
+
+
+lemma fact2 {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (hS' : IsZero (H1 (S.X₁ ↓ φ.ker.subtype))) :
+    (thebadasscomplex φ S).ShortExact := by
+  apply mapShortComplex₁_shortExact₀
+  · apply  hS.map_of_exact _
+  · exact hS'
 
   -- have : (res φ.ker.subtype)
   -- If `H¹(K, A) = 0` then we have a SES of `K`-reps `0 ⟶ Aᴷ ⟶ Bᴷ ⟶ Cᴷ ⟶ 0`.
