@@ -5,6 +5,7 @@ import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.ModuleCatExact
+import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
@@ -419,21 +420,98 @@ end Rep
 include instCyclic in
 def periodicTateCohomology (n : ℤ) :
     tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 2) :=
-  sorry
+    sorry
+
+
+def periodicTateCohomology' (n : ℤ) (m : ℕ) :
+    tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 2 * m) := by
+  induction m with
+  | zero => simp; rfl
+  | succ k ih =>
+    apply Iso.trans ih
+    rw [show n + 2 * ↑(k + 1) = n + 2 * k + 2 by omega]
+    exact periodicTateCohomology _
 
 variable {n : ℤ} {N : ℕ} {G : Type} [Group G] [IsCyclic G] [Fintype G] {M : Rep ℤ G} [M.IsTrivial]
 
 namespace TateCohomology
 
+
 /-- The even Tate cohomology of a trivial representation of a finite cyclic group of order `N` is
 `ℤ/Nℤ`. -/
 def evenTrivialInt [IsCyclic G] (hG : Nat.card G = N) (hn : Even n) :
-    (tateCohomology n).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := sorry
+    (tateCohomology n).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := by
+  have zero_aux : (tateCohomology 0).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := by
+    apply Iso.trans (TateCohomology.zeroIso _)
+    simp
+    have eq_aux : (Representation.trivial ℤ G ℤ).norm = Nat.card G := by
+      ext; simp [Representation.norm]
+    rw [eq_aux, Representation.invariants_eq_top (Representation.trivial ℤ G ℤ) , hG]
+    refine (LinearEquiv.toModuleIso ?_)
+    obtain h1 := (Int.quotientSpanNatEquivZMod N).toIntLinearEquiv
+    have h2 :  (↥(⊤ : Submodule ℤ ℤ) ⧸
+      (LinearMap.range (N : Module.End ℤ ℤ)).submoduleOf ⊤) ≃ₗ[ℤ] (ℤ ⧸ Ideal.span {(N : ℤ)})  := by
+      refine Submodule.Quotient.equiv _ _ ?_ ?_
+      exact Submodule.topEquiv
+      simp [Submodule.topEquiv, Submodule.map]
+      ext x
+      simp
+      constructor
+      · intro hx
+        simp at hx
+        have aux : (N : Module.End ℤ ℤ) = fun (x : ℤ) => ↑N * x := by
+          rfl
+        have x_mem : x ∈ LinearMap.range (N : Module.End ℤ ℤ) := by
+          exact hx
+        obtain ⟨y, hy⟩ := LinearMap.mem_range.mpr x_mem
+        refine Ideal.mem_span_singleton'.mpr ?_
+        use y
+        rw [←hy, Module.End.natCast_apply, Int.nsmul_eq_mul, mul_comm]
+      · intro hx
+        obtain ⟨y, hy⟩ := Ideal.mem_span_singleton'.mp hx
+        have aux : x ∈ LinearMap.range (N : Module.End ℤ ℤ) := by
+          apply LinearMap.mem_range.mpr
+          use y
+          simp [←hy, mul_comm]
+        exact aux
+    exact h2 ≪≫ₗ h1
+  have aux : tateCohomology (R := ℤ) (G := G) 0 ≅ tateCohomology n := by
+    have n_eq_aux : n = 2 * (n / 2) := Eq.symm (Int.two_mul_ediv_two_of_even hn)
+    by_cases hLe : 0 ≤ n
+    · rw [n_eq_aux, show 2 * (n / 2) = 0 + 2 * (n / 2).toNat by omega]
+      exact periodicTateCohomology' _ _
+    · apply Iso.symm
+      rw [n_eq_aux, show 0 = 2 * (n / 2) + 2 * (- n / 2).toNat by omega]
+      exact periodicTateCohomology' _ _
+  exact (Iso.app aux.symm (Rep.trivial ℤ G ℤ)) ≪≫ zero_aux
 
+omit [IsCyclic G] in
 /-- A trivial torsion-free representation of a finite cyclic group has trivial odd Tate cohomology.
 -/
 lemma isZero_odd_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
-    (hn : Odd n) : IsZero ((tateCohomology n).obj <| trivial ℤ G M) := sorry
+    (hn : Odd n) : IsZero ((tateCohomology n).obj <| trivial ℤ G M) := by
+  have aux : ((tateCohomology n).obj (Rep.trivial ℤ G M)) ≅
+    ((tateCohomology (-1)).obj (Rep.trivial ℤ G M)) := by
+    have eq_aux : n = (-1) + 2 * ((n + 1)/ 2) := by grind
+    by_cases hLe : -1 ≤ n
+    · apply Iso.symm; rw [eq_aux, show (n + 1) / 2 = ((n + 1) / 2).toNat by omega]
+      exact (periodicTateCohomology' _ _).app (Rep.trivial ℤ G M)
+    · rw [eq_aux]; nth_rw 2 [show -1 = (-1 + 2 * ((n + 1) / 2)) + 2 * (- (n + 1)/ 2).toNat by omega]
+      exact (periodicTateCohomology' _ _).app (Rep.trivial ℤ G M)
+  have Is_Zero_aux : IsZero ((tateCohomology (-1)).obj (Rep.trivial ℤ G M)) := by
+    obtain h1 := TateCohomology.negOneIsoOfIsTrivial (trivial ℤ G M)
+    simp only [Int.reduceNeg] at h1
+    have inj_aux : Function.Injective ((Nat.card G) : M →ₗ[ℤ] M) := by
+      have aux : Nat.card G ≠ 0 := Nat.card_ne_zero.mpr ⟨One.instNonempty, by infer_instance⟩
+      obtain h := (isAddTorsionFree_iff M).mp _ aux
+      exact (isAddTorsionFree_iff M).mp (inferInstance) aux
+    have aux : IsZero (ModuleCat.of ℤ ↥(LinearMap.ker ((Nat.card G) : M →ₗ[ℤ] M))) := by
+      refine ModuleCat.isZero_of_iff_subsingleton.mpr ?_
+      obtain h1 := LinearMap.ker_eq_bot_of_injective inj_aux
+      rw [h1]
+      exact Submodule.subsingleton_iff_eq_bot.mpr rfl
+    exact IsZero.of_iso aux h1
+  exact IsZero.of_iso Is_Zero_aux aux
 
 end TateCohomology
 
