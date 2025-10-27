@@ -37,7 +37,7 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
   d
   | 0, 1 => (functor R G 2).map S.f
   | 1, 2 => (functor R G 2).map S.g
-  | 2, 3 => δ hS 2 3 rfl ≫ (periodicCohomology 0).inv.app S.X₁
+  | 2, 3 => δ hS 2 3 rfl ≫ (periodicCohomology 3 1 (by simp [Nat.ModEq])).hom.app S.X₁
   | 3, 4 => (functor R G 1).map S.f
   | 4, 5 => (functor R G 1).map S.g
   | 5, 0 => δ hS 1 2 rfl

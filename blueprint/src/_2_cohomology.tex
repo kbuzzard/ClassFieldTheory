@@ -1132,9 +1132,9 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 		Representation.ind₁'_π_comm,
 		Rep.ind₁'_π, Rep.instEpiAppInd₁'_π,
 		Rep.dimensionShift.down,
-		Rep.dimensionShift.down_ses,
-		Rep.dimensionShift.down_shortExact,
-		Rep.dimensionShift.down_shortExact_res
+		Rep.dimensionShift.downSES,
+		Rep.dimensionShift.shortExact_downSES,
+		Rep.dimensionShift.shortExact_downSES_res
 	}
 	\uses{def:ind'}
 	\leanok
@@ -1202,7 +1202,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 
 \begin{corollary}	\label{cor:Tate up down isos}
 	\lean{groupCohomology.instIsIso_up_shortExact,
-		groupCohomology.instIsIso_down_shortExact,
+		groupCohomology.instIsIso_shortExact_downSES,
 		groupCohomology.upδiso_Tate,
 		groupCohomology.downδiso_Tate
 	}
@@ -1582,7 +1582,8 @@ This is given by
 \begin{corollary} \label{cor:periodic cohomology}
 	\uses{cor:Tate up down isos,
 		def:up iso down}
-	\lean{Rep.periodicCohomology}
+	\lean{Rep.periodicCohomology, Rep.periodicTateCohomology}
+  \leanok
 	Let $G$ be a finite cyclic group.
 	For all $n > 0$ and all representations $M$
 	we have an isomorphism $H^{n}(G,M) \cong H^{n+2}(G,M)$.
@@ -1590,6 +1591,7 @@ This is given by
 \end{corollary}
 
 \begin{proof}
+  \leanok
 	By the dimension-shifting isomorphisms we have
 	$H^{n}(G,M) \cong H^{n+1}(G,\down(M)) \cong H^{n+1}(G,\up(M)) \cong H^{n+2}(G,M)$,
 	and similarly for Tate cohomology.
