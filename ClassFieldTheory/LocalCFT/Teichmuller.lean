@@ -214,18 +214,21 @@ theorem teichmuller'_def (x : 𝒪[K]) :
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   exact (cauchySeq_teichmuller x).tendsto_limUnder
 
-theorem mk_teichmuller' (x : 𝓀[K]) :
-    Ideal.Quotient.mk _ (teichmuller' K x) = x :=
+theorem residue_teichmuller' (x : 𝓀[K]) :
+    IsLocalRing.residue 𝒪[K] (teichmuller' K x) = x :=
   Quotient.inductionOn x fun x ↦ (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr <| by
     convert limUnder_teichmullerSeq_mem x 0 <;> simp
 
-theorem mk_comp_teichmuller' :
-    (MonoidWithZeroHomClass.toMonoidWithZeroHom (Ideal.Quotient.mk 𝓂[K])).comp (teichmuller' K) =
-      .id _ :=
-  MonoidWithZeroHom.ext mk_teichmuller'
+theorem residue_comp_teichmuller' :
+    (IsLocalRing.residue 𝒪[K] : 𝒪[K] →*₀ 𝓀[K]).comp (teichmuller' K) = .id _ :=
+  MonoidWithZeroHom.ext residue_teichmuller'
+
+theorem leftInverse_teichmuller' :
+    Function.LeftInverse (IsLocalRing.residue 𝒪[K]) (teichmuller' K) :=
+  residue_teichmuller'
 
 theorem teichmuller'_injective : Function.Injective (teichmuller' K) :=
-  Function.LeftInverse.injective mk_teichmuller'
+  leftInverse_teichmuller'.injective
 
 variable (K) in
 /-- The Teichmüller character `𝓀[K] →*₀ K`. -/
