@@ -115,10 +115,10 @@ lemma TrivialTateCohomology.of_iso [Fintype G] {M N : Rep R G} (f : M ≅ N)
     letI : Fintype H := Fintype.ofFinite _
     (tateCohomology _).mapIso <| (res H.subtype).mapIso f⟩
 
-attribute [local instance] Fintype.ofFinite in
 lemma TrivialTateCohomology.of_injective [Fintype G] {M : Rep R G} {H : Type} [Fintype H]
     [Group H] (f : H →* G) (n : ℤ) (hf : Function.Injective f)
     [M.TrivialTateCohomology] : IsZero ((tateCohomology n).obj (M ↓ f)) :=
+  let := Fintype.ofFinite f.range
   .of_iso (isZero (M := M) f.range (n := n)) <| TateCohomology.res_iso
     (MonoidHom.ofInjective hf) (Iso.refl _) (by aesop) _
 
