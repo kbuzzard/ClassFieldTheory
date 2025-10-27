@@ -5,7 +5,8 @@ import Mathlib.Data.ZMod.QuotientRing
 /-!
 # Herbrand quotient of the trivial representation
 
-In this file, we show the Herbrand quotient of a trivial representation is `1`.
+In this file, we show that if `G` is cyclic of order `n` then the Herbrand quotient of
+`ℤ` with the trivial `G`-action is `n`.
 -/
 
 variable {G : Type} [Group G] [Fintype G] [IsCyclic G]
