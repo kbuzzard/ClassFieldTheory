@@ -27,7 +27,7 @@ open CategoryTheory
 namespace Representation
 
 /-- The Herbrand quotient of a representation is the size of its zeroth Tate group over
-the size of its -1-st.
+the size of its (-1)st.
 
 This version works for non-categorical representations. See `Rep.herbrandQuotient` for the
 categorical one. -/
