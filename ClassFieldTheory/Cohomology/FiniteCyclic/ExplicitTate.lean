@@ -41,9 +41,8 @@ variable [Fintype G]
 
 lemma tateBNeg1_eq_coinvariantsKer : ρ.tateBNeg1 = Coinvariants.ker ρ := by
   apply le_antisymm
-  · intro x h
+  · intro x ⟨y, hy⟩
     apply Submodule.subset_span
-    obtain ⟨y, hy⟩ := h
     simp only [Set.mem_range, Prod.exists]
     use gen G, -y
     simpa [← sub_eq_neg_add]
