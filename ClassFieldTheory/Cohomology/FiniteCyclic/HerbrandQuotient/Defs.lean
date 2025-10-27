@@ -4,9 +4,8 @@ import ClassFieldTheory.Cohomology.FiniteCyclic.ExplicitTate
 # Herbrand quotients
 
 In this file, we define the Herbrand quotient of a representation of a finite cyclic group, which is
-the size of its zeroth cohomology group over the size of its first, both categorically and
-concretely.
-
+the size of its zeroth Tate cohomology group over the size of its first, both categorically
+(that is, in the `Rep` category) and concretely (via `Representation`).
 ## Main declarations
 
 * `Representation.herbrandQuotient`: Herbrand quotient of a representation, defined concretely.
