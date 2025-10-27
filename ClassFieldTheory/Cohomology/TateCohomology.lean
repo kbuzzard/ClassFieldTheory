@@ -363,7 +363,7 @@ def zeroIsoOfIsTrivial :
     exact ⟨k, by simpa [Representation.norm] using hk⟩
   · simp [← hk, Submodule.submoduleOf, Representation.norm])
 
-/-- A concrete description of the `-1`-th Tate cohomology of a trivial representation. -/
+/-- A concrete description of the `-1`-st Tate cohomology of a trivial representation. -/
 def negOneIsoOfIsTrivial :
     (tateCohomology (-1)).obj M ≅ ModuleCat.of R (ker (Nat.card G : M.V →ₗ[R] M.V)) :=
   TateCohomology.negOneIso M ≪≫
