@@ -417,8 +417,8 @@ lemma isZero_ofEven_Odd {M : Rep R G} {a b : ℕ}
 end Rep
 
 include instCyclic in
-def periodicTateCohomology (n : ℤ) :
-    tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 2) :=
+def periodicTateCohomology (m n : ℤ) (h : m ≡ n [ZMOD 2]) :
+    tateCohomology (R := R) (G := G) m ≅ tateCohomology n :=
   sorry
 
 variable {n : ℤ} {N : ℕ} {G : Type} [Group G] [IsCyclic G] [Fintype G] {M : Rep ℤ G} [M.IsTrivial]

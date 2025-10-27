@@ -1,5 +1,6 @@
 import ClassFieldTheory.Cohomology.AugmentationModule
 import ClassFieldTheory.Cohomology.Examples.Examples
+import ClassFieldTheory.Cohomology.FiniteCyclic.ExplicitTate
 import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
 import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Finite
 import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
@@ -12,6 +13,7 @@ import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
+import ClassFieldTheory.Cohomology.LeftRegular
 import ClassFieldTheory.Cohomology.LocalInv
 import ClassFieldTheory.Cohomology.SplittingModule
 import ClassFieldTheory.Cohomology.TateCohomology
@@ -27,8 +29,10 @@ import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.WithZero
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Ab
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
@@ -43,6 +47,8 @@ import ClassFieldTheory.Mathlib.FieldTheory.Separable
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
+import ClassFieldTheory.Mathlib.LinearAlgebra.Isomorphisms
+import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
 import ClassFieldTheory.Mathlib.ModuleCatExact
 import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
@@ -63,6 +69,7 @@ import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
 import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
