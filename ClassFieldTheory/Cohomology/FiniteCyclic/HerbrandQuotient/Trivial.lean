@@ -53,8 +53,7 @@ instance : Subsingleton (trivial ℤ G ℤ).tateZNeg1 := by
 instance : Subsingleton (trivial ℤ G ℤ).TateHNeg1 := Quot.Subsingleton
 
 variable (G) in
-theorem Representation.herbrandQuotient_trivial_int_eq_card :
-    herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
+theorem herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
   unfold herbrandQuotient
   rw [card_tateH0_trivial_int, Nat.card_of_subsingleton (0 : (trivial ℤ G ℤ).TateHNeg1)]
   simp only [Nat.cast_one, div_one]
