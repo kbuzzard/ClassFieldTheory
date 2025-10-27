@@ -3,14 +3,12 @@ import ClassFieldTheory.Cohomology.FiniteCyclic.ExplicitTate
 /-!
 # Herbrand quotients
 
-In this file, we define the Herbrand quotient of a representation of a finite cyclic group, which is
-the size of its zeroth Tate cohomology group over the size of its first, both categorically
 In this file, we define the Herbrand quotient of a representation of a finite cyclic group G. Recall
 that the Tate cohomology of a finite cyclic group is periodic with period 2. The Herbrand
 quotient of a G-module is traditionally defined to be the size of its zeroth Tate cohomology
-group divided by the size of its first Tate cohomology group. We instead use the (-1)st
-cohomology group. If either of these groups are infinite, we define the Herbrand quotient
-to be zero.
+group divided by the size of its first Tate cohomology group, but by periodicity it could be defined
+as the size of any even degree cohomology group divided by the size of any odd degree group.
+If either of these groups are infinite, we define the Herbrand quotient to be zero.
 
 We make the definitions categorically (that is, in the `Rep` category) and concretely (via
 `Representation`).
@@ -19,6 +17,11 @@ We make the definitions categorically (that is, in the `Rep` category) and concr
 
 * `Representation.herbrandQuotient`: Herbrand quotient of a representation, defined concretely.
 * `Rep.herbrandQuotient`: Herbrand quotient of a representation, defined categorically.
+
+## Implentation notes
+
+In the `Representation` case, we use the 0th Tate cohomology group andy the (-1)st. In
+the `Rep` case, we use the 2nd group cohomology group and the 1st.
 -/
 
 noncomputable section
