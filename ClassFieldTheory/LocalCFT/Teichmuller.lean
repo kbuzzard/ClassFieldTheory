@@ -75,8 +75,9 @@ theorem isClosed_closedBall' (x : 𝒪[K]) (n : ℕ) :
   simp [mem_maximalIdeal_pow_iff]
 
 /-- The sequence `x ^ q ^ n` that defines the Teichmuller character. -/
-@[simps] noncomputable def teichmullerSeq : 𝒪[K] →* (ℕ → 𝒪[K]) where
+@[simps] noncomputable def teichmullerSeq : 𝒪[K] →*₀ (ℕ → 𝒪[K]) where
   toFun x n := x ^ Nat.card 𝓀[K] ^ n
+  map_zero' := by ext; simp [Nat.card_pos.ne']
   map_one' := by ext; simp
   map_mul' := by intros; ext; simp [mul_pow]
 
@@ -187,8 +188,8 @@ theorem ext_maximalIdeal' {x y : 𝒪[K]} (h : ∀ n, x - y ∈ 𝓂[K] ^ (n + 1
   ext_maximalIdeal fun n ↦ n.casesOn (by simp) h
 
 variable (K) in
-/-- The Teichmüller character `𝓀[K] →* 𝒪[K]`. -/
-noncomputable def teichmuller' : 𝓀[K] →* 𝒪[K] where
+/-- The Teichmüller character `𝓀[K] →*₀ 𝒪[K]`. -/
+noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
   toFun x := Quotient.liftOn x (limUnder .atTop <| teichmullerSeq ·) fun x₁ x₂ hx ↦ by
     refine ext_maximalIdeal' fun n ↦ ?_
     have h₁ := limUnder_teichmullerSeq_mem x₁ n
@@ -197,6 +198,7 @@ noncomputable def teichmuller' : 𝓀[K] →* 𝒪[K] where
     have := add_mem (sub_mem h₁ h₂) h₃
     ring_nf at this ⊢
     exact this
+  map_zero' := Filter.Tendsto.limUnder_eq <| by simp [Pi.zero_def]
   map_one' := Filter.Tendsto.limUnder_eq <| by simp [Pi.one_def]
   map_mul' x y := Quotient.inductionOn₂ x y fun x y ↦ by
     letI := IsTopologicalAddGroup.toUniformSpace K
@@ -218,16 +220,17 @@ theorem mk_teichmuller' (x : 𝓀[K]) :
     convert limUnder_teichmullerSeq_mem x 0 <;> simp
 
 theorem mk_comp_teichmuller' :
-    (MonoidHomClass.toMonoidHom (Ideal.Quotient.mk 𝓂[K])).comp (teichmuller' K) = .id _ :=
-  MonoidHom.ext mk_teichmuller'
+    (MonoidWithZeroHomClass.toMonoidWithZeroHom (Ideal.Quotient.mk 𝓂[K])).comp (teichmuller' K) =
+      .id _ :=
+  MonoidWithZeroHom.ext mk_teichmuller'
 
 theorem teichmuller'_injective : Function.Injective (teichmuller' K) :=
   Function.LeftInverse.injective mk_teichmuller'
 
 variable (K) in
-/-- The Teichmüller character `𝓀[K] →* K`. -/
-noncomputable def teichmuller : 𝓀[K] →* K :=
-  (algebraMap 𝒪[K] K : 𝒪[K] →* K).comp <| teichmuller' K
+/-- The Teichmüller character `𝓀[K] →*₀ K`. -/
+noncomputable def teichmuller : 𝓀[K] →*₀ K :=
+  (algebraMap 𝒪[K] K : 𝒪[K] →*₀ K).comp <| teichmuller' K
 
 theorem teichmuller_def (x : 𝒪[K]) :
     Filter.Tendsto (fun n ↦ (teichmullerSeq x n : K)) .atTop
