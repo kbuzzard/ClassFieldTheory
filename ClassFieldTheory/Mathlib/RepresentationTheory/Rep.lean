@@ -10,6 +10,11 @@ namespace Rep
 universe u
 variable {R G H : Type u} [CommRing R] [Group G] {A B : Rep R G}
 
+-- TODO: Rename `of_ρ` to `ρ_of`
+@[simp] lemma of_ρ' (M : Rep R G) : of M.ρ = M := rfl
+
+lemma ρ_apply (g : G) : (leftRegular R G).ρ g = Finsupp.lmapDomain R R (g * ·) := rfl
+
 @[simp] lemma ρ_mul_eq_comp (M : Rep R G) (x y : G) :
     Action.ρ M (x * y) = Action.ρ M y ≫ Action.ρ M x := map_mul (Action.ρ M) x y
 

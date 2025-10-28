@@ -1709,6 +1709,7 @@ very precisely here:
 \end{lemma}
 
 \begin{proof}
+  \leanok
 	Let $\gen$ be a generator of $G$.
 	Recall that $H^0_{\Tate}(G,M) \cong M^G / N_GM$.
 	Also, we can write $M^G$ as $\ker(1-\gen : M \to M)$.
@@ -1721,7 +1722,12 @@ very precisely here:
 	\end{align*}
 \end{proof}
 
-\begin{lemma} \label{lem:herbrand ses}
+\begin{lemma}
+  \label{lem:herbrand ses}
+  \uses{def:herbrand quotient}
+  \lean{Rep.herbrandQuotient_ne_zero_of_shortExact₁, Rep.herbrandQuotient_ne_zero_of_shortExact₂,
+    Rep.herbrandQuotient_ne_zero_of_shortExact₃, Rep.herbrandQuotient_eq_of_shortExact}
+  \leanok
 	Suppose we have a short exact sequence of representations of a finite cyclic group $G$:
 	\[
 		0 \to A \to B \to C \to 0.
@@ -1731,9 +1737,12 @@ very precisely here:
 \end{lemma}
 
 \begin{proof}
+  \uses{cor:periodic cohomology}
+  \leanok
 	It follows from the long exact sequence that if two of the representations $A,B,C$
 	have finite cohomology groups then so does the third.
-	Also, by periodicity, the long exact sequence reduces to an exact hexagon:
+	Also, by periodicity (\ref{cor:periodic cohomology}),
+  the long exact sequence reduces to an exact hexagon:
 	\[
 		\begin{matrix}
 			&& H^0_{\Tate}(G,B) \\

@@ -23,4 +23,17 @@ theorem exp_neg_one_def {x : ℤᵐ⁰} :
       rw [exp_le_exp]
       grind
 
+theorem exp_le_exp' {M : Type*} [LE M] {x y : M} : exp x ≤ exp y ↔ x ≤ y := WithZero.coe_le_coe
+
+@[simp] theorem exp_le_one_iff {M : Type*} [LE M] [Zero M] {x : M} : exp x ≤ 1 ↔ x ≤ 0 :=
+  exp_zero' (M := M) ▸ exp_le_exp'
+
+@[simp] theorem one_le_exp_iff {M : Type*} [LE M] [Zero M] {x : M} : 1 ≤ exp x ↔ 0 ≤ x :=
+  exp_zero' (M := M) ▸ exp_le_exp'
+
+theorem lt_exp_iff {x : ℤᵐ⁰} {n : ℤ} : x < exp n ↔ x ≤ exp (n - 1) := by
+  cases x
+  · simp
+  · simp [-exp_sub, Int.le_sub_one_iff]
+
 end WithZero

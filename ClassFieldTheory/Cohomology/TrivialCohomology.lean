@@ -94,10 +94,14 @@ lemma trivialHomology_iff_res {M : Rep R G} :
   mp _ _ _ _ inj := .res M inj
   mpr h := h (f := .id G) Function.injective_id
 
+/--
+A module `M` for a finite group `G` has trivial Tate cohomology if
+for all subgroups `S` of `G` and all integers `n`, `Hⁿ_{Tate}(S,M)=0`.
+-/
 class TrivialTateCohomology [Fintype G] (M : Rep R G) : Prop where
     isZero (H : Subgroup G) {n : ℤ} :
-    letI : Fintype H := Fintype.ofFinite _
-    IsZero ((tateCohomology n).obj (M ↓ H.subtype : Rep R H))
+      letI : Fintype H := Fintype.ofFinite _
+      IsZero ((tateCohomology n).obj (M ↓ H.subtype : Rep R H))
 
 lemma TrivialTateCohomology.of_iso [Fintype G] {M N : Rep R G} (f : M ≅ N)
     [N.TrivialTateCohomology] :
