@@ -68,11 +68,11 @@ lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS)
   · exact mapShortComplex₁_exact hS (Eq.refl 2)
   · exact mapShortComplex₂_exact hS 2
   · refine ShortComplex.exact_of_iso ?_ (mapShortComplex₃_exact hS (Eq.refl 3))
-    exact ShortComplex.isoMk (.refl _) (.refl _) ((periodicCohomology 0).symm.app S.X₁)
+    exact ShortComplex.isoMk (.refl _) (.refl _) ((periodicCohomology 3 1 <| by decide).app S.X₁)
   · refine ShortComplex.exact_of_iso ?_ (mapShortComplex₁_exact hS (Eq.refl 3))
     refine ShortComplex.isoMk (.refl _)
-      ((periodicCohomology 0).symm.app S.X₁)
-      ((periodicCohomology 0).symm.app S.X₂) ?_ ?_
+      ((periodicCohomology 3 1 <| by decide).app S.X₁)
+      ((periodicCohomology 3 1 <| by decide).app S.X₂) ?_ ?_
     · cat_disch
     · dsimp only [herbrandSixTermSequence, Fin.reduceFinMk, Fin.reduceAdd]
       rw [Iso.app_hom, ← NatTrans.naturality]
