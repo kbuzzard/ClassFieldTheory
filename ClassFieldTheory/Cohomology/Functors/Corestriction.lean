@@ -99,7 +99,7 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
   -- Recall we have 0 ⟶ M ⟶ coind₁'^G M ⟶ up_G M ⟶ 0 a short exact sequence
   -- of `G`-modules which restricts to a short exact sequence of `S`-modules.
   -- First I claim δ : H⁰(S,(up_G M)↓S) ⟶ H¹(S,M↓S) is surjective
-  have : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
+  haveI : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
     -- because `coind₁'^G M` has trivial cohomology
     up_δ_zero_epi_res (R := R) (φ := S.subtype) M S.subtype_injective
   -- so it suffices to give a map H⁰(S,(up_G M)↓S) ⟶ H¹(G,M) such that the
@@ -129,10 +129,44 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     convert comp_zero -- cancel first functor
     exact (mapShortComplex₃ (up_shortExact M) (rfl : 0 + 1 = 1)).zero
 
+@[reassoc]
+lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
+  δ (up_shortExact_res M S.subtype) 0 1 rfl ≫ cores₁_obj (S := S) M =
+    (cores₀ (S := S)).app _ ≫ δ (up_shortExact M) 0 1 rfl :=
+  haveI : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
+    up_δ_zero_epi_res (R := R) (φ := S.subtype) M S.subtype_injective
+  (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
+
+lemma groupCohomology.cocyclesMk_surjective.{u} {k G : Type u} [CommRing k] [Group G] {A : Rep k G}
+    {n : ℕ} (x : cocycles A n): ∃ (f : (Fin n → G) → A.V)
+    (h : (ConcreteCategory.hom (inhomogeneousCochains.d A n)) f = 0), cocyclesMk f h = x := by
+
+  sorry
+
+lemma δ_comm (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
+    δ (up_shortExact_res X S.subtype) 0 1 rfl ≫ map (MonoidHom.id ↥S) ((res S.subtype).map f) 1 =
+    map (.id S) ((res S.subtype).map (up.map f)) 0 ≫ δ (up_shortExact_res Y S.subtype) 0 1 rfl := by
+
+  rw [← cancel_epi (groupCohomology.π ..)]
+  ext x
+
+  simp
+  -- ext x
+  -- dsimp [-up_obj] at x
+  -- simp [δ]
+  sorry
+
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
-  -- rw [functor_map, Functor.comp_map]
+  haveI : Epi (δ (up_shortExact_res X S.subtype) 0 1 rfl) :=
+    up_δ_zero_epi_res (R := R) (φ := S.subtype) X S.subtype_injective
+  rw [← cancel_epi (δ (up_shortExact_res X S.subtype) 0 1 rfl)]
+  rw [commSq_cores₁_assoc]
+  simp only [ShortComplex.map_X₃, upShortComplex_obj_X₃, up_obj, Functor.id_obj, coind₁'_obj,
+    functor_obj, ShortComplex.map_X₁, upShortComplex_obj_X₁, Functor.comp_obj, Functor.comp_map,
+    functor_map]
+
   sorry
 
 /-- Corestriction on objects in group cohomology. -/
