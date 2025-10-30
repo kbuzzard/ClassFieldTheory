@@ -326,7 +326,7 @@ and the corresponding parts of the Tate complex. -/
 
 end negOneIso
 
-/-- A concrete description of `0`-th Tate cohomology
+/-- A concrete description of the `-1`-st Tate cohomology group
 as the quotient of the kernel of the norm by the kernel of the coinvariants. -/
 def negOneIso (M : Rep R G) :
     (tateCohomology (-1)).obj M ≅
