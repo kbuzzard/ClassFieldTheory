@@ -137,23 +137,38 @@ lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
     up_δ_zero_epi_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
 
-lemma groupCohomology.cocyclesMk_surjective.{u} {k G : Type u} [CommRing k] [Group G] {A : Rep k G}
-    {n : ℕ} (x : cocycles A n): ∃ (f : (Fin n → G) → A.V)
-    (h : (ConcreteCategory.hom (inhomogeneousCochains.d A n)) f = 0), cocyclesMk f h = x := by
+lemma CategoryTheory.ShortComplex.cocyclesMk_surjective.{u, v, w} {C : Type u} [Category.{v, u} C] {FC : C → C → Type*}
+    {CC : C → Type w} [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+    [HasForget₂ C Ab] [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
+    (S : ShortComplex C) [S.HasHomology] (x : ↑((forget₂ C Ab).obj S.cycles)) :
+    ∃ (x₂ : ↑((forget₂ C Ab).obj S.X₂)) (hx₂ : (ConcreteCategory.hom
+    ((forget₂ C Ab).map S.g)) x₂ = 0), ShortComplex.cyclesMk _ x₂ hx₂ = x := by
+  let y := (ShortComplex.abCyclesIso _).hom <| (S.mapCyclesIso (forget₂ C Ab)).inv x
+  use y.1, y.2
+  simp +zetaDelta [ShortComplex.cyclesMk]
 
-  sorry
+lemma HomologicalComplex.cyclesMk_surjective.{v, u, u_1, u_2} {C : Type u} [Category.{v, u} C] {FC : C → C → Type u_1} {CC : C → Type v}
+    [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] [HasForget₂ C Ab] [Abelian C]
+    [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type u_2} {c : ComplexShape ι}
+    (K : HomologicalComplex C c) {i : ι} (j : ι) (hj : c.next i = j)
+    (x : ↑((forget₂ C Ab).obj (K.cycles i))) :
+    ∃ (x₂ : ↑((forget₂ C Ab).obj (K.X i))) (hx₂ : (ConcreteCategory.hom
+    ((forget₂ C Ab).map (K.d i j))) x₂ = 0), HomologicalComplex.cyclesMk K x₂ j hj hx₂ = x := by
+  subst hj
+  exact (K.sc i).cocyclesMk_surjective x
+
+lemma cocyclesMk_surjective.{u} {k G : Type u} [CommRing k] [Group G] {A : Rep k G}
+    {n : ℕ} (x : cocycles A n) : ∃ (f : (Fin n → G) → A.V)
+    (h : (ConcreteCategory.hom (inhomogeneousCochains.d A n)) f = 0), cocyclesMk f h = x := by
+  have := (inhomogeneousCochains A).cyclesMk_surjective (n+1) (by simp) x
+  convert this <;> simp
 
 lemma δ_comm (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     δ (up_shortExact_res X S.subtype) 0 1 rfl ≫ map (MonoidHom.id ↥S) ((res S.subtype).map f) 1 =
     map (.id S) ((res S.subtype).map (up.map f)) 0 ≫ δ (up_shortExact_res Y S.subtype) 0 1 rfl := by
+  sorry
 
-  rw [← cancel_epi (groupCohomology.π ..)]
-  ext x
-
-  simp
-  -- ext x
-  -- dsimp [-up_obj] at x
-  -- simp [δ]
+lemma epi_up_dim0 {M : Rep R G} : Epi (δ (up_shortExact M) 0 1 rfl : H0 (up.obj M) ⟶ H1 M) := by
   sorry
 
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
