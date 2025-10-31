@@ -118,9 +118,7 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     -- now apply naturality of cores₀, because I want to change
     -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(S,(up_G M)↓S) ⟶ H⁰(G, up_G M) to
     -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(G,(coind₁'^G M)) ⟶ H⁰(G, up_G M)
-    let foo := ((upShortComplex.obj M).map (res S.subtype))
     let bar := cokernel.π (coind₁'_ι.app M)
-    let moo := (res S.subtype ⋙ functor R (↥S) 0).map bar
     -- cores₀ : res S.subtype ⋙ functor R (↥S) 0 ⟶ functor R G 0
     have baz := cores₀.naturality (F := (res S.subtype ⋙ functor R (↥S) 0)) bar
     change ((res S.subtype ⋙ functor R (↥S) 0).map bar ≫ (cores₀.app (up.obj M))) ≫ _ = 0
