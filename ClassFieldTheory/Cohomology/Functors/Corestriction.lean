@@ -151,7 +151,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
   let up_δ_top_isIso : IsIso (δ (htopexact) (d + 1) (d + 2) rfl) := by
     -- ...because `coind₁'^G M` has trivial cohomology as S-module
     -- have := M.coind₁'_trivialCohomology
-    have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res (coind₁'.obj M)
+    have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res_subtype (coind₁'.obj M)
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
     all_goals simpa only [upShortComplex_obj_X₂] using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
