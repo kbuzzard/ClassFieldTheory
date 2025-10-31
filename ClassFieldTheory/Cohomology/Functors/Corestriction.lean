@@ -164,13 +164,20 @@ lemma cocyclesMk_surjective.{u} {k G : Type u} [CommRing k] [Group G] {A : Rep k
   have := (inhomogeneousCochains A).cyclesMk_surjective (n+1) (by simp) x
   convert this <;> simp
 
-lemma δ_comm (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
-    δ (up_shortExact_res X S.subtype) 0 1 rfl ≫ map (MonoidHom.id ↥S) ((res S.subtype).map f) 1 =
-    map (.id S) ((res S.subtype).map (up.map f)) 0 ≫ δ (up_shortExact_res Y S.subtype) 0 1 rfl := by
-  sorry
+-- lemma δ_comm (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
+--     δ (up_shortExact_res X S.subtype) 0 1 rfl ≫ map (MonoidHom.id ↥S) ((res S.subtype).map f) 1 =
+--     map (.id S) ((res S.subtype).map (up.map f)) 0 ≫ δ (up_shortExact_res Y S.subtype) 0 1 rfl := by
+--   sorry
 
-lemma epi_up_dim0 {M : Rep R G} : Epi (δ (up_shortExact M) 0 1 rfl : H0 (up.obj M) ⟶ H1 M) := by
-  sorry
+-- set_option maxHeartbeats 400000 in
+theorem δ_naturality {X1 X2 : ShortComplex (Rep R G)} (hX1 : X1.ShortExact)
+    (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
+  (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=
+  -- show δ hX1 i j hij ≫ HomologicalComplex.homologyMap F'.τ₁ j =
+  --   HomologicalComplex.homologyMap F'.τ₃ i ≫ δ hX2 i j hij
+  HomologicalComplex.HomologySequence.δ_naturality
+    ((cochainsFunctor R G).mapShortComplex.map F)
+    (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
 
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
@@ -178,20 +185,17 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
   haveI : Epi (δ (up_shortExact_res X S.subtype) 0 1 rfl) :=
     up_δ_zero_epi_res (R := R) (φ := S.subtype) X S.subtype_injective
   symm
-  exact CategoryTheory.cubeLemma (ModuleCat R)
+  refine CategoryTheory.cubeLemma (ModuleCat R)
     (H0 (up.obj X ↓ S.subtype)) (H1 (X ↓ S.subtype)) (H0 (up.obj X)) (H1 X)
     (H0 (up.obj Y ↓ S.subtype)) (H1 (Y ↓ S.subtype)) (H0 (up.obj Y)) (H1 Y)
     -- four ?_ are the maps in the conclusion of the lemma
-    sorry sorry sorry sorry sorry ?_
-    sorry ?_ sorry ?_ sorry ?_
-    sorry sorry sorry sorry sorry sorry
-    -- commented code below is your (Edison's) earlier work
-
-  -- rw [← cancel_epi (δ (up_shortExact_res X S.subtype) 0 1 rfl)]
-  -- rw [commSq_cores₁_assoc]
-  -- simp only [ShortComplex.map_X₃, upShortComplex_obj_X₃, up_obj, Functor.id_obj, coind₁'_obj,
-  --   functor_obj, ShortComplex.map_X₁, upShortComplex_obj_X₁, Functor.comp_obj, Functor.comp_map,
-  --   functor_map]
+    (δ (up_shortExact_res X S.subtype) 0 1 rfl) (δ (up_shortExact X) 0 1 rfl)
+    (δ (up_shortExact_res Y S.subtype) 0 1 rfl) (δ (up_shortExact Y) 0 1 rfl)
+    (cores₀.app (up.obj X)) _ (cores₀.app (up.obj Y)) _
+    (map (.id S) ((res S.subtype).map (up.map f)) 0) _
+    (map (.id G) (up.map f) 0) _
+    ?_ ?_ ?_ ?_ (by exact (cores₀ (S := S)|>.naturality (X := up.obj X) (up.map f)).symm) this
+  <;> sorry
 
 /-- Corestriction on objects in group cohomology. -/
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
