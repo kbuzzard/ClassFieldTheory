@@ -181,7 +181,7 @@ is a short exact sequence in `Rep R H` for every subgroup `H` of `G`.
 -/
 lemma res_isShortExact {H : Type} [Group H] (φ : H →* G) :
     ((shortExactSequence σ).map (res φ)).ShortExact := by
-  rw [res_respectsShortExact]
+  rw [shortExact_res]
   exact isShortExact ..
 
 /--

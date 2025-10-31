@@ -301,12 +301,12 @@ def H1_iso [Fintype G] :
 
 def H1_iso' [Fintype G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
     (inj : Function.Injective φ) :
-    H1 (aug R G ↓ φ) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
-  LinearEquiv.toModuleIso <| LinearEquiv.symm <| by
+    H1 (aug R G ↓ φ) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card H : R)}) := by
+  have := Rep.trivialCohomology_iff_res.1 (trivialCohomology R G) φ inj
+  refine LinearEquiv.toModuleIso <|.symm ?_
   refine ?_ ≪≫ₗ LinearMap.quotKerEquivOfSurjective (δ (aug_isShortExact' R G φ) 0 1 rfl).hom
-    (ModuleCat.epi_iff_surjective _|>.1 <| epi_δ_of_isZero _ 0 <| by
-    simpa using @isZero_of_trivialCohomology R H _ _ _
-      (Rep.trivialCohomology_iff_res.1 (trivialCohomology R G) φ inj) ..)
+    (ModuleCat.epi_iff_surjective _|>.1 <| epi_δ_of_isZero _ 0 <|
+      isZero_of_trivialCohomology (M := leftRegular R G ↓ φ))
   refine Submodule.Quotient.equiv _ _ (H0trivial R H).symm.toLinearEquiv ?_
   rw [show LinearMap.ker (δ (aug_isShortExact' R G φ) 0 1 rfl).hom = _ from
     (mapShortComplex₃_exact (aug_isShortExact' R G φ) rfl).moduleCat_range_eq_ker.symm]

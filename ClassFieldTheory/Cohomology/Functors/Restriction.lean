@@ -84,7 +84,7 @@ lemma isZero_res_iff (M : Rep R G) {H : Type u} [Group H] [DecidableEq H] (φ : 
 The restriction functor `res φ : Rep R G ⥤ Rep R H` takes short exact sequences to short
 exact sequences.
 -/
-lemma res_respectsShortExact {H : Type u} [Group H] (φ : H →* G) (S : ShortComplex (Rep R G)) :
+@[simp] lemma shortExact_res {H : Type u} [Group H] (φ : H →* G) {S : ShortComplex (Rep R G)} :
     (S.map (Rep.res φ)).ShortExact ↔ S.ShortExact := by
   constructor
   · intro h
@@ -109,10 +109,6 @@ lemma res_respectsShortExact {H : Type u} [Group H] (φ : H →* G) (S : ShortCo
       mono_f := by simpa using h₂
       epi_g := by simpa using h₃
     }
-
-lemma res_ofShortExact {H : Type u} [Group H] (φ : H →* G) {S : ShortComplex (Rep R G)}
-    (hS : S.ShortExact) : (S.map (Rep.res φ)).ShortExact := by
-  rwa [res_respectsShortExact]
 
 @[simp] lemma norm_hom_res [Fintype G] [Fintype H] (M : Rep R G) (e : H ≃* G) :
     (M ↓ e.toMonoidHom).norm.hom = M.norm.hom := by
@@ -170,14 +166,14 @@ automatically commutes with the other maps. This requires us to first define coh
 -/
 lemma rest_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
     {H : Type u} [Group H] [DecidableEq H] (φ : H →* G) (i j : ℕ) (hij : i + 1 = j) :
-    (δ hS i j hij) ≫ (rest φ j).app S.X₁ = (rest φ i).app S.X₃ ≫ δ (res_ofShortExact φ hS) i j hij
+    δ hS i j hij ≫ (rest φ j).app S.X₁ = (rest φ i).app S.X₃ ≫ δ ((shortExact_res φ).2 hS) i j hij
     := by
   let C₁ := S.map (cochainsFunctor R G)
   let C₂ := (S.map (res φ)).map (cochainsFunctor R H)
   have ses₁ : C₁.ShortExact := map_cochainsFunctor_shortExact hS
   have ses₂ : C₂.ShortExact := by
     apply map_cochainsFunctor_shortExact
-    rwa [res_respectsShortExact]
+    rwa [shortExact_res]
   let this : C₁ ⟶ C₂ := {
     τ₁ := cochainsMap φ (𝟙 ((res φ).obj S.X₁))
     τ₂ := cochainsMap φ (𝟙 ((res φ).obj S.X₂))
