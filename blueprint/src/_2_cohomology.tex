@@ -1974,7 +1974,10 @@ There is evidently a short exact sequence of representations of $G$.
 
 \section{The Reciprocity Isomorphism}
 
-\begin{definition} \label{def:fundamental class}
+\begin{definition}
+  \label{def:fundamental class}
+  \lean{Rep.split.FiniteClassFormation}
+  \leanok
 	In this section $G$ is a finite group; $M$ is a representation of $G$ over a commutative ring $R$.
 	We shall call $(R,G,M)$ a \emph{finite class formation} if:
 	\begin{itemize}
@@ -2082,11 +2085,13 @@ The reciprocity isomorphism depends on the choice of a fundamental class.
 	Therefore $H^1(S,\Split(\sigma')) \cong 0$.
 \end{proof}
 
-\begin{definition} \label{def:reciprocity iso}
+\begin{definition}
+  \label{def:reciprocity iso}
 	\uses{thm:splitting module trivial,
 		lem:Tate -1 aug,
 		thm:trivial cohomology implies trivial Tate}
-	The theorem implies that we have isomorphisms for all $n\in \Z$ (which depend of $\sigma$):
+	\lean{Rep.split.reciprocityIso}
+  The theorem implies that we have isomorphisms for all $n\in \Z$ (which depend of $\sigma$):
 	\[
 		H^{n}_{\Tate}(G,\aug(R,G)) \cong H^{n+1}_{\Tate}(G,M) .
 	\]
