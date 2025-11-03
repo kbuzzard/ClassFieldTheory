@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Aaron Liu
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 # Corestriction
@@ -135,13 +136,6 @@ lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
   haveI : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
     epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
-
-theorem δ_naturality {X1 X2 : ShortComplex (Rep R G)} (hX1 : X1.ShortExact)
-    (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
-  (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=
-  HomologicalComplex.HomologySequence.δ_naturality
-    ((cochainsFunctor R G).mapShortComplex.map F)
-    (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
 
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
