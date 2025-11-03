@@ -87,13 +87,13 @@ cohomology group. -/
 def tateH0LinearEquivH2 : ρ.TateH0 ≃ₗ[R] H2 (.of ρ) :=
   ρ.tateH0LinearEquiv ≪≫ₗ
     ((periodicTateCohomology 0 2 (by simp [Int.modEq_iff_dvd]) ≪≫
-      TateCohomology.isoGroupCohomology 1).app (.of ρ)).toLinearEquiv
+      TateCohomology.isoGroupCohomology 2).app (.of ρ)).toLinearEquiv
 
 /-- The explicit description of the -1-th Tate cohomology group is isomorphic to the first
 cohomology group. -/
 def tateHNeg1LinearEquivH1 : ρ.TateHNeg1 ≃ₗ[R] H1 (.of ρ) :=
   ρ.tateHNeg1LinearEquiv ≪≫ₗ
     ((periodicTateCohomology (-1) 1 (by simp [Int.modEq_iff_dvd]) ≪≫
-      TateCohomology.isoGroupCohomology 0).app (.of ρ)).toLinearEquiv
+      TateCohomology.isoGroupCohomology 1).app (.of ρ)).toLinearEquiv
 
 end Representation

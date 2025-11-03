@@ -102,7 +102,7 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
   -- First I claim δ : H⁰(S,(up_G M)↓S) ⟶ H¹(S,M↓S) is surjective
   haveI : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
     -- because `coind₁'^G M` has trivial cohomology
-    up_δ_zero_epi_res (R := R) (φ := S.subtype) M S.subtype_injective
+    epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   -- so it suffices to give a map H⁰(S,(up_G M)↓S) ⟶ H¹(G,M) such that the
   -- image of H⁰(S,(coind₁'^G M)↓S) is in the kernel of that map
   refine (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).desc ?_ ?_
@@ -119,9 +119,7 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     -- now apply naturality of cores₀, because I want to change
     -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(S,(up_G M)↓S) ⟶ H⁰(G, up_G M) to
     -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(G,(coind₁'^G M)) ⟶ H⁰(G, up_G M)
-    let foo := ((upShortComplex.obj M).map (res S.subtype))
     let bar := cokernel.π (coind₁'_ι.app M)
-    let moo := (res S.subtype ⋙ functor R (↥S) 0).map bar
     -- cores₀ : res S.subtype ⋙ functor R (↥S) 0 ⟶ functor R G 0
     have baz := cores₀.naturality (F := (res S.subtype ⋙ functor R (↥S) 0)) bar
     change ((res S.subtype ⋙ functor R (↥S) 0).map bar ≫ (cores₀.app (up.obj M))) ≫ _ = 0
@@ -207,7 +205,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
 | M, 1 => cores₁_obj M
 | M, (d + 2) =>
   -- δ : H^{d+1}(G,up -) ≅ H^{d+2}(G,-)
-  let up_δ_bottom_Iso := Rep.dimensionShift.up_δiso_natTrans (R := R) (G := G) d
+  let up_δ_bottom_Iso := Rep.dimensionShift.δUpNatIso (R := R) (G := G) d
   -- `M ⟶ coind₁'^G M ⟶ up_G M` as a complex of S-modules
   let upsc_top := (upShortComplex.obj M).map (res S.subtype)
   -- the above complex of S-modules is exact
@@ -236,10 +234,9 @@ lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
       (groupCohomology.coresNatTrans R S n) : functor R G n ⟶ functor R G n) =
       S.index • (.id _) := sorry
 
-
--- any element of H^n-hat (n ∈ ℤ) is |G|-torsion
+/-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
 lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
-    (Nat.card G) • x = 0 := sorry
+    Nat.card G • x = 0 := sorry
 
 -- Should the above really be a statement about a functor?
 -- Something like this?

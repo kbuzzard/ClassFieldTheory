@@ -129,7 +129,7 @@ private lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (loc
 `carryH2Aux ∘ localInvAux n = id`. -/
 private lemma leftInverse_carryH2Aux_localInvAux : carryH2Aux.LeftInverse (localInvAux n) := by
   have e : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) ≃ (ZMod n)ᵐ :=
-    (groupCohomology.evenTrivialInt (by simp) even_two two_ne_zero).toLinearEquiv.toEquiv'
+    (groupCohomology.evenTrivialInt (by simp) _ even_two).toLinearEquiv.toEquiv'
   have : Finite (H2 <| .trivial ℤ (ZMod n)ᵐ ℤ) :=
     .of_equiv (ZMod n)ᵐ e.symm
   have : Fintype (H2 <| .trivial ℤ (ZMod n)ᵐ ℤ) := .ofFinite _
