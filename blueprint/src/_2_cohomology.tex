@@ -1014,13 +1014,13 @@ This case is described again below.
 \end{definition}
 
 \begin{corollary}	\label{cor:up iso}
-	\lean{Rep.dimensionShift.up_δ_zero_epi,
-		Rep.dimensionShift.up_δ_isIso,
-		Rep.dimensionShift.up_δiso,
-		Rep.dimensionShift.up_δ_zero_epi_res,
-		Rep.dimensionShift.up_δ_isIso_res,
-		Rep.dimensionShift.up_δiso_res,
-		Rep.dimensionShift.up_δiso_natTrans}
+	\lean{Rep.dimensionShift.δ_up_zero_epi,
+		Rep.dimensionShift.δ_up_isIso,
+		Rep.dimensionShift.δUpIso,
+		Rep.dimensionShift.epi_δ_up_zero_res,
+		Rep.dimensionShift.isIso_δ_up_res,
+		Rep.dimensionShift.δUpResIso,
+		Rep.dimensionShift.δUpNatIso}
 	\uses{def:up,
 		cor:coind₁' trivial cohomology}
 	\leanok
@@ -1203,8 +1203,8 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \begin{corollary}	\label{cor:Tate up down isos}
 	\lean{groupCohomology.instIsIso_up_shortExact,
 		groupCohomology.instIsIso_shortExact_downSES,
-		groupCohomology.upδiso_Tate,
-		groupCohomology.downδiso_Tate
+		groupCohomology.δUpIsoTate,
+		groupCohomology.δDownIsoTate
 	}
 	\uses{
 		def:up,
@@ -1582,7 +1582,7 @@ This is given by
 \begin{corollary} \label{cor:periodic cohomology}
 	\uses{cor:Tate up down isos,
 		def:up iso down}
-	\lean{Rep.periodicCohomology, Rep.periodicTateCohomology}
+	\lean{Rep.periodicCohomology, periodicTateCohomology}
   \leanok
 	Let $G$ be a finite cyclic group.
 	For all $n > 0$ and all representations $M$
@@ -1976,7 +1976,10 @@ There is evidently a short exact sequence of representations of $G$.
 
 \section{The Reciprocity Isomorphism}
 
-\begin{definition} \label{def:fundamental class}
+\begin{definition}
+  \label{def:fundamental class}
+  \lean{Rep.split.FiniteClassFormation}
+  \leanok
 	In this section $G$ is a finite group; $M$ is a representation of $G$ over a commutative ring $R$.
 	We shall call $(R,G,M)$ a \emph{finite class formation} if:
 	\begin{itemize}
@@ -2084,11 +2087,13 @@ The reciprocity isomorphism depends on the choice of a fundamental class.
 	Therefore $H^1(S,\Split(\sigma')) \cong 0$.
 \end{proof}
 
-\begin{definition} \label{def:reciprocity iso}
+\begin{definition}
+  \label{def:reciprocity iso}
 	\uses{thm:splitting module trivial,
 		lem:Tate -1 aug,
 		thm:trivial cohomology implies trivial Tate}
-	The theorem implies that we have isomorphisms for all $n\in \Z$ (which depend of $\sigma$):
+	\lean{Rep.split.reciprocityIso}
+  The theorem implies that we have isomorphisms for all $n\in \Z$ (which depend on $\sigma$):
 	\[
 		H^{n}_{\Tate}(G,\aug(R,G)) \cong H^{n+1}_{\Tate}(G,M) .
 	\]

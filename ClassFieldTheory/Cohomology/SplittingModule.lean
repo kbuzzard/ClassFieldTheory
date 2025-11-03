@@ -1,7 +1,9 @@
 import ClassFieldTheory.Cohomology.AugmentationModule
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
+import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
 open
   CategoryTheory
@@ -241,12 +243,12 @@ for all subgroups `H` of `G`,
 In other words, for all subgroups H of G, H¹(H,M)=0 and H²(H,M)=R/|H|R
 with the isomorphism given by sending 1 ∈ R/|H|R to σ.
 -/
-class FiniteClassFormation where
-  hypothesis₁ {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) : IsZero (H1 (M ↓ φ))
-  hypothesis₂ {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) :
+class FiniteClassFormation (σ : H2 M) where
+  isZero_H1 {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) : IsZero (H1 (M ↓ φ))
+  hypothesis₂ (σ) {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) :
     Submodule.span R {σ ↡ φ} = ⊤
-  hypothesis₂' {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) :
-    (Submodule.span R {σ ↡ φ}).annihilator = Ideal.span {(Nat.card H : R)}
+  hypothesis₂' (σ) {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) :
+    LinearMap.ker (LinearMap.toSpanSingleton R (H2 (M ↓ φ)) (σ ↡ φ)) = Ideal.span {(Nat.card H : R)}
 
 def H2Map₂ {A B : Rep R G} (f : A ⟶ B) : H2 A ⟶ H2 B := map (MonoidHom.id G) f 2
 
@@ -302,13 +304,12 @@ lemma TateTheorem_lemma_2 [FiniteClassFormation σ] [Fintype H] :
     Rep.aug.H1_iso' R G inj
   let e₂' : (R ⧸ Ideal.span {(Nat.card H : R)}) ≃ₗ[R] groupCohomology (M ↓ φ) 2 :=
     .ofBijective (Submodule.liftQ _ (.toSpanSingleton _ _ (σ ↡ φ))
-      (by rw [← Submodule.annihilator_span_singleton,
-        ← FiniteClassFormation.hypothesis₂' (σ := σ) inj])) <| by
+      (by rw [← FiniteClassFormation.hypothesis₂' σ inj])) <| by
     constructor
-    · rw [← LinearMap.ker_eq_bot, Submodule.ker_liftQ, ← Submodule.annihilator_span_singleton,
-        ← FiniteClassFormation.hypothesis₂' (σ := σ) inj, Submodule.mkQ_map_self]
+    · rw [← LinearMap.ker_eq_bot, Submodule.ker_liftQ, ← FiniteClassFormation.hypothesis₂' σ inj,
+        Submodule.mkQ_map_self]
     · rw [← LinearMap.range_eq_top, Submodule.range_liftQ, LinearMap.range_toSpanSingleton,
-        FiniteClassFormation.hypothesis₂ inj]
+        FiniteClassFormation.hypothesis₂ σ inj]
   let e₂ : groupCohomology (M ↓ φ) 2 ≅ .of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
     e₂'.symm.toModuleIso
   apply (config := { allowSynthFailures := true }) @IsIso.of_isIso_comp_right (g := e₂.hom)
@@ -330,7 +331,7 @@ lemma TateTheorem_lemma_3 [FiniteClassFormation σ] [Fintype H] :
     (map_cochainsFunctor_shortExact <| res_isShortExact (R := R) σ φ) 1 2 rfl
   have := TateTheorem_lemma_2 σ inj
   have : Mono S.L₁'.f := S.L₀_exact.mono_g_iff.mpr
-    (IsZero.eq_zero_of_src (FiniteClassFormation.hypothesis₁ σ inj) _)
+    (IsZero.eq_zero_of_src (FiniteClassFormation.isZero_H1 σ inj) _)
   apply Limits.IsZero.of_mono_eq_zero S.L₁'.f
   exact S.L₁'_exact.mono_g_iff.mp (inferInstanceAs (Mono (δ (res_isShortExact σ φ) 1 2 rfl)))
 
@@ -366,7 +367,7 @@ lemma isIso_δ [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
   have : TrivialTateCohomology (split σ) := inferInstance
   exact TateCohomology.isIso_δ _ this _
 
-def tateCohomology_iso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
+def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
     (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M :=
   -- first go from H^n(trivial) to H^{n+1}(aug)
   have first_iso := Rep.aug.tateCohomology_auc_succ_iso R G n
@@ -379,16 +380,14 @@ def tateCohomology_iso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) 
     congr 2
     ring)
 
-def reciprocity_iso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
-    (tateCohomology 0).obj N ≅ ModuleCat.of ℤ (Additive (Abelianization G)) := by
-  symm
-  apply Iso.trans (Y := (tateCohomology (-2)).obj (trivial ℤ G ℤ))
-  · let := groupHomology.H1AddEquivOfIsTrivial (trivial ℤ G ℤ)
-    -- the sorry is now basically `this` modulo isomorphisms which mathematicians
-    -- would say were trivial. In fact perhaps we should prove a variant of
-    -- `groupHomology.H1AddEquivOfIsTrivial` for Z where we don't tensor_Z Z.
-    sorry
-  · exact tateCohomology_iso τ (-2)
+def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
+    (tateCohomology 0).obj N ≅ .of ℤ (Additive (Abelianization G)) := calc
+  (tateCohomology 0).obj N
+    ≅ (tateCohomology (-2 + 2)).obj N := .refl _
+  _ ≅ (tateCohomology (-2)).obj (trivial ℤ G ℤ) := (tateCohomologyIso τ (-2)).symm
+  _ ≅ groupHomology (trivial ℤ G ℤ) 1 := (TateCohomology.isoGroupHomology 1).app _
+  _ ≅ .of ℤ (Additive (Abelianization G)) :=
+    groupHomology.H1TrivialAddEquiv.toIntLinearEquiv'.toModuleIso
 
 end Rep.split
 

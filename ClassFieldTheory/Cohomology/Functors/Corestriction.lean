@@ -142,7 +142,8 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     cores₁_obj X ≫ (functor R G 1).map f := by
   haveI : Epi (δ (up_shortExact_res X S.subtype) 0 1 rfl) :=
     epi_δ_up_zero_res (R := R) (φ := S.subtype) X S.subtype_injective
-  refine (CategoryTheory.cubeLemma
+  symm
+  refine CategoryTheory.cubeLemma
     (H0 (up.obj X ↓ S.subtype)) (H1 (X ↓ S.subtype)) (H0 (up.obj X)) (H1 X)
     (H0 (up.obj Y ↓ S.subtype)) (H1 (Y ↓ S.subtype)) (H0 (up.obj Y)) (H1 Y)
     -- four ?_ are the maps in the conclusion of the lemma
@@ -151,7 +152,7 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (cores₀.app (up.obj X)) _ (cores₀.app (up.obj Y)) _
     (map (.id S) ((res S.subtype).map (up.map f)) 0) _
     (map (.id G) (up.map f) 0) _
-    ?_ ?_ ?_ ?_ (by exact (cores₀ (S := S)|>.naturality (X := up.obj X) (up.map f)).symm) this).symm
+    ?_ ?_ ?_ ?_ (by exact (cores₀ (S := S)|>.naturality (X := up.obj X) (up.map f)).symm) this
   all_goals symm
   · exact commSq_cores₁ X
   · exact commSq_cores₁ Y
@@ -182,7 +183,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
   let up_δ_top_isIso : IsIso (δ (htopexact) (d + 1) (d + 2) rfl) := by
     -- ...because `coind₁'^G M` has trivial cohomology as S-module
     -- have := M.coind₁'_trivialCohomology
-    have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res (coind₁'.obj M)
+    have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res_subtype (coind₁'.obj M)
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
     all_goals simpa only [upShortComplex_obj_X₂] using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
