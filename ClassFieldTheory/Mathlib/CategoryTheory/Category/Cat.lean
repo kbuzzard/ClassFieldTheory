@@ -1,4 +1,5 @@
-import Mathlib.Combinatorics.Quiver.ReflQuiver
+import Mathlib.Data.Set.Function
+import Mathlib.CategoryTheory.Category.Cat
 
 open CategoryTheory
 

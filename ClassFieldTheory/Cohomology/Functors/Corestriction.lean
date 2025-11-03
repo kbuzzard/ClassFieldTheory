@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Aaron Liu
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
-import ClassFieldTheory.Cohomology.FiniteCyclic.CubeLemma -- move this to mathlib
+import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Corestriction
@@ -136,32 +136,6 @@ lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
     epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
 
-lemma CategoryTheory.ShortComplex.cocyclesMk_surjective.{u, v, w} {C : Type u} [Category.{v, u} C] {FC : C → C → Type*}
-    {CC : C → Type w} [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
-    [HasForget₂ C Ab] [Preadditive C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
-    (S : ShortComplex C) [S.HasHomology] (x : ↑((forget₂ C Ab).obj S.cycles)) :
-    ∃ (x₂ : ↑((forget₂ C Ab).obj S.X₂)) (hx₂ : (ConcreteCategory.hom
-    ((forget₂ C Ab).map S.g)) x₂ = 0), ShortComplex.cyclesMk _ x₂ hx₂ = x := by
-  let y := (ShortComplex.abCyclesIso _).hom <| (S.mapCyclesIso (forget₂ C Ab)).inv x
-  use y.1, y.2
-  simp +zetaDelta [ShortComplex.cyclesMk]
-
-lemma HomologicalComplex.cyclesMk_surjective.{v, u, u_1, u_2} {C : Type u} [Category.{v, u} C] {FC : C → C → Type u_1} {CC : C → Type v}
-    [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] [HasForget₂ C Ab] [Abelian C]
-    [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type u_2} {c : ComplexShape ι}
-    (K : HomologicalComplex C c) {i : ι} (j : ι) (hj : c.next i = j)
-    (x : ↑((forget₂ C Ab).obj (K.cycles i))) :
-    ∃ (x₂ : ↑((forget₂ C Ab).obj (K.X i))) (hx₂ : (ConcreteCategory.hom
-    ((forget₂ C Ab).map (K.d i j))) x₂ = 0), HomologicalComplex.cyclesMk K x₂ j hj hx₂ = x := by
-  subst hj
-  exact (K.sc i).cocyclesMk_surjective x
-
-lemma cocyclesMk_surjective.{u} {k G : Type u} [CommRing k] [Group G] {A : Rep k G}
-    {n : ℕ} (x : cocycles A n) : ∃ (f : (Fin n → G) → A.V)
-    (h : (ConcreteCategory.hom (inhomogeneousCochains.d A n)) f = 0), cocyclesMk f h = x := by
-  have := (inhomogeneousCochains A).cyclesMk_surjective (n+1) (by simp) x
-  convert this <;> simp
-
 theorem δ_naturality {X1 X2 : ShortComplex (Rep R G)} (hX1 : X1.ShortExact)
     (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
   (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=
@@ -169,7 +143,6 @@ theorem δ_naturality {X1 X2 : ShortComplex (Rep R G)} (hX1 : X1.ShortExact)
     ((cochainsFunctor R G).mapShortComplex.map F)
     (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
 
-set_option maxHeartbeats 400000 in
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
