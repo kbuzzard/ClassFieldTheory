@@ -375,28 +375,30 @@ def upIsoDown : up (R := R) (G := G) ≅ down := calc
     _ ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor := Functor.associator ..
     _ ≅ down := (ShortComplex.kerIsoImage periodSeq₂Functor exact_periodSeq₂).symm
 
-def periodicCohomology (n : ℕ) :
-    functor R G (n + 1) ≅ functor R G (n + 3) := by
-  apply Iso.trans (down_δiso_natTrans n)
-  apply Iso.trans (Functor.isoWhiskerRight upIsoDown.symm _)
-  exact up_δiso_natTrans _
+/-- Auxiliary definition for `periodicCohomology`. -/
+def periodicCohomologyAux (n : ℕ) [NeZero n] : ∀ k : ℕ, functor R G n ≅ functor R G (n + 2 * k)
+  | 0 => .refl _
+  | k + 1 => calc
+      functor R G n
+        ≅ functor R G (n + 2 * k) := periodicCohomologyAux n k
+      _ ≅ down ⋙ functor R G (n + 2 * k + 1) := δDownNatIso _
+      _ ≅ up ⋙ functor R G (n + 2 * k + 1) := Functor.isoWhiskerRight upIsoDown.symm _
+      _ ≅ functor R G (n + 2 * k + 2) := δUpNatIso _
 
-def periodicCohomology' (n m : ℕ) :
-    functor R G (n + 1) ≅ functor R G (n + 1 + 2 * m) := by
-  induction m with
-  | zero =>
-    apply Iso.refl
-  | succ m ih =>
-    apply Iso.trans ih
-    rw [mul_add, mul_one, ←add_assoc, add_assoc, add_comm 1, ←add_assoc]
-    exact periodicCohomology _
-
-def periodicCohomology_mod2 (m n : ℕ) (h : m ≡ n [MOD 2]) :
-    functor R G (m + 1) ≅ functor R G (n + 1) :=
-  if hLe : m ≤ n then
-    (periodicCohomology' m ((n - m) /2)).trans <| eqToIso (by grind [Nat.modEq_iff_dvd])
-  else
-   (eqToIso (by grind [Nat.modEq_iff_dvd])).trans (periodicCohomology' n ((m - n) /2)).symm
+/-- The non-zero cohomology of a finite cyclic group is 2-periodic. -/
+def periodicCohomology (m n : ℕ) [NeZero m] [NeZero n] (hmn : m ≡ n [MOD 2]) :
+    functor R G m ≅ functor R G n := calc
+      functor R G m
+    ≅ functor R G (m + 2 * (n / 2)) := periodicCohomologyAux ..
+  _ ≅ functor R G (n + 2 * (m / 2)) := by
+    refine eqToIso ?_
+    congr 1
+    obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := m.even_or_odd <;> obtain ⟨l, rfl⟩ | ⟨l, rfl⟩ := n.even_or_odd
+    · omega
+    · simp [Nat.ModEq, ← two_mul] at hmn
+    · simp [Nat.ModEq, ← two_mul] at hmn
+    · omega
+  _ ≅ functor R G n := (periodicCohomologyAux ..).symm
 
 /--
 Let `M` be a representation of a finite cyclic group `G`. Suppose there are even
@@ -404,57 +406,84 @@ and positive integers `e` and `o` with `e` even and `o` odd, such that
 `Hᵉ(G,M)` and `Hᵒ(G,M)` are both zero.
 Then `Hⁿ(G,M)` is zero for all `n > 0`.
 -/
-lemma isZero_ofEven_Odd {M : Rep R G} {a b : ℕ}
-    (hₑ : IsZero (groupCohomology M (2 * a + 2)))
-    (hₒ : IsZero (groupCohomology M (2 * b + 1))) (n : ℕ) :
-    IsZero (groupCohomology M (n + 1)) := by
+lemma isZero_ofEven_odd {M : Rep R G} {e o : ℕ} [NeZero e] (he : Even e) (ho : Odd o)
+    (hₑ : IsZero (groupCohomology M e)) (hₒ : IsZero (groupCohomology M o)) (n : ℕ) [NeZero n] :
+    IsZero (groupCohomology M n) := by
   obtain hn | hn := n.even_or_odd
-  · refine .of_iso hₒ <| (periodicCohomology_mod2 n (2 * b) ?_).app M
+  · refine .of_iso hₑ <| (periodicCohomology n e ?_).app M
     grind [Nat.modEq_iff_dvd]
-  · refine .of_iso hₑ <| (periodicCohomology_mod2 n (2 * a + 1) ?_).app M
+  · have : NeZero o := ⟨ho.pos.ne'⟩
+    refine .of_iso hₒ <| (periodicCohomology n o ?_).app M
     grind [Nat.modEq_iff_dvd]
 
 end Rep
 
-include instCyclic in
-def periodicTateCohomology (m n : ℤ) (h : m ≡ n [ZMOD 2]) :
-    tateCohomology (R := R) (G := G) m ≅ tateCohomology n :=
-  sorry
+/-- Auxiliary definition for `periodicTateCohomology`. -/
+def periodicTateCohomologyAux (n : ℤ) :
+    ∀ k : ℕ, tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 2 * k)
+  | 0 => eqToIso <| by simp
+  | k + 1 => calc
+    tateCohomology n
+      ≅ tateCohomology (n + 2 * k) := periodicTateCohomologyAux n k
+    _ ≅ down ⋙ tateCohomology (n + 2 * k + 1) := δDownNatIsoTate _
+    _ ≅ up ⋙ tateCohomology (n + 2 * k + 1) := Functor.isoWhiskerRight upIsoDown.symm _
+    _ ≅ tateCohomology (n + 2 * k + 1 + 1) := δUpNatIsoTate _
+    _ ≅ tateCohomology (n + 2 * (k + 1)) := eqToIso <| by congr 1; omega
+
+/-- The Tate cohomology of a finite cyclic group is 2-periodic. -/
+def periodicTateCohomology (m n : ℤ) (hmn : m ≡ n [ZMOD 2]) :
+    tateCohomology (R := R) (G := G) m ≅ tateCohomology n := calc
+  tateCohomology m
+    ≅ tateCohomology (m + 2 * ↑((max m n - m).natAbs / 2)) := periodicTateCohomologyAux ..
+  _ ≅ tateCohomology (n + 2 * ↑((max m n - n).natAbs / 2)) := by
+    refine eqToIso ?_
+    congr 1
+    norm_cast
+    rw [Nat.mul_div_cancel_left', Nat.mul_div_cancel_left']
+    · simp [abs_of_nonneg]
+    all_goals cases le_total m n <;> simp [← even_iff_two_dvd, *]
+    · simpa [even_iff_two_dvd] using hmn.symm.dvd
+    · simpa [even_iff_two_dvd] using hmn.dvd
+  _ ≅ tateCohomology n := (periodicTateCohomologyAux ..).symm
 
 variable {n : ℤ} {N : ℕ} {G : Type} [Group G] [IsCyclic G] [Fintype G] {M : Rep ℤ G} [M.IsTrivial]
+
+namespace groupCohomology
 
 namespace TateCohomology
 
 /-- The even Tate cohomology of a trivial representation of a finite cyclic group of order `N` is
 `ℤ/Nℤ`. -/
 def evenTrivialInt [IsCyclic G] (hG : Nat.card G = N) (hn : Even n) :
-    (tateCohomology n).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := sorry
+    (tateCohomology n).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := calc
+  (tateCohomology n).obj (trivial ℤ G ℤ)
+    ≅ (tateCohomology 0).obj (trivial ℤ G ℤ) :=
+    (periodicTateCohomology _ _ <| by simp [Int.modEq_iff_dvd, hn.two_dvd]).app _
+  _ ≅ .of ℤ (ZMod N) := zeroTrivialInt hG
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial odd Tate cohomology.
 -/
 lemma isZero_odd_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
-    (hn : Odd n) : IsZero ((tateCohomology n).obj <| trivial ℤ G M) := sorry
+    (hn : Odd n) : IsZero ((tateCohomology n).obj <| trivial ℤ G M) :=
+  isZero_neg_one_trivial_of_isAddTorsionFree.of_iso <| (periodicTateCohomology _ (-1) <| by
+    rw [Int.modEq_comm]; simp [Int.modEq_iff_dvd, hn.add_one.two_dvd]).app _
 
 end TateCohomology
 
-namespace groupCohomology
-
 /-- The nonzero even group cohomology of a trivial representation of a finite cyclic group of order
 `N` is `ℤ/Nℤ`. -/
-def evenTrivialInt {n : ℕ} (hG : Nat.card G = N) (hn : Even n) (hn₀ : n ≠ 0) :
-    groupCohomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := by
-  obtain _ | n := n
-  · simp at hn₀
-  exact .trans ((TateCohomology.isoGroupCohomology n).app _).symm <|
-    TateCohomology.evenTrivialInt hG (mod_cast hn)
+def evenTrivialInt (hG : Nat.card G = N) (n : ℕ) [NeZero n] (hn : Even n) :
+    groupCohomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := calc
+  groupCohomology (trivial ℤ G ℤ) n
+    ≅ (tateCohomology n).obj (trivial ℤ G ℤ) := ((TateCohomology.isoGroupCohomology _).app _).symm
+  _ ≅ .of ℤ (ZMod N) := TateCohomology.evenTrivialInt hG (mod_cast hn)
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial odd group
 cohomology. -/
 lemma isZero_odd_trivial_of_isAddTorsionFree {n : ℕ} {M : Type} [AddCommGroup M]
     [IsAddTorsionFree M] (hn : Odd n) : IsZero (groupCohomology (trivial ℤ G M) n) := by
-  obtain _ | n := n
-  · simp at hn
-  exact .of_iso (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| mod_cast hn) <|
+  have : NeZero n := ⟨hn.pos.ne'⟩
+  exact (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| mod_cast hn).of_iso <|
     (TateCohomology.isoGroupCohomology n).symm.app _
 
 end groupCohomology
@@ -465,20 +494,16 @@ namespace groupHomology
 `ℤ/Nℤ`. -/
 def oddTrivialInt {n : ℕ} (hG : Nat.card G = N) (hn : Odd n) :
     groupHomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := by
-  obtain _ | n := n
-  · simp at hn
+  have : NeZero n := ⟨hn.pos.ne'⟩
   exact .trans ((TateCohomology.isoGroupHomology n).app _).symm <|
     TateCohomology.evenTrivialInt hG <| by rw [← neg_add', even_neg]; exact mod_cast hn.add_one
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial nonzero even group
 homology. -/
-lemma isZero_even_trivial_of_isAddTorsionFree {n : ℕ} {M : Type} [AddCommGroup M]
-    [IsAddTorsionFree M] (hn : Even n) (hn₀ : n ≠ 0) :
-    IsZero (groupHomology (trivial ℤ G M) n) := by
-  obtain _ | n := n
-  · simp at hn₀
-  exact .of_iso (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| by
-    rw [← neg_add', odd_neg]; exact mod_cast hn.add_one) <|
+lemma isZero_even_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
+    {n : ℕ} [NeZero n] (hn : Even n) : IsZero (groupHomology (trivial ℤ G M) n) := by
+  refine (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree ?_).of_iso <|
     (TateCohomology.isoGroupHomology n).symm.app _
+  rw [← neg_add', odd_neg]; exact mod_cast hn.add_one
 
 end groupHomology
