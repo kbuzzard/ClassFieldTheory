@@ -43,14 +43,17 @@ lemma TrivialCohomology.of_iso {M N : Rep R G} (f : M ≅ N) [N.TrivialCohomolog
     M.TrivialCohomology where
   isZero H n := (isZero H).of_iso <| (functor _ _ n.succ).mapIso <| (res H.subtype).mapIso f
 
-protected lemma TrivialCohomology.res (M : Rep R G) {H : Subgroup G} [M.TrivialCohomology] :
-    (M ↓ H.subtype).TrivialCohomology where
-  isZero S n := isZero_of_injective M (H.subtype.comp S.subtype) (n + 1) (by omega)
-      (H.subtype_injective.comp S.subtype_injective)
+protected lemma TrivialCohomology.res (M : Rep R G) {H : Type} [Group H] {f : H →* G}
+    (hf : Function.Injective f) [M.TrivialCohomology] : (M ↓ f).TrivialCohomology where
+  isZero S n := isZero_of_injective M (f.comp S.subtype) (n + 1) (by omega)
+      (hf.comp S.subtype_injective)
 
-lemma isZero_of_trivialCohomology {M : Rep R G} [M.TrivialCohomology] {n : ℕ} :
-    IsZero (groupCohomology M (n + 1)) :=
-  isZero_of_injective M (.id G) n.succ (by omega) Function.injective_id
+instance TrivialCohomology.res_subtype (M : Rep R G) {H : Subgroup G} [M.TrivialCohomology] :
+    (M ↓ H.subtype).TrivialCohomology := TrivialCohomology.res M H.subtype_injective
+
+lemma isZero_of_trivialCohomology {M : Rep R G} [M.TrivialCohomology] {n : ℕ} [NeZero n] :
+    IsZero (groupCohomology M n) :=
+  isZero_of_injective M (.id G) n (NeZero.ne _) Function.injective_id
 
 lemma trivialCohomology_iff_res {M : Rep R G} :
     M.TrivialCohomology ↔
@@ -79,9 +82,11 @@ lemma TrivialHomology.of_injective {M : Rep R G} {H : Type} [Group H] (f : H →
 
 protected lemma TrivialHomology.res (M : Rep R G) {H : Type} [Group H] {f : H →* G}
     (hf : Function.Injective f) [M.TrivialHomology] : (M ↓ f).TrivialHomology where
-  isZero H n :=
-    TrivialHomology.of_injective (f.comp H.subtype) (n + 1) (by omega) <|
-      show Function.Injective (f ∘ _) from Function.Injective.comp hf H.subtype_injective
+  isZero S n := TrivialHomology.of_injective (f.comp S.subtype) (n + 1) (by omega)
+      (hf.comp S.subtype_injective)
+
+instance TrivialHomology.res_subtype (M : Rep R G) {H : Subgroup G} [M.TrivialHomology] :
+    (M ↓ H.subtype).TrivialHomology := TrivialHomology.res M H.subtype_injective
 
 lemma isZero_of_trivialHomology {M : Rep R G} [M.TrivialHomology] {n : ℕ} :
     IsZero (groupHomology M (n + 1)) :=
@@ -110,10 +115,10 @@ lemma TrivialTateCohomology.of_iso [Fintype G] {M N : Rep R G} (f : M ≅ N)
     letI : Fintype H := Fintype.ofFinite _
     (tateCohomology _).mapIso <| (res H.subtype).mapIso f⟩
 
-attribute [local instance] Fintype.ofFinite in
 lemma TrivialTateCohomology.of_injective [Fintype G] {M : Rep R G} {H : Type} [Fintype H]
     [Group H] (f : H →* G) (n : ℤ) (hf : Function.Injective f)
     [M.TrivialTateCohomology] : IsZero ((tateCohomology n).obj (M ↓ f)) :=
+  let := Fintype.ofFinite f.range
   .of_iso (isZero (M := M) f.range (n := n)) <| TateCohomology.res_iso
     (MonoidHom.ofInjective hf) (Iso.refl _) (by aesop) _
 
@@ -125,13 +130,13 @@ instance TrivialTateCohomology.to_trivialCohomology [Fintype G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialCohomology where
   isZero H n := (TrivialTateCohomology.isZero (M := M) H (n := Nat.cast n + 1)).of_iso <|
     letI : Fintype H := Fintype.ofFinite _
-    TateCohomology.isoGroupCohomology n|>.app (M ↓ H.subtype)|>.symm
+    TateCohomology.isoGroupCohomology (n + 1) |>.app (M ↓ H.subtype)|>.symm
 
 instance TrivialTateCohomology.to_trivialHomology [Fintype G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialHomology where
-  isZero H n := (TrivialTateCohomology.isZero H (n := - n - 2)).of_iso <|
+  isZero H n := (TrivialTateCohomology.isZero H (n := - (n + 1) - 1)).of_iso <|
     letI : Fintype H := Fintype.ofFinite _
-    (TateCohomology.isoGroupHomology n|>.app (M ↓ H.subtype)).symm
+    (TateCohomology.isoGroupHomology (n + 1) |>.app (M ↓ H.subtype)).symm
 
 /-- To check that a finite group has trivial Tate cohomology, it's enough to show it has trivial
 cohomology and trivial homology, and that the 0-th and -1st Tate cohomology groups are trivial. -/
@@ -145,16 +150,14 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
   isZero H n := by
     match n with
     | .ofNat (n + 1) =>
-      letI := TrivialCohomology.res M (H := H)
       exact isZero_of_trivialCohomology.of_iso <|
         letI : Fintype H := Fintype.ofFinite _
-        (TateCohomology.isoGroupCohomology n).app (M ↓ H.subtype)
+        (TateCohomology.isoGroupCohomology (n + 1)).app (M ↓ H.subtype)
     | .negSucc (n + 1) =>
       letI := TrivialHomology.res M (H := H) H.subtype_injective
-      rw [show Int.negSucc (n + 1) = -n - 2 by grind]
       exact isZero_of_trivialHomology.of_iso <|
         letI : Fintype H := Fintype.ofFinite _
-        (TateCohomology.isoGroupHomology n).app (M ↓ H.subtype)
+        (TateCohomology.isoGroupHomology (n + 1)).app (M ↓ H.subtype)
     | 0 =>
       aesop
     | .negSucc 0 =>

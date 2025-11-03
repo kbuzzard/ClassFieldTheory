@@ -37,7 +37,7 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
   d
   | 0, 1 => (functor R G 2).map S.f
   | 1, 2 => (functor R G 2).map S.g
-  | 2, 3 => δ hS 2 3 rfl ≫ (periodicCohomology 0).inv.app S.X₁
+  | 2, 3 => δ hS 2 3 rfl ≫ (periodicCohomology 3 1 <| by decide).hom.app S.X₁
   | 3, 4 => (functor R G 1).map S.f
   | 4, 5 => (functor R G 1).map S.g
   | 5, 0 => δ hS 1 2 rfl
@@ -68,11 +68,11 @@ lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS)
   · exact mapShortComplex₁_exact hS (Eq.refl 2)
   · exact mapShortComplex₂_exact hS 2
   · refine ShortComplex.exact_of_iso ?_ (mapShortComplex₃_exact hS (Eq.refl 3))
-    exact ShortComplex.isoMk (.refl _) (.refl _) ((periodicCohomology 0).symm.app S.X₁)
+    exact ShortComplex.isoMk (.refl _) (.refl _) ((periodicCohomology 3 1 <| by decide).app S.X₁)
   · refine ShortComplex.exact_of_iso ?_ (mapShortComplex₁_exact hS (Eq.refl 3))
     refine ShortComplex.isoMk (.refl _)
-      ((periodicCohomology 0).symm.app S.X₁)
-      ((periodicCohomology 0).symm.app S.X₂) ?_ ?_
+      ((periodicCohomology 3 1 <| by decide).app S.X₁)
+      ((periodicCohomology 3 1 <| by decide).app S.X₂) ?_ ?_
     · cat_disch
     · dsimp only [herbrandSixTermSequence, Fin.reduceFinMk, Fin.reduceAdd]
       rw [Iso.app_hom, ← NatTrans.naturality]
@@ -130,7 +130,7 @@ lemma herbrandQuotient_eq_of_shortExact
   This implies the relation.
   -/
   unfold herbrandQuotient at h₁ h₂ h₃ ⊢
-  rw [ne_eq, div_eq_zero_iff, Rat.natCast_eq_zero, not_or] at h₁ h₂ h₃
+  rw [ne_eq, div_eq_zero_iff, Rat.natCast_eq_zero_iff, not_or] at h₁ h₂ h₃
   cases h₁; cases h₂; cases h₃
   field_simp
   suffices h :

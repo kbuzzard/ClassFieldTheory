@@ -1014,13 +1014,13 @@ This case is described again below.
 \end{definition}
 
 \begin{corollary}	\label{cor:up iso}
-	\lean{Rep.dimensionShift.up_δ_zero_epi,
-		Rep.dimensionShift.up_δ_isIso,
-		Rep.dimensionShift.up_δiso,
-		Rep.dimensionShift.up_δ_zero_epi_res,
-		Rep.dimensionShift.up_δ_isIso_res,
-		Rep.dimensionShift.up_δiso_res,
-		Rep.dimensionShift.up_δiso_natTrans}
+	\lean{Rep.dimensionShift.δ_up_zero_epi,
+		Rep.dimensionShift.δ_up_isIso,
+		Rep.dimensionShift.δUpIso,
+		Rep.dimensionShift.epi_δ_up_zero_res,
+		Rep.dimensionShift.isIso_δ_up_res,
+		Rep.dimensionShift.δUpResIso,
+		Rep.dimensionShift.δUpNatIso}
 	\uses{def:up,
 		cor:coind₁' trivial cohomology}
 	\leanok
@@ -1132,9 +1132,9 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 		Representation.ind₁'_π_comm,
 		Rep.ind₁'_π, Rep.instEpiAppInd₁'_π,
 		Rep.dimensionShift.down,
-		Rep.dimensionShift.down_ses,
-		Rep.dimensionShift.down_shortExact,
-		Rep.dimensionShift.down_shortExact_res
+		Rep.dimensionShift.downSES,
+		Rep.dimensionShift.shortExact_downSES,
+		Rep.dimensionShift.shortExact_downSES_res
 	}
 	\uses{def:ind'}
 	\leanok
@@ -1202,9 +1202,9 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 
 \begin{corollary}	\label{cor:Tate up down isos}
 	\lean{groupCohomology.instIsIso_up_shortExact,
-		groupCohomology.instIsIso_down_shortExact,
-		groupCohomology.upδiso_Tate,
-		groupCohomology.downδiso_Tate
+		groupCohomology.instIsIso_shortExact_downSES,
+		groupCohomology.δUpIsoTate,
+		groupCohomology.δDownIsoTate
 	}
 	\uses{
 		def:up,
@@ -1372,7 +1372,7 @@ We define this now, and point out some easy consequences of the definition.
 	\uses{cor:up iso}
 
 	Let $S$ be a subgroup of finite index in $G$ and let $\{r_i\}$
-	be a set of representatives for the cosets $r_i S$.
+	be a set of representatives for the left cosets $r_i S$.
 	For any representation $M$ of $G$ there is a linear map $N_{G/S} : M^S \to M^G$
 	defined by
 	\[
@@ -1401,7 +1401,7 @@ We define this now, and point out some easy consequences of the definition.
 			\begin{matrix}
 				H^n(S,\coind_1'(M)) & \to & H^n(S,\up(M)) & \to &H^{n+1}(S,M) & \to & 0 \\
 				\downarrow &&\downarrow \\
-				H^n(S,\coind_1'(M)) & \to & H^n(S,\up(M)) & \to &H^{n+1}(S,M) & \to & 0
+				H^n(G,\coind_1'(M)) & \to & H^n(G,\up(M)) & \to &H^{n+1}(G,M) & \to & 0
 			\end{matrix}.
 		\]
 		It follows that there is a unique linear map $\cor^{n+1} : H^{n+1}(S,M) \to H^{n+1}(G,M)$
@@ -1410,11 +1410,11 @@ We define this now, and point out some easy consequences of the definition.
 			\begin{matrix}
 				H^n(S,\up(M)) & \to & H^{n+1}(S,M) \\
 				\downarrow &&\downarrow \\
-				H^n(S,\up(M)) & \to &H^{n+1}(S,M)
+				H^n(G,\up(M)) & \to &H^{n+1}(G,M)
 			\end{matrix}.
 		\]
 	\end{itemize}
-	The map $\cor^{n} : H^n(G , -) \to H^n(S,-)$ is a morphism of functors.
+	The map $\cor^{n} : H^n(S , -) \to H^n(G,-)$ is a morphism of functors.
 \end{definition}
 
 \begin{lemma} \label{lem:cor comp rest}
@@ -1582,7 +1582,8 @@ This is given by
 \begin{corollary} \label{cor:periodic cohomology}
 	\uses{cor:Tate up down isos,
 		def:up iso down}
-	\lean{Rep.periodicCohomology}
+	\lean{Rep.periodicCohomology, periodicTateCohomology}
+  \leanok
 	Let $G$ be a finite cyclic group.
 	For all $n > 0$ and all representations $M$
 	we have an isomorphism $H^{n}(G,M) \cong H^{n+2}(G,M)$.
@@ -1590,6 +1591,7 @@ This is given by
 \end{corollary}
 
 \begin{proof}
+  \leanok
 	By the dimension-shifting isomorphisms we have
 	$H^{n}(G,M) \cong H^{n+1}(G,\down(M)) \cong H^{n+1}(G,\up(M)) \cong H^{n+2}(G,M)$,
 	and similarly for Tate cohomology.

@@ -74,7 +74,8 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
     have zero1 := IsZero.of_iso h_even <| this (2 * n + 1)
     have zero2 := IsZero.of_iso h_odd <| this (2 * m)
     intro k
-    exact IsZero.of_iso (Rep.isZero_ofEven_Odd zero1 zero2 k) <| this k |>.symm
+    refine .of_iso (Rep.isZero_ofEven_odd ?_ ?_ zero1 zero2 _) <| this k |>.symm <;>
+      simp [parity_simps]
   /-
   This is proved by induction on `H`.
   If `H` is the trivial subgroup then the result is true.
@@ -108,7 +109,8 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
   -- `Hᵘ⁺¹(S, M)` is torsion
   have hx : Nat.card S • x = 0 := by
     have : Fintype S := Fintype.ofFinite S
-    apply ((TateCohomology.isoGroupCohomology u).app (M ↓ S.subtype)).toLinearEquiv.symm.injective
+    apply ((TateCohomology.isoGroupCohomology (u + 1)).app
+      (M ↓ S.subtype)).toLinearEquiv.symm.injective
     simp only [functor_obj, map_nsmul, map_zero]
     exact tateCohomology_torsion (M ↓ S.subtype) _
   -- it suffices to show that for every prime `p`, it has no `p^∞` torsion
@@ -126,7 +128,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     apply (groupCohomology_Sylow (Nat.add_one_pos u) (M ↓ S.subtype) (a • x) p v ⟨c, hx⟩).mtr
     -- `Hᵘ⁺¹(v,M)` is trivial if `M` has trivial cohomology
     refine @Subsingleton.eq_zero _ _ (ModuleCat.subsingleton_of_isZero
-      (@isZero_of_trivialCohomology R v _ _ _ ?_ u)) _
+      (@isZero_of_trivialCohomology R v _ _ _ ?_ (u + 1) _)) _
     -- `v` is a `p`-group, so it is solvable
     have : Fact p.Prime := ⟨hp⟩
     have : Group.IsNilpotent v := v.isPGroup'.isNilpotent -- todo: make this an instance?
@@ -154,17 +156,17 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
 instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (up.obj M).TrivialCohomology := open scoped Classical in
   trivialCohomology_of_even_of_odd (up.obj M) 37 9
-    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 77 (by decide) hφ) (up_δiso_res M hφ 75))
-    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 20 (by decide) hφ) (up_δiso_res M hφ 18))
+    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 77 (by decide) hφ) (δUpResIso M hφ 76))
+    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 20 (by decide) hφ) (δUpResIso M hφ 19))
 
 instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (down.obj M).TrivialCohomology := open scoped Classical in
   have : Fintype G := Fintype.ofFinite G
   trivialCohomology_of_even_of_odd (down.obj M) 9 37
     (fun H _ _ hφ _ ↦
-      .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (down_δiso_res M hφ 18).symm)
+      .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (δDownResIso M hφ 19).symm)
     (fun H _ _ hφ _ ↦
-      .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (down_δiso_res M hφ 73).symm)
+      .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (δDownResIso M hφ 74).symm)
 
 instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialTateCohomology := sorry

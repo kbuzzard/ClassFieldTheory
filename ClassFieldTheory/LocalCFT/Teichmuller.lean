@@ -3,10 +3,8 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-
 import ClassFieldTheory.LocalCFT.NonArchDef
 import ClassFieldTheory.Mathlib.Algebra.CharP.Lemmas
-import ClassFieldTheory.Mathlib.Algebra.CharP.Quotient
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
@@ -98,7 +96,7 @@ theorem pow_sub_pow_mem {a b : 𝒪[K]} {i : ℕ} (hi : i ≠ 0) (h : a - b ∈ 
       (mul_comm i 2 ▸ mul_right_mono h₂)) this
   · rw [pow_succ']
     have : CharP (𝒪[K] ⧸ IsLocalRing.maximalIdeal 𝒪[K]) p := hCp
-    refine Ideal.mul_mem_right _ _ (Ideal.mul_mem_mul (CharP.mem _ _) h)
+    exact Ideal.mul_mem_right _ _ <| Ideal.mul_mem_mul (Ideal.natCast_mem_of_charP_quotient ..) h
 
 -- another lemma
 theorem pow_card_sub_mem (x : 𝒪[K]) : x ^ Nat.card 𝓀[K] - x ∈ 𝓂[K] := by
