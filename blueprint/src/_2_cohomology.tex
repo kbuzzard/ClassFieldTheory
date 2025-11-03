@@ -1372,7 +1372,7 @@ We define this now, and point out some easy consequences of the definition.
 	\uses{cor:up iso}
 
 	Let $S$ be a subgroup of finite index in $G$ and let $\{r_i\}$
-	be a set of representatives for the cosets $r_i S$.
+	be a set of representatives for the left cosets $r_i S$.
 	For any representation $M$ of $G$ there is a linear map $N_{G/S} : M^S \to M^G$
 	defined by
 	\[
@@ -1401,7 +1401,7 @@ We define this now, and point out some easy consequences of the definition.
 			\begin{matrix}
 				H^n(S,\coind_1'(M)) & \to & H^n(S,\up(M)) & \to &H^{n+1}(S,M) & \to & 0 \\
 				\downarrow &&\downarrow \\
-				H^n(S,\coind_1'(M)) & \to & H^n(S,\up(M)) & \to &H^{n+1}(S,M) & \to & 0
+				H^n(G,\coind_1'(M)) & \to & H^n(G,\up(M)) & \to &H^{n+1}(G,M) & \to & 0
 			\end{matrix}.
 		\]
 		It follows that there is a unique linear map $\cor^{n+1} : H^{n+1}(S,M) \to H^{n+1}(G,M)$
@@ -1410,11 +1410,11 @@ We define this now, and point out some easy consequences of the definition.
 			\begin{matrix}
 				H^n(S,\up(M)) & \to & H^{n+1}(S,M) \\
 				\downarrow &&\downarrow \\
-				H^n(S,\up(M)) & \to &H^{n+1}(S,M)
+				H^n(G,\up(M)) & \to &H^{n+1}(G,M)
 			\end{matrix}.
 		\]
 	\end{itemize}
-	The map $\cor^{n} : H^n(G , -) \to H^n(S,-)$ is a morphism of functors.
+	The map $\cor^{n} : H^n(S , -) \to H^n(G,-)$ is a morphism of functors.
 \end{definition}
 
 \begin{lemma} \label{lem:cor comp rest}
