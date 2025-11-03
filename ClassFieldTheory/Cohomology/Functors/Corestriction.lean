@@ -133,7 +133,7 @@ lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
   δ (up_shortExact_res M S.subtype) 0 1 rfl ≫ cores₁_obj (S := S) M =
     (cores₀ (S := S)).app _ ≫ δ (up_shortExact M) 0 1 rfl :=
   haveI : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
-    up_δ_zero_epi_res (R := R) (φ := S.subtype) M S.subtype_injective
+    epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
 
 lemma CategoryTheory.ShortComplex.cocyclesMk_surjective.{u, v, w} {C : Type u} [Category.{v, u} C] {FC : C → C → Type*}
@@ -181,9 +181,9 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
   haveI : Epi (δ (up_shortExact_res X S.subtype) 0 1 rfl) :=
-    up_δ_zero_epi_res (R := R) (φ := S.subtype) X S.subtype_injective
+    epi_δ_up_zero_res (R := R) (φ := S.subtype) X S.subtype_injective
   symm
-  refine CategoryTheory.cubeLemma (ModuleCat R)
+  refine CategoryTheory.cubeLemma
     (H0 (up.obj X ↓ S.subtype)) (H1 (X ↓ S.subtype)) (H0 (up.obj X)) (H1 X)
     (H0 (up.obj Y ↓ S.subtype)) (H1 (Y ↓ S.subtype)) (H0 (up.obj Y)) (H1 Y)
     -- four ?_ are the maps in the conclusion of the lemma
