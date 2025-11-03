@@ -162,21 +162,14 @@ lemma cocyclesMk_surjective.{u} {k G : Type u} [CommRing k] [Group G] {A : Rep k
   have := (inhomogeneousCochains A).cyclesMk_surjective (n+1) (by simp) x
   convert this <;> simp
 
--- lemma δ_comm (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
---     δ (up_shortExact_res X S.subtype) 0 1 rfl ≫ map (MonoidHom.id ↥S) ((res S.subtype).map f) 1 =
---     map (.id S) ((res S.subtype).map (up.map f)) 0 ≫ δ (up_shortExact_res Y S.subtype) 0 1 rfl := by
---   sorry
-
--- set_option maxHeartbeats 400000 in
 theorem δ_naturality {X1 X2 : ShortComplex (Rep R G)} (hX1 : X1.ShortExact)
     (hX2 : X2.ShortExact) (F : X1 ⟶ X2) (i j : ℕ) (hij : i + 1 = j) :
   (δ hX1 i j hij) ≫ map (.id G) F.τ₁ j  = map (.id G) F.τ₃ i ≫ δ hX2 i j hij :=
-  -- show δ hX1 i j hij ≫ HomologicalComplex.homologyMap F'.τ₁ j =
-  --   HomologicalComplex.homologyMap F'.τ₃ i ≫ δ hX2 i j hij
   HomologicalComplex.HomologySequence.δ_naturality
     ((cochainsFunctor R G).mapShortComplex.map F)
     (map_cochainsFunctor_shortExact hX1) (map_cochainsFunctor_shortExact hX2) i j hij
 
+set_option maxHeartbeats 400000 in
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
@@ -193,10 +186,19 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (map (.id S) ((res S.subtype).map (up.map f)) 0) _
     (map (.id G) (up.map f) 0) _
     ?_ ?_ ?_ ?_ (by exact (cores₀ (S := S)|>.naturality (X := up.obj X) (up.map f)).symm) this
-  · exact (commSq_cores₁ X).symm
-  · exact (commSq_cores₁ Y).symm
-  · sorry
-  · sorry
+  all_goals symm
+  · exact commSq_cores₁ X
+  · exact commSq_cores₁ Y
+  · exact δ_naturality (up_shortExact_res X S.subtype) (up_shortExact_res Y S.subtype)
+      { τ₁ := (res S.subtype).map f
+        τ₂ := (res S.subtype).map <| coind₁'.map f
+        τ₃ := (res S.subtype).map <| up.map f
+        comm₂₃ := by
+          have := (upShortComplex.map f).comm₂₃
+          simp only [upShortComplex_map_τ₂, upShortComplex_map_τ₃, ShortComplex.map_g] at this ⊢
+          rw [← (res S.subtype).map_comp, this, (res S.subtype).map_comp]} 0 1 rfl
+  · exact δ_naturality (up_shortExact X) (up_shortExact Y)
+      ⟨f, coind₁'.map f, up.map f, rfl, by aesop_cat⟩ 0 1 rfl
 
 /-- Corestriction on objects in group cohomology. -/
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
