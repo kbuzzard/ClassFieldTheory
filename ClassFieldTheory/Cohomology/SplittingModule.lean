@@ -244,7 +244,7 @@ In other words, for all subgroups H of G, H¹(H,M)=0 and H²(H,M)=R/|H|R
 with the isomorphism given by sending 1 ∈ R/|H|R to σ.
 -/
 class FiniteClassFormation (σ : H2 M) where
-  isZero_H1 (σ) {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) : IsZero (H1 (M ↓ φ))
+  isZero_H1 {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) : IsZero (H1 (M ↓ φ))
   hypothesis₂ (σ) {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) :
     Submodule.span R {σ ↡ φ} = ⊤
   hypothesis₂' (σ) {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ) :
