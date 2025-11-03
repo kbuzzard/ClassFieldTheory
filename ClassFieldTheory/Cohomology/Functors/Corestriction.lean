@@ -133,7 +133,7 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
 lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
   δ (up_shortExact_res M S.subtype) 0 1 rfl ≫ cores₁_obj (S := S) M =
     (cores₀ (S := S)).app _ ≫ δ (up_shortExact M) 0 1 rfl :=
-  haveI : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
+  have : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
     epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
 
