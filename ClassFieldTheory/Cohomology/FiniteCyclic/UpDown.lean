@@ -37,8 +37,8 @@ open
   CategoryTheory
   Abelian
   ConcreteCategory
-  Limits
   groupCohomology
+open Limits hiding im
 
 -- TODO: add universes
 variable {R : Type} [CommRing R]
@@ -366,14 +366,13 @@ lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
 def upIsoDown : up (R := R) (G := G) ≅ down := calc
     up (R := R) (G := G)
-      ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coimageFunctor :=
-      ShortComplex.cokerIsoCoimage periodSeq₁Functor exact_periodSeq₁
-    _ ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coimageFunctor :=
+      ≅ periodSeq₁Functor ⋙ ShortComplex.gFunctor ⋙ coim :=
+      ShortComplex.cokerIsoCoim periodSeq₁Functor exact_periodSeq₁
+    _ ≅ (periodSeq₁Functor ⋙ ShortComplex.gFunctor) ⋙ coim :=
       (Functor.associator ..).symm
-    _ ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ imageFunctor :=
-      Functor.isoWhiskerLeft _ coimageFunctorIsoImageFunctor
-    _ ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ imageFunctor := Functor.associator ..
-    _ ≅ down := (ShortComplex.kerIsoImage periodSeq₂Functor exact_periodSeq₂).symm
+    _ ≅ (periodSeq₂Functor ⋙ ShortComplex.fFunctor) ⋙ im := Functor.isoWhiskerLeft _ coimIsoIm
+    _ ≅ periodSeq₂Functor ⋙ ShortComplex.fFunctor ⋙ im := Functor.associator ..
+    _ ≅ down := (ShortComplex.kerIsoIm periodSeq₂Functor exact_periodSeq₂).symm
 
 def periodicCohomology (n : ℕ) :
     functor R G (n + 1) ≅ functor R G (n + 3) := by

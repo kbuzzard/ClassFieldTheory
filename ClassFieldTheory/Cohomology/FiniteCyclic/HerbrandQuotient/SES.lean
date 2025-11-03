@@ -130,7 +130,7 @@ lemma herbrandQuotient_eq_of_shortExact
   This implies the relation.
   -/
   unfold herbrandQuotient at h₁ h₂ h₃ ⊢
-  rw [ne_eq, div_eq_zero_iff, Rat.natCast_eq_zero, not_or] at h₁ h₂ h₃
+  rw [ne_eq, div_eq_zero_iff, Rat.natCast_eq_zero_iff, not_or] at h₁ h₂ h₃
   cases h₁; cases h₂; cases h₃
   field_simp
   suffices h :
