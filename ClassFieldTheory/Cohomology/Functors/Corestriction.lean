@@ -5,6 +5,8 @@ Authors: Kevin Buzzard, Aaron Liu
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
+import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 # Corestriction
@@ -127,11 +129,43 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     convert comp_zero -- cancel first functor
     exact (mapShortComplex₃ (up_shortExact M) (rfl : 0 + 1 = 1)).zero
 
+@[reassoc]
+lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
+  δ (up_shortExact_res M S.subtype) 0 1 rfl ≫ cores₁_obj (S := S) M =
+    (cores₀ (S := S)).app _ ≫ δ (up_shortExact M) 0 1 rfl :=
+  have : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
+    epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
+  (mapShortComplex₃_exact (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
+
 theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
-  -- rw [functor_map, Functor.comp_map]
-  sorry
+  haveI : Epi (δ (up_shortExact_res X S.subtype) 0 1 rfl) :=
+    epi_δ_up_zero_res (R := R) (φ := S.subtype) X S.subtype_injective
+  symm
+  refine CategoryTheory.cubeLemma
+    (H0 (up.obj X ↓ S.subtype)) (H1 (X ↓ S.subtype)) (H0 (up.obj X)) (H1 X)
+    (H0 (up.obj Y ↓ S.subtype)) (H1 (Y ↓ S.subtype)) (H0 (up.obj Y)) (H1 Y)
+    -- four ?_ are the maps in the conclusion of the lemma
+    (δ (up_shortExact_res X S.subtype) 0 1 rfl) (δ (up_shortExact X) 0 1 rfl)
+    (δ (up_shortExact_res Y S.subtype) 0 1 rfl) (δ (up_shortExact Y) 0 1 rfl)
+    (cores₀.app (up.obj X)) _ (cores₀.app (up.obj Y)) _
+    (map (.id S) ((res S.subtype).map (up.map f)) 0) _
+    (map (.id G) (up.map f) 0) _
+    ?_ ?_ ?_ ?_ (by exact (cores₀ (S := S)|>.naturality (X := up.obj X) (up.map f)).symm) this
+  all_goals symm
+  · exact commSq_cores₁ X
+  · exact commSq_cores₁ Y
+  · exact δ_naturality (up_shortExact_res X S.subtype) (up_shortExact_res Y S.subtype)
+      { τ₁ := (res S.subtype).map f
+        τ₂ := (res S.subtype).map <| coind₁'.map f
+        τ₃ := (res S.subtype).map <| up.map f
+        comm₂₃ := by
+          have := (upShortComplex.map f).comm₂₃
+          simp only [upShortComplex_map_τ₂, upShortComplex_map_τ₃, ShortComplex.map_g] at this ⊢
+          rw [← (res S.subtype).map_comp, this, (res S.subtype).map_comp]} 0 1 rfl
+  · exact δ_naturality (up_shortExact X) (up_shortExact Y)
+      ⟨f, coind₁'.map f, up.map f, rfl, by aesop_cat⟩ 0 1 rfl
 
 /-- Corestriction on objects in group cohomology. -/
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
