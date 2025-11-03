@@ -100,7 +100,7 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
   -- Recall we have 0 ⟶ M ⟶ coind₁'^G M ⟶ up_G M ⟶ 0 a short exact sequence
   -- of `G`-modules which restricts to a short exact sequence of `S`-modules.
   -- First I claim δ : H⁰(S,(up_G M)↓S) ⟶ H¹(S,M↓S) is surjective
-  haveI : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
+  have : Epi (mapShortComplex₃ (up_shortExact_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
     -- because `coind₁'^G M` has trivial cohomology
     epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   -- so it suffices to give a map H⁰(S,(up_G M)↓S) ⟶ H¹(G,M) such that the
