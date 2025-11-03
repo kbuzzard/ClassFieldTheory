@@ -385,7 +385,7 @@ def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
     (tateCohomology 0).obj N
     ≅ (tateCohomology (-2 + 2)).obj N := .refl _
   _ ≅ (tateCohomology (-2)).obj (trivial ℤ G ℤ) := (tateCohomologyIso τ (-2)).symm
-  _ ≅ groupHomology (trivial ℤ G ℤ) 1 := (TateCohomology.isoGroupHomology 0).app _
+  _ ≅ groupHomology (trivial ℤ G ℤ) 1 := (TateCohomology.isoGroupHomology 1).app _
   _ ≅ .of ℤ (Additive (Abelianization G)) :=
     groupHomology.H1TrivialAddEquiv.toIntLinearEquiv'.toModuleIso
 
