@@ -195,7 +195,10 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
     (map (.id S) ((res S.subtype).map (up.map f)) 0) _
     (map (.id G) (up.map f) 0) _
     ?_ ?_ ?_ ?_ (by exact (cores₀ (S := S)|>.naturality (X := up.obj X) (up.map f)).symm) this
-  <;> sorry
+  · exact (commSq_cores₁ X).symm
+  · exact (commSq_cores₁ Y).symm
+  · sorry
+  · sorry
 
 /-- Corestriction on objects in group cohomology. -/
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
