@@ -4,7 +4,7 @@ open CategoryTheory
 
 universe u v
 
-variable (A : Type u) [Category.{v} A]
+variable {A : Type u} [Category.{v} A]
 
 variable (M000 M001 M010 M011 M100 M101 M110 M111 : A)
 
