@@ -19,8 +19,8 @@ import ClassFieldTheory.Cohomology.SplittingModule
 import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
+import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
 import ClassFieldTheory.LocalCFT.Continuity
-import ClassFieldTheory.LocalCFT.NonArchDef
 import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
