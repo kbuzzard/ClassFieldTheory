@@ -15,6 +15,7 @@ import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
 import ClassFieldTheory.Cohomology.LeftRegular
 import ClassFieldTheory.Cohomology.LocalInv
+import ClassFieldTheory.Cohomology.SerreApproximation
 import ClassFieldTheory.Cohomology.SplittingModule
 import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Cohomology.TrivialCohomology
@@ -29,10 +30,12 @@ import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.WithZero
+import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Ab
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
@@ -44,10 +47,12 @@ import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
+import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 import ClassFieldTheory.Mathlib.Data.Finsupp.Single
 import ClassFieldTheory.Mathlib.Data.Int.WithZero
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 import ClassFieldTheory.Mathlib.FieldTheory.Separable
+import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
@@ -56,11 +61,13 @@ import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
 import ClassFieldTheory.Mathlib.ModuleCatExact
 import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
 import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
