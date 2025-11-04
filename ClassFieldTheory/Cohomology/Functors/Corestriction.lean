@@ -189,14 +189,40 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
   let ih := cores_obj (up.obj M) (d + 1)
   (asIso (δ (htopexact) (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
 
+theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
+    (res S.subtype ⋙ functor R (↥S) (n + 1)).map f ≫ cores_obj Y (n + 1) =
+    cores_obj X (n + 1) ≫ (functor R G (n + 1)).map f := by
+  revert X Y f
+  induction n with
+  | zero => exact fun _ _ _ ↦ cores₁_naturality ..
+  | succ n ih =>
+    intro X Y f
+    simp only [Functor.comp_obj, functor_obj, Functor.comp_map, functor_map, cores_obj,
+      ShortComplex.map_X₃, upShortComplex_obj_X₃, up_obj, Functor.id_obj, coind₁'_obj,
+      ShortComplex.map_X₁, upShortComplex_obj_X₁, asIso_inv, Category.assoc, IsIso.eq_inv_comp,
+      δUpNatIso, Functor.comp_obj, up_obj, Functor.id_obj, coind₁'_obj, functor_obj,
+      δUpIso, id_eq, NatIso.ofComponents_hom_app, asIso_hom]
+    rw [← Category.assoc]
+    have := δ_naturality (up_shortExact_res X S.subtype) (up_shortExact_res Y S.subtype)
+      { τ₁ := (res S.subtype).map f
+        τ₂ := (res S.subtype).map <| coind₁'.map f
+        τ₃ := (res S.subtype).map <| up.map f
+        comm₂₃ := by
+          have := (upShortComplex.map f).comm₂₃
+          simp only [upShortComplex_map_τ₂, upShortComplex_map_τ₃, ShortComplex.map_g] at this ⊢
+          rw [← (res S.subtype).map_comp, this, (res S.subtype).map_comp]} (n + 1) (n + 2) rfl
+    rw [this, Category.assoc, ← Category.assoc (δ _ _ _ _), IsIso.hom_inv_id, Category.id_comp,
+      δ_naturality (up_shortExact X) (up_shortExact Y) ⟨f, coind₁'.map f, up.map f, rfl,
+      by aesop_cat⟩ (n + 1) (n + 2) rfl, ← Category.assoc, ← Category.assoc]
+    exact congr((· ≫ δ (up_shortExact _) _ _ _) $(ih (up.obj X) (up.obj Y) (up.map f)))
+
 variable (R) (S) in
 /-- Corestriction as a natural transformation. -/
 def coresNatTrans (n : ℕ) [DecidableEq G] : Rep.res S.subtype ⋙ functor R S n ⟶ functor R G n where
   app M := (groupCohomology.cores_obj M n)
   naturality X Y f := match n with
     | 0 => cores₀.naturality f
-    | 1 => cores₁_naturality _ _ _
-    | (d + 2) => sorry
+    | n + 1 => cores_succ_naturality n X Y f
 
 lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
     ((groupCohomology.resNatTrans.{0} R (S.subtype) n) ≫
