@@ -23,6 +23,18 @@ class IsFilterComplete {M ι σ : Type*} [AddCommGroup M]
   haus' : ∀ x : M, (∀ i, x ∈ F i) → x = 0
   prec' : ∀ x : (ι → M), (∀ i j, i ≤ j → x i - x j ∈ F i) → ∃ L : M, ∀ i, x i - L ∈ F i
 
+namespace Rep
+variable {k G : Type u} [CommRing k] [Monoid G] (A : Rep k G)
+
+noncomputable def piLeft (α : Type u) : Rep k G where
+  V := .of _ <| α → A
+  ρ :=
+  { toFun g := ModuleCat.ofHom <| .pi fun i ↦ A.ρ g ∘ₗ .proj i
+    map_one' := by simp only [map_one, CategoryTheory.End.one_def]; rfl
+    map_mul' _ _ := by simp only [map_mul, CategoryTheory.End.mul_def]; rfl }
+
+end Rep
+
 /-- A subrepresentation is a submodule that is invariant under the `G`-action. -/
 structure Subrep {k G : Type u} [CommRing k] [Monoid G] (A : Rep k G) extends Submodule k A.V where
   le_comap (g) : toSubmodule ≤ toSubmodule.comap (A.ρ g)
@@ -64,7 +76,26 @@ noncomputable def subrepOf (w₁ w₂ : Subrep A) : Subrep w₂.toRep where
 noncomputable def subquotient (w₁ w₂ : Subrep A) : Rep k G :=
   (w₂.subrepOf w₁).quotient
 
+-- We don't need this because C^n(M) is not meant to be viewed as a G-module?
+-- noncomputable def piLeft (w : Subrep A) (α : Type u) : Subrep (A.piLeft α) where
+--   toSubmodule := .pi .univ fun _ ↦ w.toSubmodule
+--   le_comap g _ hx i _ := w.le_comap g <| hx i trivial
+
 end Subrep
+
+namespace IsFilterComplete
+
+instance subrepToSubmodule {k G : Type u} [CommRing k] [Monoid G] (M : Rep k G)
+    {ι : Type*} [LE ι] (M_ : ι → Subrep M) [IsFilterComplete M_] :
+    IsFilterComplete fun i ↦ (M_ i).toSubmodule :=
+  sorry
+
+instance piLeft {k M : Type u} [CommRing k] [AddCommGroup M] [Module k M]
+    {ι : Type*} [LE ι] (M_ : ι → Submodule k M) [IsFilterComplete M_] (α : Type u) :
+    IsFilterComplete fun i ↦ Submodule.pi .univ fun _ : α ↦ M_ i :=
+  sorry
+
+end IsFilterComplete
 
 namespace groupCohomology
 
