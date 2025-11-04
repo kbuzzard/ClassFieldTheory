@@ -45,9 +45,24 @@ variable {A}
 noncomputable def toRep (w : Subrep A) : Rep k G :=
   .subrepresentation _ w.toSubmodule w.le_comap
 
+/-- `A ⧸ w` interpreted as a `G`-rep. -/
+noncomputable def quotient (w : Subrep A) : Rep k G :=
+  .quotient _ w.toSubmodule w.le_comap
+
+-- todo: complete lattice, two adjoint functors (aka galois insertions)
+instance : SemilatticeInf (Subrep A) where
+  inf w₁ w₂ := ⟨w₁.toSubmodule ⊓ w₂.toSubmodule, fun g ↦ inf_le_inf (w₁.le_comap g) (w₂.le_comap g)⟩
+  inf_le_left w₁ _ := inf_le_left (a := w₁.toSubmodule)
+  inf_le_right w₁ _ := inf_le_right (a := w₁.toSubmodule)
+  le_inf w₁ _ _ := le_inf (a := w₁.toSubmodule)
+
+noncomputable def subrepOf (w₁ w₂ : Subrep A) : Subrep w₂.toRep where
+  toSubmodule := w₁.submoduleOf w₂.toSubmodule
+  le_comap g := fun ⟨_, _⟩ h ↦ w₁.le_comap g h
+
 /-- `w₁ ⧸ (w₁ ⊓ w₂)` -/
-noncomputable def Subquotient (w₁ w₂ : Subrep A) : Rep k G :=
-  w₁.toRep.quotient (w₂.submoduleOf w₁.toSubmodule) sorry
+noncomputable def subquotient (w₁ w₂ : Subrep A) : Rep k G :=
+  (w₂.subrepOf w₁).quotient
 
 end Subrep
 
@@ -57,7 +72,7 @@ variable {k G : Type u} [CommRing k] [Group G] {M : Rep k G} (M_ : ℕ → Subre
 namespace groupCohomology
 
 theorem subsingleton_of_subquotient (q : ℕ)
-    (h : ∀ i, Subsingleton (groupCohomology ((M_ i).Subquotient (M_ (i + 1))) (q + 1))) :
+    (h : ∀ i, Subsingleton (groupCohomology ((M_ i).subquotient (M_ (i + 1))) (q + 1))) :
     Subsingleton (groupCohomology M (q + 1)) :=
   sorry
 
