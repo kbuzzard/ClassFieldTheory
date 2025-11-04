@@ -18,7 +18,7 @@ universe u
 -- to replace `IsAdicComplete`
 /-- `M` is complete with respect to the filtration `M_i ≤ M` if `⋂ M_i = 0` and any compatible
 sequence `I → M` has a limit in `M`. -/
-class IsFilterComplete (M : Type*) {ι σ : Type*} [AddCommGroup M]
+class IsFilterComplete {M ι σ : Type*} [AddCommGroup M]
     [LE ι] [SetLike σ M] [AddSubgroupClass σ M] (F : ι → σ) : Prop where
   haus' : ∀ x : M, (∀ i, x ∈ F i) → x = 0
   prec' : ∀ x : (ι → M), (∀ i j, i ≤ j → x i - x j ∈ F i) → ∃ L : M, ∀ i, x i - L ∈ F i
@@ -66,10 +66,11 @@ noncomputable def subquotient (w₁ w₂ : Subrep A) : Rep k G :=
 
 end Subrep
 
-variable {k G : Type u} [CommRing k] [Group G] {M : Rep k G} (M_ : ℕ → Subrep M)
-  [IsFilterComplete M M_]
-
 namespace groupCohomology
+
+variable {k G : Type u} [CommRing k] [Group G] {M : Rep k G} (M_ : ℕ → Subrep M)
+  (hm : Antitone M_) [IsFilterComplete M_]
+include hm
 
 theorem subsingleton_of_subquotient (q : ℕ)
     (h : ∀ i, Subsingleton (groupCohomology ((M_ i).subquotient (M_ (i + 1))) (q + 1))) :
