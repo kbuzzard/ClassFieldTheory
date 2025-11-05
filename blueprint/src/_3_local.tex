@@ -187,7 +187,7 @@ with the general case.
 % \end{proof}
 
 \begin{lemma}\label{lem:serre_approx}
-	Let $G$ be a finite group and let $M$ be a $G$-module. Say we have
+	Let $G$ be a group and let $M$ be a $G$-module. Say we have
 	a decreasing sequence $M=M_0\supseteq M_1\supseteq M_2\supseteq \cdots$
 	of $G$-submodules with the property that the natural map $M\to\varprojlim(M/M_i)$
 	is an isomorphism.
@@ -201,10 +201,24 @@ with the general case.
 	values in $M_n$ we recursively define a $q$-chain $\psi_n$ with values in $M_n$ such
 	that $f_n=\delta\psi_n+f_{n+1}$
 	with $f_{n+1}$ a $q+1$-cocycle taking values in $M_{n+1}$. Now set $\psi:=\psi_0+\psi_1+\cdots$,
-	which converges by our hypothesis $M=\varprojlim(M/M_i)$, defining a $q$-cochain of $G$
+	which converges by our hypothesis $M=\varprojlim(M/M_i)$. More precisely, $\psi$
+	can be thought of as an element of the projective limit of $C^q(M/M_i)$, which
+	equals $C^q(M)$. In particular $\psi$ defines a $q$-cochain of $G$
 	with values in $M$; an elementary calculation now shows $f_0=\delta\psi$ and thus $f_0$ is
 	a coboundary.
 \end{proof}
+
+\begin{remark} What the proof above seems to use is: (1) group cohomology of $M$ is computed
+	as cohomology of a complex $C^\bullet(M)$; (2) the complex is functorial in $M$;
+	(3) $C^\bullet$ preserves epis and limits (and in particular
+	$C^n(\varprojlim_i M/M_i)=\varprojlim_i C^n(M/M_i)$).
+	These facts are certainly true for the standard complex
+	computing group cohomology (where $C^n(M)=Hom(G^n,M)=\prod_{G^n}M$); is it true for the
+	integer-indexed complex computing Tate cohomology when $G$ is finite? If so then
+	the same proof would work for Tate cohomology. The reason I remark this is that Serre's
+	proof in Cassels--Froehlich seems to be a statement about Tate cohomology; my instinct
+	is that the same proof might work.
+\end{remark}
 
 \begin{lemma}\label{lem:serre_cor}
 	Let $l/k$ be a finite Galois extension of local fields.
@@ -325,7 +339,7 @@ equality by proving inequalities in both directions, and this is the first.
 	\]
 	The first term has order $[k : k_0]$ by \ref{lem:local H2 l*}, and the last term has
 	order at most $[l:k]$ by the inductive hypothesis.
-	Thereofore $H^2( l/k_0, l^\times)$ has order at most $[l:k] \times [k : k_0] = [l: k_0]$.
+	Therefore $H^2( l/k_0, l^\times)$ has order at most $[l:k] \times [k : k_0] = [l: k_0]$.
 \end{proof}
 
 \section{Fundamental classes in unramified extensions}
@@ -353,7 +367,7 @@ then $\pi_k$ is also a uniformizer in $l$, so we may identify $\F_l$ with $\cO_l
 
 	Note that $l/m$ is also unramified, so has cyclic Galois group.
 	By \ref{cor:periodic cohomology},
-	it's suffient to prove that $H^1(l/m,l^\times)$ and $H^2(l/m,l^\times)$ are trivial.
+	it's sufficient to prove that $H^1(l/m,l^\times)$ and $H^2(l/m,l^\times)$ are trivial.
 	By \ref{lem:herbrand finite} the representation $\F_l^\times$ has Herbrand quotient $1$,
 	so it's enough to prove that $H^1$ is trivial.
 	This follows from \ref{thm:hilbert 90}.
@@ -536,7 +550,7 @@ We therefore have a reciprocity isomorphism $\Gal(l/k) \cong k^\times / N(l^\tim
 		= \frac{1}{[m:k]} [m:l]\sum_{i=0}^{[l:k]-1} v_k(\sigma(F_{l/k}^i,F_{l/k})).
 	\]
 	The right hand side is equal to $\inv_{l/k}(\sigma)$.
-	The formual $\infl(\sigma_{l/k}) = [m:l]\cdot \sigma_{m/k}$ follows since both sides of the
+	The formula $\infl(\sigma_{l/k}) = [m:l]\cdot \sigma_{m/k}$ follows since both sides of the
 	equation have local invariant equal to $\frac{1}{[l:k]}$
 	(by \ref{lem:local inv fundamental class}).
 \end{proof}
@@ -595,7 +609,7 @@ Since the inflation map is injective $\sigma_{l/k}$ also has order $[l:k]$.
 		lem:local H2 upper bound
 	}
 	For every finite Galois extension $l/k$ of local fields, $(\Z,\Gal(l/k),l^\times)$ is a finite
-	class formation. The element $\sigma_{l/k}$ defined above is a funcdamental class.
+	class formation. The element $\sigma_{l/k}$ defined above is a fundamental class.
 	Corresponding the $\sigma_{l/k}$ there is a reciprocity isomorphism
 	\[
 		\Gal(l/k) \cong k^\times / N(l^\times).
@@ -619,7 +633,7 @@ Since the inflation map is injective $\sigma_{l/k}$ also has order $[l:k]$.
 	\uses{cor:norm limitiation,
 		thm:local fund class}
 	Let $l/k$ be a finite Galois extension of local fields and let $l^{\ab}$ be the
-	maximal subfield of $l$ which is an abelian extsion of $k$, i.e. the fixed field of
+	maximal subfield of $l$ which is an abelian extension of $k$, i.e. the fixed field of
 	the commutator subgroup of $\Gal(l/k)$.
 	Then $N_{l/k}(l^\times) = N_{l^\ab/k}(l^{\ab\times})$.
 \end{theorem}
@@ -741,7 +755,7 @@ we will only use the case $l=k=\Q_p$ in the application.
 
 	Suppose $\exp(x)=1$ with $x \in P^n$.
 	If $x \ne 0$ then $x = \pi^mu$ for some unit $u$.
-	By assumption on $n$, $\exp(x) = 1 + \pi^m u + O(\pi^{m+1})$; this gives a contradcition.
+	By assumption on $n$, $\exp(x) = 1 + \pi^m u + O(\pi^{m+1})$; this gives a contradiction.
 	Therefore the map $\exp : P^n \to 1+P^n$ is injective.
 
 	One can show that the map $P^n \to 1+P^n$ is surjective using Hensel's lemma as follows.
@@ -760,7 +774,7 @@ we will only use the case $l=k=\Q_p$ in the application.
 \end{lemma}
 
 \begin{proof}
-	By Eisenstein's criterion, the cyclotimic polynomial
+	By Eisenstein's criterion, the cyclotomic polynomial
 	$\Phi_{p^n}(X) = \frac{X^{p^n}-1}{X^{p^{n-1}}-1}$ is irreducible over $\Q_p$.
 	Hence the degree of the extension is $\phi(p^n)=p^n - p^{n-1}$.
 	This coincides with the index:
