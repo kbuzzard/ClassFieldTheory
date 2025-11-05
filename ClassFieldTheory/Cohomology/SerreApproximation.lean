@@ -158,6 +158,7 @@ theorem subsingleton_of_subquotient (q : ℕ)
       simp only [CochainComplex.of_x, CochainComplex.of_d, map_sub, hx, map_sum, Pi.sub_apply,
         Finset.sum_apply]
       conv => enter [1,2,2]; exact funext fun c ↦ inhomogeneousCochains.d_d_apply _ _
+      simp; rfl
     induction y using groupCohomology_induction_on with | h y =>
     sorry
   sorry
