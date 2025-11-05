@@ -3,7 +3,8 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.LocalCFT.NonArchDef
+import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
