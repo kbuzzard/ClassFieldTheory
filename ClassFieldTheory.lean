@@ -18,7 +18,8 @@ import ClassFieldTheory.Cohomology.LeftRegular
 import ClassFieldTheory.Cohomology.LocalInv
 import ClassFieldTheory.Cohomology.SerreApproximation
 import ClassFieldTheory.Cohomology.SplittingModule
-import ClassFieldTheory.Cohomology.Subrep
+import ClassFieldTheory.Cohomology.Subrep.Basic
+import ClassFieldTheory.Cohomology.Subrep.ShortExact
 import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion

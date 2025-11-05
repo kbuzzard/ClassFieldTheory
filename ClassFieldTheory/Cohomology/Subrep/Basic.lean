@@ -28,12 +28,20 @@ instance : AddSubgroupClass (Subrep A) A.V where
 variable {A}
 
 /-- `w` interpreted as a `G`-rep. -/
-noncomputable def toRep (w : Subrep A) : Rep k G :=
+@[coe] noncomputable def toRep (w : Subrep A) : Rep k G :=
   .subrepresentation _ w.toSubmodule w.le_comap
+
+/-- `w ⟶ A`. -/
+@[simps!] noncomputable def subtype (w : Subrep A) : w.toRep ⟶ A :=
+  A.subtype _ _
 
 /-- `A ⧸ w` interpreted as a `G`-rep. -/
 noncomputable def quotient (w : Subrep A) : Rep k G :=
   .quotient _ w.toSubmodule w.le_comap
+
+/-- `A ⟶ A ⧸ w`. -/
+@[simps!] noncomputable def mkQ (w : Subrep A) : A ⟶ w.quotient :=
+  A.mkQ _ _
 
 -- todo: complete lattice, two adjoint functors (aka galois insertions)
 instance : SemilatticeInf (Subrep A) where
@@ -49,6 +57,13 @@ instance : OrderTop (Subrep A) where
 noncomputable def subrepOf (w₁ w₂ : Subrep A) : Subrep w₂.toRep where
   toSubmodule := w₁.submoduleOf w₂.toSubmodule
   le_comap g := fun ⟨_, _⟩ h ↦ w₁.le_comap g h
+
+noncomputable def subrepOfIsoOfLE {w₁ w₂ : Subrep A} (h : w₁ ≤ w₂) :
+    (w₁.subrepOf w₂).toRep ≅ w₁.toRep :=
+  Action.mkIso (Submodule.submoduleOfEquivOfLe h).toModuleIso
+
+noncomputable def inclusion {w₁ w₂ : Subrep A} (h : w₁ ≤ w₂) : w₁.toRep ⟶ w₂.toRep where
+  hom := ModuleCat.ofHom <| Submodule.inclusion h
 
 /-- `w₁ ⧸ (w₁ ⊓ w₂)` -/
 noncomputable def subquotient (w₁ w₂ : Subrep A) : Rep k G :=
