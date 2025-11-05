@@ -187,7 +187,7 @@ with the general case.
 % \end{proof}
 
 \begin{lemma}\label{lem:serre_approx}
-	Let $G$ be a finite group and let $M$ be a $G$-module. Say we have
+	Let $G$ be a group and let $M$ be a $G$-module. Say we have
 	a decreasing sequence $M=M_0\supseteq M_1\supseteq M_2\supseteq \cdots$
 	of $G$-submodules with the property that the natural map $M\to\varprojlim(M/M_i)$
 	is an isomorphism.
@@ -201,10 +201,24 @@ with the general case.
 	values in $M_n$ we recursively define a $q$-chain $\psi_n$ with values in $M_n$ such
 	that $f_n=\delta\psi_n+f_{n+1}$
 	with $f_{n+1}$ a $q+1$-cocycle taking values in $M_{n+1}$. Now set $\psi:=\psi_0+\psi_1+\cdots$,
-	which converges by our hypothesis $M=\varprojlim(M/M_i)$, defining a $q$-cochain of $G$
+	which converges by our hypothesis $M=\varprojlim(M/M_i)$. More precisely, $\psi$
+	can be thought of as an element of the projective limit of $C^q(M/M_i)$, which
+	equals $C^q(M)$. In particular $\psi$ defines a $q$-cochain of $G$
 	with values in $M$; an elementary calculation now shows $f_0=\delta\psi$ and thus $f_0$ is
 	a coboundary.
 \end{proof}
+
+\begin{remark} What the proof above seems to use is: (1) group cohomology of $M$ is computed
+	as cohomology of a complex $C^\bullet(M)$; (2) the complex is functorial in $M$;
+	(3) $C^\bullet$ preserves epis and limits (and in particular
+	$C^n(\varprojlim_i M/M_i)=\varprojlim_i C^n(M/M_i)$).
+	These facts are certainly true for the standard complex
+	computing group cohomology (where $C^n(M)=Hom(G^n,M)=\prod_{G^n}M$); is it true for the
+	integer-indexed complex computing Tate cohomology when $G$ is finite? If so then
+	the same proof would work for Tate cohomology. The reason I remark this is that Serre's
+	proof in Cassels--Froehlich seems to be a statement about Tate cohomology; my instinct
+	is that the same proof might work.
+\end{remark}
 
 \begin{lemma}\label{lem:serre_cor}
 	Let $l/k$ be a finite Galois extension of local fields.
