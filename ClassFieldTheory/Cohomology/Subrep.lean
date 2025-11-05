@@ -42,6 +42,10 @@ instance : SemilatticeInf (Subrep A) where
   inf_le_right w₁ _ := inf_le_right (a := w₁.toSubmodule)
   le_inf w₁ _ _ := le_inf (a := w₁.toSubmodule)
 
+instance : OrderTop (Subrep A) where
+  top := ⟨⊤, fun _ _ _ ↦ trivial⟩
+  le_top _ _ _ := trivial
+
 noncomputable def subrepOf (w₁ w₂ : Subrep A) : Subrep w₂.toRep where
   toSubmodule := w₁.submoduleOf w₂.toSubmodule
   le_comap g := fun ⟨_, _⟩ h ↦ w₁.le_comap g h

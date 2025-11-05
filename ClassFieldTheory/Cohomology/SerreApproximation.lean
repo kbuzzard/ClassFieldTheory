@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import ClassFieldTheory.Cohomology.IsFilterComplete
 import ClassFieldTheory.Cohomology.Subrep
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 
 /-! # An approximation lemma
@@ -51,12 +52,16 @@ end IsFilterComplete
 namespace groupCohomology
 
 variable {k G : Type u} [CommRing k] [Group G] {M : Rep k G} (M_ : ℕ → Subrep M)
-  (hm : Antitone M_) [IsFilterComplete M_]
-include hm
+  (hm : Antitone M_) (hm0 : M_ 0 = ⊤) [IsFilterComplete M_]
+include hm hm0
+
+open CategoryTheory ShortComplex HomologicalComplex
 
 theorem subsingleton_of_subquotient (q : ℕ)
     (h : ∀ i, Subsingleton (groupCohomology ((M_ i).subquotient (M_ (i + 1))) (q + 1))) :
-    Subsingleton (groupCohomology M (q + 1)) :=
+    Subsingleton (groupCohomology M (q + 1)) := by
+  simp_rw [← ModuleCat.isZero_iff_subsingleton, groupCohomology, ← exactAt_iff_isZero_homology,
+    exactAt_iff, moduleCat_exact_iff] at h ⊢
   sorry
 
 end groupCohomology
