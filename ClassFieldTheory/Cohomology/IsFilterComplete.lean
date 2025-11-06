@@ -60,11 +60,11 @@ def toCompletion : M →+ Completion F where
 
 theorem toCompletion_injective_iff_isFilterHausdorff :
     Function.Injective (toCompletion F) ↔ IsFilterHasudorff F :=
-  sorry
+  sorry -- may need more assumptions?
 
 theorem toCompletion_surjective_iff_isFilterPrecomplete :
     Function.Surjective (toCompletion F) ↔ IsFilterPrecomplete F :=
-  sorry
+  sorry -- may need more assumptions?
 
 theorem toCompletion_bijective_iff_isFilterComplete :
     Function.Bijective (toCompletion F) ↔ IsFilterComplete F := by

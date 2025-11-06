@@ -20,13 +20,6 @@ universe u
 namespace Rep
 variable {k G : Type u} [CommRing k] [Monoid G] (A : Rep k G)
 
-noncomputable def piLeft (α : Type u) : Rep k G where
-  V := .of _ <| α → A
-  ρ :=
-  { toFun g := ModuleCat.ofHom <| .pi fun i ↦ A.ρ g ∘ₗ .proj i
-    map_one' := by simp only [map_one, CategoryTheory.End.one_def]; rfl
-    map_mul' _ _ := by simp only [map_mul, CategoryTheory.End.mul_def]; rfl }
-
 end Rep
 
 namespace IsFilterComplete
