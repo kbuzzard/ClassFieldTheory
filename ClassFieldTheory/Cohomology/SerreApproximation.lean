@@ -185,6 +185,11 @@ theorem map_inclusion_surjective_of_subsingleton_groupCohomology_subquotient (q 
   rw [← ModuleCat.epi_iff_surjective]
   exact (mapShortComplex₂_exact (Subrep.shortExact_of_le h) q).epi_f <| IsZero.eq_of_tgt h₀ ..
 
+@[reassoc, elementwise]
+theorem toCocycles_comp_π {k G : Type u} [CommRing k] [Group G] (M : Rep k G) (q : ℕ) :
+    toCocycles M q (q + 1) ≫ π M (q + 1) = 0 :=
+  toCycles_comp_homologyπ ..
+
 include hm hm0 in
 /-
 Needed facts:
@@ -200,6 +205,9 @@ theorem subsingleton_of_subquotient (q : ℕ)
     (q + 1) (hm (Nat.le_succ i))
   -- `C^q(M_•)` is a complete filtration of `C^q(M)`
   have : IsFilterComplete fun i ↦ (M_ i).toCochains q := inferInstance
+  let M' : ℕᵒᵈ →o Submodule k ((inhomogeneousCochains M).X q) :=
+    ⟨fun i ↦ (M_ i.ofDual).toCochains q, sorry⟩
+  have : IsFilterComplete (M' ∘ OrderDual.toDual) := this
   -- `Z^{q+1}(M_•)` is a complete filtration of `Z^{q+1}(M)`
   have : IsFilterComplete fun i ↦ (M_ i).toCocycles q := inferInstance
   -- repackage h₁ to h₂ : any z : Z^{q+1}(M_i) can be written as
@@ -213,10 +221,12 @@ theorem subsingleton_of_subquotient (q : ℕ)
   obtain ⟨x, rfl⟩ := (cocyclesMapIso ((M_ 0).isoOfEqTop hm0) (q + 1)).toLinearEquiv.surjective x
   -- x : Z^{q+1}(M₀)
   let desc (i : ℕ) : cocycles (M_ i).toRep (q + 1) := i.rec x fuel
-  let component (i : ℕ) : (inhomogeneousCochains (M_ i).toRep).X q := summand i (desc i)
+  let component (i : ℕ) := ((M_ i).toCochainsIso q).symm (summand i (desc i))
   -- this is the decomposition of x as ∑ i, d (component i)
-  -- have := IsFilterPrecomplete.sum fun i ↦ (subrepToSubmoduleIso (M_ i) q).symm (component i)
-  -- now we need theory of precomplete
+  suffices toCocycles M q (q + 1) (IsFilterComplete.sum M' component) =
+      (cocyclesMapIso (Subrep.isoOfEqTop hm0) (q + 1)).toLinearEquiv x by
+    rw [← this]
+    erw [toCocycles_comp_π_apply]
   sorry
 
 end groupCohomology
