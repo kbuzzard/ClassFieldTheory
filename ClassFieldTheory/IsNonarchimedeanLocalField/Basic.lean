@@ -23,23 +23,34 @@ import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
-# Definition of Non-Archimedean Local Fields
+# Non-Archimedean Local Fields
 
-We define non-archimedean local fields as a class `IsNonArchLF`.
+Basic properties of nonarch local fields.
 
--/
+## Main results
 
-/-
--- in mathlib now!
-class IsNonarchimedeanLocalField (K : Type*) [Field K] [ValuativeRel K] [UniformSpace K] : Prop extends
-  IsValuativeTopology K,
-  IsUniformAddGroup K,
-  LocallyCompactSpace K,
-  ValuativeRel.IsNontrivial K
-  -- ValuativeRel.IsRankLeOne K -- TODO: in future mathlib
-  -- IsTopologicalDivisionRing K,
-  -- CompleteSpace K,
-  -- ValuativeRel.IsDiscrete K
+* `ℚₚ` is a nonarch local field (**TODO** currently sorried)
+* `equivResidueField : 𝓀[K] ≃ₐ[𝒪[K]] 𝓂[K].ResidueField` for K nonarch local
+* `valuationOfIoo (ε : Set.Ioo (0 : ℝ) 1) : Valuation K ℝ≥0` (sending a uniformiser to `ε`)
+* `valuation_ext` : Two `Valuation`s which are compatible with the valuative structure
+  are equal if they're equal on a uniformiser.
+* We have the instance that a valuative extension of nonarch local fields is
+  finite-dimensional.
+* `IsNonarchimedeanLocalField.isModuleTopology` : the larger field in a valuative extension of
+  nonarch local fields has the module topology for the smaller field.
+* instance : extension of integer rings in a valuative extension of nonarch local fields
+  is module-finite (**TODO** currently sorried)
+* Basic API for `e` and `f` for a valuative extension of nonarch local fields up to and
+  including `ef=[L:K]`.
+* Definition of unramified extension (for nonarch local fields, so automatically finite).
+* Integral closure of O_K in a valuative extension of nonarch local fields is O_L
+* `isNonarchimedeanLocalField_of_valuativeExtension`:
+  Finite-diml valuative extension of a nonarch local field is a nonarch local field
+  (in the sense that an appropriate topology exists)
+* `isNonarchimedeanLocalField_of_finiteDimensional`:
+  Finite-diml extension of a nonarch local field is a nonarch local field
+  (in the sense that an appropriate valuative structure and topology exist).
+* `IsNonarchimedeanLocalField.ext_extension`: uniqueness of these structures.
 -/
 
 open ValuativeRel
@@ -144,6 +155,8 @@ noncomputable def rankOneOfIoo (ε : Set.Ioo (0 : ℝ) 1) : (valuation K).RankOn
 noncomputable def inhabitedIoo : Inhabited (Set.Ioo (0 : ℝ) 1) := ⟨0.37, by norm_num, by norm_num⟩
 attribute [local instance] inhabitedIoo
 
+-- note: nonarch local fields have a *canonical* rank 1 valuation, sending
+-- nonzero `x : K` to `addEquivAddHaarChar (t ↦ x * t)`. This example is not it.
 noncomputable example : (valuation K).RankOne := rankOneOfIoo K default
 
 theorem valuation_ext {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v₁ v₂ : Valuation K Γ₀}
@@ -306,7 +319,8 @@ instance : FaithfulSMul 𝒪[K] 𝒪[L] :=
 
 -- some power series shenanigans
 instance (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
-    (L : Type*) [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L] [Algebra K L] [ValuativeExtension K L] :
+    (L : Type*) [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
+    [Algebra K L] [ValuativeExtension K L] :
   Module.Finite 𝒪[K] 𝒪[L] :=
   sorry
 
