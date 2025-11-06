@@ -29,11 +29,6 @@ noncomputable def piLeft (α : Type u) : Rep k G where
 
 end Rep
 
--- We don't need this because C^n(M) is not meant to be viewed as a G-module?
--- noncomputable def Subrep.piLeft (w : Subrep A) (α : Type u) : Subrep (A.piLeft α) where
---   toSubmodule := .pi .univ fun _ ↦ w.toSubmodule
---   le_comap g _ hx i _ := w.le_comap g <| hx i trivial
-
 namespace IsFilterComplete
 
 instance subrepToSubmodule {k G : Type u} [CommRing k] [Monoid G] (M : Rep k G)
@@ -100,25 +95,71 @@ theorem d_commutes {w : Subrep M} {q : ℕ} {x : subrepToSubmodule w q} (f) :
     inhomogeneousCochains.d M q x.val f := by
   simp [inhomogeneousCochains.d_hom_apply, subrepToSubmoduleIso, Subrep.toRep]
 
+/-- `d : C(M_i) ⟶ C(M_i)` commutes with `d : C(M) ⟶ C(M)`. -/
+theorem d_commutes_symm {w : Subrep M} {q : ℕ} {x : (inhomogeneousCochains w.toRep).X q} (f) :
+    inhomogeneousCochains.d M q ((subrepToSubmoduleIso w q).symm x).val f =
+    (inhomogeneousCochains.d w.toRep q x f).val := by
+  rw [← d_commutes, LinearEquiv.apply_symm_apply]
+
 -- move
 @[ext] theorem _root_.Subrep.toRep_ext {k G : Type u} [CommRing k] [Monoid G] {A : Rep k G}
     {w : Subrep A} {x y : w.toRep.V} (h : x.val = y.val) : x = y :=
   Subtype.ext h
 
 -- move
-@[simp] theorem _root_.groupCohomology.inhomogeneousCochains.d_d
-    {k G : Type u} [CommRing k] {n : ℕ} [Group G] {A : Rep k G}
-    (x : (inhomogeneousCochains A).X n) :
-    inhomogeneousCochains.d A (n + 1) (inhomogeneousCochains.d A n x) = 0 :=
-  congr($(inhomogeneousCochains.d_comp_d n A) x)
+-- if π x₁ = π x₂ then there is y : C(M) with x₁ + dy = x₂
+theorem exists_of_π_eq_π {q : ℕ} {x₁ x₂ : cocycles M (q + 1)}
+    (h : π M (q + 1) x₁ = π M (q + 1) x₂) :
+    ∃ y : (inhomogeneousCochains M).X q,
+    x₁ + toCocycles M q (q + 1) y = x₂ := by
+  have hc₁ := (inhomogeneousCochains M).homologyIsCokernel q (q + 1) (by simp)
+  have hc₂ := ModuleCat.cokernelIsColimit ((inhomogeneousCochains M).toCycles q (q + 1))
+  have h₂ := congr((hc₁.coconePointUniqueUpToIso hc₂).hom $h)
+  conv at h₂ => enter [1]; exact (ConcreteCategory.comp_apply ..).symm
+  conv at h₂ => enter [1,1,1]; exact IsColimit.comp_coconePointUniqueUpToIso_hom hc₁ hc₂ .one
+  conv at h₂ => enter [2]; exact (ConcreteCategory.comp_apply ..).symm
+  conv at h₂ => enter [2,1,1]; exact IsColimit.comp_coconePointUniqueUpToIso_hom hc₁ hc₂ .one
+  obtain ⟨y, hy⟩ := (Submodule.Quotient.eq' _).mp h₂
+  exact ⟨y, eq_neg_add_iff_add_eq.mp hy⟩
 
-@[simp] theorem _root_.groupCohomology.inhomogeneousCochains.d_d_apply
-    {k G : Type u} [CommRing k] {n : ℕ} [Group G] {A : Rep k G}
-    (x : (inhomogeneousCochains A).X n) (f) :
-    inhomogeneousCochains.d A (n + 1) (inhomogeneousCochains.d A n x) f = 0 :=
-  congr($(inhomogeneousCochains.d_d x) f)
+-- move
+@[reassoc, elementwise]
+theorem cocyclesMap_comp_iCocycles {k G H : Type u} [CommRing k] [Group G] [Group H]
+    {A : Rep k H} {B : Rep k G} (f : G →* H) {φ : (Action.res (ModuleCat k) f).obj A ⟶ B} {n : ℕ} :
+    cocyclesMap f φ n ≫ iCocycles B n = iCocycles A n ≫ (cochainsMap f φ).f n :=
+  HomologicalComplex.cyclesMap_i ..
+
+-- move
+@[reassoc, elementwise]
+theorem iCocycles_d {k G : Type u} [CommRing k] [Group G] {A : Rep k G} {n : ℕ} :
+    iCocycles A n ≫ inhomogeneousCochains.d A n = 0 := by
+  rw [← inhomogeneousCochains.d_def, HomologicalComplex.iCycles_d]
 
 -- /-- `Z(M_i)` is a submodule of `Z(M)`. -/
+
+/-- Given map `f: M ⟶ N` and `q : ℕ`, if `H^{q+1}(M) ⟶ H^{q+1}(N)` is surjective, then any
+`z : Z^{q+1}(N)` can be written as `f(z') + d(y)` for some `z' : Z^{q+1}(M)` and `y : C^q(M)`.
+
+Note that `d` is spelled as `toCocycles`. -/
+theorem exists_of_surjective {k G : Type u} [CommRing k] [Group G] {M N : Rep k G}
+    {f : M ⟶ N} {q : ℕ} (h : Function.Surjective (map (MonoidHom.id G) f (q + 1)))
+    (z : cocycles N (q + 1)) :
+    ∃ z' : cocycles M (q + 1), ∃ y : (inhomogeneousCochains N).X q,
+    cocyclesMap (.id G) f (q + 1) z' + toCocycles N q (q + 1) y = z := by
+  have hc₁ := (inhomogeneousCochains N).homologyIsCokernel q (q + 1) (by simp)
+  have hc₂ := ModuleCat.cokernelIsColimit ((inhomogeneousCochains N).toCycles q (q + 1))
+  obtain ⟨z', hz'⟩ := h (π N (q + 1) z)
+  induction z' using groupCohomology_induction_on with | h z' =>
+  rw [π_map_apply] at hz'
+  obtain ⟨y, hy⟩ := exists_of_π_eq_π hz'
+  exact ⟨z', y, hy⟩
+
+noncomputable def cocyclesMapIso {k G : Type u} [CommRing k] [Group G] {M N : Rep k G} (e : M ≅ N)
+    (q : ℕ) : cocycles M q ≅ cocycles N q where
+  hom := cocyclesMap (.id G) e.hom q
+  inv := cocyclesMap (.id G) e.inv q
+  hom_inv_id := by rw [← cocyclesMap_id_comp, e.hom_inv_id, cocyclesMap_id]
+  inv_hom_id := by rw [← cocyclesMap_id_comp, e.inv_hom_id, cocyclesMap_id]
 
 include hm hm0 in
 /-
@@ -130,37 +171,33 @@ Needed facts:
 theorem subsingleton_of_subquotient (q : ℕ)
     [h₀ : ∀ i, Subsingleton (groupCohomology ((M_ i).subquotient (M_ (i + 1))) (q + 1))] :
     Subsingleton (groupCohomology M (q + 1)) := by
-  rw [← ModuleCat.isZero_iff_subsingleton, groupCohomology, ← exactAt_iff_isZero_homology,
-    exactAt_iff' _ q (q + 1) (q + 2) (by simp) (by simp), moduleCat_exact_iff]
+  -- `H^{q+1}(M_{i+1}) ⟶ H^{q+1}(M_i)` is surjective
   have h₁ (i) := map_inclusion_surjective_of_subsingleton_groupCohomology_subquotient
     (q + 1) (hm (Nat.le_succ i))
+  -- `C^q(M_•)` is a complete filtration of `C^q(M)`
   have h₂ : IsFilterComplete fun i ↦ subrepToSubmodule (M_ i) q := inferInstance
+  -- `Z^{q+1}(M_•)` is a complete filtration of `Z^{q+1}(M)`
+  -- Kenny: I might want to state this differently later.
   have h₃ := IsFilterComplete.ker
     (fun i ↦ subrepToSubmodule (M_ i) (q + 1))
     (fun i ↦ subrepToSubmodule (M_ i) (q + 2))
     ((inhomogeneousCochains M).d (q + 1) (q + 2)).hom
     fun _ ↦ subrepToSubmodule_le_comap_d _ _
-  intro (x : (inhomogeneousCochains M).X (q + 1)) hx
-  simp only [shortComplexFunctor'_obj_X₃, CochainComplex.of_x, shortComplexFunctor'_obj_X₂,
-    shortComplexFunctor'_obj_g, inhomogeneousCochains.d_def] at hx
-  -- hx : inhomogeneousCochains.d M (q + 1) x = 0
-  -- having chosen the first `n` elements, we can choose the `n+1`-st
-  have h₄ (n : ℕ) (ih : Fin n → (inhomogeneousCochains M).X q)
-      (h : x - ∑ i, (inhomogeneousCochains M).d q (q + 1) (ih i) ∈
-        subrepToSubmodule (M_ n) (q + 1)) :
-      ∃ next : (inhomogeneousCochains M).X q,
-        x - (inhomogeneousCochains M).d q (q + 1) next -
-          ∑ i, (inhomogeneousCochains M).d q (q + 1) (ih i) ∈
-            subrepToSubmodule (M_ (n + 1)) (q + 1) := by
-    obtain ⟨y, hy⟩ := h₁ n <| π _ _ <| cocyclesMk (subrepToSubmoduleIso _ _ ⟨_, h⟩) <| by
-      ext f
-      rw [d_commutes]
-      simp only [CochainComplex.of_x, CochainComplex.of_d, map_sub, hx, map_sum, Pi.sub_apply,
-        Finset.sum_apply]
-      conv => enter [1,2,2]; exact funext fun c ↦ inhomogeneousCochains.d_d_apply _ _
-      simp; rfl
-    induction y using groupCohomology_induction_on with | h y =>
-    sorry
+  -- repackage h₁ to h₄ : any z : Z^{q+1}(M_i) can be written as
+  -- a sum of something in `Z^{q+1}(M_{i+1})` and something in `C^q(M_i)` (after mapping)
+  have h₄ (i) := exists_of_surjective (h₁ i)
+  choose fuel summand h₄ using h₄
+  rw [subsingleton_iff_forall_eq 0]
+  intro x
+  induction x using groupCohomology_induction_on with | h x =>
+  -- x : Z^{q+1}(M)
+  obtain ⟨x, rfl⟩ := (cocyclesMapIso ((M_ 0).isoOfEqTop hm0) (q + 1)).toLinearEquiv.surjective x
+  -- x : Z^{q+1}(M₀)
+  let desc (i : ℕ) : cocycles (M_ i).toRep (q + 1) := i.rec x fuel
+  let component (i : ℕ) : (inhomogeneousCochains (M_ i).toRep).X q := summand i (desc i)
+  -- this is the decomposition of x as ∑ i, d (component i)
+  -- have := IsFilterPrecomplete.sum fun i ↦ (subrepToSubmoduleIso (M_ i) q).symm (component i)
+  -- now we need theory of precomplete
   sorry
 
 end groupCohomology

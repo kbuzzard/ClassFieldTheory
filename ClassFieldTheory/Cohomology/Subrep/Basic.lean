@@ -54,6 +54,12 @@ instance : OrderTop (Subrep A) where
   top := ⟨⊤, fun _ _ _ ↦ trivial⟩
   le_top _ _ _ := trivial
 
+noncomputable def topIso : (⊤ : Subrep A).toRep ≅ A :=
+  Action.mkIso Submodule.topEquiv.toModuleIso
+
+noncomputable def isoOfEqTop {w : Subrep A} (h : w = ⊤) : w.toRep ≅ A :=
+  Action.mkIso <| (LinearEquiv.ofTop _ congr(($h).toSubmodule)).toModuleIso
+
 noncomputable def subrepOf (w₁ w₂ : Subrep A) : Subrep w₂.toRep where
   toSubmodule := w₁.submoduleOf w₂.toSubmodule
   le_comap g := fun ⟨_, _⟩ h ↦ w₁.le_comap g h
