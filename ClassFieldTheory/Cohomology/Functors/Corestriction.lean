@@ -275,20 +275,23 @@ lemma commSqₙ (n : ℕ) [DecidableEq G] (M : Rep R G) :
     simp [-up_obj, coresNatTrans, cores_obj]
     rfl
 
-lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
-    ((groupCohomology.resNatTrans.{0} R (S.subtype) n) ≫
-      (groupCohomology.coresNatTrans R S n) : functor R G n ⟶ functor R G n) =
+lemma cores_res (n : ℕ) [DecidableEq G] :
+    (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =
       S.index • (.id _) := by
   induction n with
   | zero => exact cores_res₀
   | succ n ih =>
-    have : Epi (δ (up_shortExact M) n (n + 1) rfl) := sorry
-    -- rw [cancel_epi (δ (up_shortExact M) n (n + 1) rfl)]
-    sorry
+    ext M : 2
+    haveI : Epi (δ (up_shortExact M) n (n + 1) rfl) :=
+    match n with
+    | 0 => δ_up_zero_epi ..
+    | m + 1 => δ_up_isIso M m|>.epi_of_iso _
+    rw [← cancel_epi (δ (up_shortExact M) n (n + 1) rfl),  ← commSqₙ n M, ih]
+    simp
 
-/-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
-lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
-    Nat.card G • x = 0 := sorry
+-- /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
+-- lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
+--     Nat.card G • x = 0 := sorry
 
 -- Should the above really be a statement about a functor?
 -- Something like this?
