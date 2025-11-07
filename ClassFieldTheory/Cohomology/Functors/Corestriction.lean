@@ -40,19 +40,24 @@ open
   CategoryTheory
   Limits
 
-variable {R : Type} [CommRing R]
-variable {G : Type} [Group G] {S : Subgroup G}
+variable {R : Type} [CommRing R] -- R a comm ring
+variable {G : Type} [Group G] {S : Subgroup G} -- G a group, S a subgroup
 
 attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
 namespace groupCohomology
 
+-- let V be an R[G]-module
 lemma cores_aux₁ {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation R G V)
+    -- if v ∈ V is S-invariant
     (v : V) (hv : ∀ s ∈ S, (ρ s) v = v) (g₁ g₂ : G)
+    -- then for g₁ and g₂ in G such that g₁S=g₂S, then g₁•v=g₂•v
     (h : (QuotientGroup.mk g₁ : G ⧸ S) = QuotientGroup.mk g₂) : ρ g₁ v = ρ g₂ v := by
   rw [show g₂ = g₁ * (g₁⁻¹ * g₂) by simp, map_mul, Module.End.mul_apply,
   hv _ (QuotientGroup.eq.1 h)]
 
+-- Cor: if X is any finite set and s₁, s₂ : X → G are such that X -> G -> G/S is a bijection
+-- for both of them, then ∑_g s₁(g)v = ∑_g s₂(g)v for v in M^S
 lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R V] {s₁ : X → G}
     {s₂ : X → G} (ρ : Representation R G V) (v : V) (hv : ∀ s ∈ S, (ρ s) v = v)
     (hs₁ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₁ x) : X → G ⧸ S))
@@ -66,38 +71,24 @@ lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R 
 
 variable [S.FiniteIndex]
 
-/-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
-map on invariants. -/
-def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] (ρ : Representation R G V) :
-    Representation.invariants (MonoidHom.comp ρ S.subtype) →ₗ[R] ρ.invariants where
-  toFun x := ⟨∑ i : G ⧸ S, i.lift (ρ · x.1) (fun a b h ↦ cores_aux₁ ρ x.1
-    (by simpa using Representation.mem_invariants (MonoidHom.comp ρ S.subtype) x.1|>.1 <| by simp)
-    a b (Quotient.sound h)), fun g ↦ by
-    simp only [map_sum]
+@[simps]
+def _root_.Rep.cores₀_obj (V : Rep R G) :
+    -- Defining an R-linear map from V^S to V^G
+    (V ↓ S.subtype).ρ.invariants →ₗ[R] V.ρ.invariants where
+  toFun x := ⟨∑ i : G ⧸ S, V.ρ i.out x.1, fun g ↦ by
+    simp only [map_sum, ← LinearMap.comp_apply, ← Module.End.mul_eq_comp, ← map_mul]
     letI : Fintype (G ⧸ S) := Subgroup.fintypeQuotientOfFiniteIndex
-    exact Finset.sum_bijective (ι := G ⧸ S) (g • ·) (MulAction.bijective g) (by aesop) <| by
-      refine Quotient.ind <| by simp⟩
-  map_add' x y := by
-    ext
-    simpa [← Finset.sum_add_distrib] using Finset.sum_congr rfl fun i _ ↦
-      Quotient.inductionOn i (by simp)
-  map_smul' := by
-    simp only [SetLike.val_smul, map_smul, RingHom.id_apply, Subtype.forall,
-      Representation.mem_invariants, MonoidHom.coe_comp, Subgroup.coe_subtype, Function.comp_apply,
-      SetLike.mk_smul_mk, Finset.smul_sum, Subtype.mk.injEq]
-    intros
-    congr! with i
-    exact Quotient.inductionOn i (by simp)
-
--- def _root_.Rep.cores₀_obj {V : Rep R G} :
---     (V ↓ S.subtype).ρ.invariants →ₗ[R] V.ρ.invariants :=
---   Representation.cores₀_obj V.ρ
+    refine (cores_aux₂ V.ρ x.1 (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_).symm
+    simp_rw [QuotientGroup.mk_mul', QuotientGroup.out_eq', MulAction.bijective]⟩
+  map_add' := by simp [Finset.sum_add_distrib]
+  map_smul' := by simp [Finset.smul_sum]
 
 /-- The corestriction functor on H^0 for S ⊆ G a finite index subgroup, as a
 functor `H^0(S,-) → H^0(G,-)`. -/
+@[simps]
 def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
   app M :=
-    (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (Representation.cores₀_obj M.ρ)) ≫ (H0Iso M).inv
+    (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (Rep.cores₀_obj M)) ≫ (H0Iso M).inv
   naturality := by
     intro X Y f
     simp_rw [← Category.assoc]
@@ -106,14 +97,8 @@ def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
     rw [functor_map, map_id_comp_H0Iso_hom, (H0Iso X).inv_hom_id_assoc, Functor.comp_map,
       functor_map, map_id_comp_H0Iso_hom_assoc, (H0Iso (X ↓ S.subtype)).cancel_iso_hom_left]
     ext x
-    simp only [Action.res_obj_V, res_obj_ρ, Representation.cores₀_obj, ModuleCat.hom_comp,
-      ModuleCat.hom_ofHom, invariantsFunctor_map_hom, Action.res_map_hom, LinearMap.coe_comp,
-      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, LinearMap.codRestrict_apply, coe_hom,
-      Submodule.coe_subtype, LinearMap.comp_codRestrict, map_sum]
-    congr! with i
-    exact Quotient.inductionOn i (fun g ↦ by simpa using congr($(f.comm g) x.val).symm)
-    -- simp_rw [ConcreteCategory.comp_apply]
-
+    have comm := congr(∑ i : G ⧸ S, ModuleCat.Hom.hom $(f.comm i.out) x.val)
+    simpa [Rep.cores₀_obj] using comm.symm
 
 /-- The morphism `H¹(S, M↓S) ⟶ H¹(G, M)`. -/
 def cores₁_obj [DecidableEq G] (M : Rep R G) :
@@ -188,10 +173,6 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
   · exact δ_naturality (up_shortExact X) (up_shortExact Y)
       ⟨f, coind₁'.map f, up.map f, rfl, by aesop_cat⟩ 0 1 rfl
 
-def cores₁ [DecidableEq G] : Rep.res S.subtype ⋙ functor R S 1 ⟶ functor R G 1 where
-  app M := cores₁_obj (S := S) M
-  naturality {X Y} f := cores₁_naturality X Y f
-
 /-- Corestriction on objects in group cohomology. -/
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
     (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
@@ -200,7 +181,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
 | M, (d + 2) =>
   -- δ : H^{d+1}(G,up -) ≅ H^{d+2}(G,-)
   let up_δ_bottom_Iso := Rep.dimensionShift.δUpNatIso (R := R) (G := G) d
-  -- `M ⟶ coind₁'^G M ⟶ up_G M` as a complex of S-modulesx
+  -- `M ⟶ coind₁'^G M ⟶ up_G M` as a complex of S-modules
   let upsc_top := (upShortComplex.obj M).map (res S.subtype)
   -- the above complex of S-modules is exact
   have htopexact : upsc_top.ShortExact := up_shortExact_res M S.subtype
@@ -250,31 +231,20 @@ def coresNatTrans (n : ℕ) [DecidableEq G] : Rep.res S.subtype ⋙ functor R S 
     | n + 1 => cores_succ_naturality n X Y f
 
 lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group H] {A : Rep k H} {B : Rep k G}
-    (f : G →* H) (φ : A ↓ f ⟶ B) (x : ↑(groupCohomology A 0)) :
+    (f : G →* H) (φ : A ↓ f ⟶ B) (x : groupCohomology A 0) :
     (H0Iso B).hom.hom ((map f φ 0).hom x) =
     φ.hom.hom ((H0Iso A).hom.hom x : A) :=
   map_H0Iso_hom_f_apply ..
 
+-- `simp` does a lot of work here, and it was quite some effort getting
+-- it to do so, so I hope this proof never breaks...
 lemma cores_res₀ : rest (R := R) (S.subtype) 0 ≫ cores₀ = S.index • (.id _) := by
-  ext N : 2
-  simp only [functor_obj, cores₀, Functor.comp_obj, Action.res_obj_V, res_obj_ρ, NatTrans.comp_app,
-    NatTrans.app_nsmul, NatTrans.id_app']
-  ext x
-  simp only [rest, Representation.cores₀_obj, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
-    LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, ModuleCat.hom_smul,
-    ModuleCat.hom_id, nsmul_eq_mul, Module.End.mul_apply, LinearMap.id_coe, id_eq,
-    Module.End.natCast_apply]
-  apply (H0Iso N).toLinearEquiv.injective
-  simp only [Iso.toLinearEquiv, LinearEquiv.ofLinear_apply, Iso.inv_hom_id_apply,
-    LinearMap.map_smul_of_tower]
+  ext M v
+  apply (ConcreteCategory.injective_of_mono_of_preservesPullback (H0Iso M).hom)
   ext
-  simp only [Subgroup.index, Nat.card_eq_fintype_card, SetLike.val_smul_of_tower]
-  rw [← Finset.card_univ, ← Finset.sum_const]
-  congr! with i
-  induction i using QuotientGroup.induction_on
-  simp [Quotient.lift_mk]
-  erw [groupCohomology.map_H0Iso_hom_f_apply' S.subtype (𝟙 _) x] -- BAD
-  simp [ N.ρ.mem_invariants ((ModuleCat.Hom.hom (H0Iso N).hom) x).1 |>.1 (by simp)]
+  simp [-Action.res_obj_V, -res_obj_ρ, rest, Subgroup.index,
+    groupCohomology.map_H0Iso_hom_f_apply' S.subtype,
+    (M.ρ.mem_invariants ((H0Iso M).hom.hom v)).1]
 
 theorem _root_.CategoryTheory.comp_commSq (C' : Type*) [Category C'] {A B C D E F : C'}
     (f₁ : A ⟶ B) (f₂ : B ⟶ C) (g₁ : A ⟶ D) (g₂ : C ⟶ F) (h₁ : D ⟶ E) (h₂ : E ⟶ F) (f : B ⟶ E)
