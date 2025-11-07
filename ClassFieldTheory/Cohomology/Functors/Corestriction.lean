@@ -287,8 +287,8 @@ lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
     sorry
 
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
-lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
-    Nat.card G • x = 0 := sorry
+lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [Fintype G] (M : Rep R G)
+    (x : (functor R G n).obj M) : Nat.card G • x = 0 := sorry
 
 -- Should the above really be a statement about a functor?
 -- Something like this?
