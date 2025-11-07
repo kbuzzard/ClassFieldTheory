@@ -89,6 +89,10 @@ def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] 
     congr! with i
     exact Quotient.inductionOn i (by simp)
 
+-- def _root_.Rep.cores₀_obj {V : Rep R G} :
+--     (V ↓ S.subtype).ρ.invariants →ₗ[R] V.ρ.invariants :=
+--   Representation.cores₀_obj V.ρ
+
 /-- The corestriction functor on H^0 for S ⊆ G a finite index subgroup, as a
 functor `H^0(S,-) → H^0(G,-)`. -/
 def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
@@ -184,6 +188,10 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
   · exact δ_naturality (up_shortExact X) (up_shortExact Y)
       ⟨f, coind₁'.map f, up.map f, rfl, by aesop_cat⟩ 0 1 rfl
 
+def cores₁ [DecidableEq G] : Rep.res S.subtype ⋙ functor R S 1 ⟶ functor R G 1 where
+  app M := cores₁_obj (S := S) M
+  naturality {X Y} f := cores₁_naturality X Y f
+
 /-- Corestriction on objects in group cohomology. -/
 def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
     (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
@@ -192,7 +200,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
 | M, (d + 2) =>
   -- δ : H^{d+1}(G,up -) ≅ H^{d+2}(G,-)
   let up_δ_bottom_Iso := Rep.dimensionShift.δUpNatIso (R := R) (G := G) d
-  -- `M ⟶ coind₁'^G M ⟶ up_G M` as a complex of S-modules
+  -- `M ⟶ coind₁'^G M ⟶ up_G M` as a complex of S-modulesx
   let upsc_top := (upShortComplex.obj M).map (res S.subtype)
   -- the above complex of S-modules is exact
   have htopexact : upsc_top.ShortExact := up_shortExact_res M S.subtype
@@ -241,14 +249,21 @@ def coresNatTrans (n : ℕ) [DecidableEq G] : Rep.res S.subtype ⋙ functor R S 
     | 0 => cores₀.naturality f
     | n + 1 => cores_succ_naturality n X Y f
 
-lemma cores_res₀ : resNatTrans R (S.subtype) 0 ≫ cores₀ = S.index • (.id _) := by
+lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group H] {A : Rep k H} {B : Rep k G}
+    (f : G →* H) (φ : A ↓ f ⟶ B) (x : ↑(groupCohomology A 0)) :
+    (H0Iso B).hom.hom ((map f φ 0).hom x) =
+    φ.hom.hom ((H0Iso A).hom.hom x : A) :=
+  map_H0Iso_hom_f_apply ..
+
+lemma cores_res₀ : rest (R := R) (S.subtype) 0 ≫ cores₀ = S.index • (.id _) := by
   ext N : 2
   simp only [functor_obj, cores₀, Functor.comp_obj, Action.res_obj_V, res_obj_ρ, NatTrans.comp_app,
-    resNatTrans_app, NatTrans.app_nsmul, NatTrans.id_app']
+    NatTrans.app_nsmul, NatTrans.id_app']
   ext x
-  simp only [Representation.cores₀_obj, ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp,
-    LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, ModuleCat.hom_smul, ModuleCat.hom_id,
-    nsmul_eq_mul, Module.End.mul_apply, LinearMap.id_coe, id_eq, Module.End.natCast_apply]
+  simp only [rest, Representation.cores₀_obj, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
+    LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, ModuleCat.hom_smul,
+    ModuleCat.hom_id, nsmul_eq_mul, Module.End.mul_apply, LinearMap.id_coe, id_eq,
+    Module.End.natCast_apply]
   apply (H0Iso N).toLinearEquiv.injective
   simp only [Iso.toLinearEquiv, LinearEquiv.ofLinear_apply, Iso.inv_hom_id_apply,
     LinearMap.map_smul_of_tower]
@@ -257,25 +272,49 @@ lemma cores_res₀ : resNatTrans R (S.subtype) 0 ≫ cores₀ = S.index • (.id
   rw [← Finset.card_univ, ← Finset.sum_const]
   congr! with i
   induction i using QuotientGroup.induction_on
-  simp only [Quotient.lift_mk]
-  conv_lhs => enter [2]; tactic => convert groupCohomology.map_H0Iso_hom_f_apply S.subtype (𝟙 _) x -- BAD
-  change (N.ρ _) ((@CategoryStruct.comp (ModuleCat R) (ModuleCat.moduleCategory R).toCategoryStruct
-    (H0 N) (ModuleCat.of R ↥N.ρ.invariants)
-    ((Action.res (ModuleCat R) S.subtype).obj N).V (H0Iso N).hom
-    ((shortComplexH0 N).f ≫ (𝟙 ((Action.res (ModuleCat R) S.subtype).obj N):).hom)).hom x) = _ -- EVEN WORSE because of the smile face
-  simp only [Action.res_obj_V, Action.id_hom, ModuleCat.hom_comp, LinearMap.coe_comp,
-    Function.comp_apply]
-  erw [ModuleCat.hom_id] --BAD
-  simp [shortComplexH0, N.ρ.mem_invariants ((ModuleCat.Hom.hom (H0Iso N).hom) x).1 |>.1 (by simp)]
+  simp [Quotient.lift_mk]
+  erw [groupCohomology.map_H0Iso_hom_f_apply' S.subtype (𝟙 _) x] -- BAD
+  simp [ N.ρ.mem_invariants ((ModuleCat.Hom.hom (H0Iso N).hom) x).1 |>.1 (by simp)]
+
+theorem _root_.CategoryTheory.comp_commSq (C' : Type*) [Category C'] {A B C D E F : C'}
+    (f₁ : A ⟶ B) (f₂ : B ⟶ C) (g₁ : A ⟶ D) (g₂ : C ⟶ F) (h₁ : D ⟶ E) (h₂ : E ⟶ F) (f : B ⟶ E)
+    (comm1 : f₁ ≫ f = g₁ ≫ h₁) (comm2 : f₂ ≫ g₂ = f ≫ h₂) :
+    (f₁ ≫ f₂) ≫ g₂ = g₁ ≫ (h₁ ≫ h₂) := by
+  rw [← Category.assoc, ← comm1, Category.assoc, comm2, Category.assoc]
+
+/-!
+            rest                       cores
+Hⁿ(G, up M) ---> Hⁿ(S, upM ↓ S.subtype) ---> Hⁿ(G, up M)
+    |                                         |
+    | δ                                       | δ
+    v       rest                       cores  v
+Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
+
+-/
+lemma commSqₙ (n : ℕ) [DecidableEq G] (M : Rep R G) :
+    (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (up_shortExact M) n (n + 1) rfl =
+    δ (up_shortExact M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫ coresNatTrans R S (n + 1)).app M := by
+  rw [NatTrans.comp_app, NatTrans.comp_app]
+  match n with
+  | 0 =>
+    exact comp_commSq _ _ _ _ _ _ _ (δ (up_shortExact_res M S.subtype) 0 1 rfl)
+      (rest_δ_naturality (up_shortExact M) S.subtype 0 1 rfl |>.symm) (commSq_cores₁ ..|>.symm)
+  | n + 1 =>
+    refine comp_commSq _ _ _ _ _ _ _ (δ (up_shortExact_res M S.subtype) (n + 1) (n + 2) rfl)
+      (rest_δ_naturality (up_shortExact M) S.subtype (n + 1) (n + 2) rfl).symm ?_
+    simp [-up_obj, coresNatTrans, cores_obj]
+    rfl
 
 lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
     ((groupCohomology.resNatTrans.{0} R (S.subtype) n) ≫
       (groupCohomology.coresNatTrans R S n) : functor R G n ⟶ functor R G n) =
-      S.index • (.id _) :=
-  match n with
-  | 0 => cores_res₀
-  | 1 => sorry
-  | n + 2 => sorry
+      S.index • (.id _) := by
+  induction n with
+  | zero => exact cores_res₀
+  | succ n ih =>
+    have : Epi (δ (up_shortExact M) n (n + 1) rfl) := sorry
+    -- rw [cancel_epi (δ (up_shortExact M) n (n + 1) rfl)]
+    sorry
 
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
 lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
