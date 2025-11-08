@@ -1,7 +1,7 @@
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import Mathlib.Algebra.Homology.HomologySequenceLemmas
+import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import Mathlib.RepresentationTheory.Induced
 
@@ -46,43 +46,19 @@ lemma res_obj_ρ' (M : Rep R G) (H : Type u) [Group H] (φ : H →* G) (h : H) :
 lemma res_obj_V (M : Rep R G) (H : Type u) [Group H] (φ : H →* G)  :
   (M ↓ φ).V = M.V := by simp [res]
 
-instance (H : Type u) [Group H] (f : H →* G) : (res (R := R) f).ReflectsIsomorphisms := by
-  unfold res
-  infer_instance
-
-instance (H : Type u) [Group H] (f : H →* G) :
-    PreservesLimitsOfSize.{u, u, u, u, u + 1, u + 1} (res (R := R) f) := by
-  unfold res
-  infer_instance
-
-instance (H : Type u) [Group H] (f : H →* G) : ReflectsLimits (res (R := R) f) :=
-  reflectsLimits_of_reflectsIsomorphisms
-
-instance (R G H : Type u) [CommRing R] [Group G] [Group H] (f : H →* G) :
-    PreservesColimits (Action.res (ModuleCat.{u} R) f) :=
-  Action.preservesColimitsOfSize_of_preserves (Action.res (ModuleCat.{u} R) f) <|
-    Action.preservesColimits_forget ..
-
-instance (R G H : Type u) [CommRing R] [Group G] [Group H] (f : H →* G) :
-   ReflectsColimits (Action.res (ModuleCat.{u} R) f) :=
-  reflectsColimits_of_reflectsIsomorphisms
-
 instance (H : Type u) [Group H] (f : H →* G) : (res (R := R) f).Faithful := by
   unfold res
   infer_instance
 
-instance (H : Type u) [Group H] (f : H →* G) (S : ShortComplex (Rep R G)) :
-    (res (R := R) f).PreservesLeftHomologyOf S := by
+instance (H : Type u) [Group H] (f : H →* G) : (res (R := R) f).IsLeftAdjoint := by
   unfold res
   infer_instance
 
-instance (H : Type u) [Group H] (f : H →* G) (S : ShortComplex (Rep R G)) :
-    (res (R := R) f).PreservesRightHomologyOf S := by
+instance (H : Type u) [Group H] (f : H →* G) : (res (R := R) f).IsRightAdjoint := by
   unfold res
   infer_instance
 
-instance (H : Type u) [Group H] (φ : H →* G) :
-    PreservesFiniteColimits (res (R := R) φ) := by
+instance (H : Subgroup G) : (res (R := R) H.subtype).PreservesProjectiveObjects := by
   unfold res
   infer_instance
 
