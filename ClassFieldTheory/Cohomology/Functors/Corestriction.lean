@@ -271,8 +271,7 @@ lemma commSqₙ (n : ℕ) [DecidableEq G] (M : Rep R G) :
   | n + 1 =>
     refine comp_commSq _ _ _ _ _ _ _ (δ (up_shortExact_res M S.subtype) (n + 1) (n + 2) rfl)
       (rest_δ_naturality (up_shortExact M) S.subtype (n + 1) (n + 2) rfl).symm ?_
-    simp [-up_obj, coresNatTrans, cores_obj]
-    rfl
+    simp [-up_obj, coresNatTrans, cores_obj, δUpNatIso, δUpIso]
 
 lemma cores_res (n : ℕ) [DecidableEq G] :
     (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =
