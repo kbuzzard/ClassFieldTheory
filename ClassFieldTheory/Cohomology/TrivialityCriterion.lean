@@ -55,7 +55,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
         (QuotientGroup.mk' (K.subgroupOf H)).ker.subtype) (i + 1)) := by
       refine fun i ↦ .of_iso (h3 (n := i)) <| groupCohomology.mapIso ((MulEquiv.subgroupCongr <|
         QuotientGroup.ker_mk' _).trans <| Subgroup.subgroupOfEquivOfLe h12)
-        (by exact Iso.refl _) (by simp) _
+        (by exact Iso.refl _) (by simp [res]) _
     have : ∀ n, IsIso ((infl (QuotientGroup.mk'_surjective
         (K.subgroupOf H)) (n + 1)).app (M ↓ H.subtype)) := by
       intro n

@@ -73,7 +73,7 @@ lemma quotientToInvariantsFunctor'_obj_ρ_apply (M : Rep R G) (g : G) :
     (M.quotientToInvariants φ.ker).ρ g
     := by
   rw [quotientToInvariantsFunctor'_obj_ρ]
-  simp only [quotientToInvariantsFunctor'_obj, Action.res_obj_V, of_ρ, MonoidHom.coe_comp,
+  simp only [quotientToInvariantsFunctor'_obj, res, Action.res_obj_V, of_ρ, MonoidHom.coe_comp,
     MonoidHom.coe_coe, Function.comp_apply]
   congr
   rw [MulEquiv.symm_apply_eq]
@@ -101,7 +101,7 @@ noncomputable def res_quotientToInvariantsFunctor'_ι (M : Rep R G) :
   hom := ofHom (Submodule.subtype _)
   comm g := by
     ext m
-    simp only [quotientToInvariantsFunctor'_obj, Action.res_obj_V, Action.res_obj_ρ,
+    simp only [res, quotientToInvariantsFunctor'_obj, Action.res_obj_V, Action.res_obj_ρ,
       RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
       RingHom.coe_coe, Function.comp_apply, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
       LinearMap.coe_comp, Submodule.coe_subtype, ρ_hom]

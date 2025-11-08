@@ -237,7 +237,7 @@ noncomputable abbrev cochainsMap {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ 
     (tateComplexConnectData M).cochainComplex ⟶ (tateComplexConnectData N).cochainComplex := by
   refine CochainComplex.ConnectData.map (tateComplexConnectData M) (tateComplexConnectData N)
     (groupHomology.chainsMap e φ)
-    (groupCohomology.cochainsMap e.symm ⟨φ.hom, fun h ↦ by simpa using φ.comm (e.symm h)⟩) ?_
+    (groupCohomology.cochainsMap e.symm ⟨φ.hom, fun h ↦ by simpa [res] using φ.comm (e.symm h)⟩) ?_
   ext f0 (m : M)
   simp [tateNorm_eq, cochainsMap_f]
   convert norm_comm_apply φ m
@@ -252,7 +252,7 @@ noncomputable def res_iso {M : Rep R G} (e : G ≃* H) {N : Rep R H} (e' : M.V �
     (tateCohomology n).obj M ≅ (tateCohomology n).obj N where
   hom := map e ⟨e'.hom, by aesop⟩ n
   inv := map e.symm ⟨e'.inv, e.surjective.forall.mpr <| by
-      dsimp
+      dsimp [res]
       simp_rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, he',
         e.apply_symm_apply, implies_true]⟩ n
   hom_inv_id := by

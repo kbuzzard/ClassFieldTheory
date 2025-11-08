@@ -274,7 +274,7 @@ lemma TateTheorem_lemma_1 [FiniteClassFormation σ] : H2Map₂ ((res φ).map (ι
   rw [← FiniteClassFormation.hypothesis₂ (σ := σ) inj, Submodule.span_le, Set.singleton_subset_iff]
   simp only [H2res, SetLike.mem_coe, LinearMap.mem_ker]
   conv_lhs => enter [2, 2]; rw [← Rep.split.cocycle_spec σ]
-  simp only [H2π_comp_map_apply, Action.res_obj_V, H2Map₂_H2π_apply]
+  simp only [H2π_comp_map_apply, H2Map₂_H2π_apply]
   suffices (H2π (split σ)).hom ((mapCocycles₂ (.id G) (ι σ)).hom (cocycle σ)) = 0 by
     trans (map φ (𝟙 (split σ ↓ φ)) 2).hom ((H2π (split σ)).hom
       ((mapCocycles₂ (.id G) (ι σ)).hom (cocycle σ)))

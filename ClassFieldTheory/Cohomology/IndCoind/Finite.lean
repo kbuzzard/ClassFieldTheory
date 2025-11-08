@@ -416,7 +416,7 @@ def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
   refine Action.mkIso (LinearEquiv.toModuleIso ((coind₁_quotientToInvariants_iso_aux1 A φ).trans
     (coind₁_quotientToInvariants_iso_aux2 A (QuotientGroup.quotientKerEquivOfSurjective φ surj))))
     (fun q ↦ ?_)
-  simp only [Functor.comp_obj, coindFunctor_obj, quotientToInvariantsFunctor'_obj, Action.res_obj_V,
+  simp only [res, Functor.comp_obj, coindFunctor_obj, quotientToInvariantsFunctor'_obj, Action.res_obj_V,
     trivialFunctor_obj_V, of_ρ, Action.res_obj_ρ, RingHom.toMonoidHom_eq_coe,
     RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
     Function.comp_apply, LinearEquiv.toModuleIso_hom, coind_apply]
