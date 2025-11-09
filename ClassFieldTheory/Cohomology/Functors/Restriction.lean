@@ -128,7 +128,7 @@ exact sequences.
     rw [ShortComplex.exact_map_iff_of_faithful] at h₁
     simp only [ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_f,
       Functor.mono_map_iff_mono, ShortComplex.map_X₃, ShortComplex.map_g,
-      Functor.epi_map_iff_epi] at h₂ h₃ -- don't add res
+      Functor.epi_map_iff_epi] at h₂ h₃
     exact {
       exact := h₁
       mono_f := h₂
@@ -141,7 +141,7 @@ exact sequences.
     exact {
       exact := by rwa [ShortComplex.exact_map_iff_of_faithful]
       mono_f := by simpa using h₂
-      epi_g := by simpa using h₃ -- don't add res
+      epi_g := by simpa using h₃
     }
 
 @[simp] lemma norm_hom_res [Fintype G] [Fintype H] (M : Rep R G) (e : H ≃* G) :
