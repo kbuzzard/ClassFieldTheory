@@ -276,11 +276,13 @@ instance instIsIso_shortExact_downSES (M : Rep R G) (n : ℤ) :
     n (n + 1) (by rfl) (by simp; exact isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
     (by simp; exact isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
 
+@[simps! hom]
 def δUpIsoTate (M : Rep R G) (n : ℤ) :
     (tateCohomology n).obj (up.obj M) ≅ (tateCohomology (n + 1)).obj M :=
   have := instIsIso_shortExact_upSES M n
   asIso (TateCohomology.δ (shortExact_upSES M) n)
 
+@[simps! hom]
 def δDownIsoTate (M : Rep R G) (n : ℤ) :
     (tateCohomology n).obj M ≅ (tateCohomology (n + 1)).obj (down.obj M) :=
   asIso (TateCohomology.δ (shortExact_downSES M) n)
