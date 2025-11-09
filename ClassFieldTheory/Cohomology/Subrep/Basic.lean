@@ -71,6 +71,12 @@ noncomputable def subrepOfIsoOfLE {w₁ w₂ : Subrep A} (h : w₁ ≤ w₂) :
 noncomputable def inclusion {w₁ w₂ : Subrep A} (h : w₁ ≤ w₂) : w₁.toRep ⟶ w₂.toRep where
   hom := ModuleCat.ofHom <| Submodule.inclusion h
 
+open CategoryTheory in
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem inclusion_comp_subtype {w₁ w₂ : Subrep A} {h : w₁ ≤ w₂} :
+    w₁.inclusion h ≫ w₂.subtype = w₁.subtype :=
+  rfl
+
 /-- `w₁ ⧸ (w₁ ⊓ w₂)` -/
 noncomputable def subquotient (w₁ w₂ : Subrep A) : Rep k G :=
   (w₂.subrepOf w₁).quotient

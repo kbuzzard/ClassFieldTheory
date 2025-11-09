@@ -252,16 +252,6 @@ theorem _root_.sub_mem_symm {M σ : Type*} [AddGroup M] [SetLike σ M] [AddSubgr
     {s : σ} {a b : M} (h : a - b ∈ s) : b - a ∈ s :=
   neg_sub a b ▸ neg_mem h
 
-open CategoryTheory
-
--- MOVE
-@[reassoc (attr := simp), elementwise (attr := simp)]
-theorem _root_.Subrep.inclusion_comp_subtype {w₁ w₂ : Subrep M} {h : w₁ ≤ w₂} :
-    w₁.inclusion h ≫ w₂.subtype = w₁.subtype :=
-  rfl
-
-
-
 end
 
 section
