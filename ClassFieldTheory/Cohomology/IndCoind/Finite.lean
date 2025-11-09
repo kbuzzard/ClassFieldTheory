@@ -473,30 +473,17 @@ instance : Mono (coind₁'_ι.app M) := by
   exact congrFun eq 1
 
 @[simps] def coind₁'_obj_iso_coind₁ : coind₁'.obj M ≅ (coind₁ G).obj M.V where
-  hom := {
-    hom := ofHom (by
-      apply M.ρ.coind₁'_lequiv_coind₁.toLinearMap
-    )
-    comm g := by
-      ext : 1
-      exact M.ρ.coind₁'_lequiv_coind₁_comm g
-  }
-  inv := {
-    hom := ofHom M.ρ.coind₁'_lequiv_coind₁.symm.toLinearMap
-    comm g := by
-      ext f
-      simp only [Functor.comp_obj, coindFunctor_obj, trivialFunctor_obj_V,
-        RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp,
-        MonoidHom.coe_coe, RingHom.coe_coe, Function.comp_apply, coind_apply, ModuleCat.hom_comp,
-        ModuleCat.hom_ofHom, LinearMap.coe_comp, ρ_hom]
-      rw [ModuleCat.endRingEquiv_symm_apply_hom, LinearMap.restrict_apply]
-      simp only [coind₁', Representation.coind₁', coind₁'_lequiv_coind₁, LinearEquiv.coe_coe, of_ρ,
-        MonoidHom.coe_mk, OneHom.coe_mk, LinearMap.coe_mk,
-        AddHom.coe_mk, mul_inv_rev, map_mul, Module.End.mul_apply, self_inv_apply]
-      congr
-  }
-  hom_inv_id := by ext; simp
-  inv_hom_id := by ext; simp
+  hom.hom := ofHom M.ρ.coind₁'_lequiv_coind₁.toLinearMap
+  inv.hom := ofHom M.ρ.coind₁'_lequiv_coind₁.symm.toLinearMap
+  hom.comm g := by ext : 1; exact M.ρ.coind₁'_lequiv_coind₁_comm g
+  inv.comm g := by
+    ext f
+    simp only [Functor.comp_obj, coindFunctor_obj, trivialFunctor_obj_V,
+      RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp,
+      MonoidHom.coe_coe, RingHom.coe_coe, Function.comp_apply, coind_apply, ModuleCat.hom_comp,
+      ModuleCat.hom_ofHom, LinearMap.coe_comp, ρ_hom]
+    simp [coind₁', Representation.coind₁', coind₁'_lequiv_coind₁]
+    congr
 
 variable (G)
 
