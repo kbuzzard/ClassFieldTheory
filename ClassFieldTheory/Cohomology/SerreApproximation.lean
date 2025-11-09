@@ -34,19 +34,20 @@ instance piLeft {k M ι : Type*} [Ring k] [AddCommGroup M] [Module k M]
     IsFilterComplete fun i ↦ Submodule.pi .univ fun _ : α ↦ M_ i :=
   sorry
 
-theorem ker {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [AddCommGroup N] [Module R N] [LE ι] (F : ι → Submodule R M) (G : ι → Submodule R N)
-    [IsFilterComplete F] [IsFilterComplete G]
-    (φ : M →ₗ[R] N) (hφ : ∀ i x, x ∈ F i → φ x ∈ G i) :
-    IsFilterComplete fun i ↦ (F i).submoduleOf (LinearMap.ker φ) :=
-  sorry
+-- theorem ker {R M N ι : Type*} [Ring R] [AddCommGroup M] [Module R M]
+--     [AddCommGroup N] [Module R N] [LE ι] (F : ι → Submodule R M) (G : ι → Submodule R N)
+--     [IsFilterComplete F] [IsFilterComplete G]
+--     (φ : M →ₗ[R] N) (hφ : ∀ i x, x ∈ F i → φ x ∈ G i) :
+--     IsFilterComplete fun i ↦ (F i).submoduleOf (LinearMap.ker φ) :=
+--   sorry
 
 end IsFilterComplete
 
 namespace groupCohomology
+variable {k G : Type u} [CommRing k] [Group G] {M : Rep k G}
 
-variable {k G : Type u} [CommRing k] [Group G] {M : Rep k G} (M_ : ℕ → Subrep M)
-  (hm : Antitone M_) (hm0 : M_ 0 = ⊤) [IsFilterComplete M_]
+section
+variable (M_ : ℕ → Subrep M) [IsFilterComplete M_]
 
 open CategoryTheory ShortComplex HomologicalComplex Limits
 
@@ -55,10 +56,18 @@ noncomputable def _root_.Subrep.toCochains (w : Subrep M) (q : ℕ) :
     Submodule k ((inhomogeneousCochains M).X q) :=
   Submodule.pi .univ fun _ ↦ w.toSubmodule
 
+noncomputable def _root_.Subrep.toCochainsOrderHom (q : ℕ) :
+    Subrep M →o Submodule k ((inhomogeneousCochains M).X q) :=
+  ⟨(·.toCochains q), fun _ _ h₁ _ h₂ _ _ ↦ h₁ <| h₂ _ trivial⟩
+
 /-- Given a subrep `w : M`, this is `Z^q(w)` as a submodule of `Z^q(M)`. -/
 noncomputable def _root_.Subrep.toCocycles (w : Subrep M) (q : ℕ) :
     Submodule k (cocycles M q) :=
   (w.toCochains q).comap (iCocycles M q).hom
+
+noncomputable def _root_.Subrep.toCocyclesOrderHom (q : ℕ) :
+    Subrep M →o Submodule k (cocycles M q) :=
+  ⟨(·.toCocycles q), fun _ _ h₁ _ h₂ _ _ ↦ h₁ <| h₂ _ trivial⟩
 
 instance (q : ℕ) : IsFilterComplete fun i ↦ (M_ i).toCochains q :=
   inferInstanceAs <| IsFilterComplete fun _ ↦ Submodule.pi _ _
@@ -87,6 +96,7 @@ theorem iCocycles_d {k G : Type u} [CommRing k] [Group G] {A : Rep k G} {n : ℕ
     iCocycles A n ≫ (inhomogeneousCochains A).d n (n + 1) = 0 :=
   HomologicalComplex.iCycles_d ..
 
+-- move
 theorem iCocycles_d_apply {k G : Type u} [CommRing k] [Group G] {A : Rep k G} {n : ℕ} (x) :
     (inhomogeneousCochains A).d n (n + 1) (iCocycles A n x) = 0 :=
   congr($iCocycles_d x)
@@ -103,6 +113,19 @@ theorem cocyclesMap_comp_iCocycles {k G H : Type u} [CommRing k] [Group G] [Grou
     {A : Rep k H} {B : Rep k G} (f : G →* H) {φ : (Action.res (ModuleCat k) f).obj A ⟶ B} {n : ℕ} :
     cocyclesMap f φ n ≫ iCocycles B n = iCocycles A n ≫ (cochainsMap f φ).f n :=
   HomologicalComplex.cyclesMap_i ..
+
+-- move
+@[reassoc]
+theorem toCocycles_iCocycles {k G : Type u} [CommRing k] [Group G] {A : Rep k G} {n : ℕ} :
+    toCocycles A n (n + 1) ≫ iCocycles A (n + 1) = (inhomogeneousCochains A).d n (n + 1) :=
+  HomologicalComplex.toCycles_i ..
+
+-- move
+-- `@[elementwise]` causes `(inhomogeneousCochains _).X` to leak into the pi-type
+theorem toCocycles_iCocycles_apply {k G : Type u} [CommRing k] [Group G] {A : Rep k G} {n : ℕ}
+    {x : (inhomogeneousCochains A).X n} :
+    iCocycles A (n + 1) (toCocycles A n (n + 1) x) = (inhomogeneousCochains A).d n (n + 1) x :=
+  congr($toCocycles_iCocycles x)
 
 /-- `Z(w)` is isomorphic to the submodule of `Z(M)` called `w.toCocycles q`. -/
 noncomputable def _root_.Subrep.toCocyclesIso (w : Subrep M) (q : ℕ) :
@@ -122,6 +145,38 @@ noncomputable def _root_.Subrep.toCocyclesIso (w : Subrep M) (q : ℕ) :
   map_smul' := sorry
   left_inv := sorry
   right_inv := sorry
+
+-- Kenny: this feels duplicated somehow
+theorem _root_.Subrep.toCocycles_mem_toCocycles {w : Subrep M} {q : ℕ}
+    {x : (inhomogeneousCochains M).X q} (h : x ∈ w.toCochains q) :
+    toCocycles M q (q + 1) x ∈ w.toCocycles (q + 1) := by
+  -- have :=  (toCocycles w.toRep q (q + 1) ((w.toCochainsIso q) ⟨x, h⟩))
+  unfold Subrep.toCocycles
+  rw [Submodule.mem_comap, ModuleCat.Hom.hom, toCocycles_iCocycles_apply]
+  -- dx ∈ C^(q+1)_w
+  intro f _
+  rw [inhomogeneousCochains.d_def]
+  refine add_mem (w.le_comap _ <| h _ trivial) <| sum_mem fun _ _ ↦ SMulMemClass.smul_mem _ <|
+    h _ trivial
+
+
+-- theorem _root_.HomologicalComplex.toCycles_nat {C : Type*} [Category C]
+--     [HasZeroMorphisms C] {K : HomologicalComplex C (ComplexShape.up ℕ)}
+--     {j : ℕ} [K.HasHomology (j + 1)] [(K.sc' j (j + 1) (j + 2)).HasLeftHomology] :
+--     K.toCycles j (j + 1) = (K.sc' j (j + 1) (j + 2)).toCycles :=
+--   _
+
+theorem toCycles_naturality {w : Subrep M} {q : ℕ} :
+    toCocycles w.toRep q (q + 1) ≫ cocyclesMap (.id G) w.subtype (q + 1) =
+    (cochainsMap (.id G) w.subtype).f q ≫ toCocycles M q (q + 1) := by
+  sorry -- ????
+  -- rw [← groupCohomology.functor_map]
+  -- unfold toCocycles /- HomologicalComplex.toCycles HomologicalComplex.liftCycles
+    -- ShortComplex.liftCycles cocyclesMap HomologicalComplex.cyclesMap -/
+  -- convert CategoryTheory.ShortComplex.toCycles_naturality _ using 1
+  -- CategoryTheory.ShortComplex.toCycles_naturality
+  --   ((HomologicalComplex.shortComplexFunctor _ _ _).map
+  --     (groupCohomology.cochainsMap (.id G) w.subtype))
 
 -- move
 @[ext] theorem _root_.Subrep.toRep_ext {k G : Type u} [CommRing k] [Monoid G] {A : Rep k G}
@@ -183,13 +238,44 @@ theorem toCocycles_comp_π {k G : Type u} [CommRing k] [Group G] (M : Rep k G) (
     toCocycles M q (q + 1) ≫ π M (q + 1) = 0 :=
   toCycles_comp_homologyπ ..
 
-include hm hm0 in
+end
+
+section
+-- Kenny: I don't know if we should make a separate definition for `a - b ∈ s`.
+-- can't tag with `@[gcongr]`
+
+theorem _root_.sub_mem_trans {M σ : Type*} [AddGroup M] [SetLike σ M] [AddSubgroupClass σ M]
+    {s : σ} {a b c : M} (hab : a - b ∈ s) (hbc : b - c ∈ s) : a - c ∈ s :=
+  sub_add_sub_cancel a b c ▸ add_mem hab hbc
+
+theorem _root_.sub_mem_symm {M σ : Type*} [AddGroup M] [SetLike σ M] [AddSubgroupClass σ M]
+    {s : σ} {a b : M} (h : a - b ∈ s) : b - a ∈ s :=
+  neg_sub a b ▸ neg_mem h
+
+open CategoryTheory
+
+-- MOVE
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem _root_.Subrep.inclusion_comp_subtype {w₁ w₂ : Subrep M} {h : w₁ ≤ w₂} :
+    w₁.inclusion h ≫ w₂.subtype = w₁.subtype :=
+  rfl
+
+
+
+end
+
+section
+variable (M_ : ℕ → Subrep M) [IsFilterComplete M_] (hm : Antitone M_) (hm0 : M_ 0 = ⊤)
+
+open OrderDual CategoryTheory
+
 /-
 Needed facts:
 1. (✓) H^{q+1}(M_{i+1}) → H^{q+1}(M_i) is surjective
 2. C^q(M_i) ⊆ C^q(M) is precomplete
 3. Z^{q+1}(M_i) ⊆ Z^{q+1}(M) is Hausdorff
 -/
+include hm hm0 in
 theorem subsingleton_of_subquotient (q : ℕ)
     [h₀ : ∀ i, Subsingleton (groupCohomology ((M_ i).subquotient (M_ (i + 1))) (q + 1))] :
     Subsingleton (groupCohomology M (q + 1)) := by
@@ -198,11 +284,16 @@ theorem subsingleton_of_subquotient (q : ℕ)
     (q + 1) (hm (Nat.le_succ i))
   -- `C^q(M_•)` is a complete filtration of `C^q(M)`
   have : IsFilterComplete fun i ↦ (M_ i).toCochains q := inferInstance
-  let M' : ℕᵒᵈ →o Submodule k ((inhomogeneousCochains M).X q) :=
-    ⟨fun i ↦ (M_ i.ofDual).toCochains q, sorry⟩
-  have : IsFilterComplete (M' ∘ OrderDual.toDual) := this
   -- `Z^{q+1}(M_•)` is a complete filtration of `Z^{q+1}(M)`
-  have : IsFilterComplete fun i ↦ (M_ i).toCocycles q := inferInstance
+  have : IsFilterComplete fun i ↦ (M_ i).toCocycles (q + 1) := inferInstance
+  -- build the bundled versions of each filtration
+  let M_' : ℕᵒᵈ →o Subrep M := ⟨(M_ <| ofDual ·), fun _ _ h ↦ hm h⟩
+  have : IsFilterComplete (M_' ∘ toDual) := ‹_›
+  let C_ : ℕᵒᵈ →o Submodule k ((inhomogeneousCochains M).X q) :=
+    (Subrep.toCochainsOrderHom q).comp M_'
+  have : IsFilterComplete (C_ ∘ toDual) := ‹_›
+  let Z_ : ℕᵒᵈ →o Submodule k (cocycles M (q + 1)) :=
+    (Subrep.toCocyclesOrderHom (q + 1)).comp M_'
   -- repackage h₁ to h₂ : any z : Z^{q+1}(M_i) can be written as
   -- a sum of something in `Z^{q+1}(M_{i+1})` and something in `C^q(M_i)` (after mapping)
   have h₂ (i) := exists_of_surjective (h₁ i)
@@ -216,10 +307,30 @@ theorem subsingleton_of_subquotient (q : ℕ)
   let desc (i : ℕ) : cocycles (M_ i).toRep (q + 1) := i.rec x fuel
   let component (i : ℕ) := ((M_ i).toCochainsIso q).symm (summand i (desc i))
   -- this is the decomposition of x as ∑ i, d (component i)
-  suffices toCocycles M q (q + 1) (IsFilterComplete.sum M' component) =
+  suffices toCocycles M q (q + 1) (IsFilterComplete.sum C_ component) =
       (cocyclesMapIso (Subrep.isoOfEqTop hm0) (q + 1)).toLinearEquiv x by
     rw [← this]
-    erw [toCocycles_comp_π_apply]
-  sorry
+    exact toCocycles_comp_π_apply ..
+  have : IsFilterComplete (Z_ ∘ toDual) := ‹_›
+  rw [IsFilterComplete.map_sum (G := Z_) fun i _ ↦ (M_ i).toCocycles_mem_toCocycles]
+  refine Filtration.ext (Z_ ∘ toDual) fun i ↦ ?_
+  refine sub_mem_trans (IsFilterComplete.sum_sub_mem Z_) <| sub_mem_symm ?_
+  -- x - ∑ j < i, d (component j) = desc i
+  suffices cocyclesMap (.id G) (Subrep.subtype _) (q + 1) x -
+      ∑ j ∈ Finset.range i, toCocycles M q (q + 1) (component j) =
+      cocyclesMap (.id G) (Subrep.subtype _) (q + 1) (desc i) from
+    this ▸ (((M_ (toDual i)).toCocyclesIso _).symm (desc i)).2
+  induction i with
+  | zero => rw [Finset.sum_range_zero, sub_zero]; rfl
+  | succ i ih =>
+    rw [Finset.sum_range_succ, ← sub_sub, ih]
+    simp only [desc]
+    conv_lhs => rw [← h₂ i (Nat.rec x fuel i)]
+    rw [map_add]
+    simp_rw [← ConcreteCategory.comp_apply, ← cocyclesMap_id_comp, Subrep.inclusion_comp_subtype,
+      toCycles_naturality, ConcreteCategory.comp_apply]
+    exact add_sub_cancel_right _ _
+
+end
 
 end groupCohomology
