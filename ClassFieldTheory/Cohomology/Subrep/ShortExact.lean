@@ -12,14 +12,18 @@ universe u
 
 variable {k G : Type u} [CommRing k] [Monoid G] {A : Rep k G} (w w₁ w₂ : Subrep A)
 
-open CategoryTheory ShortComplex ShortExact
+open CategoryTheory ShortComplex ShortExact Limits
 
 instance : HasForget₂ (Rep k G) Ab where
   forget₂ := forget₂ (Rep k G) (ModuleCat k) ⋙ (forget₂ _ _)
 
 instance : (forget₂ (Rep k G) Ab).Additive := ⟨rfl⟩
 
-instance : (forget₂ (Rep k G) Ab).PreservesHomology := sorry
+instance : PreservesLimits (forget₂ (Rep k G) Ab) :=
+  comp_preservesLimits _ _
+
+instance : PreservesColimits (forget₂ (Rep k G) Ab) :=
+  comp_preservesColimits _ _
 
 theorem CategoryTheory.ShortComplex.rep_exact_iff
     {k G : Type u} [CommRing k] [Monoid G] {S : ShortComplex (Rep k G)} :
