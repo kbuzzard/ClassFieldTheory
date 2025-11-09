@@ -459,7 +459,7 @@ def coind₁' : Rep R G ⥤ Rep R G where
 The inclusion of a representation `M` of `G` in the coinduced representation `coind₁'.obj M`.
 This map takes an element `m : M` to the constant function with value `M`.
 -/
-@[simps, simps app] def coind₁'_ι : 𝟭 (Rep R G) ⟶ coind₁' where
+@[simps] def coind₁'_ι : 𝟭 (Rep R G) ⟶ coind₁' where
   app M := {
     hom    := ofHom Representation.coind₁'_ι
     comm _ := by ext : 1; exact M.ρ.coind₁'_ι_comm _
@@ -525,7 +525,7 @@ def ind₁' : Rep R G ⥤ Rep R G where
 The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to the sum of the
 values of `f`.
 -/
-@[simps]
+@[simps! app_hom]
 def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
   app M := ofHom (C := Rep R G) {
     val := Representation.ind₁'_π

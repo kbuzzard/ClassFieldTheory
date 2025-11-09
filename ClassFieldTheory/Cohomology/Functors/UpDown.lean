@@ -286,10 +286,17 @@ def δDownIsoTate (M : Rep R G) (n : ℤ) :
   asIso (TateCohomology.δ (shortExact_downSES M) n)
 
 def δUpNatIsoTate (n : ℤ) : up ⋙ tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 1) :=
-  NatIso.ofComponents (fun M ↦ δUpIsoTate M n) sorry
+  NatIso.ofComponents (fun M ↦ δUpIsoTate M n) fun {M N} f ↦ .symm <| HomologySequence.δ_naturality
+    ((upShortComplex ⋙ tateComplexFunctor.mapShortComplex).map f)
+    (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_upSES M))
+    (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_upSES N)) n (n + 1) rfl
 
 def δDownNatIsoTate (n : ℤ) : tateCohomology (R := R) (G := G) n ≅ down ⋙ tateCohomology (n + 1) :=
-  NatIso.ofComponents (fun M ↦ δDownIsoTate M n) sorry
+  NatIso.ofComponents (fun M ↦ δDownIsoTate M n) fun {M N} f ↦ .symm <|
+    HomologySequence.δ_naturality
+      ((downShortComplex ⋙ tateComplexFunctor.mapShortComplex).map f)
+      (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_downSES M))
+      (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_downSES N)) n (n + 1) rfl
 
 end groupCohomology
 
