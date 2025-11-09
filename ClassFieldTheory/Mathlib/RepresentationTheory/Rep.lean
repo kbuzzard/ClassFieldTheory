@@ -76,6 +76,8 @@ lemma exists_kernelι_eq {M₁ M₂ : Rep R G} (f : M₁ ⟶ M₂) (m : M₁) (h
   change m = M₁.leftRegularHomEquiv (M₁.leftRegularHomEquiv.symm m)
   rw [LinearEquiv.apply_symm_apply]
 
+@[simp] lemma forget₂_map (f : A ⟶ B) : (forget₂ (Rep R G) (ModuleCat R)).map f = f.hom := rfl
+
 end Rep
 
 lemma _root_.Representation.norm_ofIsTrivial (R M G : Type*) [Group G] [CommRing R] [AddCommGroup M]

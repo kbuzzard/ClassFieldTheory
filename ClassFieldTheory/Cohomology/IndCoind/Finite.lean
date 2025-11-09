@@ -214,9 +214,9 @@ lemma ind₁'_map_comm {ρ' : Representation R G W} {f : V →ₗ[R] W}
     (hf : ∀ g : G, f ∘ₗ ρ g = ρ' g ∘ₗ f) (g : G) :
     ind₁'_map f ∘ₗ ρ.ind₁' g = ρ'.ind₁' g ∘ₗ ind₁'_map f := by
   ext : 1
-  rw [LinearMap.comp_assoc, ind₁'_comp_lsingle, ←LinearMap.comp_assoc, ind₁'_map_comp_lsingle,
+  rw [LinearMap.comp_assoc, ind₁'_comp_lsingle, ← LinearMap.comp_assoc, ind₁'_map_comp_lsingle,
     LinearMap.comp_assoc, hf, LinearMap.comp_assoc, ind₁'_map_comp_lsingle,
-    ←LinearMap.comp_assoc, ←LinearMap.comp_assoc, ind₁'_comp_lsingle]
+    ← LinearMap.comp_assoc, ← LinearMap.comp_assoc, ind₁'_comp_lsingle]
 
 @[simps] def ind₁'_π : (G →₀ V) →ₗ[R] V where
   toFun f := f.sum (fun _ ↦ (1 : V →ₗ[R] V))
@@ -317,11 +317,11 @@ lemma ind₁'_lequiv_comm (g : G) :
     ind₁'_lequiv ρ ∘ₗ ind₁' ρ g = ind₁ R G V g ∘ₗ ind₁'_lequiv ρ := by
   ext x : 1
   rw [LinearMap.comp_assoc, ind₁'_comp_lsingle,
-    ←LinearMap.comp_assoc, ind₁'_lequiv_comp_lsingle, LinearMap.comp_assoc, map_mul]
+    ← LinearMap.comp_assoc, ind₁'_lequiv_comp_lsingle, LinearMap.comp_assoc, map_mul]
   change _ ∘ₗ (_ * ρ g) = _
-  rw [mul_assoc, ←map_mul, inv_mul_cancel, map_one, mul_one]
+  rw [mul_assoc, ← map_mul, inv_mul_cancel, map_one, mul_one]
   nth_rw 2 [LinearMap.comp_assoc]
-  rw [ind₁'_lequiv_comp_lsingle, ←LinearMap.comp_assoc, ind₁_apply]
+  rw [ind₁'_lequiv_comp_lsingle, ← LinearMap.comp_assoc, ind₁_apply]
 
 def ind₁'_lequiv_coind₁' [Finite G] : (G →₀ V) ≃ₗ[R] (G → V) :=
   linearEquivFunOnFinite R V G
@@ -338,7 +338,7 @@ lemma ind₁'_lequiv_coind₁'_comm [Finite G] (g : G) :
   ext v y : 2
   simp [ind₁'_lequiv_coind₁'_apply]
   by_cases h : x * g⁻¹ = y
-  · rw [h, single_eq_same, ←h, mul_assoc, inv_mul_cancel, mul_one, single_eq_same]
+  · rw [h, single_eq_same, ← h, mul_assoc, inv_mul_cancel, mul_one, single_eq_same]
   · rw [single_eq_of_ne, single_eq_of_ne, map_zero]
     · contrapose! h
       rw [← h, mul_inv_cancel_right]
@@ -459,7 +459,7 @@ def coind₁' : Rep R G ⥤ Rep R G where
 The inclusion of a representation `M` of `G` in the coinduced representation `coind₁'.obj M`.
 This map takes an element `m : M` to the constant function with value `M`.
 -/
-@[simps] def coind₁'_ι : 𝟭 (Rep R G) ⟶ coind₁' where
+@[simps, simps app] def coind₁'_ι : 𝟭 (Rep R G) ⟶ coind₁' where
   app M := {
     hom    := ofHom Representation.coind₁'_ι
     comm _ := by ext : 1; exact M.ρ.coind₁'_ι_comm _
@@ -471,11 +471,6 @@ instance : Mono (coind₁'_ι.app M) := by
   intro x y eq
   change Function.const G x 1 = Function.const G y 1
   exact congrFun eq 1
-
-lemma LinearEquiv.symm_apply {R S M N : Type*} [Semiring R] [Semiring S] [AddCommMonoid M]
-    [AddCommMonoid N] [Module R M] [Module S N] {σ : R →+* S} {σ' : S →+* R}
-    {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ} (e : M ≃ₛₗ[σ] N) (n : N) :
-  e.symm n = e.invFun n := rfl
 
 @[simps] def coind₁'_obj_iso_coind₁ : coind₁'.obj M ≅ (coind₁ G).obj M.V where
   hom := {
@@ -495,8 +490,8 @@ lemma LinearEquiv.symm_apply {R S M N : Type*} [Semiring R] [Semiring S] [AddCom
         MonoidHom.coe_coe, RingHom.coe_coe, Function.comp_apply, coind_apply, ModuleCat.hom_comp,
         ModuleCat.hom_ofHom, LinearMap.coe_comp, ρ_hom]
       rw [ModuleCat.endRingEquiv_symm_apply_hom, LinearMap.restrict_apply]
-      simp only [coind₁', Representation.coind₁', coind₁'_lequiv_coind₁, LinearEquiv.coe_coe,
-        LinearEquiv.symm_apply, of_ρ, MonoidHom.coe_mk, OneHom.coe_mk, LinearMap.coe_mk,
+      simp only [coind₁', Representation.coind₁', coind₁'_lequiv_coind₁, LinearEquiv.coe_coe, of_ρ,
+        MonoidHom.coe_mk, OneHom.coe_mk, LinearMap.coe_mk,
         AddHom.coe_mk, mul_inv_rev, map_mul, Module.End.mul_apply, self_inv_apply]
       congr
   }
@@ -521,7 +516,7 @@ The functor taking a representation `M` of `G` to the induced representation on
 the space `G →₀ M`. The action of `G` on `G →₀ M.V` is by left-translation on `G` and
 by `M.ρ` on `M.V`.
 -/
-@[simps! obj]
+@[simps! obj, simps! obj_ρ, simps! obj_ρ_apply]
 def ind₁' : Rep R G ⥤ Rep R G where
   obj M := of M.ρ.ind₁'
   map f := {
@@ -543,11 +538,12 @@ def ind₁' : Rep R G ⥤ Rep R G where
 The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to the sum of the
 values of `f`.
 -/
+@[simps]
 def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
   app M := ofHom (C := Rep R G) {
     val := Representation.ind₁'_π
     property g := by
-      rw [←LinearMap.coe_comp, ←LinearMap.coe_comp, ←DFunLike.ext'_iff]
+      rw [← LinearMap.coe_comp, ← LinearMap.coe_comp, ← DFunLike.ext'_iff]
       apply ind₁'_π_comm
   }
   naturality _ _ x := by
@@ -561,8 +557,6 @@ instance instEpiAppInd₁'_π : Epi (ind₁'_π.app M) := by
   refine (epi_iff_surjective (ind₁'_π.app M)).2 fun m ↦ ⟨single 1 m, ?_⟩
   change Representation.ind₁'_π _ = _
   simp only [Functor.id_obj, ind₁'_π_apply, Module.End.one_apply, sum_single_index]
-
-lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
 def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
   Action.mkIso (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) (fun g ↦
