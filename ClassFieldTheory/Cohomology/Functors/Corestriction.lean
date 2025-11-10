@@ -157,13 +157,7 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
   · exact commSq_cores₁ X
   · exact commSq_cores₁ Y
   · exact δ_naturality (shortExact_upSES_res X S.subtype) (shortExact_upSES_res Y S.subtype)
-      { τ₁ := (res S.subtype).map f
-        τ₂ := (res S.subtype).map <| coind₁'.map f
-        τ₃ := (res S.subtype).map <| up.map f
-        comm₂₃ := by
-          have := (upShortComplex.map f).comm₂₃
-          simp only [upShortComplex_map_τ₂, upShortComplex_map_τ₃, ShortComplex.map_g] at this ⊢
-          rw [← (res S.subtype).map_comp, this, (res S.subtype).map_comp]} 0 1 rfl
+      ((upShortComplex ⋙ (res (R := R) S.subtype).mapShortComplex).map f) 0 1 rfl
   · exact δ_naturality (shortExact_upSES X) (shortExact_upSES Y)
       ⟨f, coind₁'.map f, up.map f, rfl, by aesop_cat⟩ 0 1 rfl
 
@@ -185,7 +179,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
     -- have := M.coind₁'_trivialCohomology
     have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res_subtype (coind₁'.obj M)
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
-    all_goals simpa only [upShortComplex_obj_X₂] using isZero_of_trivialCohomology
+    all_goals simpa only [upSES_X₂] using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
   (asIso (δ (htopexact) (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
 
@@ -197,20 +191,16 @@ theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) [Decidable
   | zero => exact fun _ _ _ ↦ cores₁_naturality ..
   | succ n ih =>
     intro X Y f
-    simp only [Functor.comp_obj, functor_obj, Functor.comp_map, functor_map, cores_obj,
-      ShortComplex.map_X₃, upShortComplex_obj_X₃, up_obj, Functor.id_obj, coind₁'_obj,
-      ShortComplex.map_X₁, upShortComplex_obj_X₁, asIso_inv, Category.assoc, IsIso.eq_inv_comp,
-      δUpNatIso, Functor.comp_obj, up_obj, Functor.id_obj, coind₁'_obj, functor_obj,
-      δUpIso, id_eq, NatIso.ofComponents_hom_app, asIso_hom]
-    rw [← Category.assoc]
     have := δ_naturality (shortExact_upSES_res X S.subtype) (shortExact_upSES_res Y S.subtype)
-      { τ₁ := (res S.subtype).map f
-        τ₂ := (res S.subtype).map <| coind₁'.map f
-        τ₃ := (res S.subtype).map <| up.map f
-        comm₂₃ := by
-          have := (upShortComplex.map f).comm₂₃
-          simp only [upShortComplex_map_τ₂, upShortComplex_map_τ₃, ShortComplex.map_g] at this ⊢
-          rw [← (res S.subtype).map_comp, this, (res S.subtype).map_comp]} (n + 1) (n + 2) rfl
+      ((upShortComplex ⋙ (res (R := R) S.subtype).mapShortComplex).map f) (n + 1) (n + 2) rfl
+    simp only [Functor.comp_obj, functor_obj, Functor.comp_map, functor_map, cores_obj,
+      ShortComplex.map_X₃, ShortComplex.map_X₁, asIso_inv, up_obj, Functor.id_obj, coind₁'_obj,
+      δUpNatIso, δUpIso, NatIso.ofComponents_hom_app, asIso_hom, Category.assoc, IsIso.eq_inv_comp]
+    rw [← Category.assoc]
+    simp only [ShortComplex.map_X₃, upSES_X₃, up_obj, Functor.id_obj, coind₁'_obj,
+      ShortComplex.map_X₁, upSES_X₁, Functor.comp_map, upShortComplex_obj,
+      Functor.mapShortComplex_map_τ₁, upShortComplex_map_τ₁, Functor.mapShortComplex_map_τ₃,
+      upShortComplex_map_τ₃, up_map] at this
     rw [this, Category.assoc, ← Category.assoc (δ _ _ _ _), IsIso.hom_inv_id, Category.id_comp,
       δ_naturality (shortExact_upSES X) (shortExact_upSES Y) ⟨f, coind₁'.map f, up.map f, rfl,
       by aesop_cat⟩ (n + 1) (n + 2) rfl, ← Category.assoc, ← Category.assoc]
