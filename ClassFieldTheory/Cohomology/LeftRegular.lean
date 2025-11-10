@@ -1,5 +1,4 @@
 import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Mathlib.Algebra.Category.ModuleCat.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 
 /-!
