@@ -154,7 +154,7 @@ lemma _root_.groupCohomology.map_comp_H0trivial {ρ : Rep R G} (f : ρ ⟶ trivi
     LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp,
     LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply, Submodule.topEquiv_apply,
     LinearEquiv.coe_ofEq_apply]
-  rw [ModuleCat.Iso_hom, ← LinearMap.comp_apply, ← ModuleCat.hom_comp,
+  rw [Iso.toLinearEquiv_apply, ← LinearMap.comp_apply, ← ModuleCat.hom_comp,
     groupCohomology.map_id_comp_H0Iso_hom]
   simp [zeroι]
 
