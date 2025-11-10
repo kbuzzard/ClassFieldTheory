@@ -242,8 +242,9 @@ lemma cores_res₀ : rest (R := R) (S.subtype) 0 ≫ cores₀ = S.index • (.id
   ext M v
   apply (ConcreteCategory.injective_of_mono_of_preservesPullback (H0Iso M).hom)
   ext
-  simp [rest, Subgroup.index, groupCohomology.map_H0Iso_hom_f_apply' S.subtype,
-    (M.ρ.mem_invariants ((H0Iso M).hom.hom v)).1]
+  simp [-res_obj_V, -res_obj_ρ', rest, Subgroup.index,
+    groupCohomology.map_H0Iso_hom_f_apply' S.subtype,
+    (M.ρ.mem_invariants ((H0Iso M).hom.hom v)).1 (Subtype.prop _)]
 
 theorem _root_.CategoryTheory.comp_commSq (C' : Type*) [Category C'] {A B C D E F : C'}
     (f₁ : A ⟶ B) (f₂ : B ⟶ C) (g₁ : A ⟶ D) (g₂ : C ⟶ F) (h₁ : D ⟶ E) (h₂ : E ⟶ F) (f : B ⟶ E)
