@@ -23,9 +23,8 @@ namespace Rep
 /--
 The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
 -/
-def res (φ : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) φ
+def res (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) f
 
-set_option quotPrecheck false in
 /--
 If `M` is an object of `Rep R G` and `φ : H →* G` then `M ↓ φ` is the restriction of the
 representation `M` to `H`, as an object of `Rep R H`.
@@ -33,34 +32,65 @@ representation `M` to `H`, as an object of `Rep R H`.
 This is notation for `(Rep.res H).obj M`, which is an abbreviation of
 `(Action.res (ModuleCat R) H.subtype).obj M`
 -/
-notation3:60 M:60 " ↓ " φ:61 => (res φ).obj M
+notation3:60 M:60 " ↓ " f:61 => (res f).obj M
 
-@[simp] lemma ρ_res_apply (φ : H →* G) (h : H) : (M ↓ φ).ρ h = M.ρ (φ h) := rfl
+variable (f : H →* G)
 
-/-
-`simp` lemmas for `Action.res` also work for `Rep.res` because it is an abbreviation:
--/
-lemma res_obj_ρ' (M : Rep R G) (H : Type u) [Group H] (φ : H →* G) (h : H) :
-  (M ↓ φ).ρ h = M.ρ (φ h) := by simp
+@[simp] lemma res_obj_ρ' : (M ↓ f).ρ = M.ρ.comp f := rfl
 
-lemma res_obj_V (M : Rep R G) (H : Type u) [Group H] (φ : H →* G)  :
-  (M ↓ φ).V = M.V := by simp [res]
+lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
 
-instance (H : Type u) [Group H] (f : H →* G) : (res (R := R) f).Faithful := by
-  unfold res
-  infer_instance
+@[simp] lemma res_obj_V : (M ↓ f).V = M.V := rfl
 
-instance (H : Type u) [Group H] (f : H →* G) : (res (R := R) f).IsLeftAdjoint := by
-  unfold res
-  infer_instance
+@[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N): ((res f).map p).hom = p.hom := rfl
 
-instance (H : Type u) [Group H] (f : H →* G) : (res (R := R) f).IsRightAdjoint := by
-  unfold res
-  infer_instance
+section
 
-instance (H : Subgroup G) : (res (R := R) H.subtype).PreservesProjectiveObjects := by
-  unfold res
-  infer_instance
+local notation3:max "res% " R':max f:max => res (R := R') f
+
+instance : (res% R f).Faithful :=
+  inferInstanceAs (Action.res _ _).Faithful
+
+theorem full_res (hf : (⇑f).Surjective) : (res% R f).Full :=
+  Action.full_res _ _ hf
+
+instance : (res% R f).Additive :=
+  inferInstanceAs <| (Action.res _ _).Additive
+
+instance : (res% R f).Linear R :=
+  inferInstanceAs <| (Action.res _ _).Linear R
+
+variable (R) in
+@[simps! unit_app_hom_hom counit_app_hom_hom]
+noncomputable def indResAdjunction' : indFunctor R f ⊣ res% R f :=
+  indResAdjunction ..
+
+variable (R) in
+@[simps! counit_app_hom_hom unit_app_hom_hom]
+noncomputable abbrev resCoindAdjunction' : res% R f ⊣ coindFunctor R f :=
+  resCoindAdjunction ..
+
+instance : (res% R f).IsRightAdjoint :=
+  (indResAdjunction' R f).isRightAdjoint
+
+instance : (res% R f).IsLeftAdjoint :=
+  (resCoindAdjunction' R f).isLeftAdjoint
+
+instance (H : Subgroup G) : (res% R H.subtype).PreservesProjectiveObjects :=
+  inferInstanceAs (Action.res _ _).PreservesProjectiveObjects
+
+end
+
+variable (R) in
+def resEquiv (f : H ≃* G) : Rep R G ≌ Rep R H := Action.resEquiv _ f
+
+section
+variable (f : H ≃* G)
+
+@[simp] lemma resEquiv_functor : (resEquiv R f).functor = res f := rfl
+@[simp] lemma resEquiv_inverse : (resEquiv R f).inverse = res f.symm := rfl
+
+end
 
 /--
 The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
@@ -96,9 +126,9 @@ exact sequences.
     have h₂ := h.2
     have h₃ := h.3
     rw [ShortComplex.exact_map_iff_of_faithful] at h₁
-    simp only [res, ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_f,
+    simp only [ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_f,
       Functor.mono_map_iff_mono, ShortComplex.map_X₃, ShortComplex.map_g,
-      Functor.epi_map_iff_epi] at h₂ h₃ -- don't add res
+      Functor.epi_map_iff_epi] at h₂ h₃
     exact {
       exact := h₁
       mono_f := h₂
@@ -111,7 +141,7 @@ exact sequences.
     exact {
       exact := by rwa [ShortComplex.exact_map_iff_of_faithful]
       mono_f := by simpa using h₂
-      epi_g := by simpa [res] using h₃ -- don't add res
+      epi_g := by simpa using h₃
     }
 
 @[simp] lemma norm_hom_res [Fintype G] [Fintype H] (M : Rep R G) (e : H ≃* G) :

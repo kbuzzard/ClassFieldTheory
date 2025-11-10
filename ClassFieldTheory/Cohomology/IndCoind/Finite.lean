@@ -414,28 +414,17 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) 
 def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
     (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
-  refine Action.mkIso (LinearEquiv.toModuleIso ((coind₁_quotientToInvariants_iso_aux1 A φ).trans
+  refine mkIso _ _ (LinearEquiv.toModuleIso ((coind₁_quotientToInvariants_iso_aux1 A φ).trans
     (coind₁_quotientToInvariants_iso_aux2 A (QuotientGroup.quotientKerEquivOfSurjective φ surj))))
-    (fun q ↦ ?_)
-  simp only [res, Functor.comp_obj, coindFunctor_obj, quotientToInvariantsFunctor'_obj, Action.res_obj_V,
-    trivialFunctor_obj_V, of_ρ, Action.res_obj_ρ, RingHom.toMonoidHom_eq_coe,
-    RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, RingHom.coe_coe,
-    Function.comp_apply, LinearEquiv.toModuleIso_hom, coind_apply]
-  ext x q'
-  simp only [ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, LinearEquiv.trans_apply, ModuleCat.endRingEquiv_symm_apply_hom _ _,
-    LinearMap.restrict_apply, LinearMap.funLeft_apply, coind₁_quotientToInvariants_iso_aux1,
-    coind₁_quotientToInvariants_iso_aux2, trivialFunctor_obj_V, Functor.comp_obj, coindFunctor_obj,
-    of_ρ, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_mul]
-  let r := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q
-  let r' := (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q'
-  let s := Classical.choose (QuotientGroup.mk_surjective r)
-  let s' := Classical.choose (QuotientGroup.mk_surjective r')
-  have h1 : QuotientGroup.mk s = (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q :=
-    Classical.choose_spec (QuotientGroup.mk_surjective r)
-  have h2 : QuotientGroup.mk s' = (QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q' :=
-    Classical.choose_spec (QuotientGroup.mk_surjective r')
-  simp [← h1, ← h2, ← QuotientGroup.mk_mul]
+    (fun q x ↦ ?_)
+  simp only [Functor.comp_obj, coindFunctor_obj, trivialFunctor_obj_V, of_ρ, ModuleCat.of_coe,
+    LinearEquiv.toModuleIso_hom, ModuleCat.hom_ofHom, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+    coind_apply]
+  ext q'
+  obtain ⟨g, rfl⟩ := surj q
+  obtain ⟨g', rfl⟩ := surj q'
+  simp [coind₁_quotientToInvariants_iso_aux2, coind₁_quotientToInvariants_iso_aux1,
+    ← QuotientGroup.mk_mul]
 
 /--
 The functor which takes a representation `ρ` of `G` on `V` to the
@@ -566,8 +555,8 @@ instance instEpiAppInd₁'_π : Epi (ind₁'_π.app M) := by
 lemma ind₁'_obj_ρ_apply (g : G) : (ind₁'.obj M).ρ g = M.ρ.ind₁' g := rfl
 
 def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
-  Action.mkIso (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) (fun g ↦
-    ModuleCat.hom_ext (LinearMap.ext fun x ↦ LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x))
+  mkIso _ _ (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) fun g x ↦
+    LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x
 
 variable (G) in
 /-- A version of `ind₁` that's actually defined as `G →₀ A` with some action. -/
@@ -579,11 +568,11 @@ abbrev coind₁AsPi : Rep R G := .of <| Representation.coind₁AsPi R G A
 
 /-- `ind₁AsFinsupp` is isomorphic to `ind₁` pointwise. -/
 def ind₁AsFinsuppIso : ind₁AsFinsupp G A ≅ (ind₁ G).obj A :=
-  Rep.mkIso _ _ (Iso.refl (ModuleCat.of R (G →₀ A))) ≪≫ ind₁'_obj_iso_ind₁ (.trivial _ _ _)
+  mkIso _ _ (Iso.refl (ModuleCat.of R (G →₀ A))) ≪≫ ind₁'_obj_iso_ind₁ (.trivial _ _ _)
 
 /-- `coind₁AsPi` is isomorphic to `coind₁` pointwise. -/
 def coind₁AsPiIso : coind₁AsPi G A ≅ (coind₁ G).obj (.of R A) :=
-  Rep.mkIso _ _ (Iso.refl (ModuleCat.of R (G → A))) ≪≫ coind₁'_obj_iso_coind₁ (.trivial _ _ _)
+  mkIso _ _ (Iso.refl (ModuleCat.of R (G → A))) ≪≫ coind₁'_obj_iso_coind₁ (.trivial _ _ _)
 
 section FiniteGroup
 
@@ -634,20 +623,14 @@ noncomputable def iso_ind₁ :
     (Rep.ind₁ (L ≃ₐ[K] L)).obj (.of K K) ≅ .of (AlgEquiv.toLinearMapHom K L) := by
   classical
   refine (Rep.ind₁AsFinsuppIso (G := (L ≃ₐ[K] L)) (.of K K)).symm ≪≫
-    Action.mkIso (LinearEquiv.toModuleIso
+    mkIso _ _ (LinearEquiv.toModuleIso
       ((IsGalois.normalBasis K L).reindex (Equiv.inv (L ≃ₐ[K] L))).repr.symm) ?_
-  intro x
-  ext f
-  simp only [LinearEquiv.toModuleIso_hom,
-    Module.Basis.coe_repr_symm, Module.Basis.coe_reindex, Equiv.inv_symm, Equiv.inv_apply,
-    ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, Function.comp_apply,
-    RingHom.toMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
-    RingHom.coe_coe, AlgEquiv.toLinearMapHom]
+  intro x f
+  simp only [LinearEquiv.toModuleIso_hom, Module.Basis.coe_repr_symm, Module.Basis.coe_reindex,
+    Equiv.inv_symm, Equiv.inv_apply, ModuleCat.hom_ofHom, AlgEquiv.toLinearMapHom]
   rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
     Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _,
     Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _]
-  simp only [Function.comp_apply, map_sum, map_smul, ModuleCat.endRingEquiv, RingEquiv.symm_mk,
-    RingEquiv.coe_mk, Equiv.coe_fn_mk, ModuleCat.hom_ofHom]
+  simp only [Function.comp_apply, map_sum, map_smul]
   apply Fintype.sum_equiv (.mulRight x)
-  simp [IsGalois.normalBasis_apply _⁻¹, IsGalois.normalBasis_apply (_ * _),
-    Finsupp.single_apply, mul_inv_eq_iff_eq_mul]
+  simp [IsGalois.normalBasis_apply _⁻¹, IsGalois.normalBasis_apply (_ * _)]

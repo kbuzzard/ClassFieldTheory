@@ -72,11 +72,11 @@ lemma resCoind₁AsPiLinearEquiv_apply (H : Subgroup G) (f : G → A) (h : H) (x
 
 def resInd₁AsFinsuppIso (H : Subgroup G) :
     ind₁AsFinsupp G A ↓ H.subtype ≅ ind₁AsFinsupp H (.of R <| G ⧸ H →₀ A) :=
-  Rep.mkIso _ _ (resInd₁AsFinsuppLinearEquiv H).toModuleIso fun g f ↦ by ext; simp [res, mul_assoc]
+  Rep.mkIso _ _ (resInd₁AsFinsuppLinearEquiv H).toModuleIso fun g f ↦ by ext; simp [mul_assoc]
 
 def resCoind₁AsPiIso (H : Subgroup G) :
     coind₁AsPi G A ↓ H.subtype ≅ coind₁AsPi H (.of R <| G ⧸ H → A) :=
-  Rep.mkIso _ _ (resCoind₁AsPiLinearEquiv H).toModuleIso fun g f ↦ by ext; simp [res, mul_assoc]
+  Rep.mkIso _ _ (resCoind₁AsPiLinearEquiv H).toModuleIso fun g f ↦ by ext; simp [mul_assoc]
 
 instance trivialHomology_ind₁AsFinsupp : TrivialHomology (ind₁AsFinsupp G A) := by
   classical
@@ -145,9 +145,9 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     simp [eq_mul_inv_iff_mul_eq]
   refine ⟨.of_iso ?_ <| TateCohomology.zeroIso _, .of_iso ?_ <| TateCohomology.negOneIso _⟩
   · -- First, let's prove the 0-th cohomology group is trivial.
-    simp only [res, ModuleCat.isZero_of_iff_subsingleton, Submodule.subsingleton_quotient_iff_eq_top,
-      Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff, res_obj_ρ,
-      Action.res_obj_V, of_ρ, Representation.mem_invariants, MonoidHom.coe_comp,
+    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.subsingleton_quotient_iff_eq_top,
+      Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff, res_obj_ρ',
+      res_obj_V, of_ρ, Representation.mem_invariants, MonoidHom.coe_comp,
       Function.comp_apply, LinearMap.mem_range, Representation.coind₁AsPi_apply,
       LinearMap.coeFn_sum, Finset.sum_apply]
     -- This is equivalent to...
@@ -162,9 +162,9 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     simpa only [Finset.sum_apply, Pi.single_apply, hf, Finset.sum_comm (α := H), ← Subgroup.coe_inv]
       using aux f x
   · -- Second, let's prove the -1-st cohomology group is trivial.
-    simp only [res, ModuleCat.isZero_of_iff_subsingleton, Submodule.subsingleton_quotient_iff_eq_top,
+    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.subsingleton_quotient_iff_eq_top,
       Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff,
-      Action.res_obj_V, res_obj_ρ, of_ρ, MonoidHom.coe_comp, Function.comp_apply,
+      res_obj_V, res_obj_ρ', of_ρ, MonoidHom.coe_comp, Function.comp_apply,
       LinearMap.mem_ker, LinearMap.coeFn_sum, Finset.sum_apply,
       Representation.coind₁AsPi_apply, Pi.zero_apply]
     -- This is equivalent to...
