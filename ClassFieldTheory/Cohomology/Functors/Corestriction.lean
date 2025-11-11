@@ -273,8 +273,14 @@ lemma cores_res (n : ℕ) [DecidableEq G] :
     simp
 
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
-lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [Fintype G] (M : Rep R G)
-    (x : (functor R G n).obj M) : Nat.card G • x = 0 := sorry
+lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep R G)
+    (x : groupCohomology M n) : Nat.card G • x = 0 := by
+  if hG : Infinite G then simp else
+  simp only [not_infinite_iff_finite] at hG
+  have := by simpa using (LinearMap.ext_iff.1 <| ModuleCat.hom_ext_iff.1
+    congr(NatTrans.app $(cores_res (R := R) n (G := G) (S := ⊥)) M)) x
+  simp [← this, rest, IsZero.eq_zero_of_tgt isZero_of_trivialCohomology <|
+    map _ (𝟙 (M ↓ (⊥ : Subgroup G).subtype)) n]
 
 -- /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
 -- lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
