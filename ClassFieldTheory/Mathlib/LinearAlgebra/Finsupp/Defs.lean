@@ -9,8 +9,7 @@ Rename `mapDomain.linearEquiv`!
 namespace Finsupp
 variable {α β M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
-variable (M R) in
-@[simp] lemma coe_lmapDomain (f : α → β) : ⇑(lmapDomain M R f) = mapDomain f := rfl
+attribute [simp] coe_lmapDomain
 
 -- TODO: Rename in mathlib
 @[simp, norm_cast] alias toLinearMap_mapDomainLinearEquiv  := mapDomain.toLinearMap_linearEquiv

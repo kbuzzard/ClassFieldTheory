@@ -260,7 +260,7 @@ def H1_iso [Fintype G] :
     rintro a rfl
     refine ⟨a • leftRegular.norm R G, ?_⟩
     apply (H0trivial R G).toLinearEquiv.injective
-    rw [ModuleCat.Iso_symm_iso, LinearEquiv.apply_symm_apply]
+    rw [← Iso.toLinearEquiv_symm, LinearEquiv.apply_symm_apply]
     change (H0trivial R G).hom.hom _ = _
     rw [show (mapShortComplex₃ ..).f = map (.id G) (ε R G) 0 by simp, ← LinearMap.comp_apply,
       ← ModuleCat.hom_comp, map_comp_H0trivial]
@@ -282,7 +282,7 @@ def H1_iso [Fintype G] :
       ShortComplex.map_g, cochainsFunctor_map, HomologicalComplex.homologyFunctor_map,
       Nat.card_eq_fintype_card, Submodule.comap_coe, LinearEquiv.coe_coe, Set.mem_preimage,
       SetLike.mem_coe]
-    rw [ModuleCat.Iso_symm_iso, LinearEquiv.symm_symm, ModuleCat.Iso_hom, map_comp_H0trivial_apply,
+    rw [Iso.toLinearEquiv_symm, Iso.symm_symm_eq, Iso.toLinearEquiv_apply, map_comp_H0trivial_apply,
       leftRegular.zeroι_norm, map_sum]
     simpa [ε, leftRegular.of, Ideal.mem_span_singleton'] using ⟨1, one_mul _⟩
 
