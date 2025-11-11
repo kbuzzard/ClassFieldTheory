@@ -47,7 +47,7 @@ def representation : Representation R G (carrier σ) where
   toFun g := {
     toFun v := {
       fst := (aug R G).ρ g v.fst
-      snd := M.ρ g v.snd + ∑ x : G, aug.ι R G v.fst x • cocycle σ ⟨g, x⟩
+      snd := M.ρ g v.snd + ∑ x : G, (aug.ι R G).hom.hom v.fst x • cocycle σ ⟨g, x⟩
     }
     map_add' x y := by
       ext
@@ -73,7 +73,7 @@ def representation : Representation R G (carrier σ) where
       · dsimp only
         rw [zero_add]
         simp only [cocycles₂_map_one_fst]
-        rw [←Finset.sum_smul, aug.sum_coeff_ι, zero_smul]
+        rw [← Finset.sum_smul, aug.sum_coeff_ι, zero_smul]
     · ext v : 1
       simp
   map_mul' g₁ g₂ := by
@@ -91,8 +91,7 @@ def representation : Representation R G (carrier σ) where
       conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft g₂)]
       refine Finset.sum_congr rfl fun x _ ↦ ?_
       erw [Rep.hom_comm_apply]
-      simp [-equalizer_as_kernel]
-      rfl
+      simp [-equalizer_as_kernel] -- removes a `rfl` here shows I'm in the right direction
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
         Function.comp_apply, map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
         Finset.sum_const_zero, add_zero, Module.End.mul_apply]
@@ -260,8 +259,8 @@ lemma H2Map₂_H2π {A B : Rep R G} (f : A ⟶ B) :
 
 variable {H : Type} [Group H] {φ : H →* G} (inj : Function.Injective φ)
 
-unif_hint (ρ : Rep R G) where ⊢
-  (ρ ↓ φ).V ≟ ρ.V
+-- unif_hint (ρ : Rep R G) where ⊢ (ρ ↓ φ).V ≟ ρ.V
+-- don't need this as well due to our change!
 
 -- set_option pp.all true in
 include inj in
@@ -377,7 +376,7 @@ def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
   (CategoryTheory.asIso (TateCohomology.δ (aug.aug_isShortExact R G) n)) ≪≫
   (CategoryTheory.asIso (TateCohomology.δ (Rep.split.isShortExact σ) (n + 1))) ≪≫
   eqToIso (by
-    congr 2
+    congr 2;
     ring)
 
 def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :

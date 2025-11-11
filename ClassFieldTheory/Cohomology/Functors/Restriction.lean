@@ -36,11 +36,11 @@ notation3:60 M:60 " ↓ " f:61 => (res f).obj M
 
 variable (f : H →* G)
 
-@[simp] lemma res_obj_ρ' : (M ↓ f).ρ = M.ρ.comp f := rfl
+lemma res_obj_ρ' : (M ↓ f).ρ = M.ρ.comp f := rfl
 
 lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
 
-@[simp] lemma res_obj_V : (M ↓ f).V = M.V := rfl
+lemma res_obj_V : (M ↓ f).V = M.V := rfl
 
 @[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N): ((res f).map p).hom = p.hom := rfl
 
@@ -147,7 +147,7 @@ exact sequences.
 @[simp] lemma norm_hom_res [Fintype G] [Fintype H] (M : Rep R G) (e : H ≃* G) :
     (M ↓ e.toMonoidHom).norm.hom = M.norm.hom := by
   ext
-  simp [Representation.norm, ← e.toEquiv.sum_comp]
+  simp [res_obj_V, Representation.norm, res_obj_ρ',← e.toEquiv.sum_comp]
 
 end Rep
 

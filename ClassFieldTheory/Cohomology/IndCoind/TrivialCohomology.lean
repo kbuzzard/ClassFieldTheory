@@ -72,11 +72,13 @@ lemma resCoind₁AsPiLinearEquiv_apply (H : Subgroup G) (f : G → A) (h : H) (x
 
 def resInd₁AsFinsuppIso (H : Subgroup G) :
     ind₁AsFinsupp G A ↓ H.subtype ≅ ind₁AsFinsupp H (.of R <| G ⧸ H →₀ A) :=
-  Rep.mkIso _ _ (resInd₁AsFinsuppLinearEquiv H).toModuleIso fun g f ↦ by ext; simp [mul_assoc]
+  Rep.mkIso _ _ (resInd₁AsFinsuppLinearEquiv H).toModuleIso fun g f ↦ by
+    ext; simp [Rep.res_obj_V, Rep.res_obj_ρ', mul_assoc]
 
 def resCoind₁AsPiIso (H : Subgroup G) :
     coind₁AsPi G A ↓ H.subtype ≅ coind₁AsPi H (.of R <| G ⧸ H → A) :=
-  Rep.mkIso _ _ (resCoind₁AsPiLinearEquiv H).toModuleIso fun g f ↦ by ext; simp [mul_assoc]
+  Rep.mkIso _ _ (resCoind₁AsPiLinearEquiv H).toModuleIso fun g f ↦ by
+    ext; simp [Rep.res_obj_V, Rep.res_obj_ρ',mul_assoc]
 
 instance trivialHomology_ind₁AsFinsupp : TrivialHomology (ind₁AsFinsupp G A) := by
   classical

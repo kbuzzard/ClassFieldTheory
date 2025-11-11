@@ -151,13 +151,13 @@ lemma ε_comp_ρ (g : G) : ModuleCat.ofHom ((leftRegular R G).ρ g) ≫ (ε R G)
   (ε R G).comm g
 
 lemma ε_comp_ρ_apply (g : G) (v : (leftRegular R G).V) :
-    ε R G ((leftRegular R G).ρ g v) = ε R G v := by
+    (ε R G).hom.hom ((leftRegular R G).ρ g v) = ε R G v := by
   change ((ModuleCat.ofHom _) ≫ (ε R G).hom).hom v = _
   rw [ε_comp_ρ]
   rfl
 
 @[simp]
-lemma ε_of (g : G) : ε R G (of g) = (1 : R) := by
+lemma ε_of (g : G) : (ε R G).hom.hom (of g) = (1 : R) := by
   have : of g = (leftRegular R G).ρ g (of 1) := by rw [ρ_apply_of, mul_one]
   rw [this, ε_comp_ρ_apply, ε_of_one]
 
@@ -172,12 +172,12 @@ instance :
       R (leftRegular R G) (trivial R G R) where
   map_smulₛₗ f := map_smul f.val
 
-lemma ε_eq_sum' (v : leftRegular R G) : ε R G v = ∑ x ∈ v.support, v x := by
+lemma ε_eq_sum' (v : leftRegular R G) : (ε R G).hom.hom v = ∑ x ∈ v.support, v x := by
   nth_rw 1 [eq_sum_smul_of v, map_sum]
   congr!
   rw [map_smul, ε_of, smul_eq_mul, mul_one]
 
-lemma ε_eq_sum (v : leftRegular R G) [Fintype G] : ε R G v = ∑ g : G, v g := by
+lemma ε_eq_sum (v : leftRegular R G) [Fintype G] : (ε R G).hom.hom v = ∑ g : G, v g := by
   refine ε_eq_sum' v|>.trans <| (finsum_eq_sum_of_support_subset v (by simp)).symm.trans ?_
   simp [finsum_eq_sum_of_fintype]
 
