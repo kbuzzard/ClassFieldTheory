@@ -246,16 +246,16 @@ Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
 
 -/
 lemma commSqₙ (n : ℕ) [DecidableEq G] (M : Rep R G) :
-    (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (up_shortExact M) n (n + 1) rfl =
-    δ (up_shortExact M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫ coresNatTrans R S (n + 1)).app M := by
+    (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (shortExact_upSES M) n (n + 1) rfl =
+    δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫ coresNatTrans R S (n + 1)).app M := by
   rw [NatTrans.comp_app, NatTrans.comp_app]
   match n with
   | 0 =>
-    exact comp_commSq _ _ _ _ _ _ _ (δ (up_shortExact_res M S.subtype) 0 1 rfl)
-      (rest_δ_naturality (up_shortExact M) S.subtype 0 1 rfl |>.symm) (commSq_cores₁ ..|>.symm)
+    exact comp_commSq _ _ _ _ _ _ _ (δ (shortExact_upSES_res M S.subtype) 0 1 rfl)
+      (rest_δ_naturality (shortExact_upSES M) S.subtype 0 1 rfl |>.symm) (commSq_cores₁ ..|>.symm)
   | n + 1 =>
-    refine comp_commSq _ _ _ _ _ _ _ (δ (up_shortExact_res M S.subtype) (n + 1) (n + 2) rfl)
-      (rest_δ_naturality (up_shortExact M) S.subtype (n + 1) (n + 2) rfl).symm ?_
+    refine comp_commSq _ _ _ _ _ _ _ (δ (shortExact_upSES_res M S.subtype) (n + 1) (n + 2) rfl)
+      (rest_δ_naturality (shortExact_upSES M) S.subtype (n + 1) (n + 2) rfl).symm ?_
     simp [-up_obj, coresNatTrans, cores_obj, δUpNatIso, δUpIso]
 
 lemma cores_res (n : ℕ) [DecidableEq G] :
@@ -265,11 +265,11 @@ lemma cores_res (n : ℕ) [DecidableEq G] :
   | zero => exact cores_res₀
   | succ n ih =>
     ext M : 2
-    haveI : Epi (δ (up_shortExact M) n (n + 1) rfl) :=
+    haveI : Epi (δ (shortExact_upSES M) n (n + 1) rfl) :=
     match n with
     | 0 => δ_up_zero_epi ..
     | m + 1 => δ_up_isIso M m|>.epi_of_iso _
-    rw [← cancel_epi (δ (up_shortExact M) n (n + 1) rfl),  ← commSqₙ n M, ih]
+    rw [← cancel_epi (δ (shortExact_upSES M) n (n + 1) rfl),  ← commSqₙ n M, ih]
     simp
 
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
