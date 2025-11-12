@@ -13,7 +13,9 @@ import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
-import ClassFieldTheory.Cohomology.IsFilterComplete
+import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
+import ClassFieldTheory.Cohomology.IsFilterComplete.Forget
+import ClassFieldTheory.Cohomology.IsFilterComplete.Submodule
 import ClassFieldTheory.Cohomology.LeftRegular
 import ClassFieldTheory.Cohomology.LocalInv
 import ClassFieldTheory.Cohomology.SerreApproximation
