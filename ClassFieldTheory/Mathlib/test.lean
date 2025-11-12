@@ -50,6 +50,7 @@ class IsCompositum (K L M N) [Field K] [Field L] [Field M] [Field N]
     (f.fieldRange : IntermediateField K N) = ⊤
 
 set_option synthInstance.maxHeartbeats 100000 in
+open Polynomial in
 theorem Compositum.isCompositum :
     IsCompositum K L M (Compositum K L M) (Compositum.algebraMap K L M) := by
   letI : Field (Compositum K L M) := inferInstance
@@ -70,8 +71,7 @@ theorem Compositum.isCompositum :
     rw [map_zero]
     exact @IntermediateField.zero_mem K (Compositum K L M) _ _ _ _
   | tmul l m =>
-    intro _
-    change (Ideal.Quotient.mk _ (l ⊗ₜ m) : Compositum K L M) ∈ _
+    rintro -
     -- The key is that l ⊗ₜ m = (l ⊗ₜ 1) * (1 ⊗ₜ m) in the tensor product
     have h_eq : l ⊗ₜ m = (l ⊗ₜ[K] (1:M)) * ((1:L) ⊗ₜ m) := by
       rw [Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one]
@@ -79,8 +79,17 @@ theorem Compositum.isCompositum :
     -- It suffices to show each factor is in the respective field range
     refine IntermediateField.mul_mem _ ?_ ?_
     · -- l ⊗ₜ 1 is in the L field range
-      change (Ideal.Quotient.mk _ (l ⊗ₜ 1) : Compositum K L M) ∈ _
-      sorry
+      rw [← IntermediateField.mem_toSubalgebra,
+        IntermediateField.sup_toSubalgebra_of_isAlgebraic]
+      · sorry
+
+
+      · left
+        refine Algebra.isAlgebraic_def.2 fun ⟨x, hx⟩ ↦ by
+          obtain ⟨l', hl'⟩ := hx
+          simp at hl'
+          -- refine IsAlgebraic.restrictScalars K (S := L)
+          sorry
     · -- 1 ⊗ₜ m is in the M field range via Compositum.algebraMap
       change (Ideal.Quotient.mk _ (1 ⊗ₜ m) : Compositum K L M) ∈ _
       sorry
@@ -88,3 +97,5 @@ theorem Compositum.isCompositum :
     simp at hx hy
     simp
     exact IntermediateField.add_mem _ hx hy
+
+#check IntermediateField.sup_toSubalgebra_of_isAlgebraic

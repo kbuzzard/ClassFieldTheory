@@ -72,9 +72,9 @@ lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R 
 
 variable [S.FiniteIndex]
 
-@[simps]
 /-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
 map on invariants. -/
+@[simps]
 def _root_.Rep.cores₀_obj (V : Rep R G) :
     -- Defining an R-linear map from V^S to V^G
     (V ↓ S.subtype).ρ.invariants →ₗ[R] V.ρ.invariants where
