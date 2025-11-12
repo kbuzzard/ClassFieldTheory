@@ -68,8 +68,6 @@ There is an element of `aug R G` whose image in the left regular representation 
 lemma exists_ofSubOfOne (g : G) : ∃ v : aug R G, (ι R G).hom.hom v =
     leftRegular.of g - leftRegular.of 1 := by
   apply exists_kernelι_eq
-  change (ε R G).hom.hom _ = 0 -- we should always use `.hom.hom` when dealing with actual maps
-                               --instead of abstract morphisms, I don't understand why do I need to change here
   rw [map_sub, ε_of, ε_of, sub_self]
 
 /--

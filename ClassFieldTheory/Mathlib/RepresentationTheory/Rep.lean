@@ -54,19 +54,19 @@ lemma sub_apply (f₁ f₂ : A ⟶ B) (v : A) : (f₁ - f₂) v = f₁ v - f₂ 
 lemma comp_apply {A B C : Rep R G} (f : A ⟶ B) (g : B ⟶ C) (v : A.V) : (f ≫ g) v = g (f v) := rfl
 
 lemma leftRegularHomEquiv_symm_comp (f : A ⟶ B) (a : A) :
-    (leftRegularHomEquiv A).symm a ≫ f = (leftRegularHomEquiv B).symm (f a) := by
+    (leftRegularHomEquiv A).symm a ≫ f = (leftRegularHomEquiv B).symm (f.hom.hom a) := by
   rw [LinearEquiv.eq_symm_apply, leftRegularHomEquiv_apply, hom_apply, Rep.comp_apply]
-  congr
+  congr!
   exact A.leftRegularHomEquiv.right_inv a
 
 /--
 If `f : M₁ ⟶ M₂` is a morphism in `Rep R G` and `f m = 0`, then
 there exists `k : kernel f` such that `kernel.ι _ k = m`.
 -/
-lemma exists_kernelι_eq {M₁ M₂ : Rep R G} (f : M₁ ⟶ M₂) (m : M₁) (hm : f m = 0) :
-    ∃ k : kernel f (C := Rep R G), kernel.ι f k = m := by
+lemma exists_kernelι_eq {M₁ M₂ : Rep R G} (f : M₁ ⟶ M₂) (m : M₁) (hm : f.hom.hom m = 0) :
+    ∃ k : kernel f (C := Rep R G), (kernel.ι f).hom.hom k = m := by
   let g : leftRegular R G ⟶ M₁ := (leftRegularHomEquiv M₁).symm m
-  have : g ≫ f = 0 := by rw [leftRegularHomEquiv_symm_comp, hm, map_zero]
+  have : g ≫ f = 0 := by rw [leftRegularHomEquiv_symm_comp]; ext1; rw [hm, map_zero]
   let lift : leftRegular R G ⟶ kernel f := kernel.lift f g this
   use leftRegularHomEquiv (kernel f) lift
   rw [leftRegularHomEquiv_apply]
