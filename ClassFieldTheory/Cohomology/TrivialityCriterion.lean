@@ -108,6 +108,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (@Unique.instSubsingleton _ ⟨⟨0⟩, fun x => (?_ : x = 0)⟩)
   -- `Hᵘ⁺¹(S, M)` is torsion
   have hx : Nat.card S • x = 0 := by
+    classical
     have : Fintype S := Fintype.ofFinite S
     apply torsion_of_finite_of_neZero
   -- it suffices to show that for every prime `p`, it has no `p^∞` torsion

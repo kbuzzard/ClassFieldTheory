@@ -298,7 +298,10 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep 
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
-    (hx' : x ≠ 0) : (groupCohomology.rest (P.toSubgroup.subtype) n).app M x ≠ 0 := sorry
+    (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
+  simp only [Functor.comp_obj, functor_obj, ne_eq]
+
+  sorry
 
 -- Want an analogous statement for Tate cohomology but I can't find restriction
 -- in Tate cohomology
