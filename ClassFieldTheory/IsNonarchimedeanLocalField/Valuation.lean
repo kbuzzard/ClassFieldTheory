@@ -24,11 +24,6 @@ section proofWanted
 lemma valuation_eq_one_iff (K : Type*) [Field K] [ValuativeRel K] (x : K) :
   (ValuativeRel.valuation K) x = 1 ↔ ∃ r : 𝒪[K]ˣ, x = r := sorry
 
--- Andrew Yang says he has a sorry-free proof of this:
-lemma valuation_ringEquiv {L : Type*} [Field L] [ValuativeRel L] [TopologicalSpace L]
-    [IsNonarchimedeanLocalField L] (e : L ≃+* L) (x : L) :
-    valuation L (e x) = valuation L x := sorry
-
 end proofWanted
 
 def ker_v (K : Type*) [CommRing K] [ValuativeRel K] : Additive (𝒪[K]ˣ) →+ Additive Kˣ :=
