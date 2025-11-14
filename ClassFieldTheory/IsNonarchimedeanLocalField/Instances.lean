@@ -51,7 +51,7 @@ instance (K : Type*) [CommRing K] [ValuativeRel K]
     [Algebra K L] [ValuativeExtension K L] :
     Algebra 𝒪[K] 𝒪[L] where
   algebraMap := {
-    toFun r := ⟨algebraMap K L r.1, sorry⟩
+    toFun r := ⟨algebraMap K L r.1, sorry⟩ -- there is probably a better approach to this instance
     map_add' := sorry
     map_one' := sorry
     map_mul' := sorry
@@ -71,8 +71,8 @@ instance (G : Type*) [Group G] (K : Type*) [CommRing K] [ValuativeRel K]
     (L : Type*) [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
     [Algebra K L] [ValuativeExtension K L] [MulSemiringAction G L] [IsGaloisGroup G K L] :
     IsGaloisGroup G 𝒪[K] 𝒪[L] where
-  faithful := sorry
+  faithful := sorry -- follows from `IsGaloisGroup G K L`
   commutes := inferInstance
-  isInvariant := sorry
+  isInvariant := sorry -- follows from `IsGaloisGroup G K L`
 
 end IsNonarchimedeanLocalField
