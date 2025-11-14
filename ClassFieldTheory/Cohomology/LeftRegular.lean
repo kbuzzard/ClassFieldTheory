@@ -167,7 +167,10 @@ lemma groupCoh_map_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H
   change (groupCohomology.H0trivial R H).hom.hom ((groupCohomology.map _ _ 0).hom _) = _
   rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, groupCohomology.map_comp_H0trivial,
     ModuleCat.hom_comp, LinearMap.comp_apply, leftRegular.zeroι_res_norm]
-  simp [Rep.res_obj_V, of, ε]
-  -- conv_lhs => enter [2, x]; tactic => with_reducible rw [ε_of] -- why doesn't ε_of fire?
+  simp only [res_obj_V, res_map_hom, map_sum]
+  -- conv_lhs => enter [2, x]; tactic => with_reducible rw [ε_of] -- works
+  -- simp [ε_of] -- doesn't work
+  -- simp_rw [ε_of] -- doesn't work
+  simp [ε, of] -- this shows that `ε_of` may be a bad `simp` lemma but I don't know why
 
 end Rep.leftRegular
