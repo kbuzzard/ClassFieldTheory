@@ -37,7 +37,6 @@ noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
     [Algebra K L] [ValuativeExtension K L]
     [IsGaloisGroup G K L] : ShortComplex (Rep ℤ G) where
   X₁ := Rep.ofAlgebraAutOnUnits' G 𝒪[K] 𝒪[L]
-        -- restrict along an isomorphism
   X₂ := Rep.ofAlgebraAutOnUnits' G K L
   X₃ := .trivial ℤ G ℤ
   f := {
@@ -49,9 +48,11 @@ noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
     comm g := by
       ext (u : Additive Lˣ)
       obtain ⟨u, rfl⟩ := Additive.ofMul.surjective u
+      -- should follow from `valuation_ringEquiv`
       sorry
   }
-  zero := sorry -- v(𝒪[L]ˣ) = 0
+  zero := sorry -- v(𝒪[L]ˣ) = 0, follows from (easy direction of) ker_v_ker in
+                -- IsNonarchimedeanLocalField.Valuation
 
 variable {G K L : Type} [Group G] [Finite G]
     [CommRing K] [ValuativeRel K]
@@ -60,4 +61,5 @@ variable {G K L : Type} [Group G] [Finite G]
     [Algebra K L] [ValuativeExtension K L]
     [IsGaloisGroup G K L]
 
+-- use v_surjective, ker_v_ker, ker_v_injective in IsNonarchimedeanLocalField.Valuation
 lemma valuationShortComplex.shortExact : (valuationShortComplex G K L).ShortExact := sorry

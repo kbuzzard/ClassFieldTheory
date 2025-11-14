@@ -50,8 +50,6 @@ open ValuativeRel
 
 open scoped WithZero
 
--- **TODO** Andrew also says: an IsGaloisGroup version of `Rep.ofAlgebraAutOnUnits`
-
 /--
 The ℤᵐ⁰-valued valuation on a nonarchimedean local field. Note that it sends
 a uniformiser to `.exp (-1)`.
