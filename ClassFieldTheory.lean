@@ -26,6 +26,10 @@ import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+import ClassFieldTheory.IsNonarchimedeanLocalField.HerbrandQuotient
+import ClassFieldTheory.IsNonarchimedeanLocalField.Instances
+import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
+import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
