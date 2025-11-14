@@ -5,6 +5,15 @@ import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import Mathlib.RepresentationTheory.Induced
 
+/-!
+TODO : Although we made `Rep.res` a `def` there is still places we need to unfold the definition
+-- inside `simp`. The goal usually involves `groupCohomology.map` and the reason being is that
+-- `groupCohomology.map` uses `Action.res` directly, so what we should do is
+-- 1. PR `Rep.res` into mathlib and change the defition of `groupCohomology.map` to use `Rep.res`
+-- 2. refactor `Rep` in mathlib to be a `def` instead of `abbrev` which (after test in CFT repo)
+-- seems to solve some of our problems.
+-/
+
 open
   Rep
   CategoryTheory
