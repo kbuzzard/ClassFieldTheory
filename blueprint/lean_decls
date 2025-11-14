@@ -55,7 +55,6 @@ Rep.trivialCohomology_coind₁'
 Rep.coind₁'_quotientToInvariants_trivialCohomology
 Representation.coind₁'_ι
 Rep.coind₁'_ι
-Rep.dimensionShift.instMonoAppCoind₁'_ι
 Rep.dimensionShift.up
 Rep.dimensionShift.upShortComplex
 Rep.dimensionShift.up_shortExact

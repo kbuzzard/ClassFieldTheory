@@ -987,11 +987,10 @@ This case is described again below.
 \begin{definition} \label{def:up}
 	\lean{Representation.coind₁'_ι,
 		Rep.coind₁'_ι,
-		Rep.dimensionShift.instMonoAppCoind₁'_ι,
 		Rep.dimensionShift.up,
 		Rep.dimensionShift.upShortComplex,
-		Rep.dimensionShift.up_shortExact,
-		Rep.dimensionShift.up_shortExact_res}
+		Rep.dimensionShift.shortExact_upSES,
+		Rep.dimensionShift.shortExact_upSES_res}
 	\uses{def:coind₁'}
 	\leanok
 	There is an injective morphism $M \to \coind_1'(M)$ which takes a vector $m \in M$
@@ -1201,7 +1200,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \end{proof}
 
 \begin{corollary}	\label{cor:Tate up down isos}
-	\lean{groupCohomology.instIsIso_up_shortExact,
+	\lean{groupCohomology.instIsIso_shortExact_upSES,
 		groupCohomology.instIsIso_shortExact_downSES,
 		groupCohomology.δUpIsoTate,
 		groupCohomology.δDownIsoTate
@@ -1657,7 +1656,7 @@ very precisely here:
 	$H^2(G,\Z) \to \Z / n \Z$ (i.e. the coboundaries are in the kernel).
 
 	$\sigma_G$ is a 2-cocycle since one can write $\sigma_G(\gen^i, \gen^j)$ as
-	$\tilde i + \tilde j - \tilde(i + j)$ for $\tilde : \Z/n\Z \to \Z$ a section
+	$\tilde i + \tilde j - (\widetilde{i + j})$ for $\tilde\cdot : \Z/n\Z \to \Z$ a section.
 
 	It follows from the definitions that all the terms in the sum defining the local invariant are
 	zero apart from the term $i=n-1$, so we have
@@ -2116,7 +2115,7 @@ a cocycle $\sigma'$ representing the fundamental class $\sigma$.
 	}
 	The reciprocity isomorphism for a fundamental class $\sigma \in H^2(G,M)$ is given by
 	\[
-		\reciprocity(gG' \otimes 1) \equiv  \sum_{x \in G} \sigma'(g,g) \bmod N_G M.
+		\reciprocity(gG' \otimes 1) \equiv  \sum_{x \in G} \sigma'(x,g) \bmod N_G M.
 	\]
 	This depends only on the cohomology class $\sigma$ rather than the cocycle $\sigma'$.
 \end{lemma}
