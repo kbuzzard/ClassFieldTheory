@@ -1,5 +1,6 @@
 import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
+import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
 # Helper lemmas about the left regular representation
@@ -38,9 +39,9 @@ representation `R[G]`, the sum being over `h : H`.
 abbrev res_norm' [Fintype G] {H : Type} [Group H] [Fintype H] (g : G) (φ : H →* G) :
     (leftRegular R G ↓ φ).ρ.invariants :=
   ⟨∑ h : H, leftRegular.of (φ h * g), fun h ↦ by
-    simpa [leftRegular.of] using show ∑ x : H, leftRegular.of _ = _ by
-      simpa [← mul_assoc, ← leftRegular.of_def] using Finset.sum_equiv (Equiv.mulLeft h) (by grind)
-        (by simp)⟩
+    simpa [leftRegular.of] using by
+      simpa [← leftRegular.of_def] using Finset.sum_equiv (Equiv.mulLeft h) (by grind)
+        (by simp [Rep.res_obj_V, Rep.res_obj_ρ', mul_assoc, of])⟩
 
 variable {G} in
 /--
@@ -87,11 +88,11 @@ lemma res_span_norm' [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G
     (inj : φ.toFun.Injective) : Submodule.span R {res_norm' R g φ | g : G} = ⊤ := by
   classical
   ext x
-  simp only [Action.res_obj_V, res_obj_ρ, of_ρ, Submodule.mem_top, iff_true]
+  simp only [res_obj_V, res_obj_ρ', of_ρ, Submodule.mem_top, iff_true]
   choose σ hσ using Quotient.mk_surjective (s := QuotientGroup.rightRel φ.range)
   have : x = ∑ i, (show G →₀ _ from x.1) (σ i) • res_norm' R (σ i) φ := by
     ext;
-    simp only [Action.res_obj_V, res_obj_ρ, of_ρ, AddSubmonoidClass.coe_finset_sum,
+    simp only [res_obj_V, res_obj_ρ', of_ρ, AddSubmonoidClass.coe_finset_sum,
       Submodule.coe_smul_of_tower, Finsupp.ext_iff,
       coe_finset_sum, coe_smul, Finset.sum_apply, Pi.smul_apply, leftRegular.of_apply (R := R),
       Finset.sum_boole, smul_eq_mul]
@@ -101,10 +102,11 @@ lemma res_span_norm' [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G
         (show G →₀ R from x.1) j := fun hij ↦ by
         obtain ⟨x, hx⟩ := x
         obtain ⟨k, hk⟩ := by simpa [QuotientGroup.rightRel_apply] using hij
-        have := by simpa [Representation.ofMulAction_def, Finsupp.ext_iff] using hx k
-        simpa [mapDomain, Finsupp.sum_fintype, Finsupp.single_apply, hk, mul_assoc,
-          inv_mul_eq_one] using this j
-      simp only [Action.res_obj_V, res_obj_ρ, of_ρ] at this
+        have := by simpa [Rep.res_obj_V, Representation.ofMulAction_def,
+          Finsupp.ext_iff, Rep.res_obj_ρ'] using hx k
+        simpa [mapDomain, Finsupp.sum_fintype, Finsupp.single_apply, hk,
+            mul_assoc, inv_mul_eq_one] using this j
+      simp only [res_obj_V, res_obj_ρ', of_ρ] at this
       rw [this a (σ ⟦a⟧) (by rw [← Quotient.eq, hσ])]
       suffices @Finset.card H {x | φ x * σ ⟦a⟧ = a} = 1 by simp [this]
       rw [Finset.card_eq_one]
@@ -165,6 +167,10 @@ lemma groupCoh_map_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H
   change (groupCohomology.H0trivial R H).hom.hom ((groupCohomology.map _ _ 0).hom _) = _
   rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, groupCohomology.map_comp_H0trivial,
     ModuleCat.hom_comp, LinearMap.comp_apply, leftRegular.zeroι_res_norm]
-  simp [ε, leftRegular.of]
+  simp only [res_obj_V, res_map_hom, map_sum]
+  -- conv_lhs => enter [2, x]; tactic => with_reducible rw [ε_of] -- works
+  -- simp [ε_of] -- doesn't work
+  -- simp_rw [ε_of] -- doesn't work
+  simp [ε, of] -- this shows that `ε_of` may be a bad `simp` lemma but I don't know why
 
 end Rep.leftRegular

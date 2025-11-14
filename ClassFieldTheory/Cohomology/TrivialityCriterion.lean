@@ -55,7 +55,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
         (QuotientGroup.mk' (K.subgroupOf H)).ker.subtype) (i + 1)) := by
       refine fun i ↦ .of_iso (h3 (n := i)) <| groupCohomology.mapIso ((MulEquiv.subgroupCongr <|
         QuotientGroup.ker_mk' _).trans <| Subgroup.subgroupOfEquivOfLe h12)
-        (by exact Iso.refl _) (by simp) _
+        (by exact Iso.refl _) (by simp [res]) _
     have : ∀ n, IsIso ((infl (QuotientGroup.mk'_surjective
         (K.subgroupOf H)) (n + 1)).app (M ↓ H.subtype)) := by
       intro n
@@ -108,11 +108,9 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (@Unique.instSubsingleton _ ⟨⟨0⟩, fun x => (?_ : x = 0)⟩)
   -- `Hᵘ⁺¹(S, M)` is torsion
   have hx : Nat.card S • x = 0 := by
+    classical
     have : Fintype S := Fintype.ofFinite S
-    apply ((TateCohomology.isoGroupCohomology (u + 1)).app
-      (M ↓ S.subtype)).toLinearEquiv.symm.injective
-    simp only [functor_obj, map_nsmul, map_zero]
-    exact tateCohomology_torsion (M ↓ S.subtype) _
+    apply torsion_of_finite_of_neZero
   -- it suffices to show that for every prime `p`, it has no `p^∞` torsion
   have hk : 0 < Nat.card S := Nat.card_pos
   generalize Nat.card S = k at hx hk

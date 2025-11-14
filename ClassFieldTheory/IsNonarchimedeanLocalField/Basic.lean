@@ -546,7 +546,7 @@ theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] 
     rw [Valued.norm_def, Valued.norm_def, NNReal.coe_le_coe,
       (Valuation.RankOne.strictMono Valued.v).le_iff_le]
     rfl
-  exact ⟨inferInstance, inferInstance, isNonarchimedeanLocalField_of_valuativeExtension K L⟩
+  exact ⟨ofValuation v, this, isNonarchimedeanLocalField_of_valuativeExtension K L⟩
 
 include K in
 theorem ext_extension (v₁ v₂ : ValuativeRel L) (t₁ t₂ : TopologicalSpace L)

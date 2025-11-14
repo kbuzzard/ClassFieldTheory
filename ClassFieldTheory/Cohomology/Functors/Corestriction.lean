@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Aaron Liu
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
+import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
@@ -40,19 +41,24 @@ open
   CategoryTheory
   Limits
 
-variable {R : Type} [CommRing R]
-variable {G : Type} [Group G] {S : Subgroup G}
+variable {R : Type} [CommRing R] -- R a comm ring
+variable {G : Type} [Group G] {S : Subgroup G} -- G a group, S a subgroup
 
 attribute [local instance] Subgroup.fintypeQuotientOfFiniteIndex
 
 namespace groupCohomology
 
+-- let V be an R[G]-module
 lemma cores_aux₁ {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representation R G V)
+    -- if v ∈ V is S-invariant
     (v : V) (hv : ∀ s ∈ S, (ρ s) v = v) (g₁ g₂ : G)
+    -- then for g₁ and g₂ in G such that g₁S=g₂S, then g₁•v=g₂•v
     (h : (QuotientGroup.mk g₁ : G ⧸ S) = QuotientGroup.mk g₂) : ρ g₁ v = ρ g₂ v := by
   rw [show g₂ = g₁ * (g₁⁻¹ * g₂) by simp, map_mul, Module.End.mul_apply,
   hv _ (QuotientGroup.eq.1 h)]
 
+-- Cor: if X is any finite set and s₁, s₂ : X → G are such that X -> G -> G/S is a bijection
+-- for both of them, then ∑_g s₁(g)v = ∑_g s₂(g)v for v in M^S
 lemma cores_aux₂ {X : Type} {V : Type} [Fintype X] [AddCommGroup V] [Module R V] {s₁ : X → G}
     {s₂ : X → G} (ρ : Representation R G V) (v : V) (hv : ∀ s ∈ S, (ρ s) v = v)
     (hs₁ : Function.Bijective (fun x ↦ QuotientGroup.mk (s₁ x) : X → G ⧸ S))
@@ -68,21 +74,24 @@ variable [S.FiniteIndex]
 
 /-- The H^0 corestriction map for S ⊆ G a finite index subgroup, as an `R`-linear
 map on invariants. -/
-def _root_.Representation.cores₀_obj {V : Type} [AddCommGroup V] [Module R V] (ρ : Representation R G V) :
-    Representation.invariants (MonoidHom.comp ρ S.subtype) →ₗ[R] ρ.invariants where
-  toFun x := ⟨∑ i : G ⧸ S, ρ i.out x.1, fun g ↦ by
+@[simps]
+def _root_.Rep.cores₀_obj (V : Rep R G) :
+    -- Defining an R-linear map from V^S to V^G
+    (V ↓ S.subtype).ρ.invariants →ₗ[R] V.ρ.invariants where
+  toFun x := ⟨∑ i : G ⧸ S, V.ρ i.out x.1, fun g ↦ by
     simp only [map_sum, ← LinearMap.comp_apply, ← Module.End.mul_eq_comp, ← map_mul]
     letI : Fintype (G ⧸ S) := Subgroup.fintypeQuotientOfFiniteIndex
-    refine (cores_aux₂ ρ x.1 (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_).symm
+    refine (cores_aux₂ V.ρ x.1 (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_).symm
     simp_rw [QuotientGroup.mk_mul', QuotientGroup.out_eq', MulAction.bijective]⟩
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' := by simp [Finset.smul_sum]
 
 /-- The corestriction functor on H^0 for S ⊆ G a finite index subgroup, as a
 functor `H^0(S,-) → H^0(G,-)`. -/
+@[simps]
 def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
   app M :=
-    (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (Representation.cores₀_obj M.ρ)) ≫ (H0Iso M).inv
+    (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (Rep.cores₀_obj M)) ≫ (H0Iso M).inv
   naturality := by
     intro X Y f
     simp_rw [← Category.assoc]
@@ -92,7 +101,7 @@ def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
       functor_map, map_id_comp_H0Iso_hom_assoc, (H0Iso (X ↓ S.subtype)).cancel_iso_hom_left]
     ext x
     have comm := congr(∑ i : G ⧸ S, ModuleCat.Hom.hom $(f.comm i.out) x.val)
-    simpa [Representation.cores₀_obj] using comm.symm
+    simpa [Rep.cores₀_obj] using comm.symm
 
 /-- The morphism `H¹(S, M↓S) ⟶ H¹(G, M)`. -/
 def cores₁_obj [DecidableEq G] (M : Rep R G) :
@@ -214,14 +223,70 @@ def coresNatTrans (n : ℕ) [DecidableEq G] : Rep.res S.subtype ⋙ functor R S 
     | 0 => cores₀.naturality f
     | n + 1 => cores_succ_naturality n X Y f
 
-lemma cores_res (M : Rep R G) (n : ℕ) [DecidableEq G] :
-    ((groupCohomology.resNatTrans.{0} R (S.subtype) n) ≫
-      (groupCohomology.coresNatTrans R S n) : functor R G n ⟶ functor R G n) =
-      S.index • (.id _) := sorry
+lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group H] {A : Rep k H} {B : Rep k G}
+    (f : G →* H) (φ : A ↓ f ⟶ B) (x : groupCohomology A 0) :
+    (H0Iso B).hom.hom ((map f φ 0).hom x) =
+    φ.hom.hom ((H0Iso A).hom.hom x : A) :=
+  map_H0Iso_hom_f_apply ..
+
+-- `simp` does a lot of work here, and it was quite some effort getting
+-- it to do so, so I hope this proof never breaks...
+lemma cores_res₀ : rest (R := R) (S.subtype) 0 ≫ cores₀ = S.index • (.id _) := by
+  ext M v
+  apply (ConcreteCategory.injective_of_mono_of_preservesPullback (H0Iso M).hom)
+  ext
+  simp [rest, Subgroup.index, groupCohomology.map_H0Iso_hom_f_apply' S.subtype,
+    (M.ρ.mem_invariants ((H0Iso M).hom.hom v)).1 (Subtype.prop _)]
+
+/-!
+            rest                       cores
+Hⁿ(G, up M) ---> Hⁿ(S, upM ↓ S.subtype) ---> Hⁿ(G, up M)
+    |                                         |
+    | δ                                       | δ
+    v       rest                       cores  v
+Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
+
+-/
+lemma commSqₙ (n : ℕ) [DecidableEq G] (M : Rep R G) :
+    (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (shortExact_upSES M) n (n + 1) rfl =
+    δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫ coresNatTrans R S (n + 1)).app M := by
+  rw [NatTrans.comp_app, NatTrans.comp_app]
+  match n with
+  | 0 =>
+    exact comp_commSq _ _ _ _ _ _ _ (δ (shortExact_upSES_res M S.subtype) 0 1 rfl)
+      (rest_δ_naturality (shortExact_upSES M) S.subtype 0 1 rfl |>.symm) (commSq_cores₁ ..|>.symm)
+  | n + 1 =>
+    refine comp_commSq _ _ _ _ _ _ _ (δ (shortExact_upSES_res M S.subtype) (n + 1) (n + 2) rfl)
+      (rest_δ_naturality (shortExact_upSES M) S.subtype (n + 1) (n + 2) rfl).symm ?_
+    simp [-up_obj, coresNatTrans, cores_obj, δUpNatIso, δUpIso]
+
+lemma cores_res (n : ℕ) [DecidableEq G] :
+    (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =
+      S.index • (.id _) := by
+  induction n with
+  | zero => exact cores_res₀
+  | succ n ih =>
+    ext M : 2
+    haveI : Epi (δ (shortExact_upSES M) n (n + 1) rfl) :=
+    match n with
+    | 0 => δ_up_zero_epi ..
+    | m + 1 => δ_up_isIso M m|>.epi_of_iso _
+    rw [← cancel_epi (δ (shortExact_upSES M) n (n + 1) rfl),  ← commSqₙ n M, ih]
+    simp
 
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
-lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
-    Nat.card G • x = 0 := sorry
+lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep R G)
+    (x : groupCohomology M n) : Nat.card G • x = 0 := by
+  if hG : Infinite G then simp else
+  simp only [not_infinite_iff_finite] at hG
+  have := by simpa using (LinearMap.ext_iff.1 <| ModuleCat.hom_ext_iff.1
+    congr(NatTrans.app $(cores_res (R := R) n (G := G) (S := ⊥)) M)) x
+  simp [← this, rest, IsZero.eq_zero_of_tgt isZero_of_trivialCohomology <|
+    map _ (𝟙 (M ↓ (⊥ : Subgroup G).subtype)) n]
+
+-- /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
+-- lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohomology n).obj M) :
+--     Nat.card G • x = 0 := sorry
 
 -- Should the above really be a statement about a functor?
 -- Something like this?
@@ -235,7 +300,10 @@ lemma tateCohomology_torsion {n : ℤ} [Fintype G] (M : Rep R G) (x : (tateCohom
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
-    (hx' : x ≠ 0) : (groupCohomology.rest (P.toSubgroup.subtype) n).app M x ≠ 0 := sorry
+    (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
+  simp only [Functor.comp_obj, functor_obj, ne_eq]
+
+  sorry
 
 -- Want an analogous statement for Tate cohomology but I can't find restriction
 -- in Tate cohomology
