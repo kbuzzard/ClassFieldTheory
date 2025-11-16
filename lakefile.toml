@@ -1,4 +1,5 @@
 name = "ClassFieldTheory"
+keywords = ["math", "algebra", "class-field-theory"]
 defaultTargets = ["ClassFieldTheory"]
 
 [leanOptions]
