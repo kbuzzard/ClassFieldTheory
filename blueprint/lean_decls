@@ -57,8 +57,8 @@ Representation.coind₁'_ι
 Rep.coind₁'_ι
 Rep.dimensionShift.up
 Rep.dimensionShift.upShortComplex
-Rep.dimensionShift.up_shortExact
-Rep.dimensionShift.up_shortExact_res
+Rep.dimensionShift.shortExact_upSES
+Rep.dimensionShift.shortExact_upSES_res
 Rep.dimensionShift.δ_up_zero_epi
 Rep.dimensionShift.δ_up_isIso
 Rep.dimensionShift.δUpIso
@@ -83,7 +83,7 @@ Rep.dimensionShift.shortExact_downSES_res
 Rep.trivialTateCohomology_coind₁
 Rep.trivialTateCohomology_coind₁'
 Rep.trivialTateCohomology_ind₁'
-groupCohomology.instIsIso_up_shortExact
+groupCohomology.instIsIso_shortExact_upSES
 groupCohomology.instIsIso_shortExact_downSES
 groupCohomology.δUpIsoTate
 groupCohomology.δDownIsoTate
