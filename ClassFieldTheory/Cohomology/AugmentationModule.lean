@@ -57,15 +57,16 @@ abbrev ι : aug R G ⟶ leftRegular R G := kernel.ι (ε R G)
 
 lemma ε_comp_ι : ι R G ≫ ε R G = 0 := kernel.condition (ε R G)
 
-lemma ε_apply_ι (v : aug R G) : ε R G (ι R G v) = 0 := congr($(ε_comp_ι R G) v)
+lemma ε_apply_ι (v : aug R G) : (ε R G).hom.hom (ι R G|>.hom v) = 0 := congr($(ε_comp_ι R G) v)
 
-lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, (ι R G v) g = 0 := by
+lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, (ι R G|>.hom.hom v) g = 0 := by
   rw [← ε_apply_ι R G v, ε_eq_sum]
 
 /--
 There is an element of `aug R G` whose image in the left regular representation is `of g - of 1`.
 -/
-lemma exists_ofSubOfOne (g : G) : ∃ v : aug R G, ι R G v = leftRegular.of g - leftRegular.of 1 := by
+lemma exists_ofSubOfOne (g : G) : ∃ v : aug R G, (ι R G).hom.hom v =
+    leftRegular.of g - leftRegular.of 1 := by
   apply exists_kernelι_eq
   rw [map_sub, ε_of, ε_of, sub_self]
 
