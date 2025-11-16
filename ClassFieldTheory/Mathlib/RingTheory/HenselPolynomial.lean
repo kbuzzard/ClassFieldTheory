@@ -19,7 +19,7 @@ We introduce an auxiliary object `MonicCoprimeFactors f` which is the pairs `(p,
 `p * q = f` and `p` and `q` are monic and coprime.
 
 * We show that the map on such factorisations induced by `φ : R →+* S` is bijective whenever
-  `φ` is surjective with kernel being square-zero. (Equivalently, `R →+* R ⧸ I` for a square-zero
+  `φ` is surjective with square-zero kernel. (Equivalently, `R →+* R ⧸ I` for a square-zero
   ideal `I`.)
 * This then implies the same with just nilpotent kernel.
 * Then if `R ≃ lim (R⧸I^n)` then this allows you to lift factorisations in `R⧸I` to factorisations
@@ -83,6 +83,20 @@ theorem Polynomial.Monic.degree_mul' {R : Type*} [Semiring R] {p q : Polynomial 
     (p * q).degree = p.degree + q.degree := by
   rw [hp.degree_mul_comm, hp.degree_mul, add_comm]
 
+section
+variable {R S : Type*} [Ring R] [Semiring S] {f : R →+* S} (hf : Function.Surjective ⇑f)
+
+theorem RingHom.quotientKerEquivOfSurjective_comp :
+    (RingHom.quotientKerEquivOfSurjective hf : _ →+* _).comp (Ideal.Quotient.mk (ker f)) = f := rfl
+
+theorem RingHom.quotientKerEquivOfSurjective_symm_comp :
+    ((RingHom.quotientKerEquivOfSurjective hf).symm : _ →+* _).comp f =
+    Ideal.Quotient.mk (ker f) := by
+  conv => enter [1,2]; rw [← quotientKerEquivOfSurjective_comp hf]
+  rw [← comp_assoc, RingEquiv.symm_comp, id_comp]
+
+end
+
 end Lemmas
 
 
@@ -124,12 +138,13 @@ theorem monic (fac : MonicCoprimeFactors f) : f.Monic :=
   toFun fac := ⟨fac.1, fac.2, fac.3, fac.4, fac.5, h ▸ fac.6⟩
   invFun fac := ⟨fac.1, fac.2, fac.3, fac.4, fac.5, h ▸ fac.6⟩
 
-theorem map_id : map (.id R) (f := f) = congr (by simp) := by
-  ext <;> simp
+theorem map_id : map (.id R) (f := f) = congr (by simp) := by ext <;> simp
 
 theorem map_comp (φ : S →+* T) (ψ : R →+* S) :
-    map (φ.comp ψ) (f := f) = congr (by simp [map_map]) ∘ map φ ∘ map ψ := by
-  ext <;> simp
+    map (φ.comp ψ) (f := f) = congr (by simp [map_map]) ∘ map φ ∘ map ψ := by ext <;> simp
+
+theorem map_comp_map (φ : S →+* T) (ψ : R →+* S) :
+    map φ ∘ map ψ = congr (by simp [map_map]) ∘ map (φ.comp ψ) (f := f) := by ext <;> simp
 
 /-- If `e : R ≃+* S` then `MonicCoprimeFactors f ≃ MonicCoprimeFactors (e f)`. -/
 @[simps!] noncomputable def mapEquiv (e : R ≃+* S) :
@@ -138,6 +153,11 @@ theorem map_comp (φ : S →+* T) (ψ : R →+* S) :
   invFun := congr (by simp [map_map]) ∘ map (e.symm : S →+* R)
   left_inv fac := by ext <;> simp
   right_inv fac := by ext <;> simp
+
+@[simp] lemma coe_mapEquiv (e : R ≃+* S) : ⇑(mapEquiv e (f := f)) = map (e : R →+* S) := rfl
+
+@[simp] lemma coe_mapEquiv_symm (e : R ≃+* S) :
+    ⇑(mapEquiv e (f := f)).symm = congr (by simp [map_map]) ∘ map (e.symm : S →+* R) := rfl
 
 noncomputable instance [Subsingleton R] : Unique (MonicCoprimeFactors f) where
   default := ⟨1, 1, by simp, by simp, isCoprime_one_left, by subsingleton⟩
@@ -286,6 +306,48 @@ theorem map_surjective_of_sqZero (hmf : f.Monic) :
 theorem map_bijective_of_sqZero (hmf : f.Monic) :
     (map (Ideal.Quotient.mk I) (f := f)).Bijective :=
   ⟨map_injective_of_sqZero f I hi, map_surjective_of_sqZero f I hi hmf⟩
+
+omit hi
+
+variable (φ : R →+* S) (hφ : (⇑φ).Surjective)
+
+include hφ in
+/-- `R →+* S` surjective with square-zero kernel induces a bijection between factorisations. -/
+theorem map_bijective_of_sqZero_ker (hφ2 : RingHom.ker φ ^ 2 = ⊥) (hmf : f.Monic) :
+    (map φ (f := f)).Bijective :=
+  (Equiv.comp_bijective _ <| mapEquiv (RingHom.quotientKerEquivOfSurjective hφ).symm).mp <| by
+    rw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
+    RingHom.quotientKerEquivOfSurjective_symm_comp]
+    exact map_bijective_of_sqZero f (RingHom.ker φ) hφ2 hmf
+
+omit hφ
+
+/-- Monic coprime factorisations in `R` bijects onto those in `R ⧸ I` if `I ^ n = ⊥`. -/
+theorem map_bijective_of_isNilpotent (hi : IsNilpotent I) (hmf : f.Monic) :
+    (map (Ideal.Quotient.mk I) (f := f)).Bijective := by
+  obtain ⟨n, hn⟩ := hi
+  rw [zero_eq_bot, eq_bot_iff] at hn
+  induction n using Nat.strongRec generalizing I with
+  | ind n ih =>
+    obtain hn1 | h1n := le_or_gt n 1
+    · replace hn := (pow_le_pow_right hn1).trans hn
+      rw [pow_one, le_bot_iff] at hn; subst hn
+      exact (mapEquiv <| (RingEquiv.quotientBot _).symm).bijective
+    change (map ((factor (Ideal.pow_le_self two_ne_zero)).comp
+      (Ideal.Quotient.mk (I ^ 2))) (f := f)).Bijective
+    rw [map_comp, Equiv.comp_bijective]
+    exact .comp (map_bijective_of_sqZero_ker _ _ (factor_surjective _)
+      (by rw [factor_ker, ← Ideal.map_pow, map_quotient_self]) (hmf.map _))
+      (ih (n - 1) (by omega) _ <| by rw [← pow_mul]; exact (pow_le_pow_right (by omega)).trans hn)
+
+include hφ in
+/-- `R →+* S` surjective with nilpotent kernel induces a bijection between factorisations. -/
+theorem map_bijective_of_isNilpotent_ker (hφ0 : IsNilpotent (RingHom.ker φ)) (hmf : f.Monic) :
+    (map φ (f := f)).Bijective :=
+  (Equiv.comp_bijective _ <| mapEquiv (RingHom.quotientKerEquivOfSurjective hφ).symm).mp <| by
+    rw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
+    RingHom.quotientKerEquivOfSurjective_symm_comp]
+    exact map_bijective_of_isNilpotent f (RingHom.ker φ) hφ0 hmf
 
 end MonicCoprimeFactors
 
