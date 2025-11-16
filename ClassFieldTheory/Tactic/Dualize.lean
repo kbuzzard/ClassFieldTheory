@@ -1,5 +1,6 @@
 import Lean
 import Mathlib.Tactic.ToAdditive.Frontend
+import Mathlib.Tactic.ToAdditive.GuessName
 import Lean.Meta.Tactic.TryThis
 
 open Lean Elab Meta Tactic Command
@@ -34,15 +35,16 @@ specifically `Mathlib/Tactic/ToAdditive/Frontend.lean`.
 
 -/
 
-open ToAdditive in
+open Mathlib.Tactic.GuessName in
 /--
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
 def applyNameDict (nameDict : String → List String) : List String → List String
-  | x :: s => (capitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict nameDict s
+  | x :: s => (decapitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict nameDict s
   | [] => []
 
+open Mathlib.Tactic.GuessName in
 /--
 Autogenerate additive name.
 This runs in several steps:

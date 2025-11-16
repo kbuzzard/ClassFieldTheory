@@ -102,6 +102,6 @@ variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuat
   exact lt_of_lt_of_le (ValuativeExtension.algebraMap_lt.mpr hx) ha'
 
 instance : ContinuousSMul K L :=
-  letI := IsTopologicalAddGroup.toUniformSpace L
+  letI := IsTopologicalAddGroup.rightUniformSpace L
   haveI := isUniformAddGroup_of_addCommGroup (G := L)
   continuousSMul_of_algebraMap K L (continuous_algebraMap_of_density K L)
