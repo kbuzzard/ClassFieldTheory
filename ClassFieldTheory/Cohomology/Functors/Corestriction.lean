@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Aaron Liu
+Authors: Kevin Buzzard, Aaron Liu, Yunzhou Xie
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
@@ -297,11 +297,23 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep 
 -- lemma tateCohomology_torsion' {n : ℤ} [Finite G] :
 --     (Nat.card G) • (CategoryTheory.NatTrans.id (tateCohomology (R := R) (G := G) n)) = 0 := sorry
 
+
+
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
     (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
+  classical
   simp only [Functor.comp_obj, functor_obj, ne_eq]
+  have comm := commSqₙ (S := ⊥) n M
+  have : (M ↓ (⊥ : Subgroup G).subtype).TrivialCohomology := by
+    exact TrivialTateCohomology.to_trivialCohomology
+  haveI : IsZero (groupCohomology (M ↓ (⊥ : Subgroup G).subtype) (n + 1)) :=
+    isZero_of_trivialCohomology
+  have eqz : map (⊥ : Subgroup G).subtype (𝟙 (M ↓ (⊥ : Subgroup G).subtype)) (n + 1) = 0 :=
+    CategoryTheory.Limits.IsZero.eq_zero_of_tgt this _
+  conv at comm => enter [2]; simp [rest_app, eqz]
+
 
   sorry
 
