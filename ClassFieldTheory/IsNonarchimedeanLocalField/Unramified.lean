@@ -59,8 +59,17 @@ instance : IsGalois K (UnramifiedExtension K n) := by
     rw [← isGalois_iff_isGalois_top, ← this]
     exact isGalois_bot
   refine .of_separable_splitting_field (p := X ^ (Nat.card 𝓀[K] ^ (n + 1) - 1) - 1) ?_
-  rw [X_pow_sub_one_separable_iff]
-  sorry
+  rw [X_pow_sub_one_separable_iff, ← map_natCast (algebraMap 𝒪[K] K),
+    ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
+  refine ne_zero_of_map (f := algebraMap 𝒪[K] 𝓀[K]) ?_
+  have hp := Fact.mk <| prime_ringChar K
+  have := ZMod.algebra
+  rw [map_natCast, ne_eq, CharP.cast_eq_zero_iff,
+    Module.natCard_eq_pow_finrank (K := ZMod (ringChar 𝓀[K])), Nat.card_zmod, ← pow_mul,
+    Nat.dvd_sub_iff_right, Nat.dvd_one]
+  · exact hp.out.ne_one
+  · exact one_le_pow_of_one_le' hp.out.one_le _
+  · exact dvd_pow_self _ <| mul_ne_zero Module.finrank_pos.ne' n.succ_ne_zero
 
 variable {n} in
 instance (hn : n ≠ 0) :
