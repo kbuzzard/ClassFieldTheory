@@ -2,9 +2,9 @@ import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
-import ClassFieldTheory.Mathlib.ModuleCatExact
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
@@ -338,7 +338,7 @@ lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
   -- A sequence of `R`-modules is exact if `LinearMap.range _ = LinearMap.ker _`
   -- In fact, `range ≤ ker` in complexes, so we just need `ker ≤ range`.
-  apply ShortComplex.Exact.moduleCat_of_ker_le_range
+  refine .moduleCat_of_ker_le_range _ ?_
   simp [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra,
     toModuleMonoidAlgebraMap, ModuleCat.hom_ofHom]
   -- Now, we get `w` with `w ∈ ker`.

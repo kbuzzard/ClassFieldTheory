@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
@@ -48,7 +47,7 @@ theorem hasBasis_nhds : (nhds (0 : K)).HasBasis (fun _n : ℕ ↦ True)
     _ (by aesop) <| by
   refine (valueGroupWithZeroIsoInt K).symm.surjective.forall.mpr fun x hx ↦ ?_
   rw [map_ne_zero] at hx
-  obtain ⟨x, rfl⟩ := WithZero.exp_surj' hx
+  lift x to ℤ using hx
   obtain ⟨n, rfl | rfl⟩ := x.eq_nat_or_neg
   · exact ⟨0, by simp⟩
   · aesop

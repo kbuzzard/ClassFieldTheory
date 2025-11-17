@@ -90,8 +90,8 @@ lemma herbrandQuotient_ne_zero_of_shortExact₃
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 5).X₁ ∧
       Finite ((herbrandSixTermSequence hS).sc 2).X₁ := by simpa using h₂
-  exact ⟨(herbrandSixTermSequence_exactAt hS 5).finite_moduleCat,
-    (herbrandSixTermSequence_exactAt hS 2).finite_moduleCat⟩
+  exact ⟨(herbrandSixTermSequence_exactAt hS 5).moduleCat_finite,
+    (herbrandSixTermSequence_exactAt hS 2).moduleCat_finite⟩
 
 lemma herbrandQuotient_ne_zero_of_shortExact₂
     (h₁ : S.X₁.herbrandQuotient ≠ 0) (h₃ : S.X₃.herbrandQuotient ≠ 0) :
@@ -103,8 +103,8 @@ lemma herbrandQuotient_ne_zero_of_shortExact₂
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 4).X₃ ∧
       Finite ((herbrandSixTermSequence hS).sc 1).X₃ := by simpa using h₃
-  exact ⟨(herbrandSixTermSequence_exactAt hS 4).finite_moduleCat,
-    (herbrandSixTermSequence_exactAt hS 1).finite_moduleCat⟩
+  exact ⟨(herbrandSixTermSequence_exactAt hS 4).moduleCat_finite,
+    (herbrandSixTermSequence_exactAt hS 1).moduleCat_finite⟩
 
 lemma herbrandQuotient_ne_zero_of_shortExact₁
     (h₂ : S.X₂.herbrandQuotient ≠ 0) (h₃ : S.X₃.herbrandQuotient ≠ 0) :
@@ -116,8 +116,8 @@ lemma herbrandQuotient_ne_zero_of_shortExact₁
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 0).X₁ ∧
       Finite ((herbrandSixTermSequence hS).sc 3).X₁ := by simpa using h₃
-  exact ⟨(herbrandSixTermSequence_exactAt hS 3).finite_moduleCat,
-    (herbrandSixTermSequence_exactAt hS 0).finite_moduleCat⟩
+  exact ⟨(herbrandSixTermSequence_exactAt hS 3).moduleCat_finite,
+    (herbrandSixTermSequence_exactAt hS 0).moduleCat_finite⟩
 
 lemma herbrandQuotient_eq_of_shortExact
     (h₁ : S.X₁.herbrandQuotient ≠ 0) (h₂ : S.X₂.herbrandQuotient ≠ 0)

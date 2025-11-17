@@ -1,6 +1,5 @@
 import Lean
-import Mathlib.Tactic.ToAdditive.Frontend
-import Mathlib.Tactic.ToAdditive.GuessName
+import Mathlib.Tactic.Translate.GuessName
 import Lean.Meta.Tactic.TryThis
 
 open Lean Elab Meta Tactic Command

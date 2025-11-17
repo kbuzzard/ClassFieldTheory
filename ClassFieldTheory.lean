@@ -36,11 +36,9 @@ import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.WithZero
 import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Ab
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
@@ -64,7 +62,6 @@ import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.LinearAlgebra.Isomorphisms
 import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
-import ClassFieldTheory.Mathlib.ModuleCatExact
 import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
 import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
