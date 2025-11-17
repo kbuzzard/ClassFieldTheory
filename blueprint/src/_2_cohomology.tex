@@ -987,11 +987,10 @@ This case is described again below.
 \begin{definition} \label{def:up}
 	\lean{Representation.coind₁'_ι,
 		Rep.coind₁'_ι,
-		Rep.dimensionShift.instMonoAppCoind₁'_ι,
 		Rep.dimensionShift.up,
 		Rep.dimensionShift.upShortComplex,
-		Rep.dimensionShift.up_shortExact,
-		Rep.dimensionShift.up_shortExact_res}
+		Rep.dimensionShift.shortExact_upSES,
+		Rep.dimensionShift.shortExact_upSES_res}
 	\uses{def:coind₁'}
 	\leanok
 	There is an injective morphism $M \to \coind_1'(M)$ which takes a vector $m \in M$
@@ -1201,7 +1200,7 @@ Let $G$ be a group and $M$ a representation of $G$ over a commutative ring $R$.
 \end{proof}
 
 \begin{corollary}	\label{cor:Tate up down isos}
-	\lean{groupCohomology.instIsIso_up_shortExact,
+	\lean{groupCohomology.instIsIso_shortExact_upSES,
 		groupCohomology.instIsIso_shortExact_downSES,
 		groupCohomology.δUpIsoTate,
 		groupCohomology.δDownIsoTate
@@ -1657,7 +1656,7 @@ very precisely here:
 	$H^2(G,\Z) \to \Z / n \Z$ (i.e. the coboundaries are in the kernel).
 
 	$\sigma_G$ is a 2-cocycle since one can write $\sigma_G(\gen^i, \gen^j)$ as
-	$\tilde i + \tilde j - \tilde(i + j)$ for $\tilde : \Z/n\Z \to \Z$ a section
+	$\tilde i + \tilde j - (\widetilde{i + j})$ for $\tilde\cdot : \Z/n\Z \to \Z$ a section.
 
 	It follows from the definitions that all the terms in the sum defining the local invariant are
 	zero apart from the term $i=n-1$, so we have
@@ -1765,12 +1764,14 @@ very precisely here:
 \section{The Triviality Criterion}
 
 Recall that a representation $M$ of a group $G$ has trivial cohomology if for all subgroups $S$ of
-$G$ and all $n > 0$, the cohomology groups $H^{n}(S,M)$ are zero.
+$G$ and all $n > 0$, the cohomology groups $H^{n}(S,M)$ are zero. We begin with a theorem
+which will immediately be made redundant by the theorem after.
 
 \begin{theorem} \label{thm:triviality criterion solvable}
 	\lean{groupCohomology.trivialCohomology_of_even_of_odd_of_solvable}
 	\leanok
-	Let $M$ be a representation of a finite solvable group $G$.
+	Let $M$ be a representation of a finite solvable group $G$ (note that the solvability
+	condition will be removed in the next theorem).
 	Suppose we have positive natural numbers $e$ and $o$ with $e$ even and $o$ odd,
 	such that for all subgroups $S$ of $G$ we have
 	\[
@@ -2000,15 +2001,20 @@ There is evidently a short exact sequence of representations of $G$.
 In this section we'll show that if $(R,G,M)$ is a finite class formation
 then there is an isomorphism (called the \emph{reciprocity isomorphism})
 \[
-	G^{\ab} \otimes R \cong H^0_{\Tate}(G,M).
+	\reciprocity: G^{\ab} \otimes R \cong H^0_{\Tate}(G,M).
 \]
 The reciprocity isomorphism depends on the choice of a fundamental class.
 
 \begin{example}
 	If $G$ is a finite cyclic group then the trivial representation $\Z$
-	is a finite class formation.
+	(or more precisely the triple $(\Z,G,\Z)$)
+	is a finite class formation. More generally if $R$ is any commutative ring
+	with trivial additive torsion then $(R,G,R)$ is a finite class formation.
 	This follows from \ref{lem:H2 cyclic Z}.
-	The cocycle $\sigma_1$ defined in \ref{lem:H2 cyclic Z} is a fundamental class.
+	The cocycle $\sigma_G$ defined in \ref{lem:local inv iso} (which depends on
+	a choice of generator for $G$) is a fundamental class. Note that it is unsurprising
+	that the cocycle depends on a choice of generator, as in the case $R=\Z$ the
+	reciprocity isomorphism gives an isomorphism $G\cong \Z/|G|\Z.$
 \end{example}
 
 \begin{lemma} \label{lem:linear injective of surjective}
@@ -2116,7 +2122,7 @@ a cocycle $\sigma'$ representing the fundamental class $\sigma$.
 	}
 	The reciprocity isomorphism for a fundamental class $\sigma \in H^2(G,M)$ is given by
 	\[
-		\reciprocity(gG' \otimes 1) \equiv  \sum_{x \in G} \sigma'(g,g) \bmod N_G M.
+		\reciprocity(gG' \otimes 1) \equiv  \sum_{x \in G} \sigma'(x,g) \bmod N_G M.
 	\]
 	This depends only on the cohomology class $\sigma$ rather than the cocycle $\sigma'$.
 \end{lemma}
@@ -2195,7 +2201,7 @@ a cocycle $\sigma'$ representing the fundamental class $\sigma$.
 \begin{proof}
 	The fact that $(R, S, M \downarrow S)$ is a finite class formation is a tautology.
 	The fact that $\sigma_S$
-	is a fundamental is \ref{lem:restriction fundamental class generates}.
+	is a fundamental class is \ref{lem:restriction fundamental class generates}.
 	It remains to prove that the diagram commutes.
 	We'll write $\theta_G$ and $\theta_S$ for the horizontal maps in the diagram.
 	For an element $s \in S$ we have by \ref{lem:reciprocity formula}:

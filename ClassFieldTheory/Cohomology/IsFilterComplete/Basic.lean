@@ -10,18 +10,32 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-! # Completeness with respect to a filtration -/
 
+section
+-- Kenny: I don't know if we should make a separate definition for `a - b ∈ s`.
+-- can't tag with `@[gcongr]`
+
+theorem _root_.sub_mem_trans {M σ : Type*} [AddGroup M] [SetLike σ M] [AddSubgroupClass σ M]
+    {s : σ} {a b c : M} (hab : a - b ∈ s) (hbc : b - c ∈ s) : a - c ∈ s :=
+  sub_add_sub_cancel a b c ▸ add_mem hab hbc
+
+theorem _root_.sub_mem_symm {M σ : Type*} [AddGroup M] [SetLike σ M] [AddSubgroupClass σ M]
+    {s : σ} {a b : M} (h : a - b ∈ s) : b - a ∈ s :=
+  neg_sub a b ▸ neg_mem h
+
+end
+
 -- to replace `IsHausdorff`
 /-- `M` is Hausdorff with respect to the filtration `M_i ≤ M` if `⋂ M_i = 0`. -/
 @[mk_iff] class IsFilterHausdorff {M ι σ : Type*} [AddCommGroup M]
     [LE ι] [SetLike σ M] [AddSubgroupClass σ M] (F : ι → σ) : Prop where
-  haus' : ∀ x : M, (∀ i, x ∈ F i) → x = 0
+  haus' : ∀ ⦃x⦄, (∀ ⦃i⦄, x ∈ F i) → x = 0
 
 -- to replace `IsPrecomplete`
 /-- `M` is precomplete with respect to the filtration `M_i ≤ M` if any compatible
 sequence `I → M` has a limit in `M`. -/
 @[mk_iff] class IsFilterPrecomplete {M ι σ : Type*} [AddCommGroup M]
     [LE ι] [SetLike σ M] [AddSubgroupClass σ M] (F : ι → σ) : Prop where
-  prec' : ∀ x : (ι → M), (∀ i j, i ≤ j → x i - x j ∈ AddSubgroup.ofClass (F i) ⊔ .ofClass (F j)) →
+  prec' : ∀ x : (ι → M), (∀ ⦃i j⦄, i ≤ j → x i - x j ∈ AddSubgroup.ofClass (F i) ⊔ .ofClass (F j)) →
     ∃ L : M, ∀ i, x i - L ∈ F i
 
 -- to replace `IsAdicComplete`
@@ -34,8 +48,11 @@ sequence `I → M` has a limit in `M`. -/
 section
 variable {M ι σ : Type*} [AddCommGroup M] [LE ι] [SetLike σ M] [AddSubgroupClass σ M] (F : ι → σ)
 
+theorem Filtration.eq_zero [IsFilterHausdorff F] {x : M} (h : ∀ i, x ∈ F i) : x = 0 :=
+  IsFilterHausdorff.haus' h
+
 theorem Filtration.ext [IsFilterHausdorff F] {x y : M} (h : ∀ i, x - y ∈ F i) : x = y :=
-  eq_of_sub_eq_zero <| IsFilterHausdorff.haus' _ h
+  eq_of_sub_eq_zero <| eq_zero F h
 
 def Completion.set : Set ((i : ι) → M ⧸ AddSubgroup.ofClass (F i)) :=
   {f | ∀ ⦃i j⦄, i ≤ j →
@@ -149,6 +166,16 @@ variable (F)
 noncomputable def limit [IsFilterComplete F] : Completion F ≃+ M :=
   .symm <| .ofBijective _ <| toCompletion_bijective_iff_isFilterComplete.mpr ‹_›
 
+theorem limit_sub_mem [IsFilterComplete F] (x : FilterCauchySeq F) {i : ι} :
+    limit _ (.mk _ x) - x.val i ∈ F i := by
+  generalize hxy : limit _ (.mk _ x) = y
+  rw [← AddEquiv.eq_symm_apply] at hxy
+  exact QuotientAddGroup.eq_iff_sub_mem.mp congr(($hxy.symm).val i)
+
+theorem sub_limit_mem [IsFilterComplete F] (x : FilterCauchySeq F) {i : ι} :
+    x.val i - limit _ (.mk _ x) ∈ F i :=
+  sub_mem_symm <| limit_sub_mem ..
+
 end
 
 open OrderDual
@@ -160,12 +187,6 @@ variable {M ι σ : Type*} [AddCommGroup M] [Preorder ι] [SetLike σ M] [AddSub
 theorem FilterCauchySeq.mk_surjective (y : FilterCauchySeq (F ∘ toDual)) :
     ∃ x hx, .mk x hx = y :=
   ⟨y.val, fun _ _ hij ↦ sup_le (α := AddSubgroup M) le_rfl (F.2 hij) (y.2 hij), rfl⟩
-
-theorem limit_sub_mem [IsFilterComplete (⇑F ∘ ⇑toDual)] (x : FilterCauchySeq (F ∘ toDual)) {i : ι} :
-    limit _ (.mk _ x) - x.val i ∈ F (toDual i) := by
-  generalize hxy : limit _ (.mk _ x) = y
-  rw [← AddEquiv.eq_symm_apply] at hxy
-  exact QuotientAddGroup.eq_iff_sub_mem.mp congr(($hxy.symm).val i)
 
 end Antitone
 
@@ -193,7 +214,7 @@ noncomputable def sum [IsFilterComplete (F ∘ toDual)] : ((i : ℕ) → F (toDu
 
 theorem sum_sub_mem [IsFilterComplete (F ∘ toDual)] {x : ∀ i, F (toDual i)} {i : ℕ} :
     sum F x - ∑ j ∈ Finset.range i, x j ∈ F (toDual i) :=
-  limit_sub_mem ..
+  limit_sub_mem (F ∘ toDual) _
 
 variable {F G} {Φ : Type*} [FunLike Φ M N] [AddMonoidHomClass Φ M N] {φ : Φ}
   (h : ∀ ⦃i x⦄, x ∈ F i → φ x ∈ G i)
