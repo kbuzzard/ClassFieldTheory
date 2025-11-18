@@ -429,6 +429,22 @@ theorem e_mul_f_eq_n : e K L * f K L = Module.finrank K L := by
       primesOverFinset, toFinset_factors_map_maximalIdeal, Finset.sum_singleton]
   rfl
 
+theorem e_le_n : e K L ≤ Module.finrank K L :=
+  e_mul_f_eq_n K L ▸ le_mul_of_one_le_right' <| f_pos K L
+
+theorem f_le_n : f K L ≤ Module.finrank K L :=
+  e_mul_f_eq_n K L ▸ le_mul_of_one_le_left' <| e_pos K L
+
+-- TODO: standardize the spelling of "n = 1"
+-- https://leanprover.zulipchat.com/#narrow/channel/516717-Oxford-Class-Field-Theory-2025-workshop/topic/trivial.20extension.20of.20local.20fields/with/557960349
+theorem e_eq_one_of_n_eq_one (hn : Module.finrank K L = 1) : e K L = 1 :=
+  le_antisymm (hn ▸ e_le_n K L) (e_pos K L)
+
+-- TODO: standardize the spelling of "n = 1"
+-- https://leanprover.zulipchat.com/#narrow/channel/516717-Oxford-Class-Field-Theory-2025-workshop/topic/trivial.20extension.20of.20local.20fields/with/557960349
+theorem f_eq_one_of_n_eq_one (hn : Module.finrank K L = 1) : f K L = 1 :=
+  le_antisymm (hn ▸ f_le_n K L) (f_pos K L)
+
 -- TODO: generalise to extensions of DVRs.
 @[mk_iff] class IsUnramified : Prop where
   e_eq_one : e K L = 1
@@ -494,6 +510,7 @@ instance isIntegralClosure : IsIntegralClosure 𝒪[L] 𝒪[K] L where
     obtain ⟨y, rfl⟩ := hy
     exact (Algebra.IsIntegral.isIntegral y).algebraMap
 
+variable {K L} in
 theorem isIntegral_iff {y : L} : IsIntegral 𝒪[K] y ↔ valuation L y ≤ 1 := by
   rw [IsIntegralClosure.isIntegral_iff (A := 𝒪[L]), ← Set.mem_range]
   erw [Subtype.range_val, Valuation.mem_integer_iff]
