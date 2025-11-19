@@ -152,10 +152,9 @@ instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
     simp_rw [tateComplexFunctor]
     aesop_cat
 
-lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)}
-    (hS : S.ShortExact) : (S.map tateComplexFunctor).ShortExact := by
-  rw [HomologicalComplex.shortExact_iff_degreewise_shortExact]
-  simp_rw [← ShortComplex.map_comp]
+lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
+    (S.map tateComplexFunctor).ShortExact := by
+  simp_rw [HomologicalComplex.shortExact_iff_degreewise_shortExact, ← ShortComplex.map_comp]
   rintro (_ | _)
   · exact .map_of_natIso _ (tateComplex.eval_nonneg _).symm <|
       map_cochainsFunctor_eval_shortExact _ hS
@@ -257,7 +256,7 @@ noncomputable def res_iso {M : Rep R G} (e : G ≃* H) {N : Rep R H} (e' : M.V �
         e.apply_symm_apply, implies_true]⟩ n
   hom_inv_id := by
     unfold map cochainsMap;
-    rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
+    rw [← HomologicalComplex.homologyMap_comp, CochainComplex.ConnectData.map_comp_map]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
     · rw [← groupHomology.chainsMap_comp, ← groupHomology.chainsMap_id]
@@ -266,7 +265,7 @@ noncomputable def res_iso {M : Rep R G} (e : G ≃* H) {N : Rep R H} (e' : M.V �
       exact groupCohomology.cochainsMap_congr (by simp) (by simp)
   inv_hom_id := by
     unfold map cochainsMap;
-    rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
+    rw [← HomologicalComplex.homologyMap_comp, CochainComplex.ConnectData.map_comp_map]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
     · rw [← groupHomology.chainsMap_comp, ← groupHomology.chainsMap_id]

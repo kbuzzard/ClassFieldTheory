@@ -53,8 +53,8 @@ theorem exists_valuation_algebraMap_eq_valuation_pow
   by_contra! H
   have := congr(valuation L $(minpoly.aeval K y))
   rw [Polynomial.aeval_eq_sum_range, Valuation.sum_eq_iSup] at this; swap
-  · simp only [Finset.mem_range, Nat.lt_succ, ne_eq, map_eq_zero, smul_eq_zero, pow_eq_zero_iff',
-      hy, false_and, or_false]
+  · simp only [Finset.mem_range, Nat.lt_succ_iff, ne_eq, map_eq_zero, smul_eq_zero,
+      pow_eq_zero_iff', hy, false_and, or_false]
     intros i hi j hj hij hi' hj' e
     wlog hij' : i ≤ j generalizing i j
     · exact this j hj i hi (Ne.symm hij) hj' hi' e.symm (by omega)
@@ -65,7 +65,7 @@ theorem exists_valuation_algebraMap_eq_valuation_pow
     simp [*, -mul_eq_mul_right_iff, div_mul_eq_mul_div, pow_add, mul_comm]
   · simp only [map_zero, ← bot_eq_zero'', Finset.sup_eq_bot_iff] at this
     simp only [Finset.mem_range, Function.comp_apply, bot_eq_zero'', map_eq_zero, smul_eq_zero,
-      pow_eq_zero_iff', hy, ne_eq, false_and, or_false, Nat.lt_succ] at this
+      pow_eq_zero_iff', hy, ne_eq, false_and, or_false, Nat.lt_succ_iff] at this
     exact minpoly.coeff_zero_ne_zero (Algebra.IsIntegral.isIntegral _) hy (this 0 (by simp))
 
 lemma exists_valuation_algebraMap_le_valuation

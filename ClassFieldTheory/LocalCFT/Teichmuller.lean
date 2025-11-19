@@ -84,7 +84,7 @@ theorem pow_sub_pow_mem {a b : 𝒪[K]} {i : ℕ} (hi : i ≠ 0) (h : a - b ∈ 
   have h₁ : 1 ≤ i := by grind
   let := Fintype.ofFinite 𝓀[K]
   obtain ⟨p, hCp, ⟨n, hn₀⟩, hp, hn : _ = _ ^ n⟩ := FiniteField.card' 𝓀[K]
-  have h₂ : 2 ≤ p ^ n := Nat.succ_le.mpr <| one_lt_pow' hp.one_lt hn₀.ne'
+  have h₂ : 2 ≤ p ^ n := Nat.succ_le_iff.mpr <| one_lt_pow' hp.one_lt hn₀.ne'
   obtain ⟨r, hr⟩ := exists_add_pow_prime_pow_eq hp (a - b) b n
   rw [Nat.card_eq_fintype_card, hn, show a = a - b + b by abel, hr, add_right_comm,
     add_sub_cancel_right, mul_assoc _ b]

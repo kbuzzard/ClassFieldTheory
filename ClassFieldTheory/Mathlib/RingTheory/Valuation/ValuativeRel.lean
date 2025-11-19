@@ -33,12 +33,9 @@ theorem rel_iff_div_rel_one (x : F) {y : F} (hy : y ≠ 0) :
     Valuation.Compatible.rel_iff_le (v := ValuativeRel.valuation F),
     map_div₀, map_one, div_le_one₀ (bot_lt_iff_ne_bot.2 ((map_ne_zero _).2 hy))]
 
-theorem rel_zero_iff (x : F) : x ≤ᵥ 0 ↔ x = 0 := by
-  rw [Valuation.Compatible.rel_iff_le (v := valuation F), map_zero, le_zero_iff, map_eq_zero]
-
 /-- Two valuative relations on a field are equal iff their rings of integers are equal. -/
 @[ext high] theorem ext_of_field {F : Type*} [Field F] {v v' : ValuativeRel F}
-    (h : ∀ x, v.rel x 1 ↔ v'.rel x 1) : v = v' := by
+    (h : ∀ x, v.Rel x 1 ↔ v'.Rel x 1) : v = v' := by
   ext x y
   by_cases hy : y = 0
   · simp_rw [hy, rel_zero_iff]
