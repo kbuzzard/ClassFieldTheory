@@ -1764,12 +1764,14 @@ very precisely here:
 \section{The Triviality Criterion}
 
 Recall that a representation $M$ of a group $G$ has trivial cohomology if for all subgroups $S$ of
-$G$ and all $n > 0$, the cohomology groups $H^{n}(S,M)$ are zero.
+$G$ and all $n > 0$, the cohomology groups $H^{n}(S,M)$ are zero. We begin with a theorem
+which will immediately be made redundant by the theorem after.
 
 \begin{theorem} \label{thm:triviality criterion solvable}
 	\lean{groupCohomology.trivialCohomology_of_even_of_odd_of_solvable}
 	\leanok
-	Let $M$ be a representation of a finite solvable group $G$.
+	Let $M$ be a representation of a finite solvable group $G$ (note that the solvability
+	condition will be removed in the next theorem).
 	Suppose we have positive natural numbers $e$ and $o$ with $e$ even and $o$ odd,
 	such that for all subgroups $S$ of $G$ we have
 	\[
@@ -1999,15 +2001,20 @@ There is evidently a short exact sequence of representations of $G$.
 In this section we'll show that if $(R,G,M)$ is a finite class formation
 then there is an isomorphism (called the \emph{reciprocity isomorphism})
 \[
-	G^{\ab} \otimes R \cong H^0_{\Tate}(G,M).
+	\reciprocity: G^{\ab} \otimes R \cong H^0_{\Tate}(G,M).
 \]
 The reciprocity isomorphism depends on the choice of a fundamental class.
 
 \begin{example}
 	If $G$ is a finite cyclic group then the trivial representation $\Z$
-	is a finite class formation.
+	(or more precisely the triple $(\Z,G,\Z)$)
+	is a finite class formation. More generally if $R$ is any commutative ring
+	with trivial additive torsion then $(R,G,R)$ is a finite class formation.
 	This follows from \ref{lem:H2 cyclic Z}.
-	The cocycle $\sigma_1$ defined in \ref{lem:H2 cyclic Z} is a fundamental class.
+	The cocycle $\sigma_G$ defined in \ref{lem:local inv iso} (which depends on
+	a choice of generator for $G$) is a fundamental class. Note that it is unsurprising
+	that the cocycle depends on a choice of generator, as in the case $R=\Z$ the
+	reciprocity isomorphism gives an isomorphism $G\cong \Z/|G|\Z.$
 \end{example}
 
 \begin{lemma} \label{lem:linear injective of surjective}
@@ -2194,7 +2201,7 @@ a cocycle $\sigma'$ representing the fundamental class $\sigma$.
 \begin{proof}
 	The fact that $(R, S, M \downarrow S)$ is a finite class formation is a tautology.
 	The fact that $\sigma_S$
-	is a fundamental is \ref{lem:restriction fundamental class generates}.
+	is a fundamental class is \ref{lem:restriction fundamental class generates}.
 	It remains to prove that the diagram commutes.
 	We'll write $\theta_G$ and $\theta_S$ for the horizontal maps in the diagram.
 	For an element $s \in S$ we have by \ref{lem:reciprocity formula}:

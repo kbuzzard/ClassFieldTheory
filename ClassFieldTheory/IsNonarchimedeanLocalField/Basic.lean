@@ -78,7 +78,7 @@ example : CompactSpace 𝒪[K] := inferInstance
 example : Finite 𝓀[K] := inferInstance
 
 instance : T2Space K :=
-  letI := IsTopologicalAddGroup.toUniformSpace K
+  letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   open scoped Valued in inferInstance
 
@@ -227,8 +227,8 @@ open NNReal
 -- by Anand Rao and Mohit Hulse
 instance : FiniteDimensional K L := by
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
-  letI := IsTopologicalAddGroup.toUniformSpace K
-  letI := IsTopologicalAddGroup.toUniformSpace L
+  letI := IsTopologicalAddGroup.rightUniformSpace K
+  letI := IsTopologicalAddGroup.rightUniformSpace L
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   haveI := isUniformAddGroup_of_addCommGroup (G := L)
   -- choose an arbitrary rank one structure for `L` (i.e. an arbitrary `ℝ`-valued norm)
@@ -285,7 +285,7 @@ instance : FiniteDimensional K L := by
     exact congr($eq _)
 
 instance isModuleTopology : IsModuleTopology K L :=
-  let := IsTopologicalAddGroup.toUniformSpace K
+  let := IsTopologicalAddGroup.rightUniformSpace K
   have := isUniformAddGroup_of_addCommGroup (G := K)
   let := rankOneOfIoo K default
   let := Valued.toNontriviallyNormedField (L := K)
@@ -531,7 +531,7 @@ attribute [local instance] inhabitedIoo
 theorem isNonarchimedeanLocalField_of_valuativeExtension_of_isValuativeTopology
      [FiniteDimensional K L] [ValuativeRel L] [ValuativeExtension K L]
      [TopologicalSpace L] [IsValuativeTopology L] : IsNonarchimedeanLocalField L := by
-  letI := IsTopologicalAddGroup.toUniformSpace K
+  letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   letI := rankOneOfIoo K default
   letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K)
@@ -552,7 +552,7 @@ open scoped NormedField in
 theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] :
     ∃ (_ : ValuativeRel L) (_ : ValuativeExtension K L)
     (_ : TopologicalSpace L), IsNonarchimedeanLocalField L := by
-  letI := IsTopologicalAddGroup.toUniformSpace K
+  letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   letI := rankOneOfIoo K default
   letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K)
@@ -570,7 +570,7 @@ theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] 
     rw [Valued.norm_def, Valued.norm_def, NNReal.coe_le_coe,
       (Valuation.RankOne.strictMono Valued.v).le_iff_le]
     rfl
-  exact ⟨inferInstance, inferInstance, isNonarchimedeanLocalField_of_valuativeExtension K L⟩
+  exact ⟨ofValuation v, this, isNonarchimedeanLocalField_of_valuativeExtension K L⟩
 
 include K in
 theorem ext_extension (v₁ v₂ : ValuativeRel L) (t₁ t₂ : TopologicalSpace L)

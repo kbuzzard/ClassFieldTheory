@@ -1,4 +1,5 @@
 name = "ClassFieldTheory"
+keywords = ["math", "algebra", "class-field-theory"]
 defaultTargets = ["ClassFieldTheory"]
 
 [leanOptions]
@@ -11,6 +12,7 @@ warn.sorry = false
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.25.0"
 
 [[require]]
 name = "checkdecls"

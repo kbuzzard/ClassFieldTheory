@@ -165,7 +165,7 @@ lemma map₂_range [Fintype G] [DecidableEq G] :
       congr
       rw [((unique_gen_pow (gen G ^ k)).choose_spec.right (k.natMod (Fintype.card G))
         ⟨?_, ?_⟩).symm]
-      · exact  Int.natMod_lt Fintype.card_ne_zero
+      · exact Int.natMod_lt Fintype.card_ne_zero
       · simp [← zpow_natCast, Int.natMod, Int.ofNat_toNat, Int.emod_nonneg]
     have hf_apply_of_lt (k : ℕ) (hk : k < Fintype.card G) :
         f (gen G ^ k) = ∑ i ∈ Finset.Icc 0 k, w (gen G ^ i) := by
