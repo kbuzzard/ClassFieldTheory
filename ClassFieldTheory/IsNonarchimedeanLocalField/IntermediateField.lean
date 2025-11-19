@@ -18,7 +18,7 @@ variable {K L : Type*}
 attribute [local instance] inhabitedIoo
 
 instance (E : IntermediateField K L) : IsNonarchimedeanLocalField E := by
-  letI := IsTopologicalAddGroup.toUniformSpace K
+  letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   letI := rankOneOfIoo K default
   letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K)

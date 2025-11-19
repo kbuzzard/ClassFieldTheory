@@ -58,6 +58,7 @@ import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
+import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 import ClassFieldTheory.Mathlib.Data.Finset.Range
 import ClassFieldTheory.Mathlib.Data.Finsupp.Single
