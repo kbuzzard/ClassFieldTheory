@@ -25,6 +25,7 @@ import ClassFieldTheory.Cohomology.Subrep.ShortExact
 import ClassFieldTheory.Cohomology.TateCohomology
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
+import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
 import ClassFieldTheory.IsNonarchimedeanLocalField.EF
 import ClassFieldTheory.IsNonarchimedeanLocalField.HerbrandQuotient

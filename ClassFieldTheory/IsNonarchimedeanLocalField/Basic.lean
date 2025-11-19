@@ -7,20 +7,13 @@ import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.NumberTheory.LocalField.Basic
 import Mathlib.NumberTheory.Padics.ProperSpace
 import Mathlib.NumberTheory.Padics.ValuativeRel
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
-import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.PicardGroup
-import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # Non-Archimedean Local Fields
@@ -132,6 +125,10 @@ theorem valueGroupWithZeroIsoInt_irreducible {ϖ : 𝒪[K]} (hϖ : Irreducible �
   rw [exp_neg_one_def]
   simpa [(valueGroupWithZeroIsoInt K).surjective.forall] using
     ⟨Valuation.integer.v_irreducible_lt_one hϖ, fun _ ↦ le_valuation_irreducible_of_lt_one hϖ⟩
+
+theorem valuation_irreducible {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) :
+    valuation K ϖ = (valueGroupWithZeroIsoInt K).symm (.exp (-1)) := by
+  rw [OrderMonoidIso.eq_symm_apply, valueGroupWithZeroIsoInt_irreducible hϖ]
 
 @[simp] lemma WithZeroMulInt.toNNReal_exp {e : ℝ≥0} (he : e ≠ 0) {n : ℤ} :
     WithZeroMulInt.toNNReal he (.exp n) = e ^ n := by
@@ -596,3 +593,4 @@ theorem unique_isNonarchimedeanLocalField [FiniteDimensional K L] :
 end make_finite_extension
 
 end IsNonarchimedeanLocalField
+#min_imports

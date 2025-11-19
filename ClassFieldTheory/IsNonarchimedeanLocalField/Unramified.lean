@@ -3,6 +3,7 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
 import ClassFieldTheory.IsNonarchimedeanLocalField.EF
 import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
@@ -160,9 +161,6 @@ theorem UnramifiedExtension.intermediateFieldTop_eq_adjoin_primitive_root
     (⊤ : IntermediateField K (UnramifiedExtension K n)) = .adjoin K {ζ} :=
   IntermediateField.eq_adjoin_of_eq_algebra_adjoin _ _ _ <| by
     simp [top_eq_adjoin_primitive_root _ _ hζ]
-
--- ask andrew
-instance : IsAdicComplete 𝓂[K] 𝒪[K] := sorry
 
 variable {n} in
 private theorem finrank_unramifiedExtension_and_residue (hn : n ≠ 0) :
