@@ -3,7 +3,8 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
+import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 
 /-! # Basic facts about e and f and unramified
@@ -56,12 +57,12 @@ variable {K L L₁ L₂}
 
 theorem e_dvd_e (φ : L₁ →ₐ[K] L₂) : e K L₁ ∣ e K L₂ := by
   algebraize [φ.toRingHom]
-  have : ValuativeExtension L₁ L₂ := sorry -- ask andrew
+  have : ValuativeExtension L₁ L₂ := of_tower_top K L₁ L₂
   exact e_dvd_e_top ..
 
 theorem f_dvd_f (φ : L₁ →ₐ[K] L₂) : f K L₁ ∣ f K L₂ := by
   algebraize [φ.toRingHom]
-  have : ValuativeExtension L₁ L₂ := sorry -- ask andrew
+  have : ValuativeExtension L₁ L₂ := of_tower_top K L₁ L₂
   exact f_dvd_f_top ..
 
 theorem e_congr (φ : L₁ ≃ₐ[K] L₂) : e K L₁ = e K L₂ :=
@@ -72,13 +73,6 @@ theorem f_congr (φ : L₁ ≃ₐ[K] L₂) : f K L₁ = f K L₂ :=
 
 theorem IsUnramified.ofAlgEquiv (φ : L₁ ≃ₐ[K] L₂) [IsUnramified K L₁] : IsUnramified K L₂ :=
   ⟨by rw [← e_congr φ, e_eq_one]⟩
-
--- todo
-instance (K L : Type*)
-    [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
-    [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
-    [Algebra K L] [ValuativeExtension K L]
-    (E : IntermediateField K L) : IsNonarchimedeanLocalField E := sorry
 
 theorem InUnramified.intermediateField [IsUnramified K L] (E : IntermediateField K L) :
     IsUnramified K E :=

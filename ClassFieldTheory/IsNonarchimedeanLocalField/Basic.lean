@@ -528,20 +528,25 @@ variable (L : Type*) [Field L] [Algebra K L]
 
 attribute [local instance] inhabitedIoo
 
-theorem isNonarchimedeanLocalField_of_valuativeExtension [FiniteDimensional K L]
-    [ValuativeRel L] [ValuativeExtension K L] :
-    ∃ (_ : TopologicalSpace L), IsNonarchimedeanLocalField L := by
+theorem isNonarchimedeanLocalField_of_valuativeExtension_of_isValuativeTopology
+     [FiniteDimensional K L] [ValuativeRel L] [ValuativeExtension K L]
+     [TopologicalSpace L] [IsValuativeTopology L] : IsNonarchimedeanLocalField L := by
   letI := IsTopologicalAddGroup.toUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   letI := rankOneOfIoo K default
   letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K)
-  let := Valued.mk' (valuation L)
-  have : IsValuativeTopology L := .of_zero fun _ ↦ Valued.mem_nhds_zero
   have : LocallyCompactSpace L := .of_finiteDimensional_of_complete K L
   obtain ⟨ϖK, hϖK⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
   have : IsNontrivial L := ⟨(valuation L).comap (algebraMap K L) ϖK,
     (map_ne_zero _).mpr hϖK.ne_zero', ne_of_lt <| valuation_map_irreducible_lt_one hϖK⟩
-  exact ⟨inferInstance, ⟨⟩⟩
+  exact ⟨⟩
+
+theorem isNonarchimedeanLocalField_of_valuativeExtension [FiniteDimensional K L]
+    [ValuativeRel L] [ValuativeExtension K L] :
+    ∃ (_ : TopologicalSpace L), IsNonarchimedeanLocalField L := by
+  let := Valued.mk' (valuation L)
+  have : IsValuativeTopology L := .of_zero fun _ ↦ Valued.mem_nhds_zero
+  exact ⟨inferInstance, isNonarchimedeanLocalField_of_valuativeExtension_of_isValuativeTopology K L⟩
 
 open scoped NormedField in
 theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] :

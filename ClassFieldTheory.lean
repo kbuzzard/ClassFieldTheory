@@ -25,6 +25,8 @@ import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
 import ClassFieldTheory.IsNonarchimedeanLocalField.EF
+import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
+import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
 import ClassFieldTheory.IsNonarchimedeanLocalField.Unramified
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.Teichmuller
@@ -94,8 +96,11 @@ import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
+import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
 import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
+import ClassFieldTheory.Mathlib.Topology.Algebra.Monoid
+import ClassFieldTheory.Mathlib.Topology.Algebra.Ring.Basic
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
 import ClassFieldTheory.Tactic.Dualize

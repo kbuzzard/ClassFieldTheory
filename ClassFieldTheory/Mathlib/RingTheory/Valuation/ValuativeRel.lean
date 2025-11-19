@@ -60,8 +60,15 @@ namespace ValuativeExtension
 
 open ValuativeRel
 
-variable {A B : Type*} [CommRing A] [CommRing B] [ValuativeRel A] [ValuativeRel B]
-  [Algebra A B] [ValuativeExtension A B] {a b : A}
+variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
+  [ValuativeRel A] [ValuativeRel B] [ValuativeRel C]
+  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+  [ValuativeExtension A B] {a b : A}
+
+theorem trans [ValuativeExtension B C] : ValuativeExtension A C where
+  rel_iff_rel _ _ := by simp_rw [Algebra.algebraMap_eq_smul_one, ← map_one (algebraMap B C),
+    Algebra.algebraMap_eq_smul_one, ← IsScalarTower.smul_assoc, ← Algebra.algebraMap_eq_smul_one,
+    rel_iff_rel]
 
 lemma algebraMap_le : valuation B (algebraMap A B a) ≤ valuation B (algebraMap A B b) ↔
     valuation A a ≤ valuation A b := by
