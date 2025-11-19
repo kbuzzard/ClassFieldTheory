@@ -29,7 +29,7 @@ theorem of_tower_top [ValuativeExtension K L] [ValuativeExtension K F] :
   -- previous theorem: `F/L` finite, so `F` has a valuative rel + topology that make local field
   obtain ⟨v₂, e₂, t₂, l₂⟩ := isNonarchimedeanLocalField_of_finiteDimensional L F
   -- but then we have two extensions `F/K`, which must be the same
-  obtain ⟨rfl, rfl⟩ := ext_extension K F v₁ v₂ t₁ t₂ ‹_› (.trans (B := L)) l₁ l₂
+  obtain ⟨rfl, rfl⟩ := ext_extension K F v₁ v₂ t₁ t₂ ‹_› (.trans K L F) l₁ l₂
   exact e₂
 
 end IsNonarchimedeanLocalField

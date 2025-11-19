@@ -41,6 +41,8 @@ import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
+import ClassFieldTheory.Mathlib.Algebra.Group.Units.Basic
+import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.WithZero
 import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
@@ -94,6 +96,7 @@ import ClassFieldTheory.Mathlib.RingTheory.LiftingCoprime
 import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Nilpotent.Lemmas
+import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.Basic
 import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots

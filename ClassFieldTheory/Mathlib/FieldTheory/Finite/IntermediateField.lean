@@ -3,9 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 
 /-! # Results on intermediate fields of finite fields -/
 
@@ -81,13 +81,6 @@ theorem adjoin_eq_intermediateField_of_isPrimitiveRoot
     · obtain ⟨i, _, rfl⟩ := HasEnoughRootsOfUnity.exists_pow (by grind) hζ hx
       exact pow_mem (mem_adjoin_simple_self _ _) _
 
--- move
-theorem _root_.X_pow_sub_X_factors_of_isPrimitiveRoot {R : Type*} [Field R]
-    {n : ℕ} (hn : n ≠ 0) {ζ : R} (hζ : IsPrimitiveRoot ζ (n - 1)) :
-    (X ^ n - X : R[X]).Factors := by
-  rw [← Nat.sub_add_cancel (pos_of_ne_zero hn), pow_succ, ← sub_one_mul]
-  exact .mul (by simpa [Splits] using X_pow_sub_one_splits hζ) .X
-
 /-- The minimal polynomial of a primitive `(q^n-1)`-st root of unity has degree `n`. -/
 theorem degree_minpoly_of_isPrimitiveRoot
     (hn : n ≠ 0) {ζ : L} (hζ : IsPrimitiveRoot ζ (Nat.card K ^ n - 1)) :
@@ -112,7 +105,7 @@ theorem degree_minpoly_of_isPrimitiveRoot
     ← SetLike.coe_sort_coe, intermediateField_eq_rootSet hn, rootSet, aroots,
     Algebra.algebraMap_self, Polynomial.map_id, SetLike.coe_sort_coe, Nat.card_eq_finsetCard,
     Multiset.toFinset_card_of_nodup (nodup_roots <| galois_poly_separable _ _ this),
-    ← (X_pow_sub_X_factors_of_isPrimitiveRoot (by grind) hζ).natDegree_eq_card_roots,
+    ← (X_pow_sub_X_factors hζ).natDegree_eq_card_roots,
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (by grind), Fintype.card_eq_nat_card]
 
 variable (F : Type*) [Field F] [Finite F]

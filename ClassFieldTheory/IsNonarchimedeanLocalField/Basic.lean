@@ -593,4 +593,3 @@ theorem unique_isNonarchimedeanLocalField [FiniteDimensional K L] :
 end make_finite_extension
 
 end IsNonarchimedeanLocalField
-#min_imports
