@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 
 /-! # Basic facts about e and f and unramified
 
@@ -24,11 +25,9 @@ variable (K L L₁ L₂ F : Type*)
 
 open ValuativeRel
 
--- move
 instance : IsScalarTower 𝒪[K] 𝒪[L] 𝒪[F] :=
   .of_algebraMap_eq fun x ↦ Subtype.ext <| IsScalarTower.algebraMap_apply K L F x
 
--- move
 instance : IsScalarTower 𝓀[K] 𝓀[L] 𝓀[F] :=
   .of_algebraMap_eq fun x ↦ (Ideal.Quotient.mk_surjective x).elim fun x hx ↦
     hx ▸ congr(IsLocalRing.residue _ $(IsScalarTower.algebraMap_apply 𝒪[K] 𝒪[L] 𝒪[F] x))
@@ -74,44 +73,12 @@ theorem f_congr (φ : L₁ ≃ₐ[K] L₂) : f K L₁ = f K L₂ :=
 theorem IsUnramified.ofAlgEquiv (φ : L₁ ≃ₐ[K] L₂) [IsUnramified K L₁] : IsUnramified K L₂ :=
   ⟨by rw [← e_congr φ, e_eq_one]⟩
 
--- move
-instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
-    [ValuativeRel R] : ValuativeRel s :=
-  .ofValuation <| (valuation R).comap <| (Subring.ofClass s).subtype
-
--- move
-@[simp] theorem subtype_rel
-    (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
-    [ValuativeRel R] (x y : s) : x ≤ᵥ y ↔ x.val ≤ᵥ y.val :=
-  (Valuation.Compatible.rel_iff_le (v := valuation R) ..).symm
-
--- move
-instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ) :
-    Algebra s R :=
-  (Subring.ofClass s).subtype.toAlgebra
-
--- move
-@[simp] theorem SubringClass.coe_algebraMap  (R : Type*) [CommRing R] {σ : Type*}
-    [SetLike σ R] [SubringClass σ R] (s : σ) : ⇑(algebraMap s R) = Subtype.val := rfl
-
--- move
-instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
-    [ValuativeRel R] : ValuativeExtension s R where
-  rel_iff_rel _ _ := by simp
-
 -- todo
 instance (K L : Type*)
     [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
     [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
     [Algebra K L] [ValuativeExtension K L]
     (E : IntermediateField K L) : IsNonarchimedeanLocalField E := sorry
-
--- move
-instance (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
-    [ValuativeRel A] [ValuativeRel B] [ValuativeExtension A B]
-    {σ : Type*} [SetLike σ B] [SubringClass σ B] [SMulMemClass σ A B] (s : σ) :
-    ValuativeExtension A s :=
-  ⟨by simp [ValuativeExtension.rel_iff_rel]⟩
 
 theorem InUnramified.intermediateField [IsUnramified K L] (E : IntermediateField K L) :
     IsUnramified K E :=

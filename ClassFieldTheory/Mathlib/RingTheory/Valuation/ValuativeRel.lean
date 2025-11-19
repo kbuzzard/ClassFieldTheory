@@ -1,3 +1,4 @@
+import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
@@ -75,3 +76,35 @@ lemma algebraMap_lt : valuation B (algebraMap A B a) < valuation B (algebraMap A
   simp_rw [lt_iff_le_not_ge, algebraMap_le]
 
 end ValuativeExtension
+
+
+namespace ValuativeRel
+
+instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
+    [ValuativeRel R] : ValuativeRel s where
+  rel x y := x.val ≤ᵥ y.val
+  rel_total x y := rel_total x.1 y.1
+  rel_trans := rel_trans (R := R)
+  rel_add := rel_add
+  rel_mul_right z := rel_mul_right z.1
+  rel_mul_cancel := rel_mul_cancel
+  not_rel_one_zero := not_rel_one_zero
+
+instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
+    [ValuativeRel R] : ValuativeExtension s R where
+  rel_iff_rel _ _ := Iff.rfl
+
+variable {R : Type*} [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] {s : σ}
+variable [ValuativeRel R]
+
+@[simp] theorem subringclassRel_eq (x y : s) : (x ≤ᵥ y) = (x.val ≤ᵥ y.val) := rfl
+
+theorem subringclassRel_iff (x y : s) : x ≤ᵥ y ↔ x.val ≤ᵥ y.val := Iff.rfl
+
+instance (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+    [ValuativeRel A] [ValuativeRel B] [ValuativeExtension A B]
+    {σ : Type*} [SetLike σ B] [SubringClass σ B] [SMulMemClass σ A B] (s : σ) :
+    ValuativeExtension A s :=
+  ⟨by simp [ValuativeExtension.rel_iff_rel]⟩
+
+end ValuativeRel
