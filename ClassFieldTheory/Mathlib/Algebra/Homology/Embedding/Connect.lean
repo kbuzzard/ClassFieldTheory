@@ -27,20 +27,12 @@ protected def map : h.cochainComplex ⟶ h'.cochainComplex where
 
 @[simp]
 lemma map_id : h.map h (𝟙 K) (𝟙 L) (by simp) = 𝟙 _ := by
-  ext m
-  obtain m | _ | m := m
-  · simp
-  · simp; rfl
-  · simp
+  ext m; obtain m | _ | m := m <;> simp; rfl
 
-@[simp]
-lemma map_comp : h.map h'' (fK ≫ fK') (fL ≫ fL') (by simp [f_comm', reassoc_of% f_comm]) =
-    h.map h' fK fL f_comm ≫ h'.map h'' fK' fL' f_comm' := by
-  ext m
-  obtain m | _ | m := m
-  · simp
-  · simp; rfl
-  · simp
+lemma map_comp_map :
+    h.map h' fK fL f_comm ≫ h'.map h'' fK' fL' f_comm' =
+      h.map h'' (fK ≫ fK') (fL ≫ fL') (by simp [f_comm', reassoc_of% f_comm]) := by
+  ext m; obtain m | _ | m := m <;> simp; rfl
 
 lemma homologyMap_map_eq_pos (n : ℕ) (m : ℤ) (hmn : m = n + 1)
     [HasHomology h.cochainComplex m] [HasHomology L (n + 1)]
