@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import ClassFieldTheory.LocalCFT.Teichmuller
+import ClassFieldTheory.IsNonarchimedeanLocalField.EF
 import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
@@ -461,24 +462,103 @@ instance : IsUnramified K (UnramifiedExtension K n) := .mk <| by
     one_mul, e_mul_f_eq_n]
   simp [hn]
 
+section more_stuff_on_finite_fields
+variable (F : Type*) [Field F] [Finite F]
+
+open FiniteField
+
+theorem _root_.FiniteField.rootsOfUnity_eq_top : rootsOfUnity (Nat.card F - 1) F = ⊤ :=
+  have := Fintype.ofFinite F
+  eq_top_iff.mpr fun x _ ↦ Units.ext <| by simp [FiniteField.pow_card_sub_one_eq_one _ x.ne_zero]
+
+instance : HasEnoughRootsOfUnity F (Nat.card F - 1) := by
+  have := Finite.one_lt_card (α := F)
+  have : NeZero (Nat.card F - 1) := .mk <| by grind
+  exact .of_card_le <| by simp [Fintype.card_eq_nat_card, rootsOfUnity_eq_top, Nat.card_units]
+
+end more_stuff_on_finite_fields
+
+instance : HasEnoughRootsOfUnity K (Nat.card 𝓀[K] - 1) := by
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot 𝓀[K] (Nat.card 𝓀[K] - 1)
+  have := Finite.one_lt_card (α := 𝓀[K])
+  have : NeZero (Nat.card 𝓀[K] - 1) := .mk <| by grind
+  exact ⟨⟨_, hζ.map_of_injective teichmuller_injective⟩, inferInstance⟩
+
 variable (L : Type*) [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
   [Algebra K L] [ValuativeExtension K L]
-  (E : IntermediateField K L)
 
--- move to another file
-instance : ValuativeRel E := sorry
-instance : ValuativeExtension K E := sorry
-instance : IsNonarchimedeanLocalField E := sorry
+/-- If `Kn` denotes the unramified extension of `K` of degree `n`, then `Kn` embeds into `L` if
+`n ∣ f K L`. This is half of the universal property. -/
+theorem nonempty_unramifiedExtension_alghom_of_dvd_f (n : ℕ) (hn : n ∣ f K L) :
+    Nonempty (UnramifiedExtension K n →ₐ[K] L) := by
+  have hf0 := NeZero.mk (f_pos K L).ne'
+  have hn0 := NeZero.mk <| ne_zero_of_dvd_ne_zero hf0.out hn
+  have h₁ := Nat.pow_sub_one_dvd_pow_sub_one (Nat.card 𝓀[K]) hn
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot
+    (UnramifiedExtension K n) (Nat.card 𝓀[K] ^ n - 1)
+  have h₂ := pos_of_ne_zero <| card_residue_pow_sub_one_in_ne_zero K hn0.out
+  have h₃ := pos_of_ne_zero <| card_residue_pow_sub_one_in_ne_zero K hf0.out
+  refine IntermediateField.nonempty_algHom_of_adjoin_splits
+    (forall_eq.mpr ⟨.of_pow h₂ <| hζ.1 ▸ isIntegral_one,
+      .of_dvd (g := X ^ (Nat.card 𝓀[K] ^ n - 1) - C 1) ?_
+        (X_pow_sub_C_ne_zero h₂ _) ?_⟩)
+    (intermediateFieldTop_eq_adjoin_primitive_root K _ hζ).symm
+  · rw [f_spec'] at h₁ h₃
+    have := NeZero.mk h₃.ne'
+    have := HasEnoughRootsOfUnity.of_dvd L h₁
+    obtain ⟨ζ', hζ'⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot L (Nat.card 𝓀[K] ^ n - 1)
+    simpa [Splits] using X_pow_sub_one_splits hζ'
+  · conv_rhs => exact show _ = map (algebraMap K L) (X ^ (Nat.card 𝓀[K] ^ n - 1) - C 1) by simp
+    rw [map_dvd_map', minpoly.dvd_iff]
+    simp [hζ.1]
 
--- requires generalising the previous code to adjoining the roots in any extension,
--- and not require spanning
-theorem isUnramified_intermediateField_iff {E : IntermediateField K L} :
-    IsUnramified K E ↔ E = .adjoin K (nthRootsFinset (Nat.card 𝓀[K] ^ (f K E) - 1) (1 : L)) :=
-  sorry
+/-- The universal property of unramified extensions. -/
+theorem nonempty_unramifiedExtension_alghom_iff_dvd_f {n : ℕ} (hn : n ≠ 0) :
+    Nonempty (UnramifiedExtension K n →ₐ[K] L) ↔ n ∣ f K L :=
+  ⟨fun ⟨φ⟩ ↦ f_unramifiedExtension K hn ▸ f_dvd_f φ,
+  nonempty_unramifiedExtension_alghom_of_dvd_f _ _ _⟩
 
-/-- If `L/K` is an extension of local fields and `Kf` is the unramified extension of `K` of
-degree `f(L/K)` then `Kf → L`. This is the (non-unique) universal property of unramified
-extensions. -/
-def ofUnramifiedExtension : UnramifiedExtension K (f K L) →ₐ[K] L := sorry
+/-- If `L/K` is unramified, then `L` is isomorphic to `Kn` where `n = [L:K]`. -/
+theorem nonempty_unramifiedExtension_algEquiv_of_isUnramified [IsUnramified K L] :
+    Nonempty (UnramifiedExtension K (Module.finrank K L) ≃ₐ[K] L) := by
+  obtain ⟨φ⟩ := nonempty_unramifiedExtension_alghom_of_dvd_f K L (Module.finrank K L)
+    (IsUnramified.n_dvd_f K L)
+  have : φ.fieldRange = ⊤ := IntermediateField.toSubalgebra_injective <|
+    Subalgebra.toSubmodule_injective <| Submodule.eq_top_of_finrank_eq <| by
+    change Module.finrank K (LinearMap.range φ.toLinearMap) = _
+    rw [LinearMap.finrank_range_of_inj φ.toRingHom.injective,
+      finrank_unramifiedExtension _ Module.finrank_pos.ne']
+  exact ⟨(AlgEquiv.ofInjective φ φ.toRingHom.injective).trans <|
+    (IntermediateField.equivOfEq this).trans <| IntermediateField.topEquiv⟩
+
+/-- Any unramified extension is Galois. -/
+instance [IsUnramified K L] : IsGalois K L :=
+  let ⟨φ⟩ := nonempty_unramifiedExtension_algEquiv_of_isUnramified K L
+  .of_algEquiv φ
+
+/-- The maximal unramified subextension. -/
+def maximalUnramified : IntermediateField K L :=
+  (nonempty_unramifiedExtension_alghom_of_dvd_f K L (f K L) dvd_rfl).some.fieldRange
+
+instance : IsUnramified K (maximalUnramified K L) := by
+  unfold maximalUnramified
+  infer_instance
+
+variable {K L} (E : IntermediateField K L)
+
+/-- The maximal unramified subextension is maximal. -/
+theorem le_maximalUnramified_iff : E ≤ maximalUnramified K L ↔ IsUnramified K E := by
+  refine ⟨fun h ↦ .comap <| show E →ₐ[K] maximalUnramified K L from Subalgebra.inclusion h,
+    fun _ ↦ ?_⟩
+  obtain ⟨φ₁⟩ := nonempty_unramifiedExtension_algEquiv_of_isUnramified K E
+  have h₁ : Module.finrank K E ∣ f K L := .trans (IsUnramified.n_dvd_f K E) <| f_dvd_f_top ..
+  obtain ⟨φ₂⟩ := nonempty_unramifiedExtension_alghom_of_dvd_f K (UnramifiedExtension K (f K L))
+    (Module.finrank K E) (by simpa [f_unramifiedExtension _ (f_pos _ _).ne'])
+  unfold maximalUnramified
+  generalize Nonempty.some _ = φ₃
+  rw [← IntermediateField.toSubalgebra_le_toSubalgebra, AlgHom.fieldRange_toSubalgebra,
+    ← AlgHom.fieldRange_of_normal (E := E) (φ₃.comp (φ₂.comp φ₁.symm)),
+    AlgHom.fieldRange_toSubalgebra]
+  exact AlgHom.range_comp_le_range ..
 
 end IsNonarchimedeanLocalField

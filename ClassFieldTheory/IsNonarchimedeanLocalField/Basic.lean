@@ -447,7 +447,9 @@ theorem f_eq_one_of_n_eq_one (hn : Module.finrank K L = 1) : f K L = 1 :=
 
 -- TODO: generalise to extensions of DVRs.
 @[mk_iff] class IsUnramified : Prop where
-  e_eq_one : e K L = 1
+  e_eq_one' : e K L = 1
+
+@[simp] theorem IsUnramified.e_eq_one [IsUnramified K L] : e K L = 1 := e_eq_one'
 
 -- by Chenyi Yang
 theorem isUnramified_iff_map_maximalIdeal :
