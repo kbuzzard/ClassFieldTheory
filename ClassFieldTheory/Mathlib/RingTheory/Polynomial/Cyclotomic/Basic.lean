@@ -4,8 +4,6 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R] [IsDomain R] {n : ℕ} {ζ : R}
 
--- with much more effort are the following generalisable to CommRing
-
 theorem X_pow_sub_one_factors (hζ : IsPrimitiveRoot ζ n) :
     (X ^ n - 1 : R[X]).Factors := by
   obtain _ | n := n
