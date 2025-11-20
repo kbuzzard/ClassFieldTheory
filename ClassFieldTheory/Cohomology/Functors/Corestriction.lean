@@ -8,6 +8,8 @@ import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+import ClassFieldTheory.Mathlib.Algebra.Module.NatInt
+import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 
 /-!
 # Corestriction
@@ -297,47 +299,6 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep 
 -- lemma tateCohomology_torsion' {n : ℤ} [Finite G] :
 --     (Nat.card G) • (CategoryTheory.NatTrans.id (tateCohomology (R := R) (G := G) n)) = 0 := sorry
 
-def TorsionAbelian.decompose {k m1 m2: ℕ} {M : Type} [AddCommGroup M] [Module R M]
-    (hk : k = m1 * m2) (hmm : m1.Coprime m2) (hA : Module.IsTorsionBy R M k):
-    M ≃ₗ[R] Submodule.torsionBy R M m1 × Submodule.torsionBy R M m2 where
-  toFun m := ⟨⟨(m2 : R) • m, by simp [← MulAction.mul_smul, ← Nat.cast_mul, ← hk, hA]⟩,
-    ⟨(m1 : R) • m, by simp [← MulAction.mul_smul, mul_comm, ← Nat.cast_mul, ← hk, hA]⟩⟩
-  map_add' := by simp
-  map_smul' := by simp [← MulAction.mul_smul, mul_comm]
-  invFun := fun ⟨x1, x2⟩ ↦ (m1.gcdB m2 : R) • x1.1 + (m1.gcdA m2 : R) • x2.1
-  left_inv x := by
-    simp only [← smul_assoc, smul_eq_mul, ← add_smul]
-    convert one_smul R x using 2
-    rw [← Nat.cast_one, ← Nat.coprime_iff_gcd_eq_one (m := m1) (n := m2)|>.1 hmm,
-      ← AddCommGroupWithOne.intCast_ofNat (m1.gcd m2), Nat.gcd_eq_gcd_ab m1 m2]
-    simpa using by grind
-  right_inv := fun ⟨⟨x1, hx1⟩, ⟨x2, hx2⟩⟩ ↦ by
-    simp only [Submodule.mem_torsionBy_iff] at hx1 hx2
-    simp only [smul_add, ← smul_assoc, smul_eq_mul, mul_comm, Prod.mk.injEq, Subtype.mk.injEq]
-    simp only [mul_smul, hx2, smul_zero, add_zero, hx1, zero_add]
-    constructor
-    · rw [← add_zero (_ • _ • x1), ← smul_zero (m1.gcdA m2), ← hx1, ← smul_assoc, ← smul_assoc,
-        ← add_smul, smul_eq_mul, zsmul_eq_mul, ← AddCommGroupWithOne.intCast_ofNat, ← Int.cast_mul,
-        ← AddCommGroupWithOne.intCast_ofNat m1, ← Int.cast_mul, ← Int.cast_add, mul_comm,
-        mul_comm _ (m1 : ℤ), add_comm, ← Nat.gcd_eq_gcd_ab m1 m2, Nat.coprime_iff_gcd_eq_one.1 hmm]
-      simp
-    · rw [← add_zero (_ • _ • x2), ← smul_zero (m1.gcdB m2), ← hx2, ← smul_assoc, ← smul_assoc,
-        ← add_smul, smul_eq_mul, zsmul_eq_mul, ← AddCommGroupWithOne.intCast_ofNat, ← Int.cast_mul,
-        ← AddCommGroupWithOne.intCast_ofNat m2, ← Int.cast_mul, ← Int.cast_add, mul_comm,
-        mul_comm _ (m2 : ℤ), ← Nat.gcd_eq_gcd_ab m1 m2, Nat.coprime_iff_gcd_eq_one.1 hmm]
-      simp
-
-lemma Module.isTorsion_gcd_iff {M} (a b : ℕ) [AddCommGroup M] (x : M) :
-    (a.gcd b) • x = 0 ↔ a • x = 0 ∧ b • x = 0 := by
-  constructor
-  · intro h
-    obtain ⟨⟨n1, hn1⟩, ⟨n2, hn2⟩⟩ := Nat.gcd_dvd a b
-    exact ⟨hn1 ▸ mul_comm _ n1 ▸ mul_smul n1 _ x ▸ smul_zero (A := M) n1 ▸ congr(HSMul.hSMul n1 $h),
-      hn2 ▸ mul_comm _ n2 ▸ mul_smul n2 _ x ▸ smul_zero (A := M) n2 ▸ congr(HSMul.hSMul n2 $h)⟩
-  · rintro ⟨ha, hb⟩
-    rw [← natCast_zsmul, Nat.gcd_eq_gcd_ab, mul_comm (a : ℤ), mul_comm (b : ℤ)]
-    simp [add_smul, mul_smul, ha, hb]
-
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) [Fact p.Prime] (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
@@ -346,7 +307,7 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
   haveI : NeZero n := ⟨ne_of_gt hn⟩
   have eq := by simpa [rest_app, coresNatTrans] using
     ModuleCat.hom_ext_iff.1 congr(NatTrans.app $(cores_res (R := R) (G := G) (S := P) n) M)
-  let e := TorsionAbelian.decompose (R := R) (M := groupCohomology M n)
+  let e := Module.IsTorsionBy.coprime_decompose (R := R) (M := groupCohomology M n)
     (Subgroup.card_mul_index P.toSubgroup).symm (Sylow.card_coprime_index P) (fun x ↦
     Nat.cast_smul_eq_nsmul R _ x ▸ torsion_of_finite_of_neZero M x)
   let f : _ →ₗ[R] groupCohomology (M ↓ P.toSubgroup.subtype) n :=
@@ -356,7 +317,7 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     simp only [← LinearMap.coe_comp, eq, Module.End.mul_eq_comp, LinearMap.comp_id,
       LinearEquiv.coe_coe]
     intro ⟨x1, hx1⟩ ⟨x2, hx2⟩
-    simp +zetaDelta only [TorsionAbelian.decompose, LinearEquiv.coe_symm_mk', Function.comp_apply,
+    simp +zetaDelta only [Function.comp_apply, Module.IsTorsionBy.coprime_decompose_symm_apply,
       ZeroMemClass.coe_zero, smul_zero, add_zero, map_smul, Module.End.natCast_apply,
       Subtype.mk.injEq]
     intro h
@@ -372,14 +333,14 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     simpa using h
   have inj2 : Function.Injective (f ∘ₗ (LinearMap.inl _ _ _)) :=
     Function.Injective.of_comp (f := (cores_obj M n).hom) inj1 -- this should be what we want
-  simp [rest_app]
+  simp only [Functor.comp_obj, functor_obj, rest_app, ne_eq]
   by_contra hx2
   apply hx'
   have hx'' : x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P) := by
     simp
     clear eq inj1 inj2 hx2 f e
     obtain ⟨d, hd⟩ := hx
-    have := Module.isTorsion_gcd_iff (Nat.card G) (p ^ d) x|>.2 ⟨torsion_of_finite_of_neZero M x, hd⟩
+    have := AddCommGroup.isTorsion_gcd_iff (Nat.card G) (p ^ d) x|>.2 ⟨torsion_of_finite_of_neZero M x, hd⟩
     obtain ⟨k, hk1, hk2⟩ := Nat.dvd_prime_pow Fact.out|>.1 <| Nat.gcd_dvd_right (Nat.card G) (p ^ d)
     obtain ⟨m, hm⟩ := P.pow_dvd_card_of_pow_dvd_card (hk2 ▸ Nat.gcd_dvd_left (Nat.card G) (p ^ d))
     exact hm ▸ mul_comm _ m ▸ Nat.cast_mul (α := R) _ _ ▸ mul_smul (m : R) _ x ▸
@@ -387,7 +348,7 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
   suffices ⟨x, hx''⟩ = (0 : Submodule.torsionBy R (groupCohomology M n) (Nat.card P)) by
     simpa using this
   apply inj2
-  simp +zetaDelta [TorsionAbelian.decompose, hx2]
+  simp +zetaDelta [hx2]
 
 -- Want an analogous statement for Tate cohomology but I can't find restriction
 -- in Tate cohomology
