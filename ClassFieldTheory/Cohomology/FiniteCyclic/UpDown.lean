@@ -494,15 +494,14 @@ namespace groupHomology
 def oddTrivialInt {n : ℕ} (hG : Nat.card G = N) (hn : Odd n) :
     groupHomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := by
   have : NeZero n := ⟨hn.pos.ne'⟩
-  exact .trans ((TateCohomology.isoGroupHomology n).app _).symm <|
-    TateCohomology.evenTrivialInt hG <| by rw [← neg_add', even_neg]; exact mod_cast hn.add_one
+  exact .trans ((TateCohomology.isoGroupHomology (-(n + 1)) n <| by simp).app _).symm <|
+    TateCohomology.evenTrivialInt hG <| .neg <| mod_cast hn.add_one
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial nonzero even group
 homology. -/
 lemma isZero_even_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
-    {n : ℕ} [NeZero n] (hn : Even n) : IsZero (groupHomology (trivial ℤ G M) n) := by
-  refine (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree ?_).of_iso <|
-    (TateCohomology.isoGroupHomology n).symm.app _
-  rw [← neg_add', odd_neg]; exact mod_cast hn.add_one
+    {n : ℕ} [NeZero n] (hn : Even n) : IsZero (groupHomology (trivial ℤ G M) n) :=
+  (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| .neg <| mod_cast hn.add_one).of_iso <|
+    (TateCohomology.isoGroupHomology (-(n + 1)) n <| by simp).symm.app _
 
 end groupHomology
