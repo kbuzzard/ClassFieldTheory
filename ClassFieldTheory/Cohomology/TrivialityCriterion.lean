@@ -123,6 +123,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     obtain ⟨v⟩ : Nonempty (Sylow p S) := inferInstance
     rw [mul_smul] at hx
     -- the `p^∞` torsion injects into `Hᵘ⁺¹(v,M)`, so it suffices that `Hᵘ⁺¹(v,M)` is trivial
+    haveI : Fact p.Prime := ⟨hp⟩
     apply (groupCohomology_Sylow (Nat.add_one_pos u) (M ↓ S.subtype) (a • x) p v ⟨c, hx⟩).mtr
     -- `Hᵘ⁺¹(v,M)` is trivial if `M` has trivial cohomology
     refine @Subsingleton.eq_zero _ _ (ModuleCat.subsingleton_of_isZero

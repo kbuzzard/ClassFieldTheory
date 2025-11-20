@@ -1,13 +1,15 @@
 /-
 Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Aaron Liu
+Authors: Kevin Buzzard, Aaron Liu, Yunzhou Xie
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+import ClassFieldTheory.Mathlib.Algebra.Module.NatInt
+import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 
 /-!
 # Corestriction
@@ -299,11 +301,54 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep 
 
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
-    (x : groupCohomology M n) (p : ℕ) (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
+    (x : groupCohomology M n) (p : ℕ) [Fact p.Prime] (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
     (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
-  simp only [Functor.comp_obj, functor_obj, ne_eq]
-
-  sorry
+  classical
+  haveI : NeZero n := ⟨ne_of_gt hn⟩
+  have eq := by simpa [rest_app, coresNatTrans] using
+    ModuleCat.hom_ext_iff.1 congr(NatTrans.app $(cores_res (R := R) (G := G) (S := P) n) M)
+  let e := Module.IsTorsionBy.coprime_decompose (R := R) (M := groupCohomology M n)
+    (Subgroup.card_mul_index P.toSubgroup).symm (Sylow.card_coprime_index P) (fun x ↦
+    Nat.cast_smul_eq_nsmul R _ x ▸ torsion_of_finite_of_neZero M x)
+  let f : _ →ₗ[R] groupCohomology (M ↓ P.toSubgroup.subtype) n :=
+    (map P.toSubgroup.subtype (𝟙 (_ ↓ _)) n).hom ∘ₗ e.symm.toLinearMap
+  have inj1 : Function.Injective ((ModuleCat.Hom.hom (cores_obj M n)) ∘ (f ∘ₗ LinearMap.inl _ _ _)) := by
+    simp only [functor_obj, LinearMap.coe_comp, LinearMap.coe_inl, ← Function.comp_assoc, f]
+    simp only [← LinearMap.coe_comp, eq, Module.End.mul_eq_comp, LinearMap.comp_id,
+      LinearEquiv.coe_coe]
+    intro ⟨x1, hx1⟩ ⟨x2, hx2⟩
+    simp +zetaDelta only [Function.comp_apply, Module.IsTorsionBy.coprime_decompose_symm_apply,
+      ZeroMemClass.coe_zero, smul_zero, add_zero, map_smul, Module.End.natCast_apply,
+      Subtype.mk.injEq]
+    intro h
+    replace h := by simpa using congr((· + ((Nat.card P).gcdA P.toSubgroup.index : R) • 0) $h)
+    nth_rw 1 [← Submodule.mem_torsionBy_iff _ _|>.1 hx1,
+      ← Submodule.mem_torsionBy_iff _ _|>.1 hx2] at h
+    rw [← Nat.cast_smul_eq_nsmul R P.toSubgroup.index, ← Nat.cast_smul_eq_nsmul R P.toSubgroup.index,
+      ← smul_assoc, ← smul_assoc, ← smul_assoc, ← smul_assoc] at h
+    simp only [← add_smul, smul_eq_mul] at h
+    rw [← Ring.intCast_ofNat, ← Int.cast_mul, ← Ring.intCast_ofNat (Nat.card P), ← Int.cast_mul,
+      ← Int.cast_add, add_comm, mul_comm, mul_comm _ (P.toSubgroup.index : ℤ),
+      ← Nat.gcd_eq_gcd_ab, Nat.coprime_iff_gcd_eq_one.1 (Sylow.card_coprime_index P)] at h
+    simpa using h
+  have inj2 : Function.Injective (f ∘ₗ (LinearMap.inl _ _ _)) :=
+    Function.Injective.of_comp (f := (cores_obj M n).hom) inj1 -- this should be what we want
+  simp only [Functor.comp_obj, functor_obj, rest_app, ne_eq]
+  by_contra hx2
+  apply hx'
+  have hx'' : x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P) := by
+    simp
+    clear eq inj1 inj2 hx2 f e
+    obtain ⟨d, hd⟩ := hx
+    have := AddCommGroup.isTorsion_gcd_iff (Nat.card G) (p ^ d) x|>.2 ⟨torsion_of_finite_of_neZero M x, hd⟩
+    obtain ⟨k, hk1, hk2⟩ := Nat.dvd_prime_pow Fact.out|>.1 <| Nat.gcd_dvd_right (Nat.card G) (p ^ d)
+    obtain ⟨m, hm⟩ := P.pow_dvd_card_of_pow_dvd_card (hk2 ▸ Nat.gcd_dvd_left (Nat.card G) (p ^ d))
+    exact hm ▸ mul_comm _ m ▸ Nat.cast_mul (α := R) _ _ ▸ mul_smul (m : R) _ x ▸
+      Nat.cast_smul_eq_nsmul R _ x ▸ hk2.symm ▸ this.symm ▸ smul_zero _
+  suffices ⟨x, hx''⟩ = (0 : Submodule.torsionBy R (groupCohomology M n) (Nat.card P)) by
+    simpa using this
+  apply inj2
+  simp +zetaDelta [hx2]
 
 -- Want an analogous statement for Tate cohomology but I can't find restriction
 -- in Tate cohomology
