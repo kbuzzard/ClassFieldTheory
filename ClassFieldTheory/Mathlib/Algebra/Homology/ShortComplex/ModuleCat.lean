@@ -4,10 +4,16 @@ import Mathlib.GroupTheory.QuotientGroup.Finite
 universe v u
 
 namespace CategoryTheory.ShortComplex
-variable {R : Type u} [CommRing R]
+variable {R : Type u} [Ring R] (S : ShortComplex (ModuleCat.{v} R))
+
+lemma moduleCat_range_le_ker : LinearMap.range S.f.hom ≤ LinearMap.ker S.g.hom :=
+  fun _ ⟨_, ht⟩ ↦ LinearMap.mem_ker.mpr (ht ▸ moduleCat_zero_apply _ _)
+
+lemma Exact.moduleCat_of_ker_le_range (h : LinearMap.ker S.g.hom ≤ LinearMap.range S.f.hom) :
+    S.Exact := .moduleCat_of_range_eq_ker _ _ (S.moduleCat_range_le_ker.antisymm h)
 
 /-- In an exact complex, a module sandwiched between two finite modules is finite. -/
-lemma Exact.finite_moduleCat {S : ShortComplex (ModuleCat.{u} R)} (hS : S.Exact) [Finite S.X₁]
+lemma Exact.moduleCat_finite {S : ShortComplex (ModuleCat.{u} R)} (hS : S.Exact) [Finite S.X₁]
     [Finite S.X₃] :
     Finite S.X₂ := by
   have : Finite S.f.hom.toAddMonoidHom.range := Set.finite_range _
@@ -15,7 +21,6 @@ lemma Exact.finite_moduleCat {S : ShortComplex (ModuleCat.{u} R)} (hS : S.Exact)
     rw [show S.f.hom.toAddMonoidHom.range = S.g.hom.toAddMonoidHom.ker from
       congr($(hS.moduleCat_range_eq_ker).toAddSubgroup)]
     exact .of_equiv _ (QuotientAddGroup.quotientKerEquivRange _).toEquiv.symm
-  -- TODO: Make `H` explicit in `Finite.of_finite_quot_finite_addSubgroup`
-  exact .of_finite_quot_finite_addSubgroup (H := S.f.hom.toAddMonoidHom.range)
+  exact .of_addSubgroup_quotient S.f.hom.toAddMonoidHom.range
 
 end CategoryTheory.ShortComplex

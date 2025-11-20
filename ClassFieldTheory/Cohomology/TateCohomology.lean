@@ -1,9 +1,9 @@
 import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Mathlib.Algebra.Homology.Embedding.Connect
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+import Mathlib.Algebra.Homology.Embedding.Connect
 
 open
   CategoryTheory
@@ -152,10 +152,9 @@ instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
     simp_rw [tateComplexFunctor]
     aesop_cat
 
-lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)}
-    (hS : S.ShortExact) : (S.map tateComplexFunctor).ShortExact := by
-  rw [HomologicalComplex.shortExact_iff_degreewise_shortExact]
-  simp_rw [← ShortComplex.map_comp]
+lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
+    (S.map tateComplexFunctor).ShortExact := by
+  simp_rw [HomologicalComplex.shortExact_iff_degreewise_shortExact, ← ShortComplex.map_comp]
   rintro (_ | _)
   · exact .map_of_natIso _ (tateComplex.eval_nonneg _).symm <|
       map_cochainsFunctor_eval_shortExact _ hS
@@ -204,34 +203,15 @@ lemma exact₁ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
 non-zero. -/
 def isoGroupCohomology (n : ℕ) [NeZero n] :
     tateCohomology.{u} n ≅ groupCohomology.functor.{u} R G n :=
-  NatIso.ofComponents
-  (fun M ↦ by
-    obtain _ | n := n
-    · cases NeZero.ne 0 rfl
-    · exact (tateComplexConnectData M).homologyIsoPos _ _ (by norm_num)) fun {X Y} f ↦ by
-  obtain _ | n := n
-  · cases NeZero.ne 0 rfl
-  simp only [Int.natCast_add, Int.cast_ofNat_Int, tateCohomology, tateComplexFunctor,
-    Functor.comp_obj, HomologicalComplex.homologyFunctor_obj, functor_obj, Functor.comp_map,
-    HomologicalComplex.homologyFunctor_map, functor_map]
-  rw [CochainComplex.ConnectData.homologyMap_map_eq_pos (m := n + 1) (n := n) (hmn := rfl)]
-  simp
+  NatIso.ofComponents (fun M ↦ (tateComplexConnectData M).homologyIsoPos _ _ rfl) fun {X Y} f ↦ by
+    simp [tateCohomology, CochainComplex.ConnectData.homologyMap_map_of_eq_succ (n := n)]
 
 /-- The isomorphism between the `-n-1`-th Tate cohomology and `n`-th group homology for `n : ℕ`
 non-zero. -/
-def isoGroupHomology (n : ℕ) [NeZero n] : tateCohomology (-n - 1) ≅ groupHomology.functor R G n :=
-  NatIso.ofComponents (fun M ↦ by
-    obtain _ | n := n
-    · cases NeZero.ne 0 rfl
-    · exact CochainComplex.ConnectData.homologyIsoNeg (tateComplexConnectData M) _ _ (by grind))
-    fun {X Y} f ↦ by
-    obtain _ | n := n
-    · cases NeZero.ne 0 rfl
-    simp only [tateCohomology, tateComplexFunctor, Functor.comp_obj,
-      HomologicalComplex.homologyFunctor_obj, groupHomology.functor_obj, Functor.comp_map,
-      HomologicalComplex.homologyFunctor_map, groupHomology.functor_map]
-    rw [CochainComplex.ConnectData.homologyMap_map_eq_neg (n := n) (hmn := by omega)]
-    simp
+def isoGroupHomology (m : ℤ) (n : ℕ) (hmn : m = -↑(n + 1)) [NeZero n] :
+    tateCohomology m ≅ groupHomology.functor R G n :=
+  NatIso.ofComponents (fun M ↦ (tateComplexConnectData M).homologyIsoNeg _ _ hmn) fun {X Y} f ↦ by
+    simp [tateCohomology, CochainComplex.ConnectData.homologyMap_map_of_eq_neg_succ (hmn := hmn)]
 
 noncomputable abbrev cochainsMap {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ : M ⟶ N ↓ e) :
     (tateComplexConnectData M).cochainComplex ⟶ (tateComplexConnectData N).cochainComplex := by
@@ -257,7 +237,7 @@ noncomputable def res_iso {M : Rep R G} (e : G ≃* H) {N : Rep R H} (e' : M.V �
         e.apply_symm_apply, implies_true]⟩ n
   hom_inv_id := by
     unfold map cochainsMap;
-    rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
+    rw [← HomologicalComplex.homologyMap_comp, CochainComplex.ConnectData.map_comp_map]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
     · rw [← groupHomology.chainsMap_comp, ← groupHomology.chainsMap_id]
@@ -266,7 +246,7 @@ noncomputable def res_iso {M : Rep R G} (e : G ≃* H) {N : Rep R H} (e' : M.V �
       exact groupCohomology.cochainsMap_congr (by simp) (by simp)
   inv_hom_id := by
     unfold map cochainsMap;
-    rw [← HomologicalComplex.homologyMap_comp, ← CochainComplex.ConnectData.map_comp]
+    rw [← HomologicalComplex.homologyMap_comp, CochainComplex.ConnectData.map_comp_map]
     conv_rhs => erw [← HomologicalComplex.homologyMap_id, ← CochainComplex.ConnectData.map_id]
     congr
     · rw [← groupHomology.chainsMap_comp, ← groupHomology.chainsMap_id]

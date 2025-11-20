@@ -1,6 +1,5 @@
 import Lean
-import Mathlib.Tactic.ToAdditive.Frontend
-import Mathlib.Tactic.ToAdditive.GuessName
+import Mathlib.Tactic.Translate.GuessName
 import Lean.Meta.Tactic.TryThis
 
 open Lean Elab Meta Tactic Command
@@ -12,7 +11,7 @@ def Lean.Syntax.replaceNames (f : Name → Name) : Syntax → Syntax
     mkIdent (f val)
   | stx => stx
 
-def Lean.Syntax.replaceNamesM (f : Name → MetaM Name) : Syntax → MetaM Syntax
+meta def Lean.Syntax.replaceNamesM (f : Name → MetaM Name) : Syntax → MetaM Syntax
   | .node info kind args =>
     return .node info kind (← args.mapM <| replaceNamesM f)
   | .ident _ _ val _ =>
@@ -22,8 +21,8 @@ def Lean.Syntax.replaceNamesM (f : Name → MetaM Name) : Syntax → MetaM Synta
 def Lean.TSyntax.replaceNames {ks} (f : Name → Name) : TSyntax ks → TSyntax ks :=
   (⟨·.raw.replaceNames f⟩)
 
-def Lean.TSyntax.replaceNamesM {ks} (f : Name → MetaM Name) : TSyntax ks → MetaM (TSyntax ks) :=
-  (return ⟨← ·.raw.replaceNamesM f⟩)
+meta def Lean.TSyntax.replaceNamesM {ks} (f : Name → MetaM Name) :
+    TSyntax ks → MetaM (TSyntax ks) := (return ⟨← ·.raw.replaceNamesM f⟩)
 
 section Renaming
 
