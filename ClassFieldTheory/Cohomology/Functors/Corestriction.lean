@@ -338,20 +338,6 @@ lemma Module.isTorsion_gcd_iff {M} (a b : ℕ) [AddCommGroup M] (x : M) :
     rw [← natCast_zsmul, Nat.gcd_eq_gcd_ab, mul_comm (a : ℤ), mul_comm (b : ℤ)]
     simp [add_smul, mul_smul, ha, hb]
 
-lemma Module.isTorsionBy_mem_dvd (k p d t m : ℕ) [Fact p.Prime] (hk : k = p ^ t * m)
-    (h : p.Coprime m) (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    (hA : Module.IsTorsionBy R M k) (x : M) (hx : p ^ d • x = 0) : p ^ t • x = 0 := by
-  if hd : d ≤ t then
-  rw [show t = (t - d + d) by omega, pow_add, mul_smul, hx, smul_zero] else
-  simp at hd
-  rw [show d = (d - t + t) by omega, pow_add, mul_smul] at hx
-  have : (m * p ^ t) • x = 0 := (mul_comm _ m ▸ hk ▸ @hA x) ▸ (Nat.cast_smul_eq_nsmul ..).symm
-
-  sorry
-
-example (a m p : ℕ) [Fact p.Prime] : ∃ k ≤ m, a.gcd (p ^ m) = p ^ k :=
-  Nat.dvd_prime_pow Fact.out |>.1 <| Nat.gcd_dvd_right a (p ^ m)
-
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) [Fact p.Prime] (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
