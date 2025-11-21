@@ -87,7 +87,7 @@ namespace ValuativeRel
 
 instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
     [ValuativeRel R] : ValuativeRel s where
-  rel x y := x.val ≤ᵥ y.val
+  Rel x y := x.val ≤ᵥ y.val
   rel_total x y := rel_total x.1 y.1
   rel_trans := rel_trans (R := R)
   rel_add := rel_add

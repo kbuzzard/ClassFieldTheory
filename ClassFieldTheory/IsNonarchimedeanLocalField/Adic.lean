@@ -31,15 +31,14 @@ theorem isAdic : IsAdic 𝓂[K] := by
     obtain ⟨n, hn, hnt⟩ := (IsValuativeTopology.hasBasis_nhds_zero' _).mem_iff.mp ht
     obtain ⟨n, rfl⟩ := (valueGroupWithZeroIsoInt K).symm.surjective n
     replace hn := EmbeddingLike.map_ne_zero_iff.mp hn
-    obtain ⟨n, rfl⟩ := exp_surj' hn
+    lift n to ℤ using hn
     obtain ⟨m, hmn⟩ : ∃ m : ℕ, -m < n := ⟨n.natAbs + 1, by grind⟩
     refine ⟨m, fun x hx ↦ hts <| hnt ?_⟩
     simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq] at hx ⊢
     exact hx.trans_lt <| (map_lt_map_iff ..).mpr <| exp_lt_exp.mpr hmn
 
--- #30124, which is already merged
 instance : IsAdicComplete 𝓂[K] 𝒪[K] :=
-  have := isAdic K
-  sorry
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  (isAdic K).isAdicComplete_iff.mpr ⟨inferInstance, inferInstance⟩
 
 end IsNonarchimedeanLocalField

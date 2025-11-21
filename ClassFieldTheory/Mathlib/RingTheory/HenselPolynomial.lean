@@ -685,7 +685,7 @@ theorem forall_monicFactors_of_natDegree_le_one [Semiring R] {f : R[X]}
   obtain ⟨p, q, mp, mq, eq⟩ := fac
   have h₁ := mp.natDegree_mul mq
   obtain hdf | hdf := Nat.le_one_iff_eq_zero_or_eq_one.mp hdf
-  · rw [eq, hdf, eq_comm, Nat.add_eq_zero, mp.natDegree_eq_zero, mq.natDegree_eq_zero] at h₁
+  · rw [eq, hdf, eq_comm, Nat.add_eq_zero_iff, mp.natDegree_eq_zero, mq.natDegree_eq_zero] at h₁
     obtain ⟨rfl, rfl⟩ := h₁
     rw [mul_one] at eq; subst eq
     exact .inl rfl
