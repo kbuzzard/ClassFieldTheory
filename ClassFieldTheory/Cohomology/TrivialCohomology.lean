@@ -136,7 +136,7 @@ instance TrivialTateCohomology.to_trivialHomology [Fintype G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialHomology where
   isZero H n := (TrivialTateCohomology.isZero H (n := - (n + 1) - 1)).of_iso <|
     letI : Fintype H := Fintype.ofFinite _
-    (TateCohomology.isoGroupHomology (n + 1) |>.app (M ↓ H.subtype)).symm
+    (TateCohomology.isoGroupHomology _ (n + 1) rfl |>.app (M ↓ H.subtype)).symm
 
 /-- To check that a finite group has trivial Tate cohomology, it's enough to show it has trivial
 cohomology and trivial homology, and that the 0-th and -1st Tate cohomology groups are trivial. -/
@@ -157,7 +157,7 @@ lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
       letI := TrivialHomology.res M (H := H) H.subtype_injective
       exact isZero_of_trivialHomology.of_iso <|
         letI : Fintype H := Fintype.ofFinite _
-        (TateCohomology.isoGroupHomology (n + 1)).app (M ↓ H.subtype)
+        (TateCohomology.isoGroupHomology _ (n + 1) rfl).app (M ↓ H.subtype)
     | 0 =>
       aesop
     | .negSucc 0 =>

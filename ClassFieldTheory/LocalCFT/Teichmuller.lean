@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
@@ -48,7 +47,7 @@ theorem hasBasis_nhds : (nhds (0 : K)).HasBasis (fun _n : ℕ ↦ True)
     _ (by aesop) <| by
   refine (valueGroupWithZeroIsoInt K).symm.surjective.forall.mpr fun x hx ↦ ?_
   rw [map_ne_zero] at hx
-  obtain ⟨x, rfl⟩ := WithZero.exp_surj' hx
+  lift x to ℤ using hx
   obtain ⟨n, rfl | rfl⟩ := x.eq_nat_or_neg
   · exact ⟨0, by simp⟩
   · aesop
@@ -85,7 +84,7 @@ theorem pow_sub_pow_mem {a b : 𝒪[K]} {i : ℕ} (hi : i ≠ 0) (h : a - b ∈ 
   have h₁ : 1 ≤ i := by grind
   let := Fintype.ofFinite 𝓀[K]
   obtain ⟨p, hCp, ⟨n, hn₀⟩, hp, hn : _ = _ ^ n⟩ := FiniteField.card' 𝓀[K]
-  have h₂ : 2 ≤ p ^ n := Nat.succ_le.mpr <| one_lt_pow' hp.one_lt hn₀.ne'
+  have h₂ : 2 ≤ p ^ n := Nat.succ_le_iff.mpr <| one_lt_pow' hp.one_lt hn₀.ne'
   obtain ⟨r, hr⟩ := exists_add_pow_prime_pow_eq hp (a - b) b n
   rw [Nat.card_eq_fintype_card, hn, show a = a - b + b by abel, hr, add_right_comm,
     add_sub_cancel_right, mul_assoc _ b]
