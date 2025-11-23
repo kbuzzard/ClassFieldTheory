@@ -11,3 +11,7 @@ lemma AddCommGroup.isTorsion_gcd_iff {M} (a b : ℕ) [AddCommGroup M] (x : M) :
   · rintro ⟨ha, hb⟩
     rw [← natCast_zsmul, Nat.gcd_eq_gcd_ab, mul_comm (a : ℤ), mul_comm (b : ℤ)]
     simp [add_smul, mul_smul, ha, hb]
+
+lemma AddCommGroup.isTorsion_gcd_coprime_iff {M} {a b : ℕ} [AddCommGroup M] (x : M)
+    (h : a.Coprime b) : x = 0 ↔ a • x = 0 ∧ b • x = 0 := by
+  simp [h, ← AddCommGroup.isTorsion_gcd_iff]

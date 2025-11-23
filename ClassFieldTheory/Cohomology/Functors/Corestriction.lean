@@ -300,55 +300,52 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep 
 --     (Nat.card G) • (CategoryTheory.NatTrans.id (tateCohomology (R := R) (G := G) n)) = 0 := sorry
 
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
+
+lemma pTorsion_eq_sylowTorsion {n : ℕ} [NeZero n] [Finite G] [DecidableEq G] (M : Rep R G)
+    (p : ℕ) [Fact p.Prime] (P : Sylow p G) (x : groupCohomology M n) :
+    (∃ d, (p ^ d) • x = 0) ↔ x ∈ Submodule.torsionBy R _ (Nat.card P) :=
+  ⟨fun ⟨d, hd⟩ ↦ Submodule.mem_torsionBy_iff _ _ |>.2 <| by
+    obtain ⟨k, hk1, hk2⟩ := Nat.dvd_prime_pow Fact.out|>.1 <| Nat.gcd_dvd_right (Nat.card G) (p ^ d)
+    obtain ⟨m, hm⟩ := P.pow_dvd_card_of_pow_dvd_card (hk2 ▸ Nat.gcd_dvd_left (Nat.card G) (p ^ d))
+    simp [hm, mul_comm _ m, mul_smul, - Nat.cast_pow, Nat.cast_smul_eq_nsmul, ← hk2,
+      AddCommGroup.isTorsion_gcd_iff _ (p ^ d) x|>.2 ⟨torsion_of_finite_of_neZero M x, hd⟩],
+    fun h ↦ ⟨(Nat.card G).factorization p, P.card_eq_multiplicity ▸ by
+    simpa [Nat.cast_smul_eq_nsmul] using h⟩⟩
+
+lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] [DecidableEq G] (M : Rep R G)
+    (p : ℕ) [Fact p.Prime] (P : Sylow p G) : Function.Injective
+    ((map P.toSubgroup.subtype (𝟙 (_ ↓ _)) n).hom ∘ₗ (Module.IsTorsionBy.coprime_decompose
+    (M := groupCohomology M n) (Subgroup.card_mul_index P.toSubgroup).symm
+    (Sylow.card_coprime_index P) (fun x ↦ Nat.cast_smul_eq_nsmul R (Nat.card G) x ▸
+    torsion_of_finite_of_neZero M x)).symm.toLinearMap ∘ₗ LinearMap.inl _ _ _) :=
+  Function.Injective.of_comp (f := (cores_obj M n).hom) <| by
+  have eq := by simpa [rest_app, coresNatTrans] using
+    ModuleCat.hom_ext_iff.1 congr(NatTrans.app $(cores_res (R := R) (G := G) (S := P) n) M)
+  simp only [functor_obj, LinearMap.coe_comp, LinearMap.coe_inl, ← Function.comp_assoc]
+  simp only [← LinearMap.coe_comp, eq, Module.End.mul_eq_comp, LinearMap.comp_id,
+    LinearEquiv.coe_coe]
+  intro ⟨x1, hx1⟩ ⟨x2, hx2⟩
+  simp only [Function.comp_apply, Module.IsTorsionBy.coprime_decompose_symm_apply,
+    ZeroMemClass.coe_zero, smul_zero, add_zero, map_smul, Module.End.natCast_apply,
+    Subtype.mk.injEq]
+  intro h
+  replace h := by simpa using congr((· + ((Nat.card P).gcdA P.toSubgroup.index : R) • 0) $h)
+  nth_rw 1 [← Submodule.mem_torsionBy_iff _ _|>.1 hx1,
+    ← Submodule.mem_torsionBy_iff _ _|>.1 hx2] at h
+  rw [← Nat.cast_smul_eq_nsmul R P.toSubgroup.index, ← Nat.cast_smul_eq_nsmul R P.toSubgroup.index,
+    ← smul_assoc, ← smul_assoc, ← smul_assoc, ← smul_assoc] at h
+  simp only [← add_smul, smul_eq_mul] at h
+  rw [← Ring.intCast_ofNat, ← Int.cast_mul, ← Ring.intCast_ofNat (Nat.card P), ← Int.cast_mul,
+    ← Int.cast_add, add_comm, mul_comm, mul_comm _ (P.toSubgroup.index : ℤ),
+    ← Nat.gcd_eq_gcd_ab, Nat.coprime_iff_gcd_eq_one.1 (Sylow.card_coprime_index P)] at h
+  simpa using h
+
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) [Fact p.Prime] (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
     (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
   classical
   haveI : NeZero n := ⟨ne_of_gt hn⟩
-  have eq := by simpa [rest_app, coresNatTrans] using
-    ModuleCat.hom_ext_iff.1 congr(NatTrans.app $(cores_res (R := R) (G := G) (S := P) n) M)
-  let e := Module.IsTorsionBy.coprime_decompose (R := R) (M := groupCohomology M n)
-    (Subgroup.card_mul_index P.toSubgroup).symm (Sylow.card_coprime_index P) (fun x ↦
-    Nat.cast_smul_eq_nsmul R _ x ▸ torsion_of_finite_of_neZero M x)
-  let f : _ →ₗ[R] groupCohomology (M ↓ P.toSubgroup.subtype) n :=
-    (map P.toSubgroup.subtype (𝟙 (_ ↓ _)) n).hom ∘ₗ e.symm.toLinearMap
-  have inj1 : Function.Injective ((ModuleCat.Hom.hom (cores_obj M n)) ∘ (f ∘ₗ LinearMap.inl _ _ _)) := by
-    simp only [functor_obj, LinearMap.coe_comp, LinearMap.coe_inl, ← Function.comp_assoc, f]
-    simp only [← LinearMap.coe_comp, eq, Module.End.mul_eq_comp, LinearMap.comp_id,
-      LinearEquiv.coe_coe]
-    intro ⟨x1, hx1⟩ ⟨x2, hx2⟩
-    simp +zetaDelta only [Function.comp_apply, Module.IsTorsionBy.coprime_decompose_symm_apply,
-      ZeroMemClass.coe_zero, smul_zero, add_zero, map_smul, Module.End.natCast_apply,
-      Subtype.mk.injEq]
-    intro h
-    replace h := by simpa using congr((· + ((Nat.card P).gcdA P.toSubgroup.index : R) • 0) $h)
-    nth_rw 1 [← Submodule.mem_torsionBy_iff _ _|>.1 hx1,
-      ← Submodule.mem_torsionBy_iff _ _|>.1 hx2] at h
-    rw [← Nat.cast_smul_eq_nsmul R P.toSubgroup.index, ← Nat.cast_smul_eq_nsmul R P.toSubgroup.index,
-      ← smul_assoc, ← smul_assoc, ← smul_assoc, ← smul_assoc] at h
-    simp only [← add_smul, smul_eq_mul] at h
-    rw [← Ring.intCast_ofNat, ← Int.cast_mul, ← Ring.intCast_ofNat (Nat.card P), ← Int.cast_mul,
-      ← Int.cast_add, add_comm, mul_comm, mul_comm _ (P.toSubgroup.index : ℤ),
-      ← Nat.gcd_eq_gcd_ab, Nat.coprime_iff_gcd_eq_one.1 (Sylow.card_coprime_index P)] at h
-    simpa using h
-  have inj2 : Function.Injective (f ∘ₗ (LinearMap.inl _ _ _)) :=
-    Function.Injective.of_comp (f := (cores_obj M n).hom) inj1 -- this should be what we want
-  simp only [Functor.comp_obj, functor_obj, rest_app, ne_eq]
-  by_contra hx2
-  apply hx'
-  have hx'' : x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P) := by
-    simp
-    clear eq inj1 inj2 hx2 f e
-    obtain ⟨d, hd⟩ := hx
-    have := AddCommGroup.isTorsion_gcd_iff (Nat.card G) (p ^ d) x|>.2 ⟨torsion_of_finite_of_neZero M x, hd⟩
-    obtain ⟨k, hk1, hk2⟩ := Nat.dvd_prime_pow Fact.out|>.1 <| Nat.gcd_dvd_right (Nat.card G) (p ^ d)
-    obtain ⟨m, hm⟩ := P.pow_dvd_card_of_pow_dvd_card (hk2 ▸ Nat.gcd_dvd_left (Nat.card G) (p ^ d))
-    exact hm ▸ mul_comm _ m ▸ Nat.cast_mul (α := R) _ _ ▸ mul_smul (m : R) _ x ▸
-      Nat.cast_smul_eq_nsmul R _ x ▸ hk2.symm ▸ this.symm ▸ smul_zero _
-  suffices ⟨x, hx''⟩ = (0 : Submodule.torsionBy R (groupCohomology M n) (Nat.card P)) by
-    simpa using this
-  apply inj2
-  simp +zetaDelta [hx2]
-
--- Want an analogous statement for Tate cohomology but I can't find restriction
--- in Tate cohomology
+  simpa [Functor.comp_obj, functor_obj, rest_app, ne_eq] using by_contra fun hx2 ↦ hx' <|
+    @Subtype.ext_iff _ (p := fun x ↦ x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P))
+    ⟨x, pTorsion_eq_sylowTorsion M p P x|>.1 hx⟩ 0|>.1 <| groupCohomology.injects_to_sylowCoh M p P
+    (by simp [not_not.1 hx2])
