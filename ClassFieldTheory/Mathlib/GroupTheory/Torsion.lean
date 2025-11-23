@@ -1,4 +1,3 @@
-import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Torsion
 
