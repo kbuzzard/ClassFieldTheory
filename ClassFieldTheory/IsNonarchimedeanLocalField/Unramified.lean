@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
-import ClassFieldTheory.IsNonarchimedeanLocalField.EF
+import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
 import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
 import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
@@ -114,7 +114,7 @@ theorem card_residue_pow_sub_one_in_unramifiedExtension_residue_ne_zero {n : ℕ
   exact card_residue_pow_sub_one_in_residue_ne_zero K hn
 
 -- An auxiliary lemma that we might need more than once
-theorem card_residue_pow_sub_one_in_ne_zero {n : ℕ} (hn : n ≠ 0) :
+theorem card_residue_pow_sub_one_ne_zero {n : ℕ} (hn : n ≠ 0) :
     Nat.card 𝓀[K] ^ n - 1 ≠ 0 :=
   ne_zero_of_map (f := algebraMap ℕ K) <| card_residue_pow_sub_one_in_field_ne_zero K hn
 
@@ -147,7 +147,7 @@ theorem UnramifiedExtension.top_eq_adjoin_primitive_root
     (⊤ : Subalgebra K (UnramifiedExtension K n)) = Algebra.adjoin K {ζ} := by
   obtain _ | n := n
   · subsingleton
-  have := card_residue_pow_sub_one_in_ne_zero K n.succ_ne_zero
+  have := card_residue_pow_sub_one_ne_zero K n.succ_ne_zero
   rw [top_eq_adjoin_roots]
   refine le_antisymm (Algebra.adjoin_le fun ω hω ↦ ?_) <|
     Algebra.adjoin_le <| Set.singleton_subset_iff.mpr <| Algebra.subset_adjoin ?_
@@ -252,8 +252,8 @@ theorem nonempty_unramifiedExtension_alghom_of_dvd_f (n : ℕ) (hn : n ∣ f K L
   have h₁ := Nat.pow_sub_one_dvd_pow_sub_one (Nat.card 𝓀[K]) hn
   obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot
     (UnramifiedExtension K n) (Nat.card 𝓀[K] ^ n - 1)
-  have h₂ := pos_of_ne_zero <| card_residue_pow_sub_one_in_ne_zero K hn0.out
-  have h₃ := pos_of_ne_zero <| card_residue_pow_sub_one_in_ne_zero K hf0.out
+  have h₂ := pos_of_ne_zero <| card_residue_pow_sub_one_ne_zero K hn0.out
+  have h₃ := pos_of_ne_zero <| card_residue_pow_sub_one_ne_zero K hf0.out
   refine IntermediateField.nonempty_algHom_of_adjoin_splits
     (forall_eq.mpr ⟨.of_pow h₂ <| hζ.1 ▸ isIntegral_one,
       .of_dvd (g := X ^ (Nat.card 𝓀[K] ^ n - 1) - C 1) ?_
@@ -268,7 +268,7 @@ theorem nonempty_unramifiedExtension_alghom_of_dvd_f (n : ℕ) (hn : n ∣ f K L
     rw [map_dvd_map', minpoly.dvd_iff]
     simp [hζ.1]
 
-/-- The universal property of unramified extensions. -/
+/-- Universal property (non-unique) of unramified extensions. -/
 theorem nonempty_unramifiedExtension_alghom_iff_dvd_f {n : ℕ} (hn : n ≠ 0) :
     Nonempty (UnramifiedExtension K n →ₐ[K] L) ↔ n ∣ f K L :=
   ⟨fun ⟨φ⟩ ↦ f_unramifiedExtension K hn ▸ f_dvd_f φ,

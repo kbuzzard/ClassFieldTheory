@@ -27,10 +27,10 @@ import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
 import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import ClassFieldTheory.IsNonarchimedeanLocalField.EF
 import ClassFieldTheory.IsNonarchimedeanLocalField.HerbrandQuotient
 import ClassFieldTheory.IsNonarchimedeanLocalField.Instances
 import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
+import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
 import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
 import ClassFieldTheory.IsNonarchimedeanLocalField.Unramified
 import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
@@ -39,7 +39,6 @@ import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
-import ClassFieldTheory.Mathlib.Algebra.Group.Torsion
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
