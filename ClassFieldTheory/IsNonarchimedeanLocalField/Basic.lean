@@ -7,20 +7,13 @@ import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.NumberTheory.LocalField.Basic
 import Mathlib.NumberTheory.Padics.ProperSpace
 import Mathlib.NumberTheory.Padics.ValuativeRel
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
-import Mathlib.RingTheory.Henselian
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.PicardGroup
-import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 # Non-Archimedean Local Fields
@@ -132,6 +125,10 @@ theorem valueGroupWithZeroIsoInt_irreducible {ϖ : 𝒪[K]} (hϖ : Irreducible �
   rw [exp_neg_one_def]
   simpa [(valueGroupWithZeroIsoInt K).surjective.forall] using
     ⟨Valuation.integer.v_irreducible_lt_one hϖ, fun _ ↦ le_valuation_irreducible_of_lt_one hϖ⟩
+
+theorem valuation_irreducible {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) :
+    valuation K ϖ = (valueGroupWithZeroIsoInt K).symm (.exp (-1)) := by
+  rw [OrderMonoidIso.eq_symm_apply, valueGroupWithZeroIsoInt_irreducible hϖ]
 
 @[simp] lemma WithZeroMulInt.toNNReal_exp {e : ℝ≥0} (he : e ≠ 0) {n : ℤ} :
     WithZeroMulInt.toNNReal he (.exp n) = e ^ n := by
@@ -429,9 +426,30 @@ theorem e_mul_f_eq_n : e K L * f K L = Module.finrank K L := by
       primesOverFinset, toFinset_factors_map_maximalIdeal, Finset.sum_singleton]
   rfl
 
+theorem e_le_n : e K L ≤ Module.finrank K L :=
+  e_mul_f_eq_n K L ▸ le_mul_of_one_le_right' <| f_pos K L
+
+theorem f_le_n : f K L ≤ Module.finrank K L :=
+  e_mul_f_eq_n K L ▸ le_mul_of_one_le_left' <| e_pos K L
+
+-- TODO: standardize the spelling of "n = 1"
+-- https://leanprover.zulipchat.com/#narrow/channel/516717-Oxford-Class-Field-Theory-2025-workshop/topic/trivial.20extension.20of.20local.20fields/with/557960349
+theorem e_eq_one_of_n_eq_one (hn : Module.finrank K L = 1) : e K L = 1 :=
+  le_antisymm (hn ▸ e_le_n K L) (e_pos K L)
+
+-- TODO: standardize the spelling of "n = 1"
+-- https://leanprover.zulipchat.com/#narrow/channel/516717-Oxford-Class-Field-Theory-2025-workshop/topic/trivial.20extension.20of.20local.20fields/with/557960349
+theorem f_eq_one_of_n_eq_one (hn : Module.finrank K L = 1) : f K L = 1 :=
+  le_antisymm (hn ▸ f_le_n K L) (f_pos K L)
+
 -- TODO: generalise to extensions of DVRs.
-@[mk_iff] class IsUnramified : Prop where
-  e_eq_one : e K L = 1
+@[mk_iff] class IsUnramified (K L : Type*)
+    [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
+    [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
+    [Algebra K L] [ValuativeExtension K L] : Prop where
+  e_eq_one (K L) : e K L = 1
+
+attribute [simp] IsUnramified.e_eq_one
 
 -- by Chenyi Yang
 theorem isUnramified_iff_map_maximalIdeal :
@@ -494,6 +512,7 @@ instance isIntegralClosure : IsIntegralClosure 𝒪[L] 𝒪[K] L where
     obtain ⟨y, rfl⟩ := hy
     exact (Algebra.IsIntegral.isIntegral y).algebraMap
 
+variable {K L} in
 theorem isIntegral_iff {y : L} : IsIntegral 𝒪[K] y ↔ valuation L y ≤ 1 := by
   rw [IsIntegralClosure.isIntegral_iff (A := 𝒪[L]), ← Set.mem_range]
   erw [Subtype.range_val, Valuation.mem_integer_iff]
@@ -509,20 +528,25 @@ variable (L : Type*) [Field L] [Algebra K L]
 
 attribute [local instance] inhabitedIoo
 
-theorem isNonarchimedeanLocalField_of_valuativeExtension [FiniteDimensional K L]
-    [ValuativeRel L] [ValuativeExtension K L] :
-    ∃ (_ : TopologicalSpace L), IsNonarchimedeanLocalField L := by
+theorem isNonarchimedeanLocalField_of_valuativeExtension_of_isValuativeTopology
+     [FiniteDimensional K L] [ValuativeRel L] [ValuativeExtension K L]
+     [TopologicalSpace L] [IsValuativeTopology L] : IsNonarchimedeanLocalField L := by
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   letI := rankOneOfIoo K default
   letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K)
-  let := Valued.mk' (valuation L)
-  have : IsValuativeTopology L := .of_zero fun _ ↦ Valued.mem_nhds_zero
   have : LocallyCompactSpace L := .of_finiteDimensional_of_complete K L
   obtain ⟨ϖK, hϖK⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
   have : IsNontrivial L := ⟨(valuation L).comap (algebraMap K L) ϖK,
     (map_ne_zero _).mpr hϖK.ne_zero', ne_of_lt <| valuation_map_irreducible_lt_one hϖK⟩
-  exact ⟨inferInstance, ⟨⟩⟩
+  exact ⟨⟩
+
+theorem isNonarchimedeanLocalField_of_valuativeExtension [FiniteDimensional K L]
+    [ValuativeRel L] [ValuativeExtension K L] :
+    ∃ (_ : TopologicalSpace L), IsNonarchimedeanLocalField L := by
+  let := Valued.mk' (valuation L)
+  have : IsValuativeTopology L := .of_zero fun _ ↦ Valued.mem_nhds_zero
+  exact ⟨inferInstance, isNonarchimedeanLocalField_of_valuativeExtension_of_isValuativeTopology K L⟩
 
 open scoped NormedField in
 theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] :
