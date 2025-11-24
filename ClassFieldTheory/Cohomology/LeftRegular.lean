@@ -129,7 +129,7 @@ lemma res_span_norm' [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G
       simp only [Finset.card_eq_zero, Finset.filter_eq_empty_iff, Finset.mem_univ, forall_const]
       intro h eq
       apply_fun Quotient.mk (QuotientGroup.rightRel φ.range) at eq
-      exact hab <| by nth_rw 1 [← hσ b]; simp [← eq, QuotientGroup.rightRel_apply]
+      exact hab <| by nth_rw 1 [← hσ b]; simp [← eq, Quotient.eq, QuotientGroup.rightRel_apply]
     · simp
   exact this ▸ sum_mem fun i _ ↦ Submodule.smul_mem _ _ <| Submodule.subset_span ⟨σ i, rfl⟩
 
