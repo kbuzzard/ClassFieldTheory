@@ -7,7 +7,7 @@ open Polynomial
 /-- If a domain `R` satisfies that `X ^ n - 1` splits in `R` and `n ≠ 0` then `R` has enough
 `n`-th roots of unity. -/
 theorem HasEnoughRootsOfUnity.of_splits {R : Type*} [CommRing R] [IsDomain R] {n : ℕ}
-    (hr : (X ^ n - 1 : R[X]).Factors) (hn : (n : R) ≠ 0) : HasEnoughRootsOfUnity R n := by
+    (hr : (X ^ n - 1 : R[X]).Splits) (hn : (n : R) ≠ 0) : HasEnoughRootsOfUnity R n := by
   have := NeZero.mk <| show n ≠ 0 by aesop
   refine .of_card_le ?_
   classical

@@ -49,13 +49,9 @@ instance UnramifiedExtension.isSplittingField :
   .splittingField _
 
 theorem UnramifiedExtension.splits :
-    (X ^ (Nat.card 𝓀[K] ^ n - 1) - 1 : (UnramifiedExtension K n)[X]).Splits (.id _) := by
+    (X ^ (Nat.card 𝓀[K] ^ n - 1) - 1 : (UnramifiedExtension K n)[X]).Splits := by
   have := (UnramifiedExtension.isSplittingField K n).splits
   simpa using (splits_id_iff_splits _).mpr this
-
-theorem UnramifiedExtension.factors :
-    (X ^ (Nat.card 𝓀[K] ^ n - 1) - 1 : (UnramifiedExtension K n)[X]).Factors := by
-  simpa [Splits] using splits K n
 
 open UnramifiedExtension
 
@@ -131,7 +127,7 @@ instance : IsGalois K (UnramifiedExtension K n) := by
 variable {n} in
 instance [NeZero n] :
     HasEnoughRootsOfUnity (UnramifiedExtension K n) (Nat.card 𝓀[K] ^ n - 1) :=
-  .of_splits (factors K n) <| card_residue_pow_sub_one_in_unramifiedExtension_ne_zero K NeZero.out
+  .of_splits (splits K n) <| card_residue_pow_sub_one_in_unramifiedExtension_ne_zero K NeZero.out
 
 example [NeZero n] : ∃ ζ : UnramifiedExtension K n, IsPrimitiveRoot ζ (Nat.card 𝓀[K] ^ n - 1) :=
   HasEnoughRootsOfUnity.exists_primitiveRoot _ _

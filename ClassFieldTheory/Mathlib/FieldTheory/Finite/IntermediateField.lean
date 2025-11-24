@@ -105,7 +105,7 @@ theorem degree_minpoly_of_isPrimitiveRoot
     ← SetLike.coe_sort_coe, intermediateField_eq_rootSet hn, rootSet, aroots,
     Algebra.algebraMap_self, Polynomial.map_id, SetLike.coe_sort_coe, Nat.card_eq_finsetCard,
     Multiset.toFinset_card_of_nodup (nodup_roots <| galois_poly_separable _ _ this),
-    ← (X_pow_sub_X_factors hζ).natDegree_eq_card_roots,
+    ← (X_pow_sub_X_splits hζ).natDegree_eq_card_roots,
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (by grind), Fintype.card_eq_nat_card]
 
 variable (F : Type*) [Field F] [Finite F]
