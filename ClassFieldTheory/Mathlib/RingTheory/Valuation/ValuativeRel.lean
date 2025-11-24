@@ -62,6 +62,9 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
   [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
   [ValuativeExtension A B] {a b : A}
 
+instance : ValuativeExtension A A where
+  rel_iff_rel _ _ := .rfl
+
 variable (A B C) in
 theorem trans [ValuativeExtension B C] : ValuativeExtension A C where
   rel_iff_rel _ _ := by simp_rw [Algebra.algebraMap_eq_smul_one, ← map_one (algebraMap B C),

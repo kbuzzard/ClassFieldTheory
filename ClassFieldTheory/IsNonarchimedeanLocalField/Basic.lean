@@ -443,10 +443,13 @@ theorem f_eq_one_of_n_eq_one (hn : Module.finrank K L = 1) : f K L = 1 :=
   le_antisymm (hn ▸ f_le_n K L) (f_pos K L)
 
 -- TODO: generalise to extensions of DVRs.
-@[mk_iff] class IsUnramified : Prop where
-  e_eq_one' : e K L = 1
+@[mk_iff] class IsUnramified (K L : Type*)
+    [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
+    [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
+    [Algebra K L] [ValuativeExtension K L] : Prop where
+  e_eq_one (K L) : e K L = 1
 
-@[simp] theorem IsUnramified.e_eq_one [IsUnramified K L] : e K L = 1 := e_eq_one'
+attribute [simp] IsUnramified.e_eq_one
 
 -- by Chenyi Yang
 theorem isUnramified_iff_map_maximalIdeal :
