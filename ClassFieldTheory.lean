@@ -52,7 +52,9 @@ import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
+import ClassFieldTheory.Mathlib.Algebra.Module.NatInt
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
+import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
