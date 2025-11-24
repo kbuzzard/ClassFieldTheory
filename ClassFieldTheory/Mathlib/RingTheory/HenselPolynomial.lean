@@ -15,9 +15,8 @@ irreducible in `R/I`.
 
 ## Implementation details
 
-We introduce an auxiliary object `MonicCoprimeFactors f` which is the pairs `(p, q)` such that
-`p * q = f` and `p` and `q` are monic and coprime.
-
+* We introduce an auxiliary object `MonicCoprimeFactors f` which is the pairs `(p, q)` such that
+  `p * q = f` and `p` and `q` are monic and coprime.
 * We show that the map on such factorisations induced by `φ : R →+* S` is bijective whenever
   `φ` is surjective with square-zero kernel. (Equivalently, `R →+* R ⧸ I` for a square-zero
   ideal `I`.)
@@ -102,7 +101,6 @@ theorem RingHom.quotientKerEquivOfSurjective_symm_comp :
 end
 
 end Lemmas
-
 
 open Ideal Quotient
 
