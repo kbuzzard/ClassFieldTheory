@@ -1,12 +1,6 @@
 import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.GroupTheory.Solvable
 
-theorem Subgroup.Quotient.nontrivial_of_ne_top {G : Type*} [Group G] {p : Subgroup G} (h : p ≠ ⊤) :
-    Nontrivial (G ⧸ p) := by
-  obtain ⟨x, -, notMem_s⟩ : ∃ x ∈ ⊤, x ∉ p := SetLike.exists_of_lt (lt_top_iff_ne_top.2 h)
-  refine ⟨⟨QuotientGroup.mk x, QuotientGroup.mk 1, ?_⟩⟩
-  simpa [QuotientGroup.eq] using notMem_s
-
 theorem CommGroup.exists_mulHom_zmod_surjective_of_finite (G : Type*) [CommGroup G] [Finite G] [Nontrivial G] :
     ∃ n > 1, ∃ (f : G →* Multiplicative (ZMod n)), (⇑f).Surjective := by
   obtain ⟨ι, _, n, hn1, ⟨equiv⟩⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite G
@@ -20,7 +14,7 @@ theorem CommGroup.exists_mulHom_zmod_surjective_of_finite (G : Type*) [CommGroup
 
 theorem exists_isCyclic_quotient_of_finite {G : Type*} [Group G] [Finite G] {H : Subgroup G} [H.Normal]
     (hH: H ≠ ⊤) (comm : IsMulCommutative (G ⧸ H)) : ∃ H' ∈ Set.Ico H ⊤, ∃ (_ : H'.Normal), IsCyclic (G ⧸ H') := by
-  have := Subgroup.Quotient.nontrivial_of_ne_top hH
+  have := Subgroup.Quotient.nontrivial_iff.2 hH
   obtain ⟨n, hn, f, hf⟩ := CommGroup.exists_mulHom_zmod_surjective_of_finite (G ⧸ H)
   refine ⟨(f.comp (QuotientGroup.mk' H)).ker, ?_, inferInstance, ?_⟩
   · rw [Set.mem_Ico, ← MonoidHom.comap_ker, ← Subgroup.map_le_iff_le_comap,
