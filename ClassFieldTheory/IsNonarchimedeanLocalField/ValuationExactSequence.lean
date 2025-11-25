@@ -22,6 +22,15 @@ namespace IsNonarchimedeanLocalField
 
 open ValuativeRel CategoryTheory
 
+/-- The `G`-rep `𝒪[L]ˣ` where `G = Gal(L/K)`. -/
+@[simps!] noncomputable abbrev repUnitsInteger (G K L : Type) [Monoid G]
+    [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
+    [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
+    [Algebra K L] [ValuativeExtension K L]
+    [MulSemiringAction G L] [SMulCommClass G K L] : Rep ℤ G :=
+  have := invariant (M := G) K (L := L)
+  Rep.units G 𝒪[L]
+
 /-- The short complex `0 ⟶ 𝒪[L]ˣ ⟶ Lˣ ⟶ ℤ ⟶ 0` of `G`-modules where `G = Gal(L/K)`. -/
 noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
     [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
@@ -29,7 +38,7 @@ noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
     [MulSemiringAction G L]
     [Algebra K L] [ValuativeExtension K L]
     [IsGaloisGroup G K L] : ShortComplex (Rep ℤ G) where
-  X₁ := have := invariant (M := G) (L := L) K; .units G 𝒪[L]
+  X₁ := repUnitsInteger G K L
   X₂ := .units G L
   X₃ := .trivial ℤ G ℤ
   f :=
