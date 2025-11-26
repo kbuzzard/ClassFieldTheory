@@ -524,7 +524,7 @@ theorem _root_.Polynomial.map_limit {f : ∀ n, (R ⧸ I ^ n)[X]} {hf} {n : ℕ}
   obtain _ | n := n
   · subsingleton [Ideal.Quotient.subsingleton_iff.mpr (show I ^ 0 = ⊤ by simp)]
   have h₁ (n) : I ^ (n + 1) ≠ ⊤ := by simpa [pow_eq_top_iff]
-  have h₂ (n) := Ideal.Quotient.nontrivial (h₁ n)
+  have h₂ (n) := Ideal.Quotient.nontrivial_iff.2 (h₁ n)
   have hn : (f (n + 1)).natDegree = (f 1).natDegree := by
     induction n with
     | zero => rfl
@@ -557,7 +557,7 @@ theorem _root_.Polynomial.coeff_limit_natDegree {f : ∀ n, (R ⧸ I ^ n)[X]} {h
     have := IsAdicComplete.subsingleton R ‹_›
     subsingleton
   have h₁ (n) : I ^ (n + 1) ≠ ⊤ := by simpa [pow_eq_top_iff]
-  have h₂ (n) := Ideal.Quotient.nontrivial (h₁ n)
+  have h₂ (n) := Ideal.Quotient.nontrivial_iff.2 (h₁ n)
   have h₃ (n) : (f (n + 1)).natDegree = (f 1).natDegree := by
     induction n with
     | zero => rfl
@@ -574,7 +574,7 @@ theorem _root_.Polynomial.natDegree_limit {f : ∀ n, (R ⧸ I ^ n)[X]} {hf} (mf
     have := IsAdicComplete.subsingleton R ‹_›
     simp [natDegree_of_subsingleton]
   have h₁ (n) : I ^ (n + 1) ≠ ⊤ := by simpa [pow_eq_top_iff]
-  have h₂ (n) := Ideal.Quotient.nontrivial (h₁ n)
+  have h₂ (n) := Ideal.Quotient.nontrivial_iff.2 (h₁ n)
   nontriviality R
   exact natDegree_eq_of_le_of_coeff_ne_zero (Nat.le_of_lt_succ <| natDegree_sum_lt (by grind))
     (by rw [coeff_limit_natDegree mf]; exact one_ne_zero)

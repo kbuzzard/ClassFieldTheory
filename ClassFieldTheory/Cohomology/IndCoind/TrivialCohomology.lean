@@ -147,7 +147,7 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     simp [eq_mul_inv_iff_mul_eq]
   refine ⟨.of_iso ?_ <| TateCohomology.zeroIso _, .of_iso ?_ <| TateCohomology.negOneIso _⟩
   · -- First, let's prove the 0-th cohomology group is trivial.
-    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.subsingleton_quotient_iff_eq_top,
+    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.Quotient.subsingleton_iff,
       Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff, res_obj_ρ',
       res_obj_V, of_ρ, Representation.mem_invariants, MonoidHom.coe_comp,
       Function.comp_apply, LinearMap.mem_range, Representation.coind₁AsPi_apply,
@@ -164,7 +164,7 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     simpa only [Finset.sum_apply, Pi.single_apply, hf, Finset.sum_comm (α := H), ← Subgroup.coe_inv]
       using aux f x
   · -- Second, let's prove the -1-st cohomology group is trivial.
-    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.subsingleton_quotient_iff_eq_top,
+    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.Quotient.subsingleton_iff,
       Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff,
       res_obj_V, res_obj_ρ', of_ρ, MonoidHom.coe_comp, Function.comp_apply,
       LinearMap.mem_ker, LinearMap.coeFn_sum, Finset.sum_apply,
