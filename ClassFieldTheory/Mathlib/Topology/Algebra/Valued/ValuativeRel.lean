@@ -22,3 +22,20 @@ theorem valuation_map_irreducible_lt_one {K L : Type*} [Field K] [ValuativeRel K
   rw [← (valuation K).map_one, ← Valuation.srel_iff_lt] at this
   simpa using (Valuation.srel_iff_lt (v := valuation L)).mp <|
     (ValuativeExtension.srel_iff_srel (B := L) (ϖ : K) 1).mpr this
+
+@[simp] lemma valuation_units_integer_eq_one {R : Type*} [CommRing R] [ValuativeRel R]
+    (x : 𝒪[R]ˣ) : valuation R x = 1 := by
+  refine le_antisymm x.1.2 ?_
+  rw [← (valuation R).map_one, ← 𝒪[R].coe_one, ← x.mul_inv, Subring.coe_mul, map_mul]
+  exact mul_le_of_le_one_right' x⁻¹.1.2
+
+-- I only need it for IsNonarchimedeanLocalField but it should be true in this generality
+lemma valuation_eq_one_iff (K : Type*) [Field K] [ValuativeRel K] (x : K) :
+    valuation K x = 1 ↔ ∃ r : 𝒪[K]ˣ, r = x := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · lift x to 𝒪[K] using h.le
+    replace h := (Valuation.integer.integers (valuation K)).isUnit_iff_valuation_eq_one.mpr h
+    lift x to 𝒪[K]ˣ using h
+    exact ⟨_, rfl⟩
+  · rintro ⟨x, rfl⟩
+    simp

@@ -22,7 +22,7 @@ variable (K L : Type) [Field K] [ValuativeRel K] [TopologicalSpace K]
 /-- herbrand quotient of `𝒪[L]ˣ is 1` -/
 theorem Rep.herbrandQuotient_isNonarchimedeanLocalField_integer_units :
     herbrandQuotient
-    (Rep.ofAlgebraAutOnUnits' G 𝒪[K] 𝒪[L] : Rep ℤ G) = 1 := by
+    (repUnitsInteger G K L : Rep ℤ G) = 1 := by
   sorry -- hard work -- see https://kbuzzard.github.io/ClassFieldTheory/blueprint/sect0003.html#lem:herbrand%20local%20units
   -- This is the assertion that if L/K is cyclic then h(𝒪[L]ˣ)=1
   -- we have lemma 80 https://kbuzzard.github.io/ClassFieldTheory/blueprint/sect0003.html#lem:serre_approx

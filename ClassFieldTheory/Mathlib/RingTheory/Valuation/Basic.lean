@@ -93,4 +93,14 @@ theorem ext_lt_one {F Γ₀ : Type*} [Field F]
     rw [map_inv₀]
     exact inv_lt_one_of_one_lt₀ h1x
 
+theorem ne_zero_of_unit' {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
+    [Nontrivial Γ₀] (v : Valuation R Γ₀) (x : Rˣ) :
+    v x ≠ 0 :=
+  (x.map (v : R →* Γ₀)).ne_zero
+
+theorem ne_zero_of_isUnit' {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
+    [Nontrivial Γ₀] (v : Valuation R Γ₀) (x : R) (hx : IsUnit x) :
+    v x ≠ 0 :=
+  ne_zero_of_unit' v hx.unit
+
 end Valuation

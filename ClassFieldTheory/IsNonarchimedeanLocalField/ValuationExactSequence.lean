@@ -1,65 +1,68 @@
+import ClassFieldTheory.Cohomology.Subrep.ShortExact
+import ClassFieldTheory.IsNonarchimedeanLocalField.Actions
 import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
-import ClassFieldTheory.IsNonarchimedeanLocalField.Instances
+import ClassFieldTheory.Mathlib.Algebra.Group.Action.Units
 /-
 
 # 1 → 𝒪[L]ˣ → Lˣ → ℤ → 0 as G-module
 
 If L/K is a finite Galois extension of nonarch local fields, we construct the
-short exact sequence `0 → Additive (𝒪[K]ˣ) → Additive (Kˣ) → ℤ → 0` in `Rep ℤ G`
+short exact sequence `0 → Additive 𝒪[K]ˣ → Additive (Kˣ) → ℤ → 0` in `Rep ℤ G`
 
 -/
-section elsewhere
 
-@[reducible] def Units.instMulDistribMulAction_right
-    (G R : Type*) [Monoid G] [Semiring R] [MulSemiringAction G R] :
-    MulDistribMulAction G Rˣ := {
-  smul g r := ⟨g • r, g • r⁻¹, by simp [← smul_mul'], by simp [← smul_mul']⟩
-  one_smul r := by ext; exact one_smul G (r : R)
-  mul_smul g h r := by ext; exact mul_smul g h (r : R)
-  smul_mul g r s := by ext; exact smul_mul' g (r : R) (s : R)
-  smul_one g := by ext; exact smul_one g
-}
-
-noncomputable def Rep.ofAlgebraAutOnUnits' (G R S : Type) [CommRing R] [CommRing S]
-    [Algebra R S] [Group G] [MulSemiringAction G S] [IsGaloisGroup G R S] :
+/-- The `G`-module `Mˣ` where `G` acts on `M` distributively. -/
+noncomputable abbrev Rep.units
+    (G M : Type) [Monoid G] [CommMonoid M] [MulDistribMulAction G M] :
     Rep ℤ G :=
-  letI : MulDistribMulAction G Sˣ := Units.instMulDistribMulAction_right G S
-  Rep.ofMulDistribMulAction G Sˣ
+  let : MulDistribMulAction G Mˣ := Units.mulDistribMulActionRight G M
+  Rep.ofMulDistribMulAction G Mˣ
 
 namespace IsNonarchimedeanLocalField
 
 open ValuativeRel CategoryTheory
 
+/-- The `G`-rep `𝒪[L]ˣ` where `G = Gal(L/K)`. -/
+@[simps!] noncomputable abbrev repUnitsInteger (G K L : Type) [Monoid G]
+    [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
+    [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
+    [Algebra K L] [ValuativeExtension K L]
+    [MulSemiringAction G L] [SMulCommClass G K L] : Rep ℤ G :=
+  have := invariant (M := G) K (L := L)
+  Rep.units G 𝒪[L]
+
+/-- The short complex `0 ⟶ 𝒪[L]ˣ ⟶ Lˣ ⟶ ℤ ⟶ 0` of `G`-modules where `G = Gal(L/K)`. -/
 noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
-    [CommRing K] [ValuativeRel K]
+    [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
     [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
     [MulSemiringAction G L]
     [Algebra K L] [ValuativeExtension K L]
     [IsGaloisGroup G K L] : ShortComplex (Rep ℤ G) where
-  X₁ := Rep.ofAlgebraAutOnUnits' G 𝒪[K] 𝒪[L]
-  X₂ := Rep.ofAlgebraAutOnUnits' G K L
+  X₁ := repUnitsInteger G K L
+  X₂ := .units G L
   X₃ := .trivial ℤ G ℤ
-  f := {
-    hom := ModuleCat.ofHom (ker_v L).toIntLinearMap
-    comm g := rfl
-  }
-  g := {
-    hom := ModuleCat.ofHom (v L).toIntLinearMap
+  f :=
+  { hom := ModuleCat.ofHom (kerV L).toIntLinearMap
+    comm g := rfl }
+  g :=
+  { hom := ModuleCat.ofHom (v L).toIntLinearMap
     comm g := by
       ext (u : Additive Lˣ)
       obtain ⟨u, rfl⟩ := Additive.ofMul.surjective u
-      -- should follow from `valuation_ringEquiv`
-      sorry
-  }
-  zero := sorry -- v(𝒪[L]ˣ) = 0, follows from (easy direction of) ker_v_ker in
-                -- IsNonarchimedeanLocalField.Valuation
+      simp [Rep.units]
+      simp [Rep.ofMulDistribMulAction, valuationInt, valuation_smul K]
+      rfl }
+  zero := by ext; exact exact_kerV_v.apply_apply_eq_zero _
 
 variable {G K L : Type} [Group G] [Finite G]
-    [CommRing K] [ValuativeRel K]
-    [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
-    [MulSemiringAction G L]
-    [Algebra K L] [ValuativeExtension K L]
-    [IsGaloisGroup G K L]
+  [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
+  [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
+  [MulSemiringAction G L]
+  [Algebra K L] [ValuativeExtension K L]
+  [IsGaloisGroup G K L]
 
 -- use v_surjective, ker_v_ker, ker_v_injective in IsNonarchimedeanLocalField.Valuation
-lemma valuationShortComplex.shortExact : (valuationShortComplex G K L).ShortExact := sorry
+lemma valuationShortComplex.shortExact : (valuationShortComplex G K L).ShortExact :=
+  .mk' (ShortComplex.ShortExact.rep_exact_iff_function_exact.mpr exact_kerV_v)
+    ((Rep.mono_iff_injective _).mpr kerV_injective)
+    ((Rep.epi_iff_surjective _).mpr v_surjective)
