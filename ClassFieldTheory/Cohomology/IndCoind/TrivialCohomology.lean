@@ -151,7 +151,7 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
       Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff, res_obj_ρ',
       res_obj_V, of_ρ, Representation.mem_invariants, MonoidHom.coe_comp,
       Function.comp_apply, LinearMap.mem_range, Representation.coind₁AsPi_apply,
-      LinearMap.coeFn_sum, Finset.sum_apply]
+      LinearMap.coe_sum, Finset.sum_apply]
     -- This is equivalent to...
     show ∀ f : G → A, (∀ (h : H) x, f (x * h) = f x) → ∃ g : G → A, ∀ x, ∑ h : H, g (x * h) = f x
     -- Assume we have such `f`.
@@ -167,7 +167,7 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
     simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.Quotient.subsingleton_iff,
       Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff,
       res_obj_V, res_obj_ρ', of_ρ, MonoidHom.coe_comp, Function.comp_apply,
-      LinearMap.mem_ker, LinearMap.coeFn_sum, Finset.sum_apply,
+      LinearMap.mem_ker, LinearMap.coe_sum, Finset.sum_apply,
       Representation.coind₁AsPi_apply, Pi.zero_apply]
     -- This is equivalent to...
     show ∀ f : G → A, (∀ x, ∑ h : H, f (x * h) = 0) → f ∈ Representation.Coinvariants.ker _
