@@ -168,7 +168,30 @@ instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.T
       .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (δDownResIso M hφ 74).symm)
 
 instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.TrivialCohomology] :
-    M.TrivialTateCohomology := sorry
+    M.TrivialTateCohomology := by
+  constructor
+  intro H n
+  let : Fintype H := .ofFinite H
+  obtain hn | hn := Int.lt_or_le 0 n
+  · lift n to ℕ using hn.le
+    rw [Nat.cast_pos, ← Nat.exists_eq_add_one] at hn
+    obtain ⟨n, rfl⟩ := hn
+    rw [Nat.cast_add, Nat.cast_one]
+    exact .of_iso (TrivialCohomology.isZero H) ((TateCohomology.isoGroupCohomology (n + 1)).app _)
+  · classical
+    induction n, hn using Int.le_induction_down generalizing M with
+    | base =>
+      refine .of_iso ?_ (δDownResIsoTate M H.subtype_injective _)
+      refine .of_iso ?_ ((TateCohomology.isoGroupCohomology 1).app _)
+      apply isZero_of_trivialCohomology
+    | pred n hmn ih =>
+      refine .of_iso ?_ (δDownResIsoTate M H.subtype_injective _)
+      rw [sub_add_cancel]
+      apply ih
 
 instance Rep.trivialHomology_of_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
-    M.TrivialHomology := sorry
+    M.TrivialHomology where
+  isZero H n :=
+    let : Fintype H := .ofFinite H
+    .of_iso isZero_of_trivialTateCohomology
+      ((TateCohomology.isoGroupHomology (-(n + 2)) (n + 1) rfl).symm.app _)
