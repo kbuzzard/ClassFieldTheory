@@ -92,7 +92,7 @@ lemma tateComplex_d_neg (M : Rep R G) (n : ℕ) :
 lemma tateComplex.norm_comm {A B : Rep R G} (φ : A ⟶ B) : φ ≫ B.norm = A.norm ≫ φ := by
   ext
   simp only [Rep.norm, Representation.norm, Action.comp_hom, ModuleCat.hom_comp,
-    ModuleCat.hom_ofHom, LinearMap.coe_comp, coeFn_sum, Function.comp_apply,
+    ModuleCat.hom_ofHom, LinearMap.coe_comp, coe_sum, Function.comp_apply,
     Finset.sum_apply, map_sum]
   congr!
   exact (Rep.hom_comm_apply _ _ _).symm
