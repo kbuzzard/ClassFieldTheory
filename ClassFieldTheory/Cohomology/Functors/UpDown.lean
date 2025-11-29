@@ -287,6 +287,14 @@ def δDownIsoTate (M : Rep R G) (n : ℤ) :
     (tateCohomology n).obj M ≅ (tateCohomology (n + 1)).obj (down.obj M) :=
   asIso (TateCohomology.δ (shortExact_downSES M) n)
 
+def δUpResIsoTate {S : Type} [Group S] [DecidableEq S] [Fintype S] {φ : S →* G}
+    (inj : Function.Injective φ) (n : ℤ) :
+    (tateCohomology n).obj (up.obj M ↓ φ) ≅ (tateCohomology (n + 1)).obj (M ↓ φ) := sorry
+
+def δDownResIsoTate {H : Type} [Group H] [DecidableEq H] [Fintype H] {φ : H →* G}
+    (inj : Function.Injective φ) (n : ℤ) :
+    (tateCohomology n).obj (M ↓ φ) ≅ (tateCohomology (n + 1)).obj (down.obj M ↓ φ) := sorry
+
 def δUpNatIsoTate (n : ℤ) : up ⋙ tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 1) :=
   NatIso.ofComponents (fun M ↦ δUpIsoTate M n) fun {M N} f ↦ .symm <| HomologySequence.δ_naturality
     ((upShortComplex ⋙ tateComplexFunctor.mapShortComplex).map f)
