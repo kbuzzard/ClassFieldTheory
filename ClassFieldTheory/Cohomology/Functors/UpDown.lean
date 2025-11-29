@@ -288,7 +288,7 @@ def δDownIsoTate (M : Rep R G) (n : ℤ) :
   asIso (TateCohomology.δ (shortExact_downSES M) n)
 
 def δUpResIsoTate {S : Type} [Group S] [DecidableEq S] [Fintype S] {φ : S →* G}
-    (inj : Function.Injective φ) (n : ℕ) [NeZero n] :
+    (inj : Function.Injective φ) (n : ℤ) :
     (tateCohomology n).obj (up.obj M ↓ φ) ≅ (tateCohomology (n + 1)).obj (M ↓ φ) := sorry
 
 def δDownResIsoTate {H : Type} [Group H] [DecidableEq H] [Fintype H] {φ : H →* G}
