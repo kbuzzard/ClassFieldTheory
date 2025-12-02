@@ -345,8 +345,7 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
   classical
   haveI : NeZero n := ⟨ne_of_gt hn⟩
-  by_contra hx2
-  refine hx' (@Subtype.ext_iff _ (p := fun x ↦ x ∈ Submodule.torsionBy R (groupCohomology M n) _)
-    ⟨x, pTorsion_eq_sylowTorsion M p P x|>.1 hx⟩ 0|>.1 ?_)
-  refine groupCohomology.injects_to_sylowCoh (R := R) (G := G) (n := n) M p P ?_
-  simp_all [rest_app]
+  simpa [Functor.comp_obj, functor_obj, rest_app, ne_eq] using by_contra fun hx2 ↦ hx' <|
+    @Subtype.ext_iff _ (p := fun x ↦ x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P))
+    ⟨x, pTorsion_eq_sylowTorsion M p P x|>.1 hx⟩ 0|>.1 <| groupCohomology.injects_to_sylowCoh M p P
+    (by simp [not_not.1 hx2])

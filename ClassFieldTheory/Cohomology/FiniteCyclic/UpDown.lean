@@ -2,9 +2,9 @@ import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
-import ClassFieldTheory.Mathlib.ModuleCatExact
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
@@ -338,7 +338,7 @@ lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
   -- A sequence of `R`-modules is exact if `LinearMap.range _ = LinearMap.ker _`
   -- In fact, `range ≤ ker` in complexes, so we just need `ker ≤ range`.
-  apply ShortComplex.Exact.moduleCat_of_ker_le_range
+  refine .moduleCat_of_ker_le_range _ ?_
   simp [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra,
     toModuleMonoidAlgebraMap, ModuleCat.hom_ofHom]
   -- Now, we get `w` with `w ∈ ker`.
@@ -494,15 +494,14 @@ namespace groupHomology
 def oddTrivialInt {n : ℕ} (hG : Nat.card G = N) (hn : Odd n) :
     groupHomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := by
   have : NeZero n := ⟨hn.pos.ne'⟩
-  exact .trans ((TateCohomology.isoGroupHomology n).app _).symm <|
-    TateCohomology.evenTrivialInt hG <| by rw [← neg_add', even_neg]; exact mod_cast hn.add_one
+  exact .trans ((TateCohomology.isoGroupHomology (-(n + 1)) n <| by simp).app _).symm <|
+    TateCohomology.evenTrivialInt hG <| .neg <| mod_cast hn.add_one
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial nonzero even group
 homology. -/
 lemma isZero_even_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
-    {n : ℕ} [NeZero n] (hn : Even n) : IsZero (groupHomology (trivial ℤ G M) n) := by
-  refine (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree ?_).of_iso <|
-    (TateCohomology.isoGroupHomology n).symm.app _
-  rw [← neg_add', odd_neg]; exact mod_cast hn.add_one
+    {n : ℕ} [NeZero n] (hn : Even n) : IsZero (groupHomology (trivial ℤ G M) n) :=
+  (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| .neg <| mod_cast hn.add_one).of_iso <|
+    (TateCohomology.isoGroupHomology (-(n + 1)) n <| by simp).symm.app _
 
 end groupHomology

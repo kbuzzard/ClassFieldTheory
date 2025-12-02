@@ -1,5 +1,4 @@
 import ClassFieldTheory.Cohomology.Functors.Inflation
-import ClassFieldTheory.Mathlib.Algebra.Algebra.Equiv
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import Mathlib.Data.Finsupp.Notation

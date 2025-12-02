@@ -1981,8 +1981,9 @@ There is evidently a short exact sequence of representations of $G$.
   \label{def:fundamental class}
   \lean{Rep.split.FiniteClassFormation}
   \leanok
-	In this section $G$ is a finite group; $M$ is a representation of $G$ over a commutative ring $R$.
-	We shall call $(R,G,M)$ a \emph{finite class formation} if:
+	In this section $G$ is a finite group and $R$ is a commutative ring. If $M$ is a representation
+	of $G$ over $R$ then we shall call $M$ (or more precisely the triple $(R,G,M)$)
+	a \emph{finite class formation} if:
 	\begin{itemize}
 		\item
 		The ring $R$ has no additive torsion. This implies for all subgroups $S$ of $G$:
@@ -1994,7 +1995,8 @@ There is evidently a short exact sequence of representations of $G$.
 		\item
 		For all subgroups $S \le G$, $H^2(S,M)$ is isomorphic as an $R$-module to $R / |S| \cdot R$.
 	\end{itemize}
-	If $M$ is a finite class formation then a generator $\sigma$ for $H^2(G,M)$ is called
+	If $M$ is a finite class formation then a generator $\sigma$ for $H^2(G,M)$ (by which we
+	mean the image of 1 under some isomorphism $R/|G|R\equiv H^2(G,M)$) is called
 	a \emph{fundamental class}.
 \end{definition}
 
@@ -2003,17 +2005,26 @@ then there is an isomorphism (called the \emph{reciprocity isomorphism})
 \[
 	\reciprocity: G^{\ab} \otimes R \cong H^0_{\Tate}(G,M).
 \]
-The reciprocity isomorphism depends on the choice of a fundamental class.
+The reciprocity isomorphism depends on the choice of a fundamental class. In our application
+to local class field theory we will isolate a ``canonical'' fundamental class, called ``the''
+fundamental class.
+
+\begin{remark}
+	\begin{itemize}
+		\item Given $G$ and $R$, there can be several nonisomorphic $M$ which are
+  		finite class formations. For example if $M$ is a finite class formation then so is
+	  	$M\oplus N$ where $N$ is any cohomologically trivial module.
+	  \item I know of no example in class field theory where $R$ is any ring other than $\Z$.
+	\end{itemize}
+\end{remark}
 
 \begin{example}
 	If $G$ is a finite cyclic group then the trivial representation $\Z$
-	(or more precisely the triple $(\Z,G,\Z)$)
-	is a finite class formation. More generally if $R$ is any commutative ring
-	with trivial additive torsion then $(R,G,R)$ is a finite class formation.
+	(or more precisely the triple $(\Z,G,\Z)$) is a finite class formation.
 	This follows from \ref{lem:H2 cyclic Z}.
 	The cocycle $\sigma_G$ defined in \ref{lem:local inv iso} (which depends on
 	a choice of generator for $G$) is a fundamental class. Note that it is unsurprising
-	that the cocycle depends on a choice of generator, as in the case $R=\Z$ the
+	that the cocycle depends on a choice of generator, as the
 	reciprocity isomorphism gives an isomorphism $G\cong \Z/|G|\Z.$
 \end{example}
 
@@ -2032,6 +2043,9 @@ The reciprocity isomorphism depends on the choice of a fundamental class.
 	We have $cd = cf(1) = f(c) = 1$.
 	The map $f$ is given by $f(x) = dx$ and the map $x \mapsto cx$ is an inverse.
 \end{proof}
+\begin{remark} In the case $R=\Z$ and $I\not=0$, which is the only case
+	we shall use in applications, the lemma can just be proved by counting.
+\end{remark}
 
 \begin{lemma} \label{lem:restriction fundamental class generates}
 	\uses{def:fundamental class}
@@ -2065,6 +2079,18 @@ The reciprocity isomorphism depends on the choice of a fundamental class.
 	$b = \rest(c)$.
 \end{proof}
 
+\begin{remark} Again when $R=\Z$ the above proof can be made much simpler.
+\end{remark}
+
+We issue a warning: the previous lemma shows that the restriction of a fundamental class to
+a subgroup is a fundamental class. Later on we shall be talking about \emph{the} fundamental class
+in local class field theory, as opposed to \emph{a} fundamental class, and
+lemma~\ref{lem:restriction fundamental class generates} will not be good enough; we will
+need to check that \emph{the} fundamental class restricts to \emph{the} fundamental class.
+
+Say $(R,G,M)$ is a finite class formation. We now begin the construction of the reciprocity
+isomorphism $G^{\ab}\otimes R\cong H^0_{\Tate}(G,M)$ from a fundamental class.
+
 \begin{theorem} \label{thm:splitting module trivial}
 	\uses{lem:restriction fundamental class generates,
 		lem:splits in splitting module,
@@ -2085,7 +2111,7 @@ The reciprocity isomorphism depends on the choice of a fundamental class.
 	\]
 	By \ref{lem:restriction fundamental class generates} and \ref{lem:splits in splitting module},
 	the map $H^2(S,M) \to H^2(S,\Split(\sigma'))$ is zero.
-	In particular $H^2(S,\Split(\sigma')) \cong 0$.
+	Hence $H^2(S,\Split(\sigma')) \cong 0$.
 	The $R$-modules $H^1(S,\aug(R,G))$ and $H^2(S,M)$ are both isomorphic to $R / |S|R$,
 	and the map from one to the other is surjective.
 	By \ref{lem:linear injective of surjective}, the map
