@@ -1,19 +1,21 @@
 import ClassFieldTheory.LocalCFT.Continuity
+import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
-import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import ClassFieldTheory.Mathlib.Data.Int.WithZero
 import ClassFieldTheory.Mathlib.RingTheory.DiscreteValuationRing.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
+import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
+import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.NumberTheory.LocalField.Basic
 import Mathlib.NumberTheory.Padics.ProperSpace
 import Mathlib.NumberTheory.Padics.ValuativeRel
 import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Non-Archimedean Local Fields

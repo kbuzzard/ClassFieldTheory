@@ -1,6 +1,5 @@
 import ClassFieldTheory.Mathlib.FieldTheory.Separable
 import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
-import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Unramified.LocalRing
 
 /-- Extra flexibility in the choice of:

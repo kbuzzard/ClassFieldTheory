@@ -3,18 +3,15 @@ Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
-/-
 
+/-!
 # 1 → 𝒪[K]ˣ → Kˣ → ℤ → 0
 
 We construct the short exact sequence `0 → Additive 𝒪[K]ˣ → Additive (Kˣ) → ℤ → 0` in
 the following sense: we define the maps `kerV K` and `v K`, prove the first is
 injective, the second is surjective, and the pair is `Function.Exact`.
-
 -/
 
 namespace ValuativeRel

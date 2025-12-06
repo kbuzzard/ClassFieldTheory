@@ -14,18 +14,19 @@ structure Subrep {k G : Type u} [CommRing k] [Monoid G] (A : Rep k G) extends Su
   le_comap (g) : toSubmodule ≤ toSubmodule.comap (A.ρ g)
 
 namespace Subrep
-variable {k G : Type u} [CommRing k] [Monoid G] (A : Rep k G)
+variable {k G : Type u} [CommRing k] [Monoid G] {A : Rep k G}
+
+lemma toSubmodule_injective : (toSubmodule : Subrep A → Submodule k A.V).Injective :=
+  fun ⟨_, _⟩ _ _ ↦ by congr!
 
 instance : SetLike (Subrep A) A.V where
   coe w := w.carrier
-  coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ h ↦ by congr; exact SetLike.coe_injective h
+  coe_injective' := SetLike.coe_injective.comp toSubmodule_injective
 
 instance : AddSubgroupClass (Subrep A) A.V where
   add_mem {w} := w.add_mem
   zero_mem {w} := w.zero_mem
   neg_mem {w} := w.neg_mem
-
-variable {A}
 
 /-- `w` interpreted as a `G`-rep. -/
 @[coe] noncomputable def toRep (w : Subrep A) : Rep k G :=
@@ -43,12 +44,14 @@ noncomputable def quotient (w : Subrep A) : Rep k G :=
 @[simps!] noncomputable def mkQ (w : Subrep A) : A ⟶ w.quotient :=
   A.mkQ _ _
 
+instance : Min (Subrep A) where
+  min w₁ w₂ := ⟨w₁.toSubmodule ⊓ w₂.toSubmodule, fun g ↦ inf_le_inf (w₁.le_comap g) (w₂.le_comap g)⟩
+
+@[simp] lemma toSubmodule_inf (w₁ w₂ : Subrep A) :
+    (w₁ ⊓ w₂).toSubmodule = w₁.toSubmodule ⊓ w₂.toSubmodule := rfl
+
 -- todo: complete lattice, two adjoint functors (aka galois insertions)
-instance : SemilatticeInf (Subrep A) where
-  inf w₁ w₂ := ⟨w₁.toSubmodule ⊓ w₂.toSubmodule, fun g ↦ inf_le_inf (w₁.le_comap g) (w₂.le_comap g)⟩
-  inf_le_left w₁ _ := inf_le_left (a := w₁.toSubmodule)
-  inf_le_right w₁ _ := inf_le_right (a := w₁.toSubmodule)
-  le_inf w₁ _ _ := le_inf (a := w₁.toSubmodule)
+instance : SemilatticeInf (Subrep A) := toSubmodule_injective.semilatticeInf _ toSubmodule_inf
 
 instance : OrderTop (Subrep A) where
   top := ⟨⊤, fun _ _ _ ↦ trivial⟩

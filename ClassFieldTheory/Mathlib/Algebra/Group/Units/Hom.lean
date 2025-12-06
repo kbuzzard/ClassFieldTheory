@@ -1,4 +1,4 @@
-import ClassFieldTheory.Mathlib.Algebra.Group.Units.Basic
+import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.Group.Units.Hom
 
 theorem isLocalHom_iff_one {R S F : Type*} [Monoid R] [Monoid S]

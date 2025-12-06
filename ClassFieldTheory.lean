@@ -42,11 +42,10 @@ import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Action.Units
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
-import ClassFieldTheory.Mathlib.Algebra.Group.Units.Basic
+import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
 import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
-import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
@@ -57,10 +56,9 @@ import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.NatInt
 import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
+import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
-import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
-import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 import ClassFieldTheory.Mathlib.Data.Finset.Range

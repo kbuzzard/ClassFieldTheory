@@ -4,10 +4,10 @@ import Mathlib.Algebra.Module.Torsion.Basic
 def Module.IsTorsionBy.coprime_decompose {k m1 m2: ℕ} {R M : Type*} [CommRing R] [AddCommGroup M]
     [Module R M] (hk : k = m1 * m2) (hmm : m1.Coprime m2) (hA : Module.IsTorsionBy R M k):
     M ≃ₗ[R] Submodule.torsionBy R M m1 × Submodule.torsionBy R M m2 where
-  toFun m := ⟨⟨(m2 : R) • m, by simp [← MulAction.mul_smul, ← Nat.cast_mul, ← hk, hA]⟩,
-    ⟨(m1 : R) • m, by simp [← MulAction.mul_smul, mul_comm, ← Nat.cast_mul, ← hk, hA]⟩⟩
+  toFun m := ⟨⟨(m2 : R) • m, by simp [← mul_smul, ← Nat.cast_mul, ← hk, hA]⟩,
+    ⟨(m1 : R) • m, by simp [← mul_smul, mul_comm, ← Nat.cast_mul, ← hk, hA]⟩⟩
   map_add' := by simp
-  map_smul' := by simp [← MulAction.mul_smul, mul_comm]
+  map_smul' := by simp [← mul_smul, mul_comm]
   invFun := fun ⟨x1, x2⟩ ↦ (m1.gcdB m2 : R) • x1.1 + (m1.gcdA m2 : R) • x2.1
   left_inv x := by
     simp only [← smul_assoc, smul_eq_mul, ← add_smul]

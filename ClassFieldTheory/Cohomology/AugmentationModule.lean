@@ -1,5 +1,5 @@
 import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Cohomology.Functors.UpDown
+import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
 import ClassFieldTheory.Cohomology.LeftRegular
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
