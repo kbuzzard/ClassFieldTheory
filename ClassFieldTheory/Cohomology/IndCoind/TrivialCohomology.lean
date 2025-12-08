@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru,
 -/
 import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
