@@ -60,7 +60,6 @@ theorem epi_δ_infl [DecidableEq G] (n : ℕ) (M : Rep R G) (hS' : IsZero (H1 (M
     Epi (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hS')
     (n + 1) (n + 2) rfl) := epi_δ_of_isZero _ (n + 1) (by simp [-coind₁'_obj]; sorry)
 
-set_option synthInstance.maxHeartbeats 80000 in
 def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) where
   X₁ := groupCohomology (M ↑ surj) (n + 1)
   X₂ := groupCohomology M (n + 1)
