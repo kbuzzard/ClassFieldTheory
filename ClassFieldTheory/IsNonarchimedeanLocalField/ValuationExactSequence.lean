@@ -1,7 +1,6 @@
 import ClassFieldTheory.Cohomology.Subrep.ShortExact
 import ClassFieldTheory.IsNonarchimedeanLocalField.Actions
 import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
-import ClassFieldTheory.Mathlib.Algebra.Group.Action.Units
 import Mathlib.FieldTheory.Galois.IsGaloisGroup
 
 /-!
@@ -15,7 +14,7 @@ short exact sequence `0 → Additive 𝒪[K]ˣ → Additive (Kˣ) → ℤ → 0`
 noncomputable abbrev Rep.units
     (G M : Type) [Monoid G] [CommMonoid M] [MulDistribMulAction G M] :
     Rep ℤ G :=
-  let : MulDistribMulAction G Mˣ := Units.mulDistribMulActionRight G M
+  let : MulDistribMulAction G Mˣ := Units.mulDistribMulActionRight
   Rep.ofMulDistribMulAction G Mˣ
 
 namespace IsNonarchimedeanLocalField

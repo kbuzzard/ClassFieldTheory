@@ -40,7 +40,6 @@ import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
-import ClassFieldTheory.Mathlib.Algebra.Group.Action.Units
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
