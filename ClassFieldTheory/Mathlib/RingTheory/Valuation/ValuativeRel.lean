@@ -1,4 +1,3 @@
-import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 

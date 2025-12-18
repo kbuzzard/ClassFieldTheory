@@ -266,7 +266,7 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
       Function.comp_apply]
     change (_ : G →₀ _) = _
     ext g
-    simp [ind₁', Representation.map₂_apply, -Representation.map₂_apply_toFun]
+    simp [ind₁', Representation.map₂_apply, -Representation.map₂_apply_apply]
 
 omit [Fintype G] in
 lemma map₂_app_gg_ind₁'_π_app :  map₂.app M ≫ ind₁'_π.app M = 0 := by
@@ -298,7 +298,7 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
   ext d
   simp only [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', linearEquivFunOnFinite,
     Equiv.invFun_as_coe, ModuleCat.hom_ofHom, map₁, Representation.map₁, LinearMap.coe_mk,
-    AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, equivFunOnFinite_symm_apply_toFun,
+    AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, equivFunOnFinite_symm_apply_apply,
     map₂, Representation.map₂_apply]
 
 /-- The first short complex in the periodicity sequence. -/

@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Aaron Liu
 -/
 import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
-import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.GroupTheory.Torsion
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
@@ -104,7 +101,7 @@ open CategoryTheory in
 variable (n) in
 /-- The local invariant. -/
 def localInvAux : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) →+ ZMod n := by
-  refine .comp ?_ (H2Iso _).hom.hom.toAddMonoidHom''
+  refine .comp ?_ (H2Iso _).hom.hom.toAddMonoidHom
   refine QuotientAddGroup.lift _ localInvAuxAux ?_
   rintro _ ⟨x, rfl⟩
   -- TODO: We're missing projection lemmas for `shortComplexH2`
@@ -120,8 +117,7 @@ private def carryH2Aux (i : ZMod n) : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) :=
 /-- By a computation, `localInvAux n ∘ carryH2Aux = id`. -/
 private lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (localInvAux n) := by
   intro i
-  simp [carryH2Aux]
-  simp [localInvAux, LinearMap.toAddMonoidHom'']
+  simp [carryH2Aux, localInvAux]
   convert mul_one _
   exact localInvAuxAux_carryCocycle n
 
@@ -129,9 +125,8 @@ private lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (loc
 `carryH2Aux ∘ localInvAux n = id`. -/
 private lemma leftInverse_carryH2Aux_localInvAux : carryH2Aux.LeftInverse (localInvAux n) := by
   have e : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) ≃ (ZMod n)ᵐ :=
-    (groupCohomology.evenTrivialInt (by simp) _ even_two).toLinearEquiv.toEquiv'
-  have : Finite (H2 <| .trivial ℤ (ZMod n)ᵐ ℤ) :=
-    .of_equiv (ZMod n)ᵐ e.symm
+    (groupCohomology.evenTrivialInt (by simp) _ even_two).toLinearEquiv.toEquiv
+  have : Finite (H2 <| .trivial ℤ (ZMod n)ᵐ ℤ) := .of_equiv (ZMod n)ᵐ e.symm
   have : Fintype (H2 <| .trivial ℤ (ZMod n)ᵐ ℤ) := .ofFinite _
   refine rightInverse_carryH2Aux_localInvAux.leftInverse_of_card_le ?_
   simp [Fintype.card_congr e]
@@ -152,7 +147,7 @@ def localInv : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) ≃+ ZMod n where
 
 @[simp] lemma localInv_H2π_hom (f : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ)) :
     localInv n ((H2π _).hom f) = ∑ i : ZMod n, Int.cast (f (.ofAdd i, .ofAdd 1)) := by
-  simp [localInv, localInvAux, LinearMap.toAddMonoidHom'']; rfl
+  simp [localInv, localInvAux]; rfl
 
 @[simp] lemma localInv_symm_apply (i : ZMod n) :
     (localInv n).symm i = i.val • (H2Iso _).inv.hom (QuotientAddGroup.mk (carryCocycle n)) := rfl
@@ -164,4 +159,4 @@ See `groupCohomology.evenTrivialInt` for the basis-free computation in the case 
 torsion-free representation of a finite cyclic group. -/
 @[simps!]
 def localInvIso : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) ≅ .of ℤ (ZMod n) :=
-  (localInv n).toIntLinearEquiv'.toModuleIso
+  (localInv n).toIntLinearEquiv.toModuleIso
