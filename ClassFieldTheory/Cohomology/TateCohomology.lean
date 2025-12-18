@@ -1,6 +1,5 @@
 import ClassFieldTheory.Cohomology.Functors.Restriction
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 import Mathlib.Algebra.Homology.Embedding.Connect
@@ -357,7 +356,7 @@ variable {G : Type} [Group G] [Fintype G]
 def zeroTrivialInt (hG : Nat.card G = N) :
     (tateCohomology 0).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := by
   refine zeroIsoOfIsTrivial _ ≪≫ ((QuotientAddGroup.quotientAddEquivOfEq ?_).trans <|
-    Int.quotientZMultiplesEquivZMod N).toIntLinearEquiv'.toModuleIso
+    Int.quotientZMultiplesEquivZMod N).toIntLinearEquiv.toModuleIso
   ext
   simp [AddSubgroup.mem_zmultiples_iff, ← hG, mul_comm]
 

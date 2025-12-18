@@ -39,7 +39,6 @@ import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
 import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
 import ClassFieldTheory.LocalCFT.Continuity
 import ClassFieldTheory.LocalCFT.Teichmuller
-import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
@@ -49,9 +48,6 @@ import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Defs
-import ClassFieldTheory.Mathlib.Algebra.Module.LinearMap.Defs
 import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
 import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical

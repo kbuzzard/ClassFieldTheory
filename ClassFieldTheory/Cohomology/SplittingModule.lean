@@ -1,7 +1,6 @@
 import ClassFieldTheory.Cohomology.AugmentationModule
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
@@ -386,7 +385,7 @@ def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
   _ ≅ (tateCohomology (-2)).obj (trivial ℤ G ℤ) := (tateCohomologyIso τ (-2)).symm
   _ ≅ groupHomology (trivial ℤ G ℤ) 1 := (TateCohomology.isoGroupHomology _ 1 rfl).app _
   _ ≅ .of ℤ (Additive (Abelianization G)) :=
-    groupHomology.H1TrivialAddEquiv.toIntLinearEquiv'.toModuleIso
+    groupHomology.H1TrivialAddEquiv.toIntLinearEquiv.toModuleIso
 
 end Rep.split
 
