@@ -1,9 +1,7 @@
 import ClassFieldTheory.Cohomology.Functors.UpDown
 import ClassFieldTheory.Cohomology.IndCoind.Finite
-import ClassFieldTheory.Mathlib.Algebra.Homology.ImageToKernel
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import ClassFieldTheory.Mathlib.CategoryTheory.Abelian.Exact
 import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!

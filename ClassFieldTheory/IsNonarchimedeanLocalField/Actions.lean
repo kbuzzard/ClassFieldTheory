@@ -1,6 +1,5 @@
 import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
 import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
 
 /-! # Actions on local fields
 

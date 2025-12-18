@@ -15,7 +15,7 @@ theorem factors_maximalIdeal_pow (n : ℕ) :
     Multiset.replicate n (IsLocalRing.maximalIdeal R) :=
   UniqueFactorizationMonoid.factors_spec_of_subsingleton_units
     (Multiset.mem_replicate.not.mpr <| mt And.right not_a_field'.symm)
-    (by simp; rfl) (by simp [Multiset.mem_replicate])
+    (by simp) (by simp [Multiset.mem_replicate])
 
 theorem factors_maximalIdeal :
     UniqueFactorizationMonoid.factors (IsLocalRing.maximalIdeal R) = {IsLocalRing.maximalIdeal R} :=

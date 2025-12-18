@@ -1,5 +1,5 @@
 import ClassFieldTheory.Mathlib.Algebra.Algebra.Subalgebra.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 namespace ValuativeRel

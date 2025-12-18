@@ -1,9 +1,10 @@
-import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
+import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Valued.ValuativeRel
 import Mathlib.Topology.Algebra.Valued.ValuedField
-/-!
 
+/-!
 # Main theorems
 
 * `continuous_algebraMap_of_density` Given a valuative algebraic extension of valuative topological
@@ -12,6 +13,7 @@ import Mathlib.Topology.Algebra.Valued.ValuedField
 * An instance of `ContinuousSMul K L` if `K,L` are valuative topological fields and `L/K`
   is a valuative algebraic extension.
 -/
+
 open ValuativeRel
 
 theorem Valuation.sum_eq_iSup {ι R Γ₀ : Type*} (f : ι → R) (s : Finset ι)

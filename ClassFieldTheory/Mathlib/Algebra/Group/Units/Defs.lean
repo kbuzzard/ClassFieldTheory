@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Units.Defs
 
 theorem IsUnit.of_mul {M : Type*} [Monoid M] {x y z : M}
     (hxy : IsUnit (x * y)) (hzx : IsUnit (z * x)) : IsUnit x :=

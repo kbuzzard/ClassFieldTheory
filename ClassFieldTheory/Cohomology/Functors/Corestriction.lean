@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Aaron Liu, Yunzhou Xie
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
+import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
+import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-import ClassFieldTheory.Mathlib.Algebra.Module.NatInt
-import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 
 /-!
 # Corestriction
@@ -303,14 +302,15 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep 
 
 lemma pTorsion_eq_sylowTorsion {n : ℕ} [NeZero n] [Finite G] [DecidableEq G] (M : Rep R G)
     (p : ℕ) [Fact p.Prime] (P : Sylow p G) (x : groupCohomology M n) :
-    (∃ d, (p ^ d) • x = 0) ↔ x ∈ Submodule.torsionBy R _ (Nat.card P) :=
-  ⟨fun ⟨d, hd⟩ ↦ Submodule.mem_torsionBy_iff _ _ |>.2 <| by
+    (∃ d, (p ^ d) • x = 0) ↔ x ∈ Submodule.torsionBy R _ (Nat.card P) where
+  mp := by
+    rintro ⟨d, hd⟩
     obtain ⟨k, hk1, hk2⟩ := Nat.dvd_prime_pow Fact.out|>.1 <| Nat.gcd_dvd_right (Nat.card G) (p ^ d)
     obtain ⟨m, hm⟩ := P.pow_dvd_card_of_pow_dvd_card (hk2 ▸ Nat.gcd_dvd_left (Nat.card G) (p ^ d))
-    simp [hm, mul_comm _ m, mul_smul, - Nat.cast_pow, Nat.cast_smul_eq_nsmul, ← hk2,
-      AddCommGroup.isTorsion_gcd_iff _ (p ^ d) x|>.2 ⟨torsion_of_finite_of_neZero M x, hd⟩],
-    fun h ↦ ⟨(Nat.card G).factorization p, P.card_eq_multiplicity ▸ by
-    simpa [Nat.cast_smul_eq_nsmul] using h⟩⟩
+    simp [hm, mul_comm _ m, mul_smul, - Nat.cast_pow, Nat.cast_smul_eq_nsmul, ← hk2, smul_comm m]
+    simp [smul_comm _ m, hd, torsion_of_finite_of_neZero]
+  mpr h := ⟨(Nat.card G).factorization p, P.card_eq_multiplicity ▸ by
+    simpa [Nat.cast_smul_eq_nsmul] using h⟩
 
 lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] [DecidableEq G] (M : Rep R G)
     (p : ℕ) [Fact p.Prime] (P : Sylow p G) : Function.Injective

@@ -13,12 +13,4 @@ instance instAlgebra' : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.Residu
   Ideal.Quotient.algebraQuotientOfLEComap <|
     ((IsLocalRing.local_hom_TFAE (algebraMap R S)).out 0 3).mp <| by infer_instance
 
-@[simp] lemma algebraMap_residue (x : R) :
-    (algebraMap (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S))
-      (IsLocalRing.residue R x) = IsLocalRing.residue S (algebraMap R S x) := rfl
-
-instance instIsScalarTower' :
-    IsScalarTower R (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-  .of_algebraMap_eq' rfl
-
 end IsLocalRing.ResidueField
