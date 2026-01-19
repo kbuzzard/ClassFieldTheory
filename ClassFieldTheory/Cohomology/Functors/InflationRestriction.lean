@@ -11,8 +11,8 @@ open
   Limits
 
 variable {R : Type} [CommRing R]
-variable {G : Type} [Group G] [DecidableEq G]
-variable {Q : Type} [Group Q] [DecidableEq Q] {φ : G →* Q} (surj : Function.Surjective φ)
+variable {G : Type} [Group G]
+variable {Q : Type} [Group Q] {φ : G →* Q} (surj : Function.Surjective φ)
 
 namespace groupCohomology
 

@@ -125,7 +125,7 @@ def δUpNatIso (n : ℕ) : up ⋙ functor R G (n + 1) ≅ functor R G (n + 2) :=
 If S ⊆ G then the connecting homomorphism from `H^{0}(S,(up_G M)↓S)` to `H^{1}(S,M↓S)` is
 an epimorphism (i.e. surjective).
 -/
-instance epi_δ_up_zero_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G} (inj : Injective φ) :
+lemma epi_δ_up_zero_res {S : Type} [Group S] {φ : S →* G} (inj : Injective φ) :
     Epi (δ ((shortExact_res φ).2 <| shortExact_upSES M) 0 1 rfl) := by
   refine epi_δ_of_isZero _ 0 ?_
   simpa only [ShortComplex.map_X₂, upSES_X₂, zero_add]
@@ -135,15 +135,13 @@ instance epi_δ_up_zero_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
 If `S ⊆ G` and `M` is a `G`-module then the connecting homomorphism
 from `H^{n+1}(S,(up_G M)↓S)` to `H^{n+2}(S,M↓S)` is an isomorphism.
 -/
-instance isIso_δ_up_res {S : Type} [Group S] [DecidableEq S] {φ : S →* G} (inj : Injective φ)
-    (n : ℕ) [NeZero n] :
+lemma isIso_δ_up_res {S : Type} [Group S] {φ : S →* G} (inj : Injective φ) (n : ℕ) [NeZero n] :
     IsIso (δ ((shortExact_res φ).2 <| shortExact_upSES M) n (n + 1) rfl) := by
   refine isIso_δ_of_isZero _ n ?_ ?_ <;>
     simpa only [ShortComplex.map_X₂, upSES_X₂]
       using isZero_of_injective _ φ _ (NeZero.ne _) inj
 
-def δUpResIso {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
-    (inj : Function.Injective φ) (n : ℕ) [NeZero n] :
+def δUpResIso {S : Type} [Group S] {φ : S →* G} (inj : Function.Injective φ) (n : ℕ) [NeZero n] :
     groupCohomology (up.obj M ↓ φ) n ≅ groupCohomology (M ↓ φ) (n + 1) := by
   have := isIso_δ_up_res M inj n
   apply asIso (δ ((shortExact_res φ).2 <| shortExact_upSES M) n (n + 1) rfl)
@@ -209,8 +207,8 @@ instance epi_δ_down_zero : Epi (δ (shortExact_downSES M) 0 1 rfl) := by
 The connecting homomorphism `H⁰(H,down.obj M ↓ H) ⟶ H¹(H, M ↓ H)` is an epimorphism if
 `H` is a subgroup of a finite group `G`.
 -/
-instance epi_δ_down_res_zero {S : Type} [Group S] [DecidableEq S] {φ : S →* G}
-    (inj : Function.Injective φ) : Epi (δ (shortExact_downSES_res M φ) 0 1 rfl) := by
+lemma epi_δ_down_res_zero {S : Type} [Group S] {φ : S →* G} (inj : Injective φ) :
+    Epi (δ (shortExact_downSES_res M φ) 0 1 rfl) := by
   refine epi_δ_of_isZero (shortExact_downSES_res M φ) 0 ?_
   simpa only [downSES_X₂, ShortComplex.map_X₂, zero_add]
     using isZero_of_injective _ φ _ (by omega) inj
@@ -222,8 +220,8 @@ if `G` is finite.
 instance isIso_δ_down (n : ℕ) [NeZero n] : IsIso (δ (shortExact_downSES M) n (n + 1) rfl) := by
   apply isIso_δ_of_isZero <;> dsimp only [downSES_X₂] <;> exact isZero_of_trivialCohomology
 
-instance isIso_δ_down_res (n : ℕ) [NeZero n] {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
-    (inj : Function.Injective φ) : IsIso (δ (shortExact_downSES_res M φ) n (n + 1) rfl) := by
+lemma isIso_δ_down_res (n : ℕ) [NeZero n] {H : Type} [Group H] {φ : H →* G} (inj : Injective φ) :
+    IsIso (δ (shortExact_downSES_res M φ) n (n + 1) rfl) := by
   have := NeZero.ne n
   refine isIso_δ_of_isZero (shortExact_downSES_res M φ) n ?_ ?_ <;>
     simpa only [downSES_X₂, ShortComplex.map_X₂] using isZero_of_injective _ φ _ (by omega) inj
@@ -231,8 +229,7 @@ instance isIso_δ_down_res (n : ℕ) [NeZero n] {H : Type} [Group H] [DecidableE
 def δDownIso (n : ℕ) [NeZero n] : groupCohomology M n ≅ groupCohomology (down.obj M) (n + 1) :=
   asIso (δ (shortExact_downSES M) n (n + 1) rfl)
 
-def δDownResIso {H : Type} [Group H] [DecidableEq H] {φ : H →* G}
-    (inj : Function.Injective φ) (n : ℕ) [NeZero n] :
+def δDownResIso {H : Type} [Group H] {φ : H →* G} (inj : Injective φ) (n : ℕ) [NeZero n] :
     groupCohomology (M ↓ φ) n ≅ groupCohomology (down.obj M ↓ φ) (n + 1) :=
   have := isIso_δ_down_res M n inj
   asIso (δ (shortExact_downSES_res M φ) n (n + 1) rfl)
@@ -287,12 +284,10 @@ def δDownIsoTate (M : Rep R G) (n : ℤ) :
     (tateCohomology n).obj M ≅ (tateCohomology (n + 1)).obj (down.obj M) :=
   asIso (TateCohomology.δ (shortExact_downSES M) n)
 
-def δUpResIsoTate {S : Type} [Group S] [DecidableEq S] [Fintype S] {φ : S →* G}
-    (inj : Function.Injective φ) (n : ℤ) :
+def δUpResIsoTate {S : Type} [Group S] [Fintype S] {φ : S →* G} (inj : Injective φ) (n : ℤ) :
     (tateCohomology n).obj (up.obj M ↓ φ) ≅ (tateCohomology (n + 1)).obj (M ↓ φ) := sorry
 
-def δDownResIsoTate {H : Type} [Group H] [DecidableEq H] [Fintype H] {φ : H →* G}
-    (inj : Function.Injective φ) (n : ℤ) :
+def δDownResIsoTate {H : Type} [Group H] [Fintype H] {φ : H →* G} (inj : Injective φ) (n : ℤ) :
     (tateCohomology n).obj (M ↓ φ) ≅ (tateCohomology (n + 1)).obj (down.obj M ↓ φ) := sorry
 
 def δUpNatIsoTate (n : ℤ) : up ⋙ tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 1) :=

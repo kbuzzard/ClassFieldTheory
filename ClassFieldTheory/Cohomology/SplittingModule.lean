@@ -352,10 +352,10 @@ The splitting module has trivial cohomology.
 instance trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     (split σ).TrivialCohomology := by
   apply trivialCohomology_of_even_of_odd (split σ) 0 0
-  · intro H _ φ inj _
+  · intro H _ φ inj
     apply IsZero.of_iso (TateTheorem_lemma_4 σ inj)
     rfl
-  · intro H _ φ inj _
+  · intro H _ φ inj
     let : Fintype H := Fintype.ofInjective φ inj
     apply IsZero.of_iso (TateTheorem_lemma_3 σ inj)
     rfl

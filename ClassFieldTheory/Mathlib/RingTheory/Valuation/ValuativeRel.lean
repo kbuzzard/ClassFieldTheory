@@ -12,13 +12,13 @@ attribute [ext] ValuativeRel
 variable [ValuativeRel R]
 
 theorem posSubmonoid.ne_zero (x : posSubmonoid R) : x.val ≠ 0 :=
-  mt (· ▸ rel_rfl) x.2
+  mt (· ▸ vle_rfl) x.2
 
 instance _root_.Valuation.compatible_map {R Γ₀ : Type*} [CommRing R]
     [LinearOrderedCommMonoidWithZero Γ₀] {v : Valuation R Γ₀} [ValuativeRel R]
     {Γ₁ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] (f : Γ₀ →*₀ Γ₁) (hf : StrictMono f)
     [v.Compatible] : (v.map f hf.monotone).Compatible :=
-  ⟨fun _ _ ↦ (Valuation.Compatible.rel_iff_le (v := v) _ _).trans hf.le_iff_le.symm⟩
+  ⟨fun _ _ ↦ (Valuation.Compatible.vle_iff_le (v := v) _ _).trans hf.le_iff_le.symm⟩
 
 end Ring
 
@@ -27,19 +27,19 @@ section Field
 
 variable {F : Type*} [Field F] [ValuativeRel F]
 
-theorem rel_iff_div_rel_one (x : F) {y : F} (hy : y ≠ 0) :
+theorem vle_iff_div_vle_one (x : F) {y : F} (hy : y ≠ 0) :
     x ≤ᵥ y ↔ x / y ≤ᵥ 1 := by
-  rw [Valuation.Compatible.rel_iff_le (v := ValuativeRel.valuation F),
-    Valuation.Compatible.rel_iff_le (v := ValuativeRel.valuation F),
+  rw [Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation F),
+    Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation F),
     map_div₀, map_one, div_le_one₀ (bot_lt_iff_ne_bot.2 ((map_ne_zero _).2 hy))]
 
 /-- Two valuative relations on a field are equal iff their rings of integers are equal. -/
 @[ext high] theorem ext_of_field {F : Type*} [Field F] {v v' : ValuativeRel F}
-    (h : ∀ x, v.Rel x 1 ↔ v'.Rel x 1) : v = v' := by
+    (h : ∀ x, v.vle x 1 ↔ v'.vle x 1) : v = v' := by
   ext x y
   by_cases hy : y = 0
-  · simp_rw [hy, rel_zero_iff]
-  · rw [rel_iff_div_rel_one _ hy, @rel_iff_div_rel_one _ _ v x y hy, h]
+  · simp_rw [hy, vle_zero_iff]
+  · rw [vle_iff_div_vle_one _ hy, @vle_iff_div_vle_one _ _ v x y hy, h]
 
 theorem unitsMap_valuation_surjective :
     Function.Surjective (Units.map (valuation F : F →* ValueGroupWithZero F)) :=
@@ -62,17 +62,17 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
   [ValuativeExtension A B] {a b : A}
 
 instance : ValuativeExtension A A where
-  rel_iff_rel _ _ := .rfl
+  vle_iff_vle _ _ := .rfl
 
 variable (A B C) in
 theorem trans [ValuativeExtension B C] : ValuativeExtension A C where
-  rel_iff_rel _ _ := by simp_rw [Algebra.algebraMap_eq_smul_one, ← map_one (algebraMap B C),
+  vle_iff_vle _ _ := by simp_rw [Algebra.algebraMap_eq_smul_one, ← map_one (algebraMap B C),
     Algebra.algebraMap_eq_smul_one, ← IsScalarTower.smul_assoc, ← Algebra.algebraMap_eq_smul_one,
-    rel_iff_rel]
+    vle_iff_vle]
 
 lemma algebraMap_le : valuation B (algebraMap A B a) ≤ valuation B (algebraMap A B b) ↔
     valuation A a ≤ valuation A b := by
-  simp_rw [← Valuation.Compatible.rel_iff_le, rel_iff_rel]
+  simp_rw [← Valuation.Compatible.vle_iff_le, vle_iff_vle]
 
 lemma algebraMap_eq : valuation B (algebraMap A B a) = valuation B (algebraMap A B b) ↔
     valuation A a = valuation A b := by
@@ -89,17 +89,17 @@ namespace ValuativeRel
 
 instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
     [ValuativeRel R] : ValuativeRel s where
-  Rel x y := x.val ≤ᵥ y.val
-  rel_total x y := rel_total x.1 y.1
-  rel_trans := rel_trans (R := R)
-  rel_add := rel_add
-  rel_mul_right z := rel_mul_right z.1
-  rel_mul_cancel := rel_mul_cancel
-  not_rel_one_zero := not_rel_one_zero
+  vle x y := x.val ≤ᵥ y.val
+  vle_total x y := vle_total x.1 y.1
+  vle_trans := vle_trans (R := R)
+  vle_add := vle_add
+  mul_vle_mul_left hxy z := mul_vle_mul_left hxy z.1
+  vle_mul_cancel := vle_mul_cancel
+  not_vle_one_zero := not_vle_one_zero
 
 instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
     [ValuativeRel R] : ValuativeExtension s R where
-  rel_iff_rel _ _ := Iff.rfl
+  vle_iff_vle _ _ := Iff.rfl
 
 variable {R : Type*} [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] {s : σ}
 variable [ValuativeRel R]
@@ -112,6 +112,6 @@ instance (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
     [ValuativeRel A] [ValuativeRel B] [ValuativeExtension A B]
     {σ : Type*} [SetLike σ B] [SubringClass σ B] [SMulMemClass σ A B] (s : σ) :
     ValuativeExtension A s :=
-  ⟨by simp [ValuativeExtension.rel_iff_rel]⟩
+  ⟨by simp [ValuativeExtension.vle_iff_vle]⟩
 
 end ValuativeRel

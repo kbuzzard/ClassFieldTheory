@@ -39,10 +39,9 @@ instance (K : Type*) [CommRing K] [ValuativeRel K]
     rw [Valuation.mem_integer_iff] at hr hs ⊢
     rw [Algebra.smul_def, Valuation.map_mul]
     apply mul_le_one₀ _ zero_le' hs
-    rw [← map_one (valuation L), ← Valuation.Compatible.rel_iff_le,
-      ← RingHom.map_one (algebraMap K L),
-      ValuativeExtension.rel_iff_rel]
-    rw [← map_one (valuation K), ← Valuation.Compatible.rel_iff_le] at hr
+    rw [← map_one (valuation L), ← Valuation.Compatible.vle_iff_le,
+      ← RingHom.map_one (algebraMap K L), ValuativeExtension.vle_iff_vle]
+    rw [← map_one (valuation K), ← Valuation.Compatible.vle_iff_le] at hr
     exact hr⟩
 
 -- Probably not how I'm supposed to be doing this (this is not specific to nonarch local fields)

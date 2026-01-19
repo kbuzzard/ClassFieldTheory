@@ -42,7 +42,6 @@ import ClassFieldTheory.LocalCFT.Teichmuller
 import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
 import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
-import ClassFieldTheory.Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact

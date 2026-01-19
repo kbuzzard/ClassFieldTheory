@@ -119,7 +119,7 @@ lemma isZero_iff (M : Rep R G) : IsZero M ↔ IsZero (M.V) := by
 /--
 An object of `Rep R G` is zero iff its restriction to `H` is zero.
 -/
-lemma isZero_res_iff (M : Rep R G) {H : Type u} [Group H] [DecidableEq H] (φ : H →* G) :
+lemma isZero_res_iff (M : Rep R G) {H : Type u} [Group H] (φ : H →* G) :
     IsZero (M ↓ φ) ↔ IsZero M := by
   rw [isZero_iff, isZero_iff, Rep.res_obj_V]
 
@@ -208,7 +208,7 @@ For this, it would be sensible to define restriction as a natural transformation
 automatically commutes with the other maps. This requires us to first define cohomology as a functor.
 -/
 lemma rest_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
-    {H : Type u} [Group H] [DecidableEq H] (φ : H →* G) (i j : ℕ) (hij : i + 1 = j) :
+    {H : Type u} [Group H] (φ : H →* G) (i j : ℕ) (hij : i + 1 = j) :
     δ hS i j hij ≫ (rest φ j).app S.X₁ = (rest φ i).app S.X₃ ≫ δ ((shortExact_res φ).2 hS) i j hij
     := by
   let C₁ := S.map (cochainsFunctor R G)

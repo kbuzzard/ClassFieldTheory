@@ -55,7 +55,7 @@ namespace Rep
 
 def resInd₁AsFinsuppLinearEquiv (H : Subgroup G) : (G →₀ A) ≃ₗ[R] (H →₀ (G ⧸ H →₀ A)) :=
   open scoped Classical in
-  (Finsupp.domLCongr (prodQuotEquiv H).symm).trans (Finsupp.finsuppProdLEquiv R)
+  (Finsupp.domLCongr (prodQuotEquiv H).symm).trans (Finsupp.curryLinearEquiv R)
 
 def resCoind₁AsPiLinearEquiv (H : Subgroup G) : (G → A) ≃ₗ[R] (H → G ⧸ H → A) :=
   .trans (.funCongrLeft _ _ <| prodQuotEquiv H) (.curry R ..)

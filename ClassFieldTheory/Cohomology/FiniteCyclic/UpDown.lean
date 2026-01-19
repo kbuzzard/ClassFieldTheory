@@ -62,7 +62,7 @@ namespace Representation
 
 variable {A : Type} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
 
-omit [Fintype G] --[DecidableEq G]
+omit [Fintype G]
 
 @[simps] def map₁ : (G → A) →ₗ[R] (G → A) where
   toFun f x := f x - f ((gen G)⁻¹ * x)
@@ -147,8 +147,9 @@ lemma ind₁'_π_comp_map₂ :
   rw [LinearMap.comp_assoc, map₂_comp_lsingle, LinearMap.comp_sub,
     LinearMap.zero_comp, sub_eq_zero, ind₁'_π_comp_lsingle, ind₁'_π_comp_lsingle]
 
-lemma map₂_range [Fintype G] [DecidableEq G] :
+lemma map₂_range [Fintype G] :
     LinearMap.range (map₂ (R := R) (G := G) (A := A)) = LinearMap.ker ind₁'_π := by
+  classical
   ext w
   constructor
   · rintro ⟨y, rfl⟩
