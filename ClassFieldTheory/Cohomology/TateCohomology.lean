@@ -33,11 +33,12 @@ def tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCocha
 lemma tateNorm_eq (M : Rep R G) :
     tateNorm M = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
   ext
-  simp only [Rep.norm, ModuleCat.hom_ofHom, Finsupp.lsum_comp_lsingle, pi_apply, ChainComplex.of_x,
-    CochainComplex.of_x, chainsIso₀, LinearEquiv.toModuleIso_hom, cochainsIso₀,
-    LinearEquiv.toModuleIso_inv, ModuleCat.hom_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+  simp only [ModuleCat.of_coe, CochainComplex.of_x, tateNorm, ChainComplex.of_x, chainsIso₀,
+    LinearEquiv.toModuleIso_hom, norm, cochainsIso₀, LinearEquiv.toModuleIso_inv,
+    ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe,
     LinearEquiv.funUnique_symm_apply, Function.comp_apply, Finsupp.lsingle_apply,
-    Finsupp.LinearEquiv.finsuppUnique_apply, uniqueElim_const, tateNorm]
+    Finsupp.LinearEquiv.finsuppUnique_apply, AddEquiv.funUnique_symm_apply,
+    Finsupp.lsum_comp_lsingle, pi_apply]
   congr
   simp only [Finsupp.single_apply, ite_eq_left_iff]
   exact fun h ↦ False.elim <| h <| Unique.eq_default _
@@ -318,8 +319,7 @@ def negOneIso (M : Rep R G) :
     apply Submodule.map_injective_of_injective (f := (LinearMap.ker _).subtype)
       Subtype.val_injective
     rw [← range_d₁₀_eq_coinvariantsKer, Submodule.submoduleOf, Submodule.map_comap_eq_of_le,
-      ← Submodule.map_coe_toLinearMap (F := _ ≃ₗ[R] _), ← Submodule.map_comp,
-      ← LinearMap.range_comp]
+      ← Submodule.map_comp, ← LinearMap.range_comp]
     · rfl
     · simpa [LinearMap.range_le_iff_comap, ← ker_comp, -comp_eq_zero] using
         congr(($(comp_eq_zero M)).hom)

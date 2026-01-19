@@ -564,8 +564,8 @@ theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] 
   let v := NormedField.valuation (K := L)
   haveI : ValuativeExtension K L := by
     refine ⟨fun x y ↦ ?_⟩
-    rw [Valuation.Compatible.rel_iff_le (v := v),
-    Valuation.Compatible.rel_iff_le (v := ValuativeRel.valuation K)]
+    rw [Valuation.Compatible.vle_iff_le (v := v),
+    Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation K)]
     change spectralNorm K L _ ≤ spectralNorm K L _ ↔ _
     rw [spectralNorm_extends, spectralNorm_extends]
     change Valued.norm _ ≤ Valued.norm _ ↔ _
@@ -582,8 +582,8 @@ theorem ext_extension (v₁ v₂ : ValuativeRel L) (t₁ t₂ : TopologicalSpace
   left := ValuativeRel.ext_of_field fun y ↦ by
     -- they agree on being `≤ 1`, because they agree on integral elements, because
     -- being integral is an algebraic property.
-    rw [@Valuation.Compatible.rel_iff_le _ _ _ _ (v := @valuation L _ v₁) v₁ _,
-      @Valuation.Compatible.rel_iff_le _ _ _ _ (v := @valuation L _ v₂) v₂ _, map_one, map_one,
+    rw [@Valuation.Compatible.vle_iff_le _ _ _ _ (v := @valuation L _ v₁) v₁ _,
+      @Valuation.Compatible.vle_iff_le _ _ _ _ (v := @valuation L _ v₂) v₂ _, map_one, map_one,
       ← @isIntegral_iff K _ _ _ _ L _ v₁ t₁, ← @isIntegral_iff K _ _ _ _ L _ v₂ t₂]
   right := -- they are both the module topology
     (@isModuleTopology K _ _ _ _ L _ v₁ t₁ _ _ e₁).eq_moduleTopology'.trans <|

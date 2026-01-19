@@ -107,8 +107,9 @@ theorem of_iso (e : M ≃ₗ[R] N) (he : ∀ ⦃x⦄ i, x ∈ M_ i ↔ e x ∈ N
     IsFilterComplete N_ := by
   have he' := e.symm.surjective.forall.mp he
   simp_rw [e.apply_symm_apply] at he'
-  have hn (i) : M_ i = (N_ i).comap e := by ext; exact he _
-  have hn' (i) : N_ i = (M_ i).map e := hn i ▸ (map_comap_eq_of_surjective e.surjective _).symm
+  have hn (i) : M_ i = (N_ i).comap e.toLinearMap := by ext; exact he _
+  have hn' (i) : N_ i = (M_ i).map e.toLinearMap :=
+    hn i ▸ (map_comap_eq_of_surjective e.surjective _).symm
   refine mk_submodule (comap_injective_of_surjective e.surjective ?_) ?_
   · simp_rw [comap_iInf, ← hn, Filtration.iInf_eq_bot_submodule, comap_bot]
     exact e.ker.symm
