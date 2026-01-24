@@ -64,7 +64,8 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
 lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS).ExactAt i := by
   fin_cases i <;>
       change ShortComplex.Exact (ShortComplex.mk ..) <;>
-      rw [CochainComplex.prev, CochainComplex.next]
+      -- FIXME: This `erw` appeared in v4.27.0
+      erw [CochainComplex.prev, CochainComplex.next]
   · exact mapShortComplex₁_exact hS (Eq.refl 2)
   · exact mapShortComplex₂_exact hS 2
   · refine ShortComplex.exact_of_iso ?_ (mapShortComplex₃_exact hS (Eq.refl 3))
