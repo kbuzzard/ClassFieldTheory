@@ -2,7 +2,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 namespace UniqueFactorizationMonoid
 
-variable {M : Type*} [CancelCommMonoidWithZero M] [UniqueFactorizationMonoid M] [Subsingleton Mˣ]
+variable {M : Type*} [CommMonoidWithZero M] [UniqueFactorizationMonoid M] [Subsingleton Mˣ]
 
 theorem factors_irreducible_of_subsingleton_units
     {x : M} (hx : Irreducible x) (hx₀ : x ≠ 0) :
@@ -22,7 +22,7 @@ theorem factors_irreducible_of_subsingleton_units
     exact ((UniqueFactorizationMonoid.irreducible_of_factor 1 this).not_isUnit (by simp)).elim
 
 theorem factors_spec_of_subsingleton_units
-    {M : Type*} [CancelCommMonoidWithZero M] [UniqueFactorizationMonoid M] [Subsingleton Mˣ]
+    {M : Type*} [CommMonoidWithZero M] [UniqueFactorizationMonoid M] [Subsingleton Mˣ]
     {x : M} {m : Multiset M} (h₀ : 0 ∉ m) (h₁ : Associated x m.prod) (h₂ : ∀ y ∈ m, Irreducible y) :
     UniqueFactorizationMonoid.factors x = m := by
   rw [associated_iff_eq] at h₁; subst h₁
