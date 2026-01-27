@@ -1,7 +1,6 @@
 import ClassFieldTheory.Cohomology.AugmentationModule
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Cohomology.TrivialityCriterion
-import ClassFieldTheory.Mathlib.Algebra.Module.Equiv.Basic
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
@@ -353,10 +352,10 @@ The splitting module has trivial cohomology.
 instance trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
     (split σ).TrivialCohomology := by
   apply trivialCohomology_of_even_of_odd (split σ) 0 0
-  · intro H _ φ inj _
+  · intro H _ φ inj
     apply IsZero.of_iso (TateTheorem_lemma_4 σ inj)
     rfl
-  · intro H _ φ inj _
+  · intro H _ φ inj
     let : Fintype H := Fintype.ofInjective φ inj
     apply IsZero.of_iso (TateTheorem_lemma_3 σ inj)
     rfl
@@ -386,7 +385,7 @@ def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
   _ ≅ (tateCohomology (-2)).obj (trivial ℤ G ℤ) := (tateCohomologyIso τ (-2)).symm
   _ ≅ groupHomology (trivial ℤ G ℤ) 1 := (TateCohomology.isoGroupHomology _ 1 rfl).app _
   _ ≅ .of ℤ (Additive (Abelianization G)) :=
-    groupHomology.H1TrivialAddEquiv.toIntLinearEquiv'.toModuleIso
+    groupHomology.H1TrivialAddEquiv.toIntLinearEquiv.toModuleIso
 
 end Rep.split
 

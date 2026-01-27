@@ -19,9 +19,8 @@ theorem valuation_map_irreducible_lt_one {K L : Type*} [Field K] [ValuativeRel K
     {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) :
     valuation L (algebraMap K L ϖ) < 1 := by
   have : valuation K ϖ < 1 := Valuation.integer.v_irreducible_lt_one hϖ
-  rw [← (valuation K).map_one, ← Valuation.srel_iff_lt] at this
-  simpa using (Valuation.srel_iff_lt (v := valuation L)).mp <|
-    (ValuativeExtension.srel_iff_srel (B := L) (ϖ : K) 1).mpr this
+  rw [← (valuation K).map_one, ← Valuation.vlt_iff_lt] at this
+  simpa [(valuation L).vlt_iff_lt, ← ValuativeExtension.vlt_iff_vlt (B := L)] using this
 
 @[simp] lemma valuation_units_integer_eq_one {R : Type*} [CommRing R] [ValuativeRel R]
     (x : 𝒪[R]ˣ) : valuation R x = 1 := by

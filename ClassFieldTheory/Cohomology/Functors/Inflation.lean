@@ -37,9 +37,9 @@ open CategoryTheory
   groupCohomology
   HomologicalComplex
 
-variable {R G : Type} [CommRing R] [Group G] --[DecidableEq G]
+variable {R G : Type} [CommRing R] [Group G]
 
-variable {Q : Type} [Group Q] {φ : G →* Q} (surj : Function.Surjective φ) -- [DecidableEq H]
+variable {Q : Type} [Group Q] {φ : G →* Q} (surj : Function.Surjective φ)
 
 namespace Rep
 

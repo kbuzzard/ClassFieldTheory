@@ -1,6 +1,5 @@
 import ClassFieldTheory.Mathlib.FieldTheory.Separable
 import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
-import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Unramified.LocalRing
 
 /-- Extra flexibility in the choice of:
@@ -24,8 +23,9 @@ lemma Algebra.isUnramifiedAt_iff_map_eq' {R : Type*} {S : Type*} [CommRing R] [C
       (IsLocalRing.ResidueField.mapEquiv <| Localization.algEquiv q.primeCompl S') ?_
     refine IsLocalization.ringHom_ext (nonZeroDivisors (R ⧸ p)) <| Ideal.Quotient.ringHom_ext <|
       RingHom.ext fun x ↦ ?_
-    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, algebraMap_mk,
-      IsLocalRing.ResidueField.mapEquiv_apply, AlgEquiv.toRingEquiv_toRingHom]
+    simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
+      Ideal.algebraMap_quotient_residueField_mk, IsLocalRing.ResidueField.mapEquiv_apply,
+      AlgEquiv.toRingEquiv_toRingHom]
     rw [← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_eq R (Localization.AtPrime p) p.ResidueField,
       RingHom.comp_apply, IsLocalRing.ResidueField.algebraMap_eq,

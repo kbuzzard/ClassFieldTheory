@@ -96,9 +96,9 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
 theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
     (M : Rep R G) (n m : ℕ)
     -- todo: don't quantify over all types
-    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
+    (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
       IsZero (groupCohomology (M ↓ φ) (2 * n + 2)))
-    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ) [DecidableEq H],
+    (h_odd : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
       IsZero (groupCohomology (M ↓ φ) (2 * m + 1))) :
     M.TrivialCohomology := by
   constructor
@@ -155,17 +155,15 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
 instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (up.obj M).TrivialCohomology := open scoped Classical in
   trivialCohomology_of_even_of_odd (up.obj M) 37 9
-    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 77 (by decide) hφ) (δUpResIso M hφ 76))
-    (fun H _ _ hφ _ ↦ .of_iso (isZero_of_injective M _ 20 (by decide) hφ) (δUpResIso M hφ 19))
+    (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 77 (by decide) hφ) (δUpResIso M hφ 76))
+    (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 20 (by decide) hφ) (δUpResIso M hφ 19))
 
 instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (down.obj M).TrivialCohomology := open scoped Classical in
   have : Fintype G := Fintype.ofFinite G
   trivialCohomology_of_even_of_odd (down.obj M) 9 37
-    (fun H _ _ hφ _ ↦
-      .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (δDownResIso M hφ 19).symm)
-    (fun H _ _ hφ _ ↦
-      .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (δDownResIso M hφ 74).symm)
+    (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (δDownResIso M hφ 19).symm)
+    (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (δDownResIso M hφ 74).symm)
 
 instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialTateCohomology := by

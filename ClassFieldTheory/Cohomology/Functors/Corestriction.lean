@@ -4,12 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Aaron Liu, Yunzhou Xie
 -/
 import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
+import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
+import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-import ClassFieldTheory.Mathlib.Algebra.Module.NatInt
-import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 
 /-!
 # Corestriction
@@ -106,7 +105,7 @@ def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
     simpa [Rep.cores₀_obj] using comm.symm
 
 /-- The morphism `H¹(S, M↓S) ⟶ H¹(G, M)`. -/
-def cores₁_obj [DecidableEq G] (M : Rep R G) :
+def cores₁_obj (M : Rep R G) :
     -- defining H¹(S, M↓S) ⟶ H¹(G, M) by a diagram chase
     (functor R S 1).obj (M ↓ S.subtype) ⟶ (functor R G 1).obj M := by
   -- Recall we have 0 ⟶ M ⟶ coind₁'^G M ⟶ up_G M ⟶ 0 a short exact sequence
@@ -141,14 +140,14 @@ def cores₁_obj [DecidableEq G] (M : Rep R G) :
     exact (mapShortComplex₃ (shortExact_upSES M) (rfl : 0 + 1 = 1)).zero
 
 @[reassoc]
-lemma commSq_cores₁ [DecidableEq G] (M : Rep R G) :
+lemma commSq_cores₁ (M : Rep R G) :
   δ (shortExact_upSES_res M S.subtype) 0 1 rfl ≫ cores₁_obj (S := S) M =
     (cores₀ (S := S)).app _ ≫ δ (shortExact_upSES M) 0 1 rfl :=
   have : Epi (mapShortComplex₃ (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
     epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
 
-theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
+theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
   haveI : Epi (δ (shortExact_upSES_res X S.subtype) 0 1 rfl) :=
@@ -173,7 +172,7 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
       ⟨f, coind₁'.map f, up.map f, rfl, by aesop_cat⟩ 0 1 rfl
 
 /-- Corestriction on objects in group cohomology. -/
-def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
+def cores_obj : (M : Rep R G) → (n : ℕ) →
     (functor R S n).obj (M ↓ S.subtype) ⟶ (functor R G n).obj M
 | M, 0 => cores₀.app M
 | M, 1 => cores₁_obj M
@@ -194,7 +193,7 @@ def cores_obj [DecidableEq G] : (M : Rep R G) → (n : ℕ) →
   let ih := cores_obj (up.obj M) (d + 1)
   (asIso (δ (htopexact) (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
 
-theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) [DecidableEq G] :
+theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
     (res S.subtype ⋙ functor R (↥S) (n + 1)).map f ≫ cores_obj Y (n + 1) =
     cores_obj X (n + 1) ≫ (functor R G (n + 1)).map f := by
   revert X Y f
@@ -219,7 +218,7 @@ theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) [Decidable
 
 variable (R) (S) in
 /-- Corestriction as a natural transformation. -/
-def coresNatTrans (n : ℕ) [DecidableEq G] : Rep.res S.subtype ⋙ functor R S n ⟶ functor R G n where
+def coresNatTrans (n : ℕ) : Rep.res S.subtype ⋙ functor R S n ⟶ functor R G n where
   app M := (groupCohomology.cores_obj M n)
   naturality X Y f := match n with
     | 0 => cores₀.naturality f
@@ -249,7 +248,7 @@ Hⁿ(G, up M) ---> Hⁿ(S, upM ↓ S.subtype) ---> Hⁿ(G, up M)
 Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
 
 -/
-lemma commSqₙ (n : ℕ) [DecidableEq G] (M : Rep R G) :
+lemma commSqₙ (n : ℕ) (M : Rep R G) :
     (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (shortExact_upSES M) n (n + 1) rfl =
     δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫ coresNatTrans R S (n + 1)).app M := by
   rw [NatTrans.comp_app, NatTrans.comp_app]
@@ -262,7 +261,7 @@ lemma commSqₙ (n : ℕ) [DecidableEq G] (M : Rep R G) :
       (rest_δ_naturality (shortExact_upSES M) S.subtype (n + 1) (n + 2) rfl).symm ?_
     simp [-up_obj, coresNatTrans, cores_obj, δUpNatIso, δUpIso]
 
-lemma cores_res (n : ℕ) [DecidableEq G] :
+lemma cores_res (n : ℕ) :
     (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =
       S.index • (.id _) := by
   induction n with
@@ -277,7 +276,7 @@ lemma cores_res (n : ℕ) [DecidableEq G] :
     simp
 
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
-lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep R G)
+lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] (M : Rep R G)
     (x : groupCohomology M n) : Nat.card G • x = 0 := by
   if hG : Infinite G then simp else
   simp only [not_infinite_iff_finite] at hG
@@ -301,18 +300,19 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] [DecidableEq G] (M : Rep 
 
 -- p^infty-torsion injects into H^(Sylow) (for group cohomology)
 
-lemma pTorsion_eq_sylowTorsion {n : ℕ} [NeZero n] [Finite G] [DecidableEq G] (M : Rep R G)
+lemma pTorsion_eq_sylowTorsion {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
     (p : ℕ) [Fact p.Prime] (P : Sylow p G) (x : groupCohomology M n) :
-    (∃ d, (p ^ d) • x = 0) ↔ x ∈ Submodule.torsionBy R _ (Nat.card P) :=
-  ⟨fun ⟨d, hd⟩ ↦ Submodule.mem_torsionBy_iff _ _ |>.2 <| by
+    (∃ d, (p ^ d) • x = 0) ↔ x ∈ Submodule.torsionBy R _ (Nat.card P) where
+  mp := by
+    rintro ⟨d, hd⟩
     obtain ⟨k, hk1, hk2⟩ := Nat.dvd_prime_pow Fact.out|>.1 <| Nat.gcd_dvd_right (Nat.card G) (p ^ d)
     obtain ⟨m, hm⟩ := P.pow_dvd_card_of_pow_dvd_card (hk2 ▸ Nat.gcd_dvd_left (Nat.card G) (p ^ d))
-    simp [hm, mul_comm _ m, mul_smul, - Nat.cast_pow, Nat.cast_smul_eq_nsmul, ← hk2,
-      AddCommGroup.isTorsion_gcd_iff _ (p ^ d) x|>.2 ⟨torsion_of_finite_of_neZero M x, hd⟩],
-    fun h ↦ ⟨(Nat.card G).factorization p, P.card_eq_multiplicity ▸ by
-    simpa [Nat.cast_smul_eq_nsmul] using h⟩⟩
+    simp [hm, mul_comm _ m, mul_smul, - Nat.cast_pow, Nat.cast_smul_eq_nsmul, ← hk2, smul_comm m]
+    simp [smul_comm _ m, hd, torsion_of_finite_of_neZero]
+  mpr h := ⟨(Nat.card G).factorization p, P.card_eq_multiplicity ▸ by
+    simpa [Nat.cast_smul_eq_nsmul] using h⟩
 
-lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] [DecidableEq G] (M : Rep R G)
+lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
     (p : ℕ) [Fact p.Prime] (P : Sylow p G) : Function.Injective
     ((map P.toSubgroup.subtype (𝟙 (_ ↓ _)) n).hom ∘ₗ (Module.IsTorsionBy.coprime_decompose
     (M := groupCohomology M n) (Subgroup.card_mul_index P.toSubgroup).symm

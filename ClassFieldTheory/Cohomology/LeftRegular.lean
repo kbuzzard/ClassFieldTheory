@@ -36,7 +36,7 @@ If `φ : H →* G` is a map between finite groups, and `g ; G`, then
 `res_norm' R g φ` is the element `∑ h*g` in the `H`-invariants of the left regular
 representation `R[G]`, the sum being over `h : H`.
 -/
-abbrev res_norm' [Fintype G] {H : Type} [Group H] [Fintype H] (g : G) (φ : H →* G) :
+abbrev res_norm' {H : Type} [Group H] [Fintype H] (g : G) (φ : H →* G) :
     (leftRegular R G ↓ φ).ρ.invariants :=
   ⟨∑ h : H, leftRegular.of (φ h * g), fun h ↦ by
     simpa [leftRegular.of] using by
@@ -49,7 +49,7 @@ If `φ : H →* G` is a map between finite groups, and `g ; G`, then
 `res_norm R g φ` is the element `∑ h*g` in `H0(H,R[G])`,
 the sum being over `h : H`.
 -/
-def res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
+def res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
     groupCohomology.H0 (leftRegular R G ↓ φ) :=
   (groupCohomology.H0Iso (leftRegular R G ↓ φ)).toLinearEquiv.symm <|
   leftRegular.res_norm' R g φ
@@ -64,12 +64,11 @@ lemma zeroι_norm [Fintype G] :
       Finset.sum_equiv (Equiv.mulLeft g) (by grind) <| fun _ _ ↦ rfl⟩
   exact congr($this)
 
-lemma H0Iso_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
-    (g : G) : (groupCohomology.H0Iso (leftRegular R G ↓ φ)).hom
-    (res_norm R φ g) = res_norm' R g φ :=
+lemma H0Iso_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
+    (groupCohomology.H0Iso (leftRegular R G ↓ φ)).hom (res_norm R φ g) = res_norm' R g φ :=
   (groupCohomology.H0Iso _).toLinearEquiv.apply_symm_apply _
 
-lemma zeroι_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
+lemma zeroι_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
     zeroι _ (res_norm R φ g) = ∑ h : H, leftRegular.of (φ h * g) := by
   dsimp [zeroι]
   exact congr(Subtype.val $(leftRegular.H0Iso_res_norm R G φ g))
@@ -134,13 +133,14 @@ lemma res_span_norm' [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G
   exact this ▸ sum_mem fun i _ ↦ Submodule.smul_mem _ _ <| Submodule.subset_span ⟨σ i, rfl⟩
 
 lemma span_norm [Fintype G] : Submodule.span R {leftRegular.norm R G} = ⊤ := by
-  rw [leftRegular.norm, ← Set.image_singleton, ← Submodule.map_span, leftRegular.span_norm']
+  rw [leftRegular.norm, ← Set.image_singleton, ← LinearEquiv.coe_toLinearMap,
+    ← Submodule.map_span, leftRegular.span_norm']
   simp
 
 lemma res_span_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
     (inj : φ.toFun.Injective) : Submodule.span R (Set.range (res_norm R φ)) = ⊤ := by
   change Submodule.span R (Set.range (_ ∘ _)) = _
-  rw [Set.range_comp, ← Submodule.map_span]
+  rw [Set.range_comp, ← LinearEquiv.coe_toLinearMap, ← Submodule.map_span]
   exact Submodule.map_eq_top_iff.2 <| leftRegular.res_span_norm' R φ inj
 
 /-- The 0th group cohomology of the trivial `R[G]`-module `R` is the trivial module. -/
@@ -160,7 +160,7 @@ lemma _root_.groupCohomology.map_comp_H0trivial {ρ : Rep R G} (f : ρ ⟶ trivi
     groupCohomology.map_id_comp_H0Iso_hom]
   simp [zeroι]
 
-lemma groupCoh_map_res_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
+lemma groupCoh_map_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
     groupCohomology.map (.id _) ((res φ).map (ε R G)) 0 (res_norm R φ g) =
       (groupCohomology.H0trivial R H).toLinearEquiv.symm (Fintype.card H : R) := by
   apply (groupCohomology.H0trivial R H).toLinearEquiv.eq_symm_apply.mpr

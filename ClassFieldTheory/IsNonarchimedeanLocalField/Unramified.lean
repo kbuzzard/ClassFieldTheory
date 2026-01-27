@@ -247,7 +247,7 @@ theorem nonempty_unramifiedExtension_alghom_of_dvd_f (n : ℕ) (hn : n ∣ f K L
   have h₃ := pos_of_ne_zero <| card_pow_sub_one_in_nat_ne_zero 𝓀[K] hf0.out
   refine IntermediateField.nonempty_algHom_of_adjoin_splits
     (forall_eq.mpr ⟨.of_pow h₂ <| hζ.1 ▸ isIntegral_one,
-      .splits_of_dvd (g := X ^ (Nat.card 𝓀[K] ^ n - 1) - C 1) ?_
+      .of_dvd (g := X ^ (Nat.card 𝓀[K] ^ n - 1) - C 1) ?_
         (X_pow_sub_C_ne_zero h₂ _) ?_⟩)
     (intermediateFieldTop_eq_adjoin_primitive_root K _ hζ).symm
   · rw [f_spec'] at h₁ h₃

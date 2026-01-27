@@ -1,3 +1,4 @@
+import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 import Mathlib.Topology.Algebra.Valued.NormedValued
 
@@ -16,7 +17,7 @@ def toValuativeRel : ValuativeRel K :=
 scoped [NormedField] attribute [instance] toValuativeRel
 
 theorem compatible : valuation.Compatible (R := K) where
-  rel_iff_le _ _ := Iff.rfl
+  vle_iff_le _ _ := Iff.rfl
 scoped [NormedField] attribute [instance] compatible
 
 /-- The `ValuativeRel.valuation K` coming from the `ValuativeRel` that comes from

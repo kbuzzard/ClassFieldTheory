@@ -38,7 +38,6 @@ example (n : ℕ) : cocycles M n ⟶ groupCohomology M n := groupCohomology.π M
 example (n : ℕ) : Epi (groupCohomology.π M n) := inferInstance
 
 -- Here `P` is *any* projective resolution of the trivial G-module R
-variable [DecidableEq G] in
 example (P : ProjectiveResolution (Rep.trivial R G R)) :
     groupCohomology M n ≅ (P.complex.linearYonedaObj R M).homology n :=
   groupCohomologyIso M n P

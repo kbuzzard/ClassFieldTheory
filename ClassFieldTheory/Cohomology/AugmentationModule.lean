@@ -1,5 +1,5 @@
 import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Cohomology.Functors.UpDown
+import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
 import ClassFieldTheory.Cohomology.LeftRegular
 import ClassFieldTheory.Cohomology.TrivialCohomology
 import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
@@ -261,7 +261,7 @@ def H1_iso [Fintype G] :
     rintro a rfl
     refine ⟨a • leftRegular.norm R G, ?_⟩
     apply (H0trivial R G).toLinearEquiv.injective
-    rw [← Iso.toLinearEquiv_symm, LinearEquiv.apply_symm_apply]
+    rw [← Iso.toLinearEquiv_symm, LinearEquiv.coe_toLinearMap, LinearEquiv.apply_symm_apply]
     change (H0trivial R G).hom.hom _ = _
     rw [show (mapShortComplex₃ ..).f = map (.id G) (ε R G) 0 by simp, ← LinearMap.comp_apply,
       ← ModuleCat.hom_comp, map_comp_H0trivial]

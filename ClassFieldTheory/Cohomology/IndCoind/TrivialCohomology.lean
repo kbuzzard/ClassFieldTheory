@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru,
 -/
 import ClassFieldTheory.Cohomology.IndCoind.Finite
 import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Mathlib.Algebra.Module.Submodule.Range
 import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
@@ -56,7 +55,7 @@ namespace Rep
 
 def resInd₁AsFinsuppLinearEquiv (H : Subgroup G) : (G →₀ A) ≃ₗ[R] (H →₀ (G ⧸ H →₀ A)) :=
   open scoped Classical in
-  (Finsupp.domLCongr (prodQuotEquiv H).symm).trans (Finsupp.finsuppProdLEquiv R)
+  (Finsupp.domLCongr (prodQuotEquiv H).symm).trans (Finsupp.curryLinearEquiv R)
 
 def resCoind₁AsPiLinearEquiv (H : Subgroup G) : (G → A) ≃ₗ[R] (H → G ⧸ H → A) :=
   .trans (.funCongrLeft _ _ <| prodQuotEquiv H) (.curry R ..)
