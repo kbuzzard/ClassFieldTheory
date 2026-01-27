@@ -56,9 +56,9 @@ def resEquiv_inv (n : ℕ) (G' : Type) [Group G'] (M : Rep R G) (e : G ≃* G') 
     exact map_congr (by simp) (by simp [Rep.res_obj_V]) n
 
 
-theorem epi_δ_infl [DecidableEq G] (n : ℕ) (M : Rep R G) (hS' : IsZero (H1 (M ↓ φ.ker.subtype))) :
-    Epi (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hS')
-    (n + 1) (n + 2) rfl) := epi_δ_of_isZero _ (n + 1) (by simp [-coind₁'_obj]; sorry)
+-- theorem epi_δ_infl [DecidableEq G] (n : ℕ) (M : Rep R G) (hS' : IsZero (H1 (M ↓ φ.ker.subtype))) :
+--     Epi (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hS')
+--     (n + 1) (n + 2) rfl) := epi_δ_of_isZero _ (n + 1) (by simp [-coind₁'_obj]; sorry)
 
 def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) where
   X₁ := groupCohomology (M ↑ surj) (n + 1)
@@ -71,24 +71,41 @@ def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) wh
     | zero =>
       have : map _ _ _ ≫ map _ (𝟙 (M ↓ φ.ker.subtype)) _ = 0 :=
         (groupCohomology.H1InfRes M φ.ker).zero
-      simp [rest_app, infl, cochain_infl]
+      simp only [Nat.reduceAdd, infl, cochain_infl, Functor.hcomp_id, Functor.whiskerRight_app,
+        Functor.comp_obj, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_map, rest_app]
       change map _ _ 1 ≫ _ = 0
       apply_fun ((resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
         (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom ≫ ·) at this
       rwa [comp_zero, resEquiv_inv_hom, ← Category.assoc, ← map_comp] at this
     | succ n ih =>
-    have commSq1 := infl_δ_naturality surj (shortExact_upSES M)
-      (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
-      sorry) (n + 1) (n + 1 + 1) rfl
-    have commSq2 := rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl
-    rw [← @cancel_epi _ _ _ _ _ _ (epi_δ_infl surj n M sorry), ← Category.assoc]
-    simp only [ShortComplex.map_X₃, upSES_X₃, upSES_X₁, functor_obj, ShortComplex.map_X₁,
-      Functor.comp_obj, comp_zero] at commSq1 commSq2 ⊢
-    rw [commSq1, Category.assoc, commSq2, ← Category.assoc, ih, zero_comp]
+    ext x
+    induction x using groupCohomology_induction_on with
+    | h x =>
+    simp only [infl, Functor.hcomp_id, Functor.whiskerRight_app, Functor.comp_obj,
+      cochainsFunctor_obj, HomologicalComplex.homologyFunctor_map, rest, ModuleCat.hom_comp,
+      LinearMap.coe_comp, Function.comp_apply, ModuleCat.hom_zero, LinearMap.zero_apply]
+    erw [groupCohomology.π_map_apply, groupCohomology.π_map_apply]
+    nth_rw 2 [← CategoryTheory.ConcreteCategory.comp_apply]
+    rw [← cocyclesMap_comp]
+    -- have := (resEquiv_inv (n + 1) Q (M.quotientToInvariants φ.ker) (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom
+    -- dsimp at this
+    -- conv_lhs => enter [2, 1, 1]; tactic =>
+      -- convert cocyclesMap_id
 
+    sorry
+    -- have commSq1 := infl_δ_naturality surj (shortExact_upSES M)
+    --   (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
+    --   sorry) (n + 1) (n + 1 + 1) rfl
+    -- have commSq2 := rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl
+    -- rw [← @cancel_epi _ _ _ _ _ _ (epi_δ_infl surj n M sorry), ← Category.assoc]
+    -- simp only [ShortComplex.map_X₃, upSES_X₃, upSES_X₁, functor_obj, ShortComplex.map_X₁,
+    --   Functor.comp_obj, comp_zero] at commSq1 commSq2 ⊢
+    -- rw [commSq1, Category.assoc, commSq2, ← Category.assoc, ih, zero_comp]
+
+-- set_option pp.proofs true in
 theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
-    Mono (inflationRestriction surj n M).f :=
+    Mono (inflationRestriction surj n M).f := by
   /-
   The proof is by induction on `n`. The `H¹` case (i.e. `n = 0`) is in Mathlib.
   For the inductive step, use the fact that the following square commutes by `infl_δ_naturality`.
@@ -99,6 +116,33 @@ theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
 
   The vertical maps are the dimension-shifting isomorphisms.
   -/
+  induction n with
+  | zero =>
+  have h1 := groupCohomology.instMonoModuleCatFH1InfRes M φ.ker
+  change Mono (map _ _ _) at h1
+  have : Mono (resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
+        (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom := IsIso.mono_of_iso _
+  convert @mono_comp _ _ _ _ _ _ this _ h1 using 1
+  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, NatTrans.hcomp_app,
+    Functor.comp_obj, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj, NatTrans.id_app,
+    HomologicalComplex.homologyFunctor_map, Category.id_comp, resEquiv_inverse, resEquiv_inv_hom]
+  rw [← map_comp]
+  congr
+  | succ n ih =>
+  have commSq1 := infl_δ_naturality surj (shortExact_upSES M)
+    (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
+    (hM 0 (by omega))) (n + 1) (n + 1 + 1) rfl
+  have commSq2 := rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl
+  simp only [inflationRestriction]
+  -- have : Mono (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
+  --   (hM 0 (by omega))) (n + 1) (n + 1 + 1) rfl) :=
+  --   groupCohomology.mono_δ_of_isZero _ _ (by
+  --     dsimp [-coind₁'_obj];
+  --     sorry)
+  -- -- why is δ iso?
+  -- simp [infl, cochain_infl]
+  -- change Mono (map _ _ _)
+  -- -- refine CategoryTheory.mono_comp_iff_of_mono _ _ |>.2 ?_
   sorry
 
 theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
