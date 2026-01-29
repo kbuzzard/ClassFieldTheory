@@ -129,8 +129,6 @@ theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     exact hM (i + 1) (by omega)
   exact mono_comp _ _
 
-example (C) [Category C] {A B : C} (f : A ⟶ B) [IsIso f] : inv f ≫ f = 𝟙 B := by exact (inv_comp_eq_id f).mpr rfl
-
 theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
     (inflationRestriction surj n M).Exact := by
@@ -147,35 +145,24 @@ theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
   -/
   induction n generalizing M with
   | zero =>
-  rw [CategoryTheory.ShortComplex.moduleCat_exact_iff_ker_sub_range]
-  intro x hx
-  induction x using H1_induction_on with | @h x =>
-  simp_all only [not_lt_zero, IsEmpty.forall_iff, implies_true, inflationRestriction, Nat.reduceAdd,
-    rest, LinearMap.mem_ker, H1π_comp_map_apply]
-  obtain ⟨(y : M), hy⟩ := H1π_eq_zero_iff _ |>.1 hx
-  have h1 := (mem_cocycles₁_iff x).1 x.2
-  have h2 : ∀ s ∈ φ.ker, x s = M.ρ s y - y := fun s hs => funext_iff.1 hy.symm ⟨s, hs⟩
-  let e : G ⧸ φ.ker ≃* Q := QuotientGroup.quotientKerEquivOfSurjective φ surj
-  refine ⟨H1π _ ⟨(fun g ↦ ⟨x.1 (e.symm g).out - M.ρ (e.symm g).out y + y, ?_⟩), ?_⟩, ?_⟩
-  · intro s
-    let g' := (e.symm g).out
-    calc
-      _ = x (s * g') - x s - M.ρ s (M.ρ g' y) + (x s + y) := by
-        simp only [g', MonoidHom.coe_comp, Subgroup.coe_subtype, Function.comp_apply,
-          cocycles₁.val_eq_coe, map_add, map_sub, h1]
-        abel_nf
-        simp [h2]
-      _ = x (g' * (g' ⁻¹ * s * g')) - M.ρ g' ((M.ρ (g' ⁻¹ * s * g') y) - y) - M.ρ g' y + y := by
-        simp only [mul_assoc, mul_inv_cancel_left, map_mul, Module.End.mul_apply, map_sub,
-          Representation.self_inv_apply, g']
-        abel
-      _ = _ := by
-        simp [g', eq_sub_of_add_eq' (h1 g' (g'⁻¹ * s * g')).symm,
-          h2 (g'⁻¹ * s * g') (Subgroup.Normal.conj_mem' _ _ s.2 _)]
-  · rw [mem_cocycles₁_iff]
-    intro g' h'
-    sorry
-  · sorry
+  have : (map _ _ _).hom.range = _ := ShortComplex.Exact.moduleCat_range_eq_ker <|
+    H1InfRes_exact M φ.ker
+  rw [← LinearEquiv.range_comp (resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
+    (QuotientGroup.quotientKerEquivOfSurjective φ surj)).toLinearEquiv,
+    Iso.toLinearMap_toLinearEquiv, ← ModuleCat.hom_comp] at this
+  rw [ShortComplex.moduleCat_exact_iff_range_eq_ker]
+  convert this using 3
+  clear * -
+  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, NatTrans.hcomp_app,
+    Functor.comp_obj, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj, NatTrans.id_app,
+    HomologicalComplex.homologyFunctor_map, Category.id_comp, resEquiv_inverse, resEquiv_inv_hom,
+    ← map_comp]
+  rw [map_congr]
+  · ext g
+    simp [QuotientGroup.quotientKerEquivOfSurjective]
+  · simp only [Action.res_obj_V, Action.comp_hom, Action.res_map_hom, subtype_hom,
+    res_quotientToInvariantsFunctor'_ι]
+    rfl
   | succ n ih =>
   have commSq1 := infl_δ_naturality surj (shortExact_upSES M)
       (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
@@ -184,7 +171,7 @@ theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
   rw [CategoryTheory.ShortComplex.moduleCat_exact_iff_ker_sub_range]
   intro x hx
   simp only [inflationRestriction, rest, LinearMap.mem_ker, res] at hx x
-  simp [inflationRestriction]
+  simp only [inflationRestriction, LinearMap.mem_range]
   let x' := (δUpIso M n).inv.hom x
   have eq := CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker <| @ih (up.obj M) fun i hi ↦ by
     refine IsZero.of_iso ?_ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
