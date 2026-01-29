@@ -137,6 +137,8 @@ theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     exact hM (i + 1) (by omega)
   exact mono_comp _ _
 
+example (C) [Category C] {A B : C} (f : A ⟶ B) [IsIso f] : inv f ≫ f = 𝟙 B := by exact (inv_comp_eq_id f).mpr rfl
+
 theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
     (inflationRestriction surj n M).Exact := by
@@ -162,21 +164,72 @@ theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
   have h1 := (mem_cocycles₁_iff x).1 x.2
   have h2 : ∀ s ∈ φ.ker, x s = M.ρ s y - y := fun s hs => funext_iff.1 hy.symm ⟨s, hs⟩
   let e : G ⧸ φ.ker ≃* Q := QuotientGroup.quotientKerEquivOfSurjective φ surj
-  refine  ⟨H1π _ ⟨(fun g ↦ ⟨x.1 (e.symm g).out - M.ρ (e.symm g).out y + y, ?_⟩), ?_⟩, ?_⟩
+  refine ⟨H1π _ ⟨(fun g ↦ ⟨x.1 (e.symm g).out - M.ρ (e.symm g).out y + y, ?_⟩), ?_⟩, ?_⟩
   · intro s
+    let g' := (e.symm g).out
+    calc
+      _ = x (s * g') - x s - M.ρ s (M.ρ g' y) + (x s + y) := by
+        simp only [g', MonoidHom.coe_comp, Subgroup.coe_subtype, Function.comp_apply,
+          cocycles₁.val_eq_coe, map_add, map_sub, h1]
+        abel_nf
+        simp [h2]
+      _ = x (g' * (g' ⁻¹ * s * g')) - M.ρ g' ((M.ρ (g' ⁻¹ * s * g') y) - y) - M.ρ g' y + y := by
+        simp only [mul_assoc, mul_inv_cancel_left, map_mul, Module.End.mul_apply, map_sub,
+          Representation.self_inv_apply, g']
+        abel
+      _ = _ := by
+        simp [g', eq_sub_of_add_eq' (h1 g' (g'⁻¹ * s * g')).symm,
+          h2 (g'⁻¹ * s * g') (Subgroup.Normal.conj_mem' _ _ s.2 _)]
+  · rw [mem_cocycles₁_iff]
+    intro g' h'
     sorry
   · sorry
-  sorry
-  | succ n _ =>
+  | succ n ih =>
   have commSq1 := infl_δ_naturality surj (shortExact_upSES M)
       (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
       (hM 0 (by omega))) (n + 1) (n + 1 + 1) rfl
   have commSq2 := rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl
-  sorry
+  rw [CategoryTheory.ShortComplex.moduleCat_exact_iff_ker_sub_range]
+  intro x hx
+  simp only [inflationRestriction, rest, LinearMap.mem_ker, res] at hx x
+  simp [inflationRestriction]
+  let x' := (δUpIso M n).inv.hom x
+  have eq := CategoryTheory.ShortComplex.Exact.moduleCat_range_eq_ker <| @ih (up.obj M) fun i hi ↦ by
+    refine IsZero.of_iso ?_ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
+    exact hM (i + 1) (by omega)
+  simp only [inflationRestriction, rest] at eq
+  have hx' : x' ∈ (map φ.ker.subtype (𝟙 (up.obj M ↓ φ.ker.subtype)) (n + 1)).hom.ker := by
+    have := congr(($commSq2).hom x')
+    simp only at this
+    simp only [LinearMap.mem_ker]
+    conv_lhs at this => enter [2]; tactic => unfold x'
+    simp only [upSES, rest] at this
+    rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, ← Category.assoc, δUpIso, asIso_inv,
+      (inv_comp_eq_id _).2 rfl, Category.id_comp] at this
+    erw [hx] at this
+    change 0 = (_ ≫ (δUpResIso M φ.ker.subtype_injective (n + 1)).hom).hom x' at this
+    rw [ModuleCat.hom_comp] at this
+    change 0 = ((δUpResIso _ _ _).toLinearEquiv.toLinearMap ∘ₗ _) x' at this
+    rwa [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap, eq_comm,
+      LinearEquiv.map_eq_zero_iff] at this
+  rw [← eq] at hx'
+  obtain ⟨y, hy⟩ := hx'
+  have : IsIso (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
+    (hM 0 (by omega))) (n + 1) (n + 1 + 1) rfl) := by
+    have := coind₁'_quotientToInvariants_trivialCohomology (M := M) surj
+    refine isIso_δ_of_isZero _ (n + 1) ?_ ?_
+    <;> simp only [ShortComplex.map_X₂, upSES_X₂]
+    <;> exact isZero_of_trivialCohomology
+  use (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
+    (hM 0 (by omega))) (n + 1) (n + 1 + 1) rfl).hom y
+  have := congr(($commSq1).hom y)
+  simp only [ModuleCat.hom_comp, LinearMap.comp_apply, upSES] at this
+  erw [this, hy] --`erw?` gives nothing
+  unfold x'
+  erw [← LinearMap.comp_apply]
+  rw [← ModuleCat.hom_comp, δUpIso, asIso_inv, (inv_comp_eq_id _).2 rfl, ModuleCat.hom_id,
+    LinearMap.id_apply]
 
-#check map_congr
-#check map_id
-#check Category.comp_id
 end groupCohomology
 
 end
