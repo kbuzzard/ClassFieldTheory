@@ -80,16 +80,8 @@ def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) wh
     erw [groupCohomology.π_map_apply, groupCohomology.π_map_apply]
     nth_rw 2 [← CategoryTheory.ConcreteCategory.comp_apply]
     rw [← cocyclesMap_comp]
-    -- have := (resEquiv_inv (n + 1) Q (M.quotientToInvariants φ.ker) (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom
-    -- dsimp at this
-    -- conv_lhs => enter [2, 1, 1]; tactic =>
-      -- convert cocyclesMap_id
 
     sorry
-    -- rw [← @cancel_epi _ _ _ _ _ _ (epi_δ_infl surj n M sorry), ← Category.assoc]
-    -- simp only [ShortComplex.map_X₃, upSES_X₃, upSES_X₁, functor_obj, ShortComplex.map_X₁,
-    --   Functor.comp_obj, comp_zero] at commSq1 commSq2 ⊢
-    -- rw [commSq1, Category.assoc, commSq2, ← Category.assoc, ih, zero_comp]
 
 theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
