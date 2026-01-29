@@ -23,7 +23,8 @@ open
   groupCohomology
 
 namespace Rep
-variable {R G : Type} [CommRing R] [Group G]
+universe u
+variable {R G : Type u} [CommRing R] [Group G]
 
 /--
 A representation `M : Rep R G` has trivial cohomology if the cohomology groups `Hⁿ(H, M)`
@@ -32,7 +33,7 @@ are zero for every subgroup `H` of `G` and every `n > 0`.
 class TrivialCohomology (M : Rep R G) : Prop where
   isZero (H : Subgroup G) {n : ℕ} : IsZero (groupCohomology (M ↓ H.subtype) (n + 1))
 
-theorem isZero_of_injective (M : Rep R G) {H : Type} [Group H] (f : H →* G) (n : ℕ) (hn : n ≠ 0)
+theorem isZero_of_injective (M : Rep R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ) (hn : n ≠ 0)
     (hf : Function.Injective f) [M.TrivialCohomology] : IsZero (groupCohomology (M ↓ f) n) := by
   cases n with
   | zero => tauto
@@ -43,7 +44,7 @@ lemma TrivialCohomology.of_iso {M N : Rep R G} (f : M ≅ N) [N.TrivialCohomolog
     M.TrivialCohomology where
   isZero H n := (isZero H).of_iso <| (functor _ _ n.succ).mapIso <| (res H.subtype).mapIso f
 
-protected lemma TrivialCohomology.res (M : Rep R G) {H : Type} [Group H] {f : H →* G}
+protected lemma TrivialCohomology.res (M : Rep R G) {H : Type u} [Group H] {f : H →* G}
     (hf : Function.Injective f) [M.TrivialCohomology] : (M ↓ f).TrivialCohomology where
   isZero S n := isZero_of_injective M (f.comp S.subtype) (n + 1) (by omega)
       (hf.comp S.subtype_injective)
@@ -57,7 +58,7 @@ lemma isZero_of_trivialCohomology {M : Rep R G} [M.TrivialCohomology] {n : ℕ} 
 
 lemma trivialCohomology_iff_res {M : Rep R G} :
     M.TrivialCohomology ↔
-      ∀ {H : Type} [Group H] (f : H →* G), Function.Injective f → (M ↓ f).TrivialCohomology where
+      ∀ {H : Type u} [Group H] (f : H →* G), Function.Injective f → (M ↓ f).TrivialCohomology where
   mp _ _ _ f inj := ⟨fun S n ↦ isZero_of_injective M (f.comp S.subtype) (n + 1) (by omega)
     (inj.comp S.subtype_injective)⟩
   mpr h := h (f := .id G) Function.injective_id
@@ -71,7 +72,7 @@ lemma TrivialHomology.of_iso {M N : Rep R G} (f : M ≅ N) [N.TrivialHomology] :
   intro H n
   exact (isZero _).of_iso <| (groupHomology.functor R H n.succ).mapIso <| (res H.subtype).mapIso f
 
-lemma TrivialHomology.of_injective {M : Rep R G} {H : Type} [Group H] (f : H →* G) (n : ℕ)
+lemma TrivialHomology.of_injective {M : Rep R G} {H : Type u} [Group H] (f : H →* G) (n : ℕ)
     (hn : n ≠ 0) (hf : Function.Injective f) [M.TrivialHomology] :
     IsZero (groupHomology (M ↓ f) n) := by
   cases n with
@@ -80,7 +81,7 @@ lemma TrivialHomology.of_injective {M : Rep R G} {H : Type} [Group H] (f : H →
     exact .of_iso (TrivialHomology.isZero f.range)
       (groupHomology.resSubtypeRangeIso M f (n + 1) hf).symm
 
-protected lemma TrivialHomology.res (M : Rep R G) {H : Type} [Group H] {f : H →* G}
+protected lemma TrivialHomology.res (M : Rep R G) {H : Type u} [Group H] {f : H →* G}
     (hf : Function.Injective f) [M.TrivialHomology] : (M ↓ f).TrivialHomology where
   isZero S n := TrivialHomology.of_injective (f.comp S.subtype) (n + 1) (by omega)
       (hf.comp S.subtype_injective)
@@ -94,7 +95,7 @@ lemma isZero_of_trivialHomology {M : Rep R G} [M.TrivialHomology] {n : ℕ} :
 
 lemma trivialHomology_iff_res {M : Rep R G} :
     M.TrivialHomology ↔
-      ∀ {H : Type} [Group H] (f : H →* G), Function.Injective f → (M ↓ f).TrivialHomology
+      ∀ {H : Type u} [Group H] (f : H →* G), Function.Injective f → (M ↓ f).TrivialHomology
     where
   mp _ _ _ _ inj := .res M inj
   mpr h := h (f := .id G) Function.injective_id
@@ -115,7 +116,7 @@ lemma TrivialTateCohomology.of_iso [Fintype G] {M N : Rep R G} (f : M ≅ N)
     letI : Fintype H := Fintype.ofFinite _
     (tateCohomology _).mapIso <| (res H.subtype).mapIso f⟩
 
-lemma TrivialTateCohomology.of_injective [Fintype G] {M : Rep R G} {H : Type} [Fintype H]
+lemma TrivialTateCohomology.of_injective [Fintype G] {M : Rep R G} {H : Type u} [Fintype H]
     [Group H] (f : H →* G) (n : ℤ) (hf : Function.Injective f)
     [M.TrivialTateCohomology] : IsZero ((tateCohomology n).obj (M ↓ f)) :=
   let := Fintype.ofFinite f.range
