@@ -65,11 +65,13 @@ open
 
 noncomputable section
 
-variable (R G : Type) [CommRing R] [Group G]
+universe u
+
+variable (R G : Type u) [CommRing R] [Group G]
 
 namespace Representation
 
-variable (V W : Type) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+variable (V W : Type*) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
 
 abbrev coind₁V := coindV (⊥ : Subgroup G).subtype (trivial R _ V)
 
@@ -182,7 +184,7 @@ representation `ρ.coind₁'` of `G` on `G → V`.
 -/
 lemma coind₁'_ι_comm (g : G) : coind₁' ρ g ∘ₗ coind₁'_ι = coind₁'_ι ∘ₗ ρ g := by ext; simp
 
-variable {W X : Type} [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X]
+variable {W X : Type*} [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X]
 
 /--
 `ind₁' ρ` is the representation of `G` on `G →₀ V`, where the action is defined by
@@ -371,7 +373,7 @@ abbrev coind₁ : ModuleCat R ⥤ Rep R G :=
 
 variable {G}
 
-def coind₁_quotientToInvariants_iso_aux1 {Q : Type} [Group Q] (φ : G →* Q) :
+def coind₁_quotientToInvariants_iso_aux1 {Q : Type*} [Group Q] (φ : G →* Q) :
     invariants (((coind₁ G).obj A).ρ.comp φ.ker.subtype) ≃ₗ[R]
       coindV (⊥ : Subgroup (G ⧸ φ.ker)).subtype (trivial R (⊥ : Subgroup (G ⧸ φ.ker)) A).ρ where
   toFun x := ⟨Quotient.lift x.1.1 (fun a b hab ↦ by
@@ -396,7 +398,7 @@ def coind₁_quotientToInvariants_iso_aux1 {Q : Type} [Group Q] (φ : G →* Q) 
     induction x using QuotientGroup.induction_on
     simp
 
-def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) :
+def coind₁_quotientToInvariants_iso_aux2 {H : Type u} [Group H] (φ : G ≃* H) :
     (coindV (⊥ : Subgroup G).subtype
     ((trivialFunctor R (⊥ : Subgroup G)).obj A).ρ) ≃ₗ[R]
     ↥(coindV (⊥ : Subgroup H).subtype ((trivialFunctor R (⊥ : Subgroup H)).obj A).ρ) where
@@ -410,7 +412,7 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) 
     simpa [Function.RightInverse, Function.LeftInverse] using
       fun a ha ↦ by simp [Function.comp_assoc]
 
-def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
+def coind₁_quotientToInvariants_iso {Q : Type u} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
     (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
   refine mkIso _ _ (LinearEquiv.toModuleIso ((coind₁_quotientToInvariants_iso_aux1 A φ).trans

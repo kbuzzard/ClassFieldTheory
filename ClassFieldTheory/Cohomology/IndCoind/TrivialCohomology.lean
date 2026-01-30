@@ -49,7 +49,9 @@ def prodQuotEquiv (H : Subgroup G) : H × G ⧸ H ≃ G := .ofBijective _ biject
 
 end FINDMEINMATHLIB
 
-variable {R G A : Type} [CommRing R] [Group G] {M : Rep R G} {A : ModuleCat R}
+universe u
+
+variable {R G : Type u} [CommRing R] [Group G] {M : Rep R G} {A : ModuleCat R}
 
 namespace Rep
 
@@ -205,12 +207,12 @@ instance trivialTateCohomology_coind₁' : TrivialTateCohomology (coind₁'.obj 
 /--
 The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` with trivial cohomology.
 -/
-instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type} [Group Q]
+instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type u} [Group Q]
     {φ : G →* Q} (surj : Function.Surjective φ) :
     ((coind₁ G ⋙ quotientToInvariantsFunctor' surj).obj A).TrivialCohomology :=
   .of_iso (Rep.coind₁_quotientToInvariants_iso A surj)
 
-instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
+instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type u} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
   have iso := (quotientToInvariantsFunctor' surj).mapIso (coind₁'_obj_iso_coind₁ M)
   have : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology :=

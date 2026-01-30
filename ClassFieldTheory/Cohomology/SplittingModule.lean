@@ -79,9 +79,9 @@ def representation : Representation R G (carrier σ) where
     simp only [map_mul, Module.End.mul_apply]
     ext v
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inl,
-        Function.comp_apply, map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
+        Function.comp_apply, _root_.map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inl,
-        Function.comp_apply, map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
+        Function.comp_apply, _root_.map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
       have (a b c : _) :=
         eq_sub_iff_add_eq.mpr ((groupCohomology.mem_cocycles₂_iff _).mp (cocycle σ).2 a b c)
       simp only [cocycles₂.val_eq_coe] at this
@@ -92,10 +92,10 @@ def representation : Representation R G (carrier σ) where
       erw [Rep.hom_comm_apply]
       simp [-equalizer_as_kernel] -- removes a `rfl` here shows I'm in the right direction
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
-        Function.comp_apply, map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
+        Function.comp_apply, _root_.map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
         Finset.sum_const_zero, add_zero, Module.End.mul_apply]
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
-        Function.comp_apply, map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
+        Function.comp_apply, _root_.map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
         Finset.sum_const_zero, add_zero, Module.End.mul_apply]
 
 def _root_.Rep.split : Rep R G := Rep.of (split.representation σ)
@@ -133,9 +133,9 @@ def ι : M ⟶ split σ := by
       rw [apply]
       ext
       · change 0 = (aug R G).ρ g 0
-        rw [map_zero]
+        rw [_root_.map_zero]
       · change M.ρ g m = (M.ρ g) m + ∑ x : G, (aug.ι R G) 0 x • cocycle σ (g, x)
-        rw [map_zero]
+        rw [_root_.map_zero]
         simp
   }
 
@@ -205,7 +205,7 @@ lemma τ_property (g h : G) : (split σ).ρ g (τ σ h) - τ σ (g * h) + τ σ 
   ext
   · simp only [aug.ofSubOfOne_spec, Finsupp.coe_sub, Pi.sub_apply, add_fst, sub_fst]
     apply (Rep.mono_iff_injective _).mp (inferInstanceAs (Mono (aug.ι R G)))
-    simp [-equalizer_as_kernel, map_add, map_sub, map_zero]
+    simp [-equalizer_as_kernel, map_add, map_sub, _root_.map_zero]
     rw [Rep.hom_comm_apply]
     simp [-equalizer_as_kernel]
     erw [Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec]
@@ -277,7 +277,7 @@ lemma TateTheorem_lemma_1 [FiniteClassFormation σ] : H2Map₂ ((res φ).map (ι
     trans (map φ (𝟙 (split σ ↓ φ)) 2).hom ((H2π (split σ)).hom
       ((mapCocycles₂ (.id G) (ι σ)).hom (cocycle σ)))
     · simp; rfl
-    · simp only [this, map_zero]
+    · simp only [this, _root_.map_zero]
   rw [H2π_eq_zero_iff]
   exact Rep.split.splits _
 
