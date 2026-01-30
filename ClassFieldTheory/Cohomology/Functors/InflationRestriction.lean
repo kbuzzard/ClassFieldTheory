@@ -12,11 +12,8 @@ open
   Limits
 
 universe u
+
 variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q} (surj : Function.Surjective φ)
-
-instance : HasForget₂ (Rep R G) (ModuleCat R) := Action.hasForgetToV (ModuleCat R) G
-
-
 
 namespace groupCohomology
 
