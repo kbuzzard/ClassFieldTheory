@@ -1,5 +1,4 @@
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import ClassFieldTheory.Mathlib.Data.Finset.Range
 import ClassFieldTheory.Mathlib.FieldTheory.Separable
 
 open Polynomial

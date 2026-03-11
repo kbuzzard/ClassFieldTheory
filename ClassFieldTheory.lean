@@ -46,6 +46,7 @@ import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Rep
 import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
@@ -53,7 +54,6 @@ import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
-import ClassFieldTheory.Mathlib.Data.Finset.Range
 import ClassFieldTheory.Mathlib.Data.Finsupp.Single
 import ClassFieldTheory.Mathlib.Data.Int.WithZero
 import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic

@@ -86,20 +86,6 @@ theorem Polynomial.Monic.degree_mul' {R : Type*} [Semiring R] {p q : Polynomial 
     (p * q).degree = p.degree + q.degree := by
   rw [hp.degree_mul_comm, hp.degree_mul, add_comm]
 
-section
-variable {R S : Type*} [Ring R] [Semiring S] {f : R →+* S} (hf : Function.Surjective ⇑f)
-
-theorem RingHom.quotientKerEquivOfSurjective_comp :
-    (RingHom.quotientKerEquivOfSurjective hf : _ →+* _).comp (Ideal.Quotient.mk (ker f)) = f := rfl
-
-theorem RingHom.quotientKerEquivOfSurjective_symm_comp :
-    ((RingHom.quotientKerEquivOfSurjective hf).symm : _ →+* _).comp f =
-    Ideal.Quotient.mk (ker f) := by
-  conv => enter [1,2]; rw [← quotientKerEquivOfSurjective_comp hf]
-  rw [← comp_assoc, RingEquiv.symm_comp, id_comp]
-
-end
-
 end Lemmas
 
 open Ideal Quotient
@@ -411,8 +397,8 @@ include hφ in
 theorem map_bijective_of_sqZero_ker (hφ2 : RingHom.ker φ ^ 2 = ⊥) (mf : f.Monic) :
     (map φ (f := f)).Bijective :=
   (Equiv.comp_bijective _ <| mapEquiv (RingHom.quotientKerEquivOfSurjective hφ).symm).mp <| by
-    rw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
-    RingHom.quotientKerEquivOfSurjective_symm_comp]
+    erw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
+    RingHom.quotientKerEquivOfSurjective_symm_comp hφ]
     exact map_bijective_of_sqZero f (RingHom.ker φ) hφ2 mf
 
 /-- Monic coprime factorisations in `R` bijects onto those in `R ⧸ I` if `I ^ n = ⊥`. -/
@@ -438,8 +424,8 @@ include hφ in
 theorem map_bijective_of_isNilpotent_ker (hφ0 : IsNilpotent (RingHom.ker φ)) (mf : f.Monic) :
     (map φ (f := f)).Bijective :=
   (Equiv.comp_bijective _ <| mapEquiv (RingHom.quotientKerEquivOfSurjective hφ).symm).mp <| by
-    rw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
-    RingHom.quotientKerEquivOfSurjective_symm_comp]
+    erw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
+    RingHom.quotientKerEquivOfSurjective_symm_comp hφ]
     exact map_bijective_of_isNilpotent f (RingHom.ker φ) hφ0 mf
 
 variable {f : R[X]} {mf : f.Monic} {n : ℕ}

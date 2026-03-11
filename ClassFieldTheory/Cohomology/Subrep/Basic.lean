@@ -50,8 +50,10 @@ instance : Min (Subrep A) where
 @[simp] lemma toSubmodule_inf (w₁ w₂ : Subrep A) :
     (w₁ ⊓ w₂).toSubmodule = w₁.toSubmodule ⊓ w₂.toSubmodule := rfl
 
+instance : Preorder (Subrep A) := .lift toSubmodule
+
 -- todo: complete lattice, two adjoint functors (aka galois insertions)
-instance : SemilatticeInf (Subrep A) := toSubmodule_injective.semilatticeInf _ toSubmodule_inf
+instance : SemilatticeInf (Subrep A) := toSubmodule_injective.semilatticeInf _ .rfl .rfl toSubmodule_inf
 
 instance : OrderTop (Subrep A) where
   top := ⟨⊤, fun _ _ _ ↦ trivial⟩
