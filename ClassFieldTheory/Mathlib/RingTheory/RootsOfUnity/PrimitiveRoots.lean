@@ -1,6 +1,5 @@
 module
 
-public import ClassFieldTheory.Mathlib.Data.Finset.Range
 public import ClassFieldTheory.Mathlib.FieldTheory.Separable
 public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 

@@ -314,8 +314,8 @@ lemma TateTheorem_lemma_2 [FiniteClassFormation σ] [Finite H] :
         FiniteClassFormation.hypothesis₂ σ inj]
   let e₂ : groupCohomology (M ↓ φ) 2 ≅ .of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
     e₂'.symm.toModuleIso
-  apply (config := { allowSynthFailures := true }) @IsIso.of_isIso_comp_right (g := e₂.hom)
-  apply (config := { allowSynthFailures := true }) IsIso.of_isIso_comp_left (f := e₁.inv)
+  refine @IsIso.of_isIso_comp_right _ _ _ _ _ _ e₂.hom _ <|
+    @IsIso.of_isIso_comp_left _ _ _ _ _ e₁.inv _ _ ?_
   suffices Function.Surjective (e₁.inv ≫ δ (res_isShortExact σ φ) 1 2 rfl ≫ e₂.hom) by
     rw [ConcreteCategory.isIso_iff_bijective]
     refine ⟨OrzechProperty.injective_of_surjective_endomorphism _ this, this⟩
