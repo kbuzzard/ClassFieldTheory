@@ -181,19 +181,22 @@ end
 open OrderDual
 
 section Antitone
-variable {M ι σ : Type*} [AddCommGroup M] [Preorder ι] [SetLike σ M] [AddSubgroupClass σ M]
-  {F : ιᵒᵈ →o σ}
+variable {M ι σ : Type*} [AddCommGroup M] [Preorder ι] [Preorder σ] [SetLike σ M] [IsConcreteLE σ M]
+  [AddSubgroupClass σ M] {F : ιᵒᵈ →o σ}
 
 theorem FilterCauchySeq.mk_surjective (y : FilterCauchySeq (F ∘ toDual)) :
     ∃ x hx, .mk x hx = y :=
-  ⟨y.val, fun _ _ hij ↦ sup_le (α := AddSubgroup M) le_rfl (F.2 hij) (y.2 hij), rfl⟩
+  ⟨y.val, fun _ _ hij ↦ sup_le (α := AddSubgroup M) le_rfl
+    (by simpa [← SetLike.coe_subset_coe] using F.2 hij) (y.2 hij), rfl⟩
 
 end Antitone
 
 
 section
-variable {M N σ τ : Type*} [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M]
-  [AddCommGroup N] [SetLike τ N] [AddSubgroupClass τ N] (F : ℕᵒᵈ →o σ) (G : ℕᵒᵈ →o τ)
+variable {M N σ τ : Type*} [AddCommGroup M] [AddCommGroup N]
+  [Preorder σ] [SetLike σ M] [IsConcreteLE σ M] [AddSubgroupClass σ M]
+  [Preorder τ] [SetLike τ N] [IsConcreteLE τ N] [AddSubgroupClass τ N]
+  (F : ℕᵒᵈ →o σ) (G : ℕᵒᵈ →o τ)
 
 -- We thought for a long time about the minimal assumptions on `ι`, and
 -- Kevin posited the axiom that `∀ i, ∀ᶠ j, i ≤ j`, and
@@ -203,7 +206,7 @@ def partialSum : ((i : ℕ) → F (toDual i)) →+ FilterCauchySeq (F ∘ toDual
   toFun a := .mk (fun i ↦ ∑ j ∈ Finset.range i, a j) fun i₁ i₂ h ↦ by
     dsimp only
     rw [← Finset.sum_range_add_sum_Ico _ h, sub_mem_comm_iff, add_sub_cancel_left]
-    exact sum_mem fun j hj ↦ F.2 (Finset.mem_Ico.mp hj).1 (a j).2
+    exact sum_mem fun j hj ↦ SetLike.coe_subset_coe.2 (F.2 (Finset.mem_Ico.mp hj).1) (a j).2
   map_zero' := by ext; simp; rfl
   map_add' _ _ := by ext; simp [Finset.sum_add_distrib]; rfl
 
