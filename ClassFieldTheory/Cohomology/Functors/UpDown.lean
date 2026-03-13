@@ -81,12 +81,7 @@ lemma shortExact_upSES : (upSES M).ShortExact where
 lemma shortExact_upSES_res {H : Type} [Group H] (φ : H →* G) :
     ((upSES M).map (res φ)).ShortExact := by simpa using shortExact_upSES M
 
-/--
-The functor taking `M : Rep R G` to the short complex:
-
-  `M ⟶ coind₁'.obj M ⟶ up.obj M`.
-
--/
+/-- The functor taking `M : Rep R G` to the short complex: `M ⟶ coind₁'.obj M ⟶ up.obj M`. -/
 @[simps] def upShortComplex : Rep R G ⥤ ShortComplex (Rep R G) where
   obj := upSES
   map f := {
@@ -194,7 +189,7 @@ lemma shortExact_downSES_res {H : Type} [Group H] (φ : H →* G) :
   }
   map_comp f g := by simp only [Functor.map_comp]; rfl
 
-variable [Fintype G]
+variable [Finite G]
 
 /--
 The connecting homomorphism `H⁰(G,down.obj M) ⟶ H¹(G, M)` is an epimorphism if `G` is finite.
@@ -262,16 +257,16 @@ instance instIsIso_shortExact_upSES (M : Rep R G) (n : ℤ) :
   have _ : TrivialTateCohomology (coind₁'.obj M) := inferInstance
   exact ShortComplex.ShortExact.isIso_δ
     (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_upSES M))
-    n (n + 1) (by rfl) (by simp; exact isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
-    (by simp; exact isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
+    n (n + 1) rfl (by simpa using isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
+    (by simpa using isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
 
 instance instIsIso_shortExact_downSES (M : Rep R G) (n : ℤ) :
     IsIso (TateCohomology.δ (shortExact_downSES M) n) := by
   have _ : TrivialTateCohomology (ind₁'.obj M) := inferInstance
   exact ShortComplex.ShortExact.isIso_δ
     (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_downSES M))
-    n (n + 1) (by rfl) (by simp; exact isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
-    (by simp; exact isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
+    n (n + 1) rfl (by simpa using isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
+    (by simpa using isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
 
 @[simps! hom]
 def δUpIsoTate (M : Rep R G) (n : ℤ) :

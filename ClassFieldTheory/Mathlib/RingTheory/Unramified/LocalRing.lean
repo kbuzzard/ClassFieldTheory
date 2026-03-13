@@ -36,7 +36,7 @@ lemma Algebra.isUnramifiedAt_iff_map_eq' {R : Type*} {S : Type*} [CommRing R] [C
       RingHom.coe_coe, IsScalarTower.algebraMap_apply R S (Localization.AtPrime q),
       AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   · rw [← (Ideal.map_injective (Localization.algEquiv q.primeCompl S')).eq_iff,
-      IsLocalRing.eq_maximalIdeal (Ideal.map_isMaximal_of_equiv _ (p := IsLocalRing.maximalIdeal _)),
+      IsLocalRing.eq_maximalIdeal ((IsLocalRing.maximalIdeal _).map_isMaximal_of_equiv _),
       ← Ideal.map_coe, Ideal.map_map, ← AlgEquiv.toAlgHom_toRingHom,
       IsScalarTower.algebraMap_eq R S, ← RingHom.comp_assoc, AlgHom.comp_algebraMap,
       ← IsScalarTower.algebraMap_eq]

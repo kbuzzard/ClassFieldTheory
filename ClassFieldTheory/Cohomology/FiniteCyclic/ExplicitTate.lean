@@ -37,9 +37,10 @@ lemma tateZ0_eq_invariants : ρ.tateZ0 = ρ.invariants := by
   rw [← Subgroup.zpowers_le, ← MonoidHom.map_zpowers, Subgroup.map_le_iff_le_comap] at hg
   exact hg (gen_generate g)
 
-variable [Fintype G]
+variable [Finite G]
 
 lemma tateBNeg1_eq_coinvariantsKer : ρ.tateBNeg1 = Coinvariants.ker ρ := by
+  cases nonempty_fintype G
   apply le_antisymm
   · intro x ⟨y, hy⟩
     apply Submodule.subset_span
@@ -55,6 +56,9 @@ lemma tateBNeg1_eq_coinvariantsKer : ρ.tateBNeg1 = Coinvariants.ker ρ := by
       ← Function.iterate_succ_apply']
     rw [Finset.sum_range_sub' fun i => (ρ (gen G))^[i] x]
     simp [Module.End.pow_apply]
+
+omit [Finite G]
+variable [Fintype G]
 
 /-- An explicit description of the -1-cycles of the Tate complex. -/
 abbrev tateZNeg1 := ker ρ.norm

@@ -16,9 +16,8 @@ open
 namespace Rep.leftRegular
 variable (R G : Type) [Group G] [CommRing R]
 
-/--
-`norm' R G` for `G` finite, is the element `∑ g` in the `invariants` subtyoe of
-`R[G]`, the `leftRegular` representation of `G`.-/
+/-- `norm' R G` for `G` finite, is the element `∑ g` in the `invariants` submodule of
+`R[G]`, the `leftRegular` representation of `G`. -/
 abbrev norm' [Fintype G] : (leftRegular R G).ρ.invariants :=
   ⟨∑ g : G, leftRegular.of g, fun g ↦ by
     simpa [leftRegular.of] using show ∑ x : G, leftRegular.of (g * x) = _ from
@@ -83,9 +82,10 @@ lemma span_norm' [Fintype G] :
   exact ⟨hx.choose, Finsupp.ext_iff.2 fun g ↦ by simp [← hx.choose_spec g, leftRegular.of]⟩
 
 variable {G} in
-lemma res_span_norm' [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
+lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
     (inj : φ.toFun.Injective) : Submodule.span R {res_norm' R g φ | g : G} = ⊤ := by
   classical
+  cases nonempty_fintype G
   ext x
   simp only [res_obj_V, res_obj_ρ', of_ρ, Submodule.mem_top, iff_true]
   choose σ hσ using Quotient.mk_surjective (s := QuotientGroup.rightRel φ.range)
@@ -137,7 +137,7 @@ lemma span_norm [Fintype G] : Submodule.span R {leftRegular.norm R G} = ⊤ := b
     ← Submodule.map_span, leftRegular.span_norm']
   simp
 
-lemma res_span_norm [Fintype G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
+lemma res_span_norm [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
     (inj : φ.toFun.Injective) : Submodule.span R (Set.range (res_norm R φ)) = ⊤ := by
   change Submodule.span R (Set.range (_ ∘ _)) = _
   rw [Set.range_comp, ← LinearEquiv.coe_toLinearMap, ← Submodule.map_span]
@@ -152,10 +152,10 @@ def _root_.groupCohomology.H0trivial : groupCohomology.H0 (trivial R G R) ≅ Mo
 lemma _root_.groupCohomology.map_comp_H0trivial {ρ : Rep R G} (f : ρ ⟶ trivial R G R) :
     groupCohomology.map (.id _) f 0 ≫ (groupCohomology.H0trivial R G).hom = zeroι _ ≫ f.hom := by
   ext x
-  simp only [groupCohomology.H0trivial, of_ρ, LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.ofEq_symm,
-    LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp,
-    LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply, Submodule.topEquiv_apply,
-    LinearEquiv.coe_ofEq_apply]
+  simp only [groupCohomology.H0trivial, of_ρ, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
+    LinearEquiv.ofEq_symm, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
+    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
+    Submodule.topEquiv_apply, LinearEquiv.coe_ofEq_apply]
   rw [Iso.toLinearEquiv_apply, ← LinearMap.comp_apply, ← ModuleCat.hom_comp,
     groupCohomology.map_id_comp_H0Iso_hom]
   simp [zeroι]

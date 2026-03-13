@@ -114,3 +114,5 @@ theorem isNontrivial (K : Type*) [NontriviallyNormedField K] [IsUltrametricDist 
       ← NNReal.coe_lt_coe, NNReal.coe_one, coe_nnnorm]
 
 scoped [NormedField] attribute [instance] isValuativeTopology isNontrivial
+
+end NormedField

@@ -111,7 +111,7 @@ instance trivialHomology_ind₁' : (ind₁'.obj M).TrivialHomology :=
 instance trivialCohomology_coind₁' : (coind₁'.obj M).TrivialCohomology :=
   .of_iso (coind₁'_obj_iso_coind₁ M)
 
-variable [Fintype G]
+variable [Finite G]
 
 instance trivialCohomology_ind₁ : TrivialCohomology ((ind₁ G).obj A) :=
   .of_iso (ind₁_obj_iso_coind₁_obj A)
@@ -130,8 +130,7 @@ instance trivialHomology_coind₁AsPi : TrivialHomology (coind₁AsPi G A) :=
 
 /-- `coind₁` considered as the concrete left-regular action on `G →₀ A` has trivial Tate cohomology.
 -/
-instance trivialTateCohomology_coind₁AsPi [Fintype G] :
-    TrivialTateCohomology (Rep.coind₁AsPi G A) := by
+instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind₁AsPi G A) := by
   classical
   refine .of_cases fun H ↦ ?_
   -- Let's collect some trivialities.
@@ -152,7 +151,7 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
       Function.comp_apply, LinearMap.mem_range, Representation.coind₁AsPi_apply,
       LinearMap.coe_sum, Finset.sum_apply]
     -- This is equivalent to...
-    show ∀ f : G → A, (∀ (h : H) x, f (x * h) = f x) → ∃ g : G → A, ∀ x, ∑ h : H, g (x * h) = f x
+    change ∀ f : G → A, (∀ (h : H) x, f (x * h) = f x) → ∃ g : G → A, ∀ x, ∑ h : H, g (x * h) = f x
     -- Assume we have such `f`.
     intro f hf
     -- We claim we can take `g := ∑ y : G ⧸ H, Pi.single y.out (f y.out)`, where `out` is an
@@ -169,7 +168,7 @@ instance trivialTateCohomology_coind₁AsPi [Fintype G] :
       LinearMap.mem_ker, LinearMap.coe_sum, Finset.sum_apply,
       Representation.coind₁AsPi_apply, Pi.zero_apply]
     -- This is equivalent to...
-    show ∀ f : G → A, (∀ x, ∑ h : H, f (x * h) = 0) → f ∈ Representation.Coinvariants.ker _
+    change ∀ f : G → A, (∀ x, ∑ h : H, f (x * h) = 0) → f ∈ Representation.Coinvariants.ker _
     -- Assume we have such `f`.
     intro f hf
     replace hf x : ∑ h : H, f (x * (↑h)⁻¹) = 0 := by

@@ -59,7 +59,7 @@ def representation : Representation R G (carrier σ) where
   }
   map_one' := by
     ext : 1
-    · simp
+    · simp only [map_one, Module.End.one_apply, equalizer_as_kernel]
       ext v : 1
       rw [LinearMap.comp_apply]
       dsimp only [Prod.fst_add, Prod.snd_add, Submodule.coe_add, Finsupp.coe_add, Pi.add_apply,
@@ -109,7 +109,7 @@ lemma apply_fst (g : G) (vm : carrier σ) :
 lemma apply_snd (g : G) (vm : carrier σ) :
     ((split σ).ρ g vm).snd = M.ρ g vm.2 + ∑ x : G, aug.ι R G vm.1 x • cocycle σ ⟨g, x⟩ := rfl
 
-@[ext] lemma ext (vm vm' : split σ) (hv : vm.1 =vm'.1) (hm : vm.2 = vm'.2) : vm = vm' := by
+@[ext] lemma ext (vm vm' : split σ) (hv : vm.1 = vm'.1) (hm : vm.2 = vm'.2) : vm = vm' := by
   change (⟨vm.1,vm.2⟩ : aug R G × M) = ⟨vm'.1,vm'.2⟩
   rw [hv,hm]
 
@@ -193,7 +193,7 @@ The coboundary of this function is equal to the image of `σ` in H²(G,split).
 noncomputable def τ (g : G) : split σ :=
   ⟨aug.ofSubOfOne R G g, M.ρ g (cocycle σ (1,1))⟩
 
-open leftRegular Classical
+open leftRegular
 
 /--
 Given a 2-cocycle `σ`, the image of `σ` in the splitting module of `σ` is equal to the
@@ -201,13 +201,14 @@ coboundary of `τ σ`.
 -/
 lemma τ_property (g h : G) : (split σ).ρ g (τ σ h) - τ σ (g * h) + τ σ g = ι σ (cocycle σ (g,h))
     := by
+  classical
   rw [τ, apply, τ, τ, ι_apply]
   ext
   · simp only [aug.ofSubOfOne_spec, Finsupp.coe_sub, Pi.sub_apply, add_fst, sub_fst]
     apply (Rep.mono_iff_injective _).mp (inferInstanceAs (Mono (aug.ι R G)))
-    simp [-equalizer_as_kernel, map_add, map_sub, map_zero]
+    simp only [map_add, map_sub, map_zero]
     rw [Rep.hom_comm_apply]
-    simp [-equalizer_as_kernel]
+    simp only [of_ρ]
     erw [Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec]
     simp [of_def]
   · simp [leftRegular.of, Finsupp.single_apply, sub_smul]
@@ -296,8 +297,9 @@ For any subgroup H of `G`, the connecting hommorphism in the splitting module lo
 
 is an isomorphism.
 -/
-lemma TateTheorem_lemma_2 [FiniteClassFormation σ] [Fintype H] :
+lemma TateTheorem_lemma_2 [FiniteClassFormation σ] [Finite H] :
     IsIso (δ (res_isShortExact σ φ) 1 2 rfl) := by
+  cases nonempty_fintype H
   let e₁ : groupCohomology (aug R G ↓ φ) 1 ≅ .of R (R ⧸ Ideal.span {(Nat.card H : R)}) :=
     Rep.aug.H1_iso' R G inj
   let e₂' : (R ⧸ Ideal.span {(Nat.card H : R)}) ≃ₗ[R] groupCohomology (M ↓ φ) 2 :=
@@ -323,8 +325,8 @@ lemma TateTheorem_lemma_2 [FiniteClassFormation σ] [Fintype H] :
   exact S.L₂'_exact.epi_f_iff.mpr (TateTheorem_lemma_1 _ inj)
 
 include inj in
-lemma TateTheorem_lemma_3 [FiniteClassFormation σ] [Fintype H] :
-    IsZero (H1 (split σ ↓ φ)) := by
+lemma TateTheorem_lemma_3 [FiniteClassFormation σ] [Finite H] : IsZero (H1 (split σ ↓ φ)) := by
+  cases nonempty_fintype H
   let S := HomologicalComplex.HomologySequence.snakeInput
     (map_cochainsFunctor_shortExact <| res_isShortExact (R := R) σ φ) 1 2 rfl
   have := TateTheorem_lemma_2 σ inj

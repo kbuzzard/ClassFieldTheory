@@ -65,3 +65,5 @@ lemma valuationShortComplex.shortExact : (valuationShortComplex G K L).ShortExac
   .mk' (ShortComplex.ShortExact.rep_exact_iff_function_exact.mpr exact_kerV_v)
     ((Rep.mono_iff_injective _).mpr kerV_injective)
     ((Rep.epi_iff_surjective _).mpr v_surjective)
+
+end IsNonarchimedeanLocalField

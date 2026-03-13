@@ -36,15 +36,13 @@ open
   groupCohomology
   BigOperators
 
-variable (R G: Type) [CommRing R] [Group G]
+variable (R G : Type) [CommRing R] [Group G]
 
 noncomputable section AugmentationModule
 
 /--
 The augmentation module `aug R G` is the kernel of the augmentation map
-
   `ε : leftRegular R G ⟶ trivial R G R`.
-
 -/
 abbrev Rep.aug : Rep R G := kernel (ε R G)
 
@@ -79,12 +77,7 @@ def ofSubOfOne (g : G) : aug R G := (exists_ofSubOfOne R G g).choose
     ι R G (ofSubOfOne R G g) = leftRegular.of g - leftRegular.of 1 :=
   (exists_ofSubOfOne R G g).choose_spec
 
-/--
-The short exact sequence
-
-    `0 ⟶ aug R G ⟶ R[G] ⟶ R ⟶ 0`.
-
--/
+/-- The short exact sequence `0 ⟶ aug R G ⟶ R[G] ⟶ R ⟶ 0`. -/
 abbrev aug_shortExactSequence : ShortComplex (Rep R G) where
   X₁ := aug R G
   X₂ := leftRegular R G
@@ -176,7 +169,7 @@ def _root_.Rep.leftRegular.iso_ind₁' : leftRegular R G ≅ ind₁'.obj (trivia
 /--
 For a finite group, the left regular representation is acyclic for cohomology.
 -/
-instance _root_.Rep.leftRegular.trivialCohomology [Fintype G] :
+instance _root_.Rep.leftRegular.trivialCohomology [Finite G] :
     (leftRegular R G).TrivialCohomology := .of_iso (iso_ind₁' R G)
 
 /--
@@ -194,11 +187,11 @@ instance _root_.Rep.leftRegular.trivialTateCohomology [Fintype G] :
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,R)` to `Hⁿ⁺²(G,aug R G)` is an isomorphism.
 -/
-lemma cohomology_aug_succ_iso [Fintype G] (n : ℕ) :
+lemma cohomology_aug_succ_iso [Finite G] (n : ℕ) :
     IsIso (δ (aug_isShortExact R G) (n + 1) (n + 2) rfl) :=
   /-
-  This connecting homomorphism is sandwiched between two modules H^{n+1}(G,R[G]) and H^{n+2}(G,R[G]),
-  where P is the left regular representation.
+  This connecting homomorphism is sandwiched between two modules `H^{n + 1}(G, R[G])` and
+  `H^{n + 2}(G, R[G])`, where `P` is the left regular representation.
   Then use `Rep.leftRegular.trivialCohomology` to show that both of these are zero.
   -/
   groupCohomology.isIso_δ_of_isZero _ _ Rep.isZero_of_trivialCohomology
@@ -209,7 +202,7 @@ lemma tateCohomology_auc_succ_iso [Fintype G] (n : ℤ) :
   have : TrivialTateCohomology (leftRegular R G) := inferInstance
   exact TateCohomology.isIso_δ _ this _
 
-lemma H2_aug_isZero [Fintype G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
+lemma H2_aug_isZero [Finite G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
   /-
   This follows from `cohomology_aug_succ_iso` and `groupCohomology.H1_isZero_of_trivial`.
   -/
@@ -220,7 +213,7 @@ lemma H2_aug_isZero [Fintype G] [IsAddTorsionFree R] : IsZero (H2 (aug R G)) :=
 If `H` is a subgroup of a finite group `G` then the connecting homomorphism
 from `Hⁿ⁺¹(H,R)` to `Hⁿ⁺²(H,aug R G)` is an isomorphism.
 -/
-lemma cohomology_aug_succ_iso' [Fintype G] {H : Type} [Group H] {φ : H →* G}
+lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
     (inj : Function.Injective φ) (n : ℕ) :
     IsIso (δ (aug_isShortExact' R G φ) (n + 1) (n + 2) rfl) :=
   /-
@@ -300,7 +293,7 @@ def H1_iso [Fintype G] :
   group is mapped by `ε` to `1`.
   -/
 
-def H1_iso' [Fintype G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
+def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
     (inj : Function.Injective φ) :
     H1 (aug R G ↓ φ) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card H : R)}) := by
   have := Rep.trivialCohomology_iff_res.1 (trivialCohomology R G) φ inj

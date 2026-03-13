@@ -27,7 +27,7 @@ def tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCocha
 
 -- FIXME: `@[simps!] def tateNorm` produces a lemma mentioning `ModuleCat.Hom.hom'`!
 -- We are missing `initialize_simps_projections ModuleCat (hom' → hom)`
-@[simp] lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fin 0 → G):
+@[simp] lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fin 0 → G) :
     (tateNorm M).hom x y = (cochainsIso₀ M).inv.hom (M.ρ.norm <| (chainsIso₀ M).hom.hom x) y := rfl
 
 lemma tateNorm_eq (M : Rep R G) :
@@ -219,7 +219,11 @@ noncomputable abbrev cochainsMap {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ 
     (groupHomology.chainsMap e φ)
     (groupCohomology.cochainsMap e.symm ⟨φ.hom, fun h ↦ by simpa [res] using φ.comm (e.symm h)⟩) ?_
   ext f0 (m : M)
-  simp [tateNorm_eq, cochainsMap_f]
+  simp only [ModuleCat.of_coe, CochainComplex.of_x, ChainComplex.of_x, tateComplexConnectData_d₀,
+    tateNorm_eq, lsingle_comp_chainsMap_f_assoc, Action.res_obj_V, MonoidHom.coe_coe,
+    ModuleCat.hom_comp, ModuleCat.hom_ofHom, Finsupp.lsum_comp_lsingle, LinearMap.coe_comp,
+    Function.comp_apply, pi_apply, cochainsMap_f, Finsupp.coe_lsum, Finsupp.lsingle_apply, map_zero,
+    Finsupp.sum_single_index, compLeft_apply, funLeft_apply]
   convert norm_comm_apply φ m
   exact congr(⇑$(norm_hom_res N e)).symm
 
@@ -335,7 +339,8 @@ def zeroIsoOfIsTrivial :
     Submodule.topEquiv) <| by
   refine Submodule.ext fun x ↦ ⟨fun ⟨⟨m, hm1⟩, hm2, hm3⟩ ↦ ?_, fun ⟨k, hk⟩ ↦ ?_⟩
   · rw [eq1] at hm1
-    simp at hm2 hm3
+    simp only [SetLike.mem_coe, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+      Submodule.topEquiv_apply, LinearEquiv.coe_ofEq_apply] at hm2 hm3
     rw [hm3.symm]
     obtain ⟨k, hk⟩ := hm2
     exact ⟨k, by simpa [Representation.norm] using hk⟩

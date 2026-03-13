@@ -262,20 +262,16 @@ section
 variable [Nontrivial S] {fac : MonicCoprimeFactors f} (φ : R →+* S)
 
 /-- Degree is preserved by `map`. -/
-theorem degree_fst_map  : (fac.map φ).fst.degree = fac.fst.degree :=
-  fac.3.degree_map _
+theorem degree_fst_map : (fac.map φ).fst.degree = fac.fst.degree := fac.3.degree_map _
 
 /-- Degree is preserved by `map`. -/
-theorem degree_snd_map  : (fac.map φ).snd.degree = fac.snd.degree :=
-  fac.4.degree_map _
+theorem degree_snd_map : (fac.map φ).snd.degree = fac.snd.degree := fac.4.degree_map _
 
 /-- Degree is preserved by `map`. -/
-theorem natDegree_fst_map  : (fac.map φ).fst.natDegree = fac.fst.natDegree :=
-  fac.3.natDegree_map _
+theorem natDegree_fst_map : (fac.map φ).fst.natDegree = fac.fst.natDegree := fac.3.natDegree_map _
 
 /-- Degree is preserved by `map`. -/
-theorem natDegree_snd_map  : (fac.map φ).snd.natDegree = fac.snd.natDegree :=
-  fac.4.natDegree_map _
+theorem natDegree_snd_map : (fac.map φ).snd.natDegree = fac.snd.natDegree := fac.4.natDegree_map _
 
 end
 end CommSemiring

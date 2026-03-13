@@ -1,8 +1,8 @@
 import Mathlib.Algebra.Module.Torsion.Basic
 
 @[simps]
-def Module.IsTorsionBy.coprime_decompose {k m1 m2: ℕ} {R M : Type*} [CommRing R] [AddCommGroup M]
-    [Module R M] (hk : k = m1 * m2) (hmm : m1.Coprime m2) (hA : Module.IsTorsionBy R M k):
+def Module.IsTorsionBy.coprime_decompose {k m1 m2 : ℕ} {R M : Type*} [CommRing R] [AddCommGroup M]
+    [Module R M] (hk : k = m1 * m2) (hmm : m1.Coprime m2) (hA : Module.IsTorsionBy R M k) :
     M ≃ₗ[R] Submodule.torsionBy R M m1 × Submodule.torsionBy R M m2 where
   toFun m := ⟨⟨(m2 : R) • m, by simp [← mul_smul, ← Nat.cast_mul, ← hk, hA]⟩,
     ⟨(m1 : R) • m, by simp [← mul_smul, mul_comm, ← Nat.cast_mul, ← hk, hA]⟩⟩

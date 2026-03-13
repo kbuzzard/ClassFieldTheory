@@ -1,7 +1,8 @@
 import Mathlib.GroupTheory.FiniteAbelian.Basic
 import Mathlib.GroupTheory.Solvable
 
-theorem CommGroup.exists_mulHom_zmod_surjective_of_finite (G : Type*) [CommGroup G] [Finite G] [Nontrivial G] :
+theorem CommGroup.exists_mulHom_zmod_surjective_of_finite (G : Type*) [CommGroup G] [Finite G]
+    [Nontrivial G] :
     ∃ n > 1, ∃ (f : G →* Multiplicative (ZMod n)), (⇑f).Surjective := by
   obtain ⟨ι, _, n, hn1, ⟨equiv⟩⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite G
   obtain ⟨i⟩ : Nonempty ι := by
@@ -12,14 +13,16 @@ theorem CommGroup.exists_mulHom_zmod_surjective_of_finite (G : Type*) [CommGroup
   refine ⟨n i, hn1 i, (Pi.evalMonoidHom (fun i => Multiplicative (ZMod (n i))) i).comp equiv, ?_⟩
   simp [Function.surjective_eval]
 
-theorem exists_isCyclic_quotient_of_finite {G : Type*} [Group G] [Finite G] {H : Subgroup G} [H.Normal]
-    (hH: H ≠ ⊤) (comm : IsMulCommutative (G ⧸ H)) : ∃ H' ∈ Set.Ico H ⊤, ∃ (_ : H'.Normal), IsCyclic (G ⧸ H') := by
+theorem exists_isCyclic_quotient_of_finite {G : Type*} [Group G] [Finite G] {H : Subgroup G}
+    [H.Normal] (hH : H ≠ ⊤) (comm : IsMulCommutative (G ⧸ H)) :
+    ∃ H' ∈ Set.Ico H ⊤, ∃ (_ : H'.Normal), IsCyclic (G ⧸ H') := by
   have := QuotientGroup.nontrivial_iff.2 hH
   obtain ⟨n, hn, f, hf⟩ := CommGroup.exists_mulHom_zmod_surjective_of_finite (G ⧸ H)
   refine ⟨(f.comp (QuotientGroup.mk' H)).ker, ?_, inferInstance, ?_⟩
   · rw [Set.mem_Ico, ← MonoidHom.comap_ker, ← Subgroup.map_le_iff_le_comap,
       QuotientGroup.map_mk'_self, and_iff_right bot_le, lt_top_iff_ne_top,
-      ← Subgroup.comap_top (QuotientGroup.mk' H), (Subgroup.comap_injective (QuotientGroup.mk'_surjective H)).ne_iff,
+      ← Subgroup.comap_top (QuotientGroup.mk' H),
+      (Subgroup.comap_injective (QuotientGroup.mk'_surjective H)).ne_iff,
       ne_eq, MonoidHom.ker_eq_top_iff]
     rintro rfl
     apply Fact.mk at hn
