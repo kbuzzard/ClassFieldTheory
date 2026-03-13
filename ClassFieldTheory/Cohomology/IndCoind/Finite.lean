@@ -413,12 +413,11 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) 
 def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) :
     (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
-  refine mkIso _ _ (LinearEquiv.toModuleIso ((coind₁_quotientToInvariants_iso_aux1 A φ).trans
-    (coind₁_quotientToInvariants_iso_aux2 A (QuotientGroup.quotientKerEquivOfSurjective φ surj))))
-    (fun q x ↦ ?_)
+  refine mkIso _ _ ((coind₁_quotientToInvariants_iso_aux1 A φ).trans <|
+    coind₁_quotientToInvariants_iso_aux2 A <| QuotientGroup.quotientKerEquivOfSurjective φ surj)
+    fun q x ↦ ?_
   simp only [Functor.comp_obj, coindFunctor_obj, trivialFunctor_obj_V, of_ρ, ModuleCat.of_coe,
-    LinearEquiv.toModuleIso_hom, ModuleCat.hom_ofHom, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
-    coind_apply]
+    LinearEquiv.trans_apply, coind_apply]
   ext q'
   obtain ⟨g, rfl⟩ := surj q
   obtain ⟨g', rfl⟩ := surj q'
@@ -453,7 +452,6 @@ This map takes an element `m : M` to the constant function with value `M`.
     hom    := ofHom Representation.coind₁'_ι
     comm _ := by ext : 1; exact M.ρ.coind₁'_ι_comm _
   }
-  naturality _ _ _ := by simpa using by rfl
 
 instance : Mono (coind₁'_ι.app M) := by
   refine (mono_iff_injective (coind₁'_ι.app M)).mpr ?_
@@ -535,8 +533,7 @@ instance instEpiAppInd₁'_π : Epi (ind₁'_π.app M) := by
   simp only [Functor.id_obj, ind₁'_π_apply, Module.End.one_apply, sum_single_index]
 
 def ind₁'_obj_iso_ind₁ : ind₁'.obj M ≅ (ind₁ G).obj M.V :=
-  mkIso _ _ (LinearEquiv.toModuleIso M.ρ.ind₁'_lequiv) fun g x ↦
-    LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g) x
+  mkIso _ _ (M.ρ.ind₁'_lequiv) fun g ↦ LinearMap.congr_fun (ind₁'_lequiv_comm M.ρ g)
 
 variable (G) in
 /-- A version of `ind₁` that's actually defined as `G →₀ A` with some action. -/
@@ -548,11 +545,11 @@ abbrev coind₁AsPi : Rep R G := .of <| Representation.coind₁AsPi R G A
 
 /-- `ind₁AsFinsupp` is isomorphic to `ind₁` pointwise. -/
 def ind₁AsFinsuppIso : ind₁AsFinsupp G A ≅ (ind₁ G).obj A :=
-  mkIso _ _ (Iso.refl (ModuleCat.of R (G →₀ A))) ≪≫ ind₁'_obj_iso_ind₁ (.trivial _ _ _)
+  mkIso _ _ (.refl R (G →₀ A)) ≪≫ ind₁'_obj_iso_ind₁ (.trivial _ _ _)
 
 /-- `coind₁AsPi` is isomorphic to `coind₁` pointwise. -/
 def coind₁AsPiIso : coind₁AsPi G A ≅ (coind₁ G).obj (.of R A) :=
-  mkIso _ _ (Iso.refl (ModuleCat.of R (G → A))) ≪≫ coind₁'_obj_iso_coind₁ (.trivial _ _ _)
+  mkIso _ _ (.refl R (G → A)) ≪≫ coind₁'_obj_iso_coind₁ (.trivial _ _ _)
 
 section FiniteGroup
 
@@ -566,28 +563,9 @@ instance : DecidableRel ⇑(QuotientGroup.rightRel (⊥ : Subgroup G)) :=
 abbrev ind₁_obj_iso_coind₁_obj [Finite G] : (ind₁ G).obj A ≅ (coind₁ G).obj A :=
   indCoindIso _
 
-def ind₁'_iso_coind₁' [Finite G] : ind₁' (R := R) (G := G) ≅ coind₁' where
-  hom := {
-    app M := {
-      hom := ofHom ind₁'_lequiv_coind₁'.toLinearMap
-      comm g := by
-        ext : 1
-        apply ind₁'_lequiv_coind₁'_comm
-    }
-  }
-  inv := {
-    app M := {
-      hom := ofHom ind₁'_lequiv_coind₁'.symm.toLinearMap
-      comm g := by
-        ext : 1
-        apply ind₁'_lequiv_coind₁'_comm'
-    }
-    naturality _ _ _ := by
-      ext : 3
-      change ind₁'_lequiv_coind₁'.symm _ = _
-      rw [LinearEquiv.symm_apply_eq]
-      rfl
-  }
+def ind₁'_iso_coind₁' [Finite G] : ind₁' (R := R) (G := G) ≅ coind₁' :=
+  NatIso.ofComponents fun M ↦
+    Rep.mkIso _ _ ind₁'_lequiv_coind₁' fun _ _ ↦ congr(⇑$(ind₁'_lequiv_coind₁'_comm _ _) _)
 
 lemma ind₁'_iso_coind₁'_app_apply [Finite G] (f : G →₀ M.V) (x : G) :
     (ind₁'_iso_coind₁'.app M).hom f x = f x := by
@@ -603,11 +581,12 @@ noncomputable def iso_ind₁ :
     (Rep.ind₁ (L ≃ₐ[K] L)).obj (.of K K) ≅ .of (AlgEquiv.toLinearMapHom K L) := by
   classical
   refine (Rep.ind₁AsFinsuppIso (G := (L ≃ₐ[K] L)) (.of K K)).symm ≪≫
-    mkIso _ _ (LinearEquiv.toModuleIso
-      ((IsGalois.normalBasis K L).reindex (Equiv.inv (L ≃ₐ[K] L))).repr.symm) ?_
+    mkIso _ _ ((IsGalois.normalBasis K L).reindex (.inv (L ≃ₐ[K] L))).repr.symm ?_
   intro x f
-  simp only [LinearEquiv.toModuleIso_hom, Module.Basis.coe_repr_symm, Module.Basis.coe_reindex,
-    Equiv.inv_symm, Equiv.inv_apply, ModuleCat.hom_ofHom, AlgEquiv.toLinearMapHom]
+  simp only [AlgEquiv.toLinearMapHom, of_ρ, Module.Basis.repr_symm_apply, Module.Basis.coe_reindex,
+    Equiv.inv_symm, Equiv.inv_apply, MonoidHom.coe_comp, Function.comp_apply,
+    AlgEquiv.toAlgHomHom_apply, AlgEquiv.toAlgHom_eq_coe, AlgHom.toEnd_apply,
+    AlgEquiv.toAlgHom_toLinearMap, AlgEquiv.toLinearMap_apply]
   rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
     Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _,
     Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _]
