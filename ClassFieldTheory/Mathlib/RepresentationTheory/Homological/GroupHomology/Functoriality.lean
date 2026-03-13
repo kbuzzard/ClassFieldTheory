@@ -7,7 +7,7 @@ open CategoryTheory
 universe u
 variable {R G H : Type u} [CommRing R] [Group G] [Group H] {M : Rep R G} {N : Rep R H}
   {f g : G →* H}
-  {φ : M ⟶ (Action.res (ModuleCat R) f).obj N} {ψ :  M ⟶ (Action.res (ModuleCat R) g).obj N}
+  {φ : M ⟶ (Action.res (ModuleCat R) f).obj N} {ψ : M ⟶ (Action.res (ModuleCat R) g).obj N}
 
 namespace groupHomology
 

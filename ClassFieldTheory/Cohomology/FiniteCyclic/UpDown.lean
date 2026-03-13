@@ -28,6 +28,8 @@ Using this, construct isomorphisms
 
 -/
 
+noncomputable section
+
 open
   Finsupp
   Rep
@@ -36,18 +38,11 @@ open
   Abelian
   ConcreteCategory
   groupCohomology
+  IsCyclic
 open Limits hiding im
 
 -- TODO: add universes
-variable {R : Type} [CommRing R]
-variable (G : Type) [Group G] [instCyclic : IsCyclic G]
-variable (M : Rep R G)
-
-noncomputable section
-
-open IsCyclic
-
-variable {G} [Fintype G] (M : Rep R G)
+variable {R G : Type} [CommRing R] [Group G] [IsCyclic G]
 
 @[simp] lemma ofHom_sub (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
     (ofHom (f₁ - f₂) : A ⟶ B) = ofHom f₁ - ofHom f₂ := rfl
@@ -61,8 +56,6 @@ variable {G} [Fintype G] (M : Rep R G)
 namespace Representation
 
 variable {A : Type} [AddCommGroup A] [Module R A] (ρ : Representation R G A)
-
-omit [Fintype G]
 
 @[simps] def map₁ : (G → A) →ₗ[R] (G → A) where
   toFun f x := f x - f ((gen G)⁻¹ * x)
@@ -119,16 +112,15 @@ lemma map₁_ker :
 @[simps!] def map₂ : (G →₀ A) →ₗ[R] (G →₀ A) :=
   LinearMap.id - lmapDomain _ _ (fun x ↦ gen G * x)
 
-omit [Fintype G] in
 lemma map₂_apply (f : G →₀ A) (x : G) :
     Representation.map₂ (R := R) f x = f x - f ((gen G)⁻¹ * x) := by
-  simp [Representation.map₂]
+  simp only [map₂, LinearMap.sub_apply, LinearMap.id_coe, id_eq, lmapDomain_apply, coe_sub,
+    Pi.sub_apply, sub_right_inj]
   convert Finsupp.mapDomain_apply ?_ _ ((gen G)⁻¹ * x)
   · simp
   · intro x y h
     simpa using h
 
-omit [Fintype G] in
 @[simp] lemma map₂_comp_lsingle (x : G) :
     map₂ (R := R) (G := G) (A := A) ∘ₗ lsingle x = lsingle x - lsingle (gen G * x) := by
   ext
@@ -147,9 +139,10 @@ lemma ind₁'_π_comp_map₂ :
   rw [LinearMap.comp_assoc, map₂_comp_lsingle, LinearMap.comp_sub,
     LinearMap.zero_comp, sub_eq_zero, ind₁'_π_comp_lsingle, ind₁'_π_comp_lsingle]
 
-lemma map₂_range [Fintype G] :
+lemma map₂_range [Finite G] :
     LinearMap.range (map₂ (R := R) (G := G) (A := A)) = LinearMap.ker ind₁'_π := by
   classical
+  cases nonempty_fintype G
   ext w
   constructor
   · rintro ⟨y, rfl⟩
@@ -244,12 +237,10 @@ def map₁ : coind₁' (R := R) (G := G) ⟶ coind₁' where
     ext x
     simp
 
-omit [Fintype G] in
-lemma coind_ι_gg_map₁_app : coind₁'_ι.app M ≫ map₁.app M = 0 := by
+lemma coind_ι_gg_map₁_app (M : Rep R G) : coind₁'_ι.app M ≫ map₁.app M = 0 := by
   ext : 2
   exact Representation.map₁_comp_coind_ι
 
-omit [Fintype G] in
 lemma coind_ι_gg_map₁ : coind₁'_ι ≫ map₁ (R := R) (G := G) = 0 := by
   ext : 2
   exact coind_ι_gg_map₁_app _
@@ -269,15 +260,15 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
     ext g
     simp [ind₁', Representation.map₂_apply, -Representation.map₂_apply_apply]
 
-omit [Fintype G] in
-lemma map₂_app_gg_ind₁'_π_app :  map₂.app M ≫ ind₁'_π.app M = 0 := by
+lemma map₂_app_gg_ind₁'_π_app (M : Rep R G) :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
   exact Representation.ind₁'_π_comp_map₂
 
-omit [Fintype G] in
 lemma map₂_gg_ind₁'_π : map₂ (R := R) (G := G) ≫ ind₁'_π = 0 := by
   ext : 2
   exact map₂_app_gg_ind₁'_π_app _
+
+variable [Finite G] (M : Rep R G)
 
 /--
 Let `M` be a representation of a finite cyclic group `G`.
@@ -295,7 +286,8 @@ and the horizontal maps are `map₁` and `map₂`.
 lemma map₁_comp_ind₁'_iso_coind₁' :
     map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv = (ind₁'_iso_coind₁'.app M).inv ≫ map₂.app M := by
   ext x
-  simp [coind₁', ind₁'] at x ⊢
+  simp only [coind₁', ind₁', Iso.app_inv, Action.comp_hom, ModuleCat.hom_comp, LinearMap.coe_comp,
+    Function.comp_apply] at x ⊢
   ext d
   simp only [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', linearEquivFunOnFinite,
     Equiv.invFun_as_coe, ModuleCat.hom_ofHom, map₁, Representation.map₁, LinearMap.coe_mk,
@@ -303,7 +295,7 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
     map₂, Representation.map₂_apply]
 
 /-- The first short complex in the periodicity sequence. -/
-@[simps] def periodSeq₁ : ShortComplex (Rep R G) where
+@[simps] def periodSeq₁ (M : Rep R G) : ShortComplex (Rep R G) where
   X₁ := M
   X₂ := coind₁'.obj M
   X₃ := ind₁'.obj M
@@ -338,8 +330,11 @@ lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   -- A sequence of `R`-modules is exact if `LinearMap.range _ = LinearMap.ker _`
   -- In fact, `range ≤ ker` in complexes, so we just need `ker ≤ range`.
   refine .moduleCat_of_ker_le_range _ ?_
-  simp [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra,
-    toModuleMonoidAlgebraMap, ModuleCat.hom_ofHom]
+  simp only [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra, toModuleMonoidAlgebraMap,
+    Lean.Elab.WF.paramLet, ShortComplex.map_X₂, periodSeq₁_X₂, coind₁'_obj, of_ρ,
+    ShortComplex.map_X₃, periodSeq₁_X₃, ind₁'_obj, ShortComplex.map_g, periodSeq₁_g, Iso.app_inv,
+    Action.comp_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom, ShortComplex.map_X₁, periodSeq₁_X₁,
+    ShortComplex.map_f, periodSeq₁_f, coind₁'_ι_app_hom, Functor.id_obj]
   -- Now, we get `w` with `w ∈ ker`.
   intro (w : G → M.V) hw
   simp only [LinearMap.mem_range, LinearMap.coe_mk]
@@ -350,8 +345,11 @@ lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
   classical
   apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
   apply ShortComplex.Exact.moduleCat_of_ker_le_range
-  simp [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra, toModuleMonoidAlgebraMap,
-    ModuleCat.hom_ofHom]
+  simp only [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra, toModuleMonoidAlgebraMap,
+    Lean.Elab.WF.paramLet, ShortComplex.map_X₂, periodSeq₂_X₂, ind₁'_obj, of_ρ, ShortComplex.map_X₃,
+    periodSeq₂_X₃, ShortComplex.map_g, periodSeq₂_g, ind₁'_π_app_hom, ModuleCat.hom_ofHom,
+    ShortComplex.map_X₁, periodSeq₂_X₁, coind₁'_obj, ShortComplex.map_f, periodSeq₂_f, Iso.app_inv,
+    Action.comp_hom, ModuleCat.hom_comp]
   intro w hw_ker
   change w ∈ LinearMap.ker (Representation.ind₁'_π (R := R)) at hw_ker
   rw [← Representation.map₂_range] at hw_ker
@@ -398,15 +396,17 @@ def periodicCohomology (m n : ℕ) [NeZero m] [NeZero n] (hmn : m ≡ n [MOD 2])
     · omega
   _ ≅ functor R G n := (periodicCohomologyAux ..).symm
 
+variable {M} in
 /--
 Let `M` be a representation of a finite cyclic group `G`. Suppose there are even
 and positive integers `e` and `o` with `e` even and `o` odd, such that
 `Hᵉ(G,M)` and `Hᵒ(G,M)` are both zero.
 Then `Hⁿ(G,M)` is zero for all `n > 0`.
 -/
-lemma isZero_ofEven_odd {M : Rep R G} {e o : ℕ} [NeZero e] (he : Even e) (ho : Odd o)
+lemma isZero_ofEven_odd {e o : ℕ} [NeZero e] (he : Even e) (ho : Odd o)
     (hₑ : IsZero (groupCohomology M e)) (hₒ : IsZero (groupCohomology M o)) (n : ℕ) [NeZero n] :
     IsZero (groupCohomology M n) := by
+  cases nonempty_fintype G
   obtain hn | hn := n.even_or_odd
   · refine .of_iso hₑ <| (periodicCohomology n e ?_).app M
     grind [Nat.modEq_iff_dvd]
@@ -417,7 +417,7 @@ lemma isZero_ofEven_odd {M : Rep R G} {e o : ℕ} [NeZero e] (he : Even e) (ho :
 end Rep
 
 /-- Auxiliary definition for `periodicTateCohomology`. -/
-def periodicTateCohomologyAux (n : ℤ) :
+def periodicTateCohomologyAux [Fintype G] (n : ℤ) :
     ∀ k : ℕ, tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 2 * k)
   | 0 => eqToIso <| by simp
   | k + 1 => calc
@@ -429,7 +429,7 @@ def periodicTateCohomologyAux (n : ℤ) :
     _ ≅ tateCohomology (n + 2 * (k + 1)) := eqToIso <| by congr 1; omega
 
 /-- The Tate cohomology of a finite cyclic group is 2-periodic. -/
-def periodicTateCohomology (m n : ℤ) (hmn : m ≡ n [ZMOD 2]) :
+def periodicTateCohomology [Fintype G] (m n : ℤ) (hmn : m ≡ n [ZMOD 2]) :
     tateCohomology (R := R) (G := G) m ≅ tateCohomology n := calc
   tateCohomology m
     ≅ tateCohomology (m + 2 * ↑((max m n - m).natAbs / 2)) := periodicTateCohomologyAux ..
@@ -476,10 +476,12 @@ def evenTrivialInt (hG : Nat.card G = N) (n : ℕ) [NeZero n] (hn : Even n) :
     ≅ (tateCohomology n).obj (trivial ℤ G ℤ) := ((TateCohomology.isoGroupCohomology _).app _).symm
   _ ≅ .of ℤ (ZMod N) := TateCohomology.evenTrivialInt hG (mod_cast hn)
 
+omit [Fintype G] in
 /-- A trivial torsion-free representation of a finite cyclic group has trivial odd group
 cohomology. -/
-lemma isZero_odd_trivial_of_isAddTorsionFree {n : ℕ} {M : Type} [AddCommGroup M]
+lemma isZero_odd_trivial_of_isAddTorsionFree [Finite G] {n : ℕ} {M : Type} [AddCommGroup M]
     [IsAddTorsionFree M] (hn : Odd n) : IsZero (groupCohomology (trivial ℤ G M) n) := by
+  cases nonempty_fintype G
   have : NeZero n := ⟨hn.pos.ne'⟩
   exact (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| mod_cast hn).of_iso <|
     (TateCohomology.isoGroupCohomology n).symm.app _
@@ -496,11 +498,14 @@ def oddTrivialInt {n : ℕ} (hG : Nat.card G = N) (hn : Odd n) :
   exact .trans ((TateCohomology.isoGroupHomology (-(n + 1)) n <| by simp).app _).symm <|
     TateCohomology.evenTrivialInt hG <| .neg <| mod_cast hn.add_one
 
+omit [Fintype G] in
 /-- A trivial torsion-free representation of a finite cyclic group has trivial nonzero even group
 homology. -/
-lemma isZero_even_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
-    {n : ℕ} [NeZero n] (hn : Even n) : IsZero (groupHomology (trivial ℤ G M) n) :=
-  (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| .neg <| mod_cast hn.add_one).of_iso <|
-    (TateCohomology.isoGroupHomology (-(n + 1)) n <| by simp).symm.app _
+lemma isZero_even_trivial_of_isAddTorsionFree [Finite G] {M : Type} [AddCommGroup M]
+    [IsAddTorsionFree M]
+    {n : ℕ} [NeZero n] (hn : Even n) : IsZero (groupHomology (trivial ℤ G M) n) := by
+  cases nonempty_fintype G
+  exact (TateCohomology.isZero_odd_trivial_of_isAddTorsionFree <| .neg <| mod_cast
+    hn.add_one).of_iso <| (TateCohomology.isoGroupHomology (-(n + 1)) n <| by simp).symm.app _
 
 end groupHomology

@@ -36,7 +36,7 @@ variable {G : Type} [Group G]
 /--
 If `H²ⁿ⁺²(H,M)` and `H²ᵐ⁺¹(H,M)` are both zero for every subgroup `H` of `G` then `M` is acyclic.
 -/
-theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G] [IsSolvable G]
+theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Finite G] [IsSolvable G]
     (M : Rep R G) (n m : ℕ)
     -- todo: don't quantify over all types
     (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
@@ -62,9 +62,8 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
       apply (config := { allowSynthFailures := true }) isIso_of_mono_of_epi
       · exact inflation_restriction_mono (R := R)
           (QuotientGroup.mk'_surjective (K.subgroupOf H)) n (M := M ↓ H.subtype) (fun i _ ↦ IH i)
-      · exact (inflation_restriction_exact (R := R)
-          (QuotientGroup.mk'_surjective (K.subgroupOf H)) n (M := M ↓ H.subtype) (fun i _ ↦ IH i)).epi_f
-          (IsZero.eq_zero_of_tgt (IH _) _)
+      · exact (inflation_restriction_exact (QuotientGroup.mk'_surjective _) n fun i _ ↦ IH i).epi_f
+          ((IH _).eq_zero_of_tgt _)
     have : ∀ n : ℕ, groupCohomology ((M ↓ H.subtype) ↑
       (QuotientGroup.mk'_surjective (K.subgroupOf H))) (n + 1) ≅
       groupCohomology (M ↓ H.subtype) (n + 1) := fun n ↦ asIso ((infl (QuotientGroup.mk'_surjective

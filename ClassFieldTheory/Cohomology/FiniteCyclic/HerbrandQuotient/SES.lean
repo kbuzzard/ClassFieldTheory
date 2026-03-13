@@ -11,7 +11,7 @@ of `B` is the product of the Herbrand quotients of `A` and `C`.
 
 noncomputable section
 
-variable {R G : Type} [CommRing R] [Group G] [Fintype G] [IsCyclic G]
+variable {R G : Type} [CommRing R] [Group G] [Finite G] [IsCyclic G]
 
 open CategoryTheory
   groupCohomology

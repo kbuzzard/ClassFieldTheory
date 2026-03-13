@@ -240,10 +240,10 @@ instance : FiniteDimensional K L := by
   { toUniformSpace := ‹UniformSpace K›
     __ := NormedField.induced K L (algebraMap K L) (algebraMap K L).injective,
     uniformity_dist := ?_ }
-  letI : NontriviallyNormedField K := .ofNormNeOne ⟨ϖ, hϖ.ne_zero', hϖ1.ne⟩
-  letI : NormedSpace K L :=
-  { norm_smul_le a b := by rw [Algebra.smul_def a b, norm_mul]; rfl }
-  exact FiniteDimensional.of_locallyCompactSpace (𝕜 := K) (E := L)
+  · letI : NontriviallyNormedField K := .ofNormNeOne ⟨ϖ, hϖ.ne_zero', hϖ1.ne⟩
+    letI : NormedSpace K L :=
+    { norm_smul_le a b := by rw [Algebra.smul_def a b, norm_mul]; rfl }
+    exact FiniteDimensional.of_locallyCompactSpace (𝕜 := K) (E := L)
   -- Showing `uniformity_dist` for `K`
   let ε : Set.Ioo (0 : ℝ) 1 := ⟨‖ϖ‖, norm_pos_iff.mpr hϖ.ne_zero, hϖ1⟩
   -- install the rank one structure for `K` where `ϖK` goes to `‖iKL ϖK‖`.

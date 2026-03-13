@@ -281,7 +281,9 @@ between `ind₁' ρ` and `ind₁ R G V`.
     · rename_i f g h1 h2
       rw [map_add, map_add, h1, h2]
     · rename_i g v
-      simp [ind₁'_invlmap, Submodule.quotEquivOfEqBot, Coinvariants.mk]
+      simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot, LinearEquiv.ofLinear_toLinearMap,
+        ind₁'_lmap_apply, LinearMap.coe_comp, Coinvariants.mk, Function.comp_apply,
+        TensorProduct.mk_apply, map_zero, TensorProduct.tmul_zero, sum_single_index]
       change (TensorProduct.lift ρ.ind₁'_invlmap_aux)
         (LinearMap.id (R := R) ((fun₀ | g => (1 : R)) ⊗ₜ[R] (ρ g) v)) = fun₀ | g => v
       simp [ind₁'_invlmap_aux]
@@ -305,7 +307,10 @@ between `ind₁' ρ` and `ind₁ R G V`.
       rw [map_add, LinearMap.add_apply, map_add, h1, h2, TensorProduct.add_tmul]
       rfl
     | single g r =>
-      simp [ind₁'_invlmap_aux, Coinvariants.mk]
+      simp only [ind₁'_invlmap_aux, LinearMap.coe_mk, AddHom.coe_mk, zero_smul, single_zero,
+        sum_single_index, ind₁'_lmap_apply, LinearMap.coe_comp, Coinvariants.mk,
+        Function.comp_apply, TensorProduct.mk_apply, map_zero, TensorProduct.tmul_zero, map_smul,
+        self_inv_apply, TensorProduct.tmul_smul]
       rw [← map_smul, ← Submodule.mkQ_apply]
       congr
       rw [TensorProduct.smul_tmul', Finsupp.smul_single, smul_eq_mul, mul_one]
@@ -336,7 +341,8 @@ lemma ind₁'_lequiv_coind₁'_comm [Finite G] (g : G) :
   ext x : 1
   rw [LinearMap.comp_assoc, LinearMap.comp_assoc, ind₁'_comp_lsingle]
   ext v y : 2
-  simp [ind₁'_lequiv_coind₁'_apply]
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, lsingle_apply,
+    ind₁'_lequiv_coind₁'_apply, coind₁'_apply_apply]
   by_cases h : x * g⁻¹ = y
   · rw [h, single_eq_same, ← h, mul_assoc, inv_mul_cancel, mul_one, single_eq_same]
   · rw [single_eq_of_ne, single_eq_of_ne, map_zero]
@@ -526,8 +532,7 @@ def ind₁'_π : ind₁' ⟶ 𝟭 (Rep R G) where
     ext z
     change Representation.ind₁'_π ((ind₁'.map x).hom.hom z) =
       x.hom.hom (Representation.ind₁'_π z)
-    simp [ind₁', sum_mapRange_index]
-    exact (map_finsuppSum x.hom.hom z _).symm
+    simpa [ind₁', sum_mapRange_index] using (map_finsuppSum x.hom.hom z _).symm
 
 instance instEpiAppInd₁'_π : Epi (ind₁'_π.app M) := by
   refine (epi_iff_surjective (ind₁'_π.app M)).2 fun m ↦ ⟨single 1 m, ?_⟩
@@ -557,7 +562,6 @@ def coind₁AsPiIso : coind₁AsPi G A ≅ (coind₁ G).obj (.of R A) :=
 section FiniteGroup
 
 variable (A : ModuleCat R)
-set_option linter.unusedSectionVars false
 
 -- Hack:
 instance : DecidableRel ⇑(QuotientGroup.rightRel (⊥ : Subgroup G)) :=
@@ -614,3 +618,5 @@ noncomputable def iso_ind₁ :
   simp only [Function.comp_apply, map_sum, map_smul]
   apply Fintype.sum_equiv (.mulRight x)
   simp [IsGalois.normalBasis_apply _⁻¹, IsGalois.normalBasis_apply (_ * _)]
+
+end Rep

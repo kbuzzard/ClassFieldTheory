@@ -103,19 +103,19 @@ lemma trivialHomology_iff_res {M : Rep R G} :
 A module `M` for a finite group `G` has trivial Tate cohomology if
 for all subgroups `S` of `G` and all integers `n`, `Hⁿ_{Tate}(S,M)=0`.
 -/
-class TrivialTateCohomology [Fintype G] (M : Rep R G) : Prop where
+class TrivialTateCohomology [Finite G] (M : Rep R G) : Prop where
     isZero (H : Subgroup G) {n : ℤ} :
       letI : Fintype H := Fintype.ofFinite _
       IsZero ((tateCohomology n).obj (M ↓ H.subtype : Rep R H))
 
-lemma TrivialTateCohomology.of_iso [Fintype G] {M N : Rep R G} (f : M ≅ N)
+lemma TrivialTateCohomology.of_iso [Finite G] {M N : Rep R G} (f : M ≅ N)
     [N.TrivialTateCohomology] :
     M.TrivialTateCohomology :=
   ⟨fun H ↦ (TrivialTateCohomology.isZero _).of_iso <|
     letI : Fintype H := Fintype.ofFinite _
     (tateCohomology _).mapIso <| (res H.subtype).mapIso f⟩
 
-lemma TrivialTateCohomology.of_injective [Fintype G] {M : Rep R G} {H : Type} [Fintype H]
+lemma TrivialTateCohomology.of_injective [Finite G] {M : Rep R G} {H : Type} [Fintype H]
     [Group H] (f : H →* G) (n : ℤ) (hf : Function.Injective f)
     [M.TrivialTateCohomology] : IsZero ((tateCohomology n).obj (M ↓ f)) :=
   let := Fintype.ofFinite f.range
@@ -126,13 +126,13 @@ lemma isZero_of_trivialTateCohomology [Fintype G] {M : Rep R G}
     [M.TrivialTateCohomology] {n : ℤ} : IsZero ((tateCohomology n).obj M) :=
   TrivialTateCohomology.of_injective (.id G) n Function.injective_id
 
-instance TrivialTateCohomology.to_trivialCohomology [Fintype G] {M : Rep R G}
+instance TrivialTateCohomology.to_trivialCohomology [Finite G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialCohomology where
   isZero H n := (TrivialTateCohomology.isZero (M := M) H (n := Nat.cast n + 1)).of_iso <|
     letI : Fintype H := Fintype.ofFinite _
     TateCohomology.isoGroupCohomology (n + 1) |>.app (M ↓ H.subtype)|>.symm
 
-instance TrivialTateCohomology.to_trivialHomology [Fintype G] {M : Rep R G}
+instance TrivialTateCohomology.to_trivialHomology [Finite G] {M : Rep R G}
     [M.TrivialTateCohomology] : M.TrivialHomology where
   isZero H n := (TrivialTateCohomology.isZero H (n := - (n + 1) - 1)).of_iso <|
     letI : Fintype H := Fintype.ofFinite _
@@ -140,7 +140,7 @@ instance TrivialTateCohomology.to_trivialHomology [Fintype G] {M : Rep R G}
 
 /-- To check that a finite group has trivial Tate cohomology, it's enough to show it has trivial
 cohomology and trivial homology, and that the 0-th and -1st Tate cohomology groups are trivial. -/
-lemma TrivialTateCohomology.of_cases [Fintype G] {M : Rep R G}
+lemma TrivialTateCohomology.of_cases [Finite G] {M : Rep R G}
     [M.TrivialCohomology] [M.TrivialHomology]
     (h : ∀ (H : Subgroup G),
       letI : Fintype H := Fintype.ofFinite _
@@ -171,7 +171,7 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialHomology where
   isZero H n := by
     apply isZero_groupHomology_succ_of_subsingleton
 
-instance [Fintype G] [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
+instance [Finite G] [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
   refine .of_cases ?_
   intro H
   letI : Fintype H := Fintype.ofFinite _

@@ -147,7 +147,7 @@ lemma commSq_cores₁ (M : Rep R G) :
     epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
 
-theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) :
+theorem cores₁_naturality (X Y : Rep R G) (f : X ⟶ Y) :
     (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
   haveI : Epi (δ (shortExact_upSES_res X S.subtype) 0 1 rfl) :=
@@ -224,8 +224,8 @@ def coresNatTrans (n : ℕ) : Rep.res S.subtype ⋙ functor R S n ⟶ functor R 
     | 0 => cores₀.naturality f
     | n + 1 => cores_succ_naturality n X Y f
 
-lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group H] {A : Rep k H} {B : Rep k G}
-    (f : G →* H) (φ : A ↓ f ⟶ B) (x : groupCohomology A 0) :
+lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group H] {A : Rep k H}
+    {B : Rep k G} (f : G →* H) (φ : A ↓ f ⟶ B) (x : groupCohomology A 0) :
     (H0Iso B).hom.hom ((map f φ 0).hom x) =
     φ.hom.hom ((H0Iso A).hom.hom x : A) :=
   map_H0Iso_hom_f_apply ..
@@ -250,7 +250,8 @@ Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
 -/
 lemma commSqₙ (n : ℕ) (M : Rep R G) :
     (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (shortExact_upSES M) n (n + 1) rfl =
-    δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫ coresNatTrans R S (n + 1)).app M := by
+      δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫
+        coresNatTrans R S (n + 1)).app M := by
   rw [NatTrans.comp_app, NatTrans.comp_app]
   match n with
   | 0 =>
@@ -349,3 +350,5 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     @Subtype.ext_iff _ (p := fun x ↦ x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P))
     ⟨x, pTorsion_eq_sylowTorsion M p P x|>.1 hx⟩ 0|>.1 <| groupCohomology.injects_to_sylowCoh M p P
     (by simp [not_not.1 hx2])
+
+end groupCohomology

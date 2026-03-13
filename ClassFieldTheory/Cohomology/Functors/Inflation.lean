@@ -20,7 +20,8 @@ We define the natural map of `G`-representations
 
 Using this map, we define the inflation map as a morphism of functors
 
-  `groupCohomology.cochain_infl : quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G`.
+  `groupCohomology.cochain_infl` of type
+    `quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G`.
 
 Using this we define the inflation map on group cohomology:
 
@@ -116,7 +117,7 @@ where the horizontal maps are connecting homomorphisms
 and the vertical maps are inflation.
 -/
 lemma infl_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
-    (hS' : (S.map (quotientToInvariantsFunctor' surj)).ShortExact)  (i j : ℕ) (hij : i + 1 = j) :
+    (hS' : (S.map (quotientToInvariantsFunctor' surj)).ShortExact) (i j : ℕ) (hij : i + 1 = j) :
     δ hS' i j hij ≫ (infl surj j).app _ = (infl surj i).app _ ≫ δ hS i j hij
     := by
   let C := S.map (cochainsFunctor R G)
@@ -132,3 +133,5 @@ lemma infl_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
   have ses₁ : C.ShortExact := map_cochainsFunctor_shortExact hS
   have ses₂ : C'.ShortExact := map_cochainsFunctor_shortExact hS'
   exact HomologySequence.δ_naturality φ ses₂ ses₁ i j hij
+
+end groupCohomology

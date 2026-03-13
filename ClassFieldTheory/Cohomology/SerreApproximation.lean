@@ -8,7 +8,8 @@ import ClassFieldTheory.Cohomology.IsFilterComplete.Submodule
 import ClassFieldTheory.Cohomology.Subrep.ShortExact
 import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
-/-! # An approximation lemma
+/-!
+# An approximation lemma
 
 Let `M` be a filtered `G`-module, i.e. given `G`-submodules `M_i ≤ M` indexed by `i : ℕ`, such that
 `M = lim[<-] M/M_i`. Now fix `q : ℕ` and suppose that `∀ i : ℕ, H^(q+1)(G, M_i/M_{i+1}) = 0`. Then
@@ -38,7 +39,7 @@ open groupCohomology
 noncomputable def toCochains : Submodule k ((inhomogeneousCochains M).X q) :=
   .pi .univ fun _ ↦ w.toSubmodule
 
-noncomputable def toCochainsOrderHom: Subrep M →o Submodule k ((inhomogeneousCochains M).X q) :=
+noncomputable def toCochainsOrderHom : Subrep M →o Submodule k ((inhomogeneousCochains M).X q) :=
   ⟨(·.toCochains q), fun _ _ h₁ _ h₂ _ _ ↦ h₁ <| h₂ _ trivial⟩
 
 /-- `C(w)` is isomorphic to the submodule of `C(M)` called `w.toCochains q`. -/

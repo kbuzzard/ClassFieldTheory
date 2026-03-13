@@ -51,7 +51,7 @@ lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
 
 lemma res_obj_V : (M ↓ f).V = M.V := rfl
 
-@[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N): ((res f).map p).hom = p.hom := rfl
+@[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N) : ((res f).map p).hom = p.hom := rfl
 
 section
 
@@ -205,7 +205,8 @@ subgroup `H` of `G`, the following diagram is commutative
 The vertical arrows are restriction and the horizontals are connecting homomorphisms.
 
 For this, it would be sensible to define restriction as a natural transformation, so that it
-automatically commutes with the other maps. This requires us to first define cohomology as a functor.
+automatically commutes with the other maps. This requires us to first define cohomology as a
+functor.
 -/
 lemma rest_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
     {H : Type u} [Group H] (φ : H →* G) (i j : ℕ) (hij : i + 1 = j) :

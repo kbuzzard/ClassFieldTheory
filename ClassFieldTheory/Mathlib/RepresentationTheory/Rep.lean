@@ -39,7 +39,7 @@ instance [MulAction G H] :
 @[simp] lemma coe_hom (f : A ⟶ B) : ⇑f.hom = f := rfl
 @[simp] lemma hom_apply (f : A ⟶ B) (x : A) : f.hom x = f x := rfl
 
-example (A B : Rep R G) (f : A ⟶ B ) (a b : A) (c : R) : f (a + c • b) = f a + c • f b := by simp
+example (A B : Rep R G) (f : A ⟶ B) (a b : A) (c : R) : f (a + c • b) = f a + c • f b := by simp
 
 @[simp] lemma zero_apply (v : A) : (0 : A ⟶ B) v = 0 := rfl
 @[simp] lemma add_apply (f₁ f₂ : A ⟶ B) (v : A) : (f₁ + f₂) v = f₁ v + f₂ v := rfl
@@ -142,7 +142,7 @@ lemma leftRegularHom_eq_ρReg (g : G) (hg : g ∈ Subgroup.center G) :
   rw [hg.comm]
 
 variable (R G)
-/--The augmentation map from the left regular representation to the trivial module.-/
+/-- The augmentation map from the left regular representation to the trivial module. -/
 noncomputable
 def ε : leftRegular R G ⟶ trivial R G R := leftRegularHom (trivial R G R) (1 : R)
 
@@ -188,7 +188,7 @@ The left regular representation is nontrivial (i.e. non-zero) if and only if the
 ring is trivial.
 -/
 lemma nontrivial_iff_nontrivial : Nontrivial (leftRegular R G) ↔ Nontrivial R := by
-  simp [Finsupp.nontrivial_iff]; infer_instance
+  simp only [Finsupp.nontrivial_iff, and_iff_right_iff_imp]; infer_instance
 
 lemma ε_epi : Epi (ε R G) := epi_of_surjective _ fun r ↦
   ⟨r • of 1, by erw [map_smul, ε_of_one, smul_eq_mul, mul_one]⟩

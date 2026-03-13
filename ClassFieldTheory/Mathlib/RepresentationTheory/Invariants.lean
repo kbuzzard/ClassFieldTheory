@@ -11,7 +11,8 @@ open groupCohomology CategoryTheory
 lemma Rep.forget₂_obj (M) : (forget₂ (Rep k G) (ModuleCat k)).obj M = M.V := rfl
 
 @[simp]
-lemma Rep.forget₂_map {M N : Rep k G} (f : M ⟶ N) : (forget₂ (Rep k G) (ModuleCat k)).map f = f.hom := rfl
+lemma Rep.forget₂_map {M N : Rep k G} (f : M ⟶ N) :
+    (forget₂ (Rep k G) (ModuleCat k)).map f = f.hom := rfl
 
 /-- For `X : Rep k G`, `zeroι X` is the morphism `H0 X ⇨ X.V` in `ModuleCat k`. -/
 noncomputable def groupCohomology.zeroι (X : Rep k G) : H0 X ⟶ X.V :=
@@ -27,3 +28,5 @@ variable (k G) in
 the forgetful functor `Rep k G ⥤ ModuleCat k`. -/
 noncomputable def groupCohomology.zeroEmb : functor k G 0 ⟶ forget₂ (Rep k G) (ModuleCat k) where
   app X := groupCohomology.zeroι X
+
+end RepresentationTheory
