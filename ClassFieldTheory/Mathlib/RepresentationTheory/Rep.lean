@@ -22,11 +22,11 @@ lemma ρ_apply (g : G) : (leftRegular R G).ρ g = Finsupp.lmapDomain R R (g * ·
 --attribute [simps obj_ρ] trivialFunctor
 
 @[simps]
-def mkIso (M₁ M₂ : Rep R G) (f : M₁.V ≅ M₂.V)
-    (hf : ∀ g : G, ∀ m : M₁, f.hom (M₁.ρ g m) = M₂.ρ g (f.hom m) := by aesop) : M₁ ≅ M₂ where
-  hom.hom := f.hom
-  inv.hom := f.inv
-  inv.comm g := by rw [f.comp_inv_eq, Category.assoc, eq_comm, f.inv_comp_eq]; aesop
+def mkIso (M₁ M₂ : Rep R G) (f : M₁ ≃ₗ[R] M₂)
+    (hf : ∀ g : G, ∀ m : M₁, f (M₁.ρ g m) = M₂.ρ g (f m) := by aesop) : M₁ ≅ M₂ where
+  hom.hom := ofHom f
+  inv.hom := ofHom f.symm
+  inv.comm g := by ext; aesop (add simp [LinearEquiv.symm_apply_eq])
 
 instance richards : LinearMapClass (Action.HomSubtype _ _ A B) R A B where
   map_add f := map_add f.val

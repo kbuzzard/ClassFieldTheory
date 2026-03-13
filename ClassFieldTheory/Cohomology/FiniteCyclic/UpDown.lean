@@ -298,9 +298,8 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
   simp [coind₁', ind₁'] at x ⊢
   ext d
   simp only [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', linearEquivFunOnFinite,
-    Equiv.invFun_as_coe, ModuleCat.hom_ofHom, map₁, Representation.map₁, LinearMap.coe_mk,
-    AddHom.coe_mk, LinearEquiv.coe_coe, LinearEquiv.coe_symm_mk, equivFunOnFinite_symm_apply_apply,
-    map₂, Representation.map₂_apply]
+    ModuleCat.hom_ofHom, map₁, map₂, Representation.map₂_apply]
+  simp
 
 /-- The first short complex in the periodicity sequence. -/
 @[simps] def periodSeq₁ : ShortComplex (Rep R G) where
