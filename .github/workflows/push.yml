@@ -45,11 +45,15 @@ jobs:
         id: build-lean
         uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
 
-      - if: github.ref == 'refs/heads/main'
-        name: Upstreaming dashboard
-        run: |
-          mkdir -p website/_includes
-          python3 scripts/upstreaming_dashboard.py
+      - name: Upstreaming dashboard
+        if: github.ref == 'refs/heads/main'
+        uses: leanprover-community/upstreaming-dashboard-action@main
+        with:
+          website-directory: ./website
+          project-name: ClassFieldTheory
+          relevant-labels: CFT
+          include-drafts: true
+          branch-name: main
 
       - if: github.ref == 'refs/heads/main'
         name: File dependencies
