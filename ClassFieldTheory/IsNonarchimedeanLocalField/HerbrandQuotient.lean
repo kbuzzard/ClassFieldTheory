@@ -1,13 +1,17 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Trivial
-import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
-/-
+module
 
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Trivial
+public import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
+
+/-!
 # Herbrand quotient of Lˣ
 
 If L/K is a finite cyclic extension of nonarchimedean local fields then `h(Lˣ)=[L:K]`.
 
 -/
+
+@[expose] public section
 
 open IsNonarchimedeanLocalField
 

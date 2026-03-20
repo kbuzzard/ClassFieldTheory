@@ -1,8 +1,10 @@
-import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Cohomology.IndCoind.Finite
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import ClassFieldTheory.Cohomology.IndCoind.Finite
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 Let `M : Rep R G`, where `G` is a finite cyclic group.
@@ -28,7 +30,7 @@ Using this, construct isomorphisms
 
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open
   Finsupp
@@ -85,7 +87,7 @@ lemma map₁_ker :
     simp only [coind₁'_ι, LinearMap.mem_range, LinearMap.coe_mk, AddHom.coe_mk, ] at hf ⊢
     use f (gen G)⁻¹
     ext x
-    obtain ⟨n, hx⟩ : x ∈ Subgroup.zpowers (gen G) := IsCyclic.exists_generator.choose_spec x
+    obtain ⟨n, hx⟩ : x ∈ Subgroup.zpowers (gen G) := gen_generate x
     dsimp at hx
     rw [Function.const_apply, ← hx]
     dsimp [map₁] at hf

@@ -3,10 +3,14 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
 
 /-! # Intermediate field of local fields is local field -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 

@@ -3,10 +3,14 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import Mathlib.RingTheory.AdicCompletion.Topology
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import Mathlib.RingTheory.AdicCompletion.Topology
 
 /-! # Facts about the adic topology and local fields -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]

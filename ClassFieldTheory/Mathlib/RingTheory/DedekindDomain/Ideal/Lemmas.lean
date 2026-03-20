@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+
+public section
 
 theorem Ideal.IsMaximal.irreducible_of_ne_bot {R : Type*} [CommRing R] [IsDedekindDomain R]
     {I : Ideal R} [hI : I.IsMaximal] (ne_bot : I ≠ ⊥) : Irreducible I := by

@@ -1,11 +1,13 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
-import ClassFieldTheory.Cohomology.Functors.Corestriction
-import ClassFieldTheory.Cohomology.Functors.InflationRestriction
-import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Cohomology.TateCohomology
-import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
-import Mathlib.GroupTheory.Nilpotent
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
+public import ClassFieldTheory.Cohomology.Functors.Corestriction
+public import ClassFieldTheory.Cohomology.Functors.InflationRestriction
+public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import ClassFieldTheory.Cohomology.TateCohomology
+public import ClassFieldTheory.Cohomology.TrivialCohomology
+public import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
+public import Mathlib.GroupTheory.Nilpotent
 
 /-!
 Suppose `G` is a finite group, and there are positive integers `r` and `s`
@@ -22,6 +24,8 @@ As a corollary, we show that if `M` has trivial cohomology then `up.obj M` and `
 both have trivial cohomology. Using this, we show that if `M` has trivial cohomology then it has
 trivial Tate cohomology.
 -/
+
+public section
 
 open
   CategoryTheory

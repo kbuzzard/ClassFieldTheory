@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Nilpotent.Lemmas
+module
+
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+
+public section
 
 -- forward direction of `Ideal.FG.isNilpotent_iff_le_nilradical`
 theorem le_nilradical_of_isNilpotent {R : Type*} [CommSemiring R] {I : Ideal R}

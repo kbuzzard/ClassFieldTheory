@@ -3,10 +3,14 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Cohomology.Subrep.Basic
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+
+public import ClassFieldTheory.Cohomology.Subrep.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-! # Short exact sequences associated to subreps -/
+
+@[expose] public section
 
 universe u
 

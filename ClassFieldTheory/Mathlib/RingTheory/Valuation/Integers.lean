@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.RingTheory.Valuation.Integers
+module
+
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.RingTheory.Valuation.Integers
+
+public section
 
 lemma Valuation.Integers.associated_iff_eq {F Γ₀ O : Type*} [Field F]
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation F Γ₀}

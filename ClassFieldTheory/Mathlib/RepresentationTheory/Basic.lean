@@ -1,4 +1,8 @@
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import Mathlib.RepresentationTheory.Basic
+
+public section
 
 namespace Representation
 variable {G : Type*} [Group G] [Fintype G]

@@ -1,10 +1,12 @@
-import ClassFieldTheory.Mathlib.Data.Finsupp.Single
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.Rep
+module
+
+public import ClassFieldTheory.Mathlib.Data.Finsupp.Single
+public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.Rep
+
+@[expose] public noncomputable section
 
 open CategoryTheory Limits ConcreteCategory
-
-noncomputable section
 
 namespace Rep
 universe u

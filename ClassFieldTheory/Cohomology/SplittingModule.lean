@@ -1,8 +1,12 @@
-import ClassFieldTheory.Cohomology.AugmentationModule
-import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Cohomology.TrivialityCriterion
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+module
+
+public import ClassFieldTheory.Cohomology.AugmentationModule
+public import ClassFieldTheory.Cohomology.TrivialCohomology
+public import ClassFieldTheory.Cohomology.TrivialityCriterion
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+
+@[expose] public noncomputable section
 
 open
   CategoryTheory
@@ -14,8 +18,6 @@ open
 
 variable {R : Type} [CommRing R]
 variable {G : Type} [Group G]
-
-noncomputable section Split
 variable [Fintype G]
 variable {M : Rep R G}
 
@@ -390,5 +392,3 @@ def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
     groupHomology.H1TrivialAddEquiv.toIntLinearEquiv.toModuleIso
 
 end Rep.split
-
-end Split

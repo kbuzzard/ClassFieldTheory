@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Order.Hom.Monoid
+module
+
+public import Mathlib.Algebra.Order.Hom.Monoid
+
+public section
 
 namespace OrderMonoidIso
 

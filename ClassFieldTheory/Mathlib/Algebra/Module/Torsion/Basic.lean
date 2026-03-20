@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Module.Torsion.Basic
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+
+@[expose] public section
 
 @[simps]
 def Module.IsTorsionBy.coprime_decompose {k m1 m2 : ℕ} {R M : Type*} [CommRing R] [AddCommGroup M]

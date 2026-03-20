@@ -1,9 +1,12 @@
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
-import Mathlib.Algebra.Homology.HomologySequenceLemmas
-import Mathlib.RepresentationTheory.Coinduced
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-import Mathlib.RepresentationTheory.Induced
+module
+
+public import
+  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.RepresentationTheory.Coinduced
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public import Mathlib.RepresentationTheory.Induced
 
 /-!
 TODO : Although we made `Rep.res` a `def` there is still places we need to unfold the definition
@@ -13,6 +16,8 @@ TODO : Although we made `Rep.res` a `def` there is still places we need to unfol
 -- 2. refactor `Rep` in mathlib to be a `def` instead of `abbrev` which (after test in CFT repo)
 -- seems to solve some of our problems.
 -/
+
+@[expose] public section
 
 open
   Rep

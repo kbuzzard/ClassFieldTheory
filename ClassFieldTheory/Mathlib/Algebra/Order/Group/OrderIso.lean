@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Order.Group.OrderIso
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+
+public section
 
 @[simp] lemma map_lt_one_iff {F α β : Type*} [Preorder α] [Preorder β]
     [MulOneClass α] [MulOneClass β] [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β]

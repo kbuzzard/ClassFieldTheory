@@ -1,8 +1,10 @@
-import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
-import ClassFieldTheory.Cohomology.LeftRegular
-import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import ClassFieldTheory.Cohomology.Functors.Restriction
+public import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
+public import ClassFieldTheory.Cohomology.LeftRegular
+public import ClassFieldTheory.Cohomology.TrivialCohomology
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!
 Let `R` be a commutative ring and `G` a group.
@@ -27,6 +29,8 @@ We also have isomorphisms
 
 -/
 
+public noncomputable section
+
 open
   Rep
   leftRegular
@@ -37,8 +41,6 @@ open
   BigOperators
 
 variable (R G : Type) [CommRing R] [Group G]
-
-noncomputable section AugmentationModule
 
 /--
 The augmentation module `aug R G` is the kernel of the augmentation map
@@ -319,5 +321,3 @@ def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
   simpa [leftRegular.groupCoh_map_res_norm, eq_comm] using by rfl
 
 end Rep.aug
-
-end AugmentationModule

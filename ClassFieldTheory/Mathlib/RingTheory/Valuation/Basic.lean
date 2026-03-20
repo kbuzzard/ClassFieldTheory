@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+
+public section
 
 namespace Valuation
 

@@ -1,6 +1,10 @@
-import ClassFieldTheory.Mathlib.FieldTheory.Separable
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.Basic
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+module
+
+public import ClassFieldTheory.Mathlib.FieldTheory.Separable
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.Basic
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+
+public section
 
 open Polynomial
 

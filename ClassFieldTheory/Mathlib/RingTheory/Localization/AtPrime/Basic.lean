@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+module
+
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+
+public section
 
 instance isLocalization_self (R : Type*) [CommSemiring R] [IsLocalRing R] :
     IsLocalization.AtPrime R (IsLocalRing.maximalIdeal R) where

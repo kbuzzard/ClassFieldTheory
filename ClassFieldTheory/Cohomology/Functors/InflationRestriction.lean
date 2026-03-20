@@ -1,7 +1,9 @@
-import ClassFieldTheory.Cohomology.Functors.Inflation
-import ClassFieldTheory.Cohomology.Functors.UpDown
+module
 
-noncomputable section
+public import ClassFieldTheory.Cohomology.Functors.Inflation
+public import ClassFieldTheory.Cohomology.Functors.UpDown
+
+@[expose] public noncomputable section
 
 open
   Rep

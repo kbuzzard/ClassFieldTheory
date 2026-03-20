@@ -1,5 +1,7 @@
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+module
+
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 
 /-!
 

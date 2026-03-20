@@ -3,10 +3,12 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Cohomology.IsFilterComplete.Forget
-import ClassFieldTheory.Cohomology.IsFilterComplete.Submodule
-import ClassFieldTheory.Cohomology.Subrep.ShortExact
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+module
+
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Forget
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Submodule
+public import ClassFieldTheory.Cohomology.Subrep.ShortExact
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 # An approximation lemma
@@ -16,6 +18,8 @@ Let `M` be a filtered `G`-module, i.e. given `G`-submodules `M_i ≤ M` indexed 
 `H^(q+1)(G, M) = 0`.
 
 -/
+
+@[expose] public section
 
 universe u
 

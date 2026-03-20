@@ -1,6 +1,10 @@
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
-import Mathlib.Topology.Algebra.Valued.NormedValued
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+
+@[expose] public section
 
 namespace NormedField
 
@@ -97,7 +101,7 @@ theorem isValuativeTopology (K : Type*) [NormedField K] [IsUltrametricDist K] :
         convert hn
         ext
         simp [← map_pow, e.lt_iff_lt, ← NNReal.coe_lt_coe, dist_eq_norm, sub_eq_neg_add]
-      · obtain ⟨y, rfl⟩ := unitsMap_valuation_surjective γ
+      · obtain ⟨y, rfl⟩ := ValuativeRel.unitsMap_valuation_surjective γ
         refine Metric.mem_nhds_iff.mpr ⟨‖y.val‖, by simp, ?_⟩
         convert hγ
         ext

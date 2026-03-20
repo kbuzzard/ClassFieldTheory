@@ -3,8 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
+public import Mathlib.LinearAlgebra.Pi
 
 /-! # Complete filtrations by submodules
 
@@ -14,6 +16,8 @@ This file constructs more complete filtrations by:
 3. kernel of a map that respects the filtration
 4. isomorphism that respects the filtration
 -/
+
+public section
 
 -- TODO: more API (e.g. SModEq)
 

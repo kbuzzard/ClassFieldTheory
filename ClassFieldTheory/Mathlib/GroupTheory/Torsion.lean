@@ -1,5 +1,9 @@
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.GroupTheory.Torsion
+module
+
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.Torsion
+
+public section
 
 variable {M N : Type*}
 

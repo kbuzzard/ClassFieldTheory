@@ -1,4 +1,6 @@
-import ClassFieldTheory.Cohomology.Functors.Restriction
+module
+
+public import ClassFieldTheory.Cohomology.Functors.Restriction
 
 /-!
 In this file we have a group homomorphism `φ : G →* Q` satisfying the condition
@@ -30,6 +32,8 @@ Using this we define the inflation map on group cohomology:
 Since this is defined on cochains first, we are able to deduce `δ`-naturality of the inflation map
 on cohomology.
 -/
+
+@[expose] public section
 
 open CategoryTheory
   ConcreteCategory

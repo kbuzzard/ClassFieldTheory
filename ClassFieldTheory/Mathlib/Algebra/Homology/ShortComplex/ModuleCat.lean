@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.QuotientGroup.Finite
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.GroupTheory.QuotientGroup.Finite
+
+public section
 
 universe v u
 

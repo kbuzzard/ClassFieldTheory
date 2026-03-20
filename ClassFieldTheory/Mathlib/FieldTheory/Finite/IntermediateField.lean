@@ -3,9 +3,13 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import Mathlib.FieldTheory.Finite.GaloisField
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.FieldTheory.Finite.GaloisField
+
+public section
 
 /-! # Results on intermediate fields of finite fields -/
 

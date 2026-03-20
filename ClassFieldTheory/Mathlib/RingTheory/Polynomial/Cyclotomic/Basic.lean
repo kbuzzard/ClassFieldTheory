@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+
+public section
 
 namespace Polynomial
 

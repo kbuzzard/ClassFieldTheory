@@ -1,5 +1,7 @@
-import ClassFieldTheory.Cohomology.TateCohomology
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+module
+
+public import ClassFieldTheory.Cohomology.TateCohomology
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
 # Trivial (Tate) (co)homology
@@ -16,6 +18,8 @@ we have `Hⁿ_{Tate}(S, M) ≅ 0`.
 We define these three classes of representation, and prove that they are preserved
 by isomorphisms.
 -/
+
+public section
 
 open
   CategoryTheory

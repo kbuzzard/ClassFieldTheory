@@ -3,10 +3,12 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Mathlib.RingTheory.AdicCompletion.Ring
-import ClassFieldTheory.Mathlib.RingTheory.LiftingCoprime
-import ClassFieldTheory.Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.FieldTheory.Separable
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.AdicCompletion.Ring
+public import ClassFieldTheory.Mathlib.RingTheory.LiftingCoprime
+public import ClassFieldTheory.Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.FieldTheory.Separable
 
 /-! # Hensel's lemma on factorisation of polynomials
 
@@ -25,6 +27,8 @@ irreducible in `R/I`.
   in `R`.
 
 -/
+
+@[expose] public section
 
 section Lemmas
 

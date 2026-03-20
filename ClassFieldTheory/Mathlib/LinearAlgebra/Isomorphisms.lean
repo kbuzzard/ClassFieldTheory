@@ -1,4 +1,8 @@
-import Mathlib.LinearAlgebra.Isomorphisms
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+
+public section
 
 variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂] [Module R M] [Module R M₂]
 

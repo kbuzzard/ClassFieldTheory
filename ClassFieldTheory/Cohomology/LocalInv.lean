@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies, Aaron Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Aaron Liu
 -/
-import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
-import ClassFieldTheory.Mathlib.GroupTheory.Torsion
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
+public import ClassFieldTheory.Mathlib.GroupTheory.Torsion
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!
 # The local invariant
@@ -15,7 +17,7 @@ In this file, we define the carry cocycle, show that it is a two-cocycle and gen
 invariant as the isomorphism `H²(ℤ/nℤ, ℤ) ≅ ℤ/nℤ`.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open groupCohomology TateCohomology CategoryTheory Limits
 
@@ -82,7 +84,7 @@ def carryCocycle : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ) where
 variable [NeZero n]
 
 /-- The local invariant as a map from two-cocycles. -/
-private def localInvAuxAux : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ) →+ ZMod n where
+def localInvAuxAux : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ) →+ ZMod n where
   toFun f := ∑ i : ZMod n, Int.cast (f (.ofAdd i, .ofAdd 1))
   map_zero' := by simp
   map_add' _ _ := by simp [Finset.sum_add_distrib]
@@ -111,11 +113,11 @@ def localInvAux : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) →+ ZMod n := by
     using (Equiv.sum_comp (Equiv.addRight (1 : ZMod n)) _).symm
 
 /-- Multiplying the fundamental class by `i`. Auxiliary definition for `carryH2`. -/
-private def carryH2Aux (i : ZMod n) : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) :=
+def carryH2Aux (i : ZMod n) : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) :=
   i.val • (H2Iso _).inv.hom (QuotientAddGroup.mk (carryCocycle n))
 
 /-- By a computation, `localInvAux n ∘ carryH2Aux = id`. -/
-private lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (localInvAux n) := by
+lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (localInvAux n) := by
   intro i
   simp only [localInvAux, ShortComplex.moduleCatLeftHomologyData_H, carryH2Aux,
     AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe, Function.comp_apply,
@@ -125,7 +127,7 @@ private lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (loc
 
 /-- Since `|H²(ℤ/nℤ, ℤ)| = |ℤ/nℤ|` and `localInvAux n ∘ carryH2Aux = id`, we also have
 `carryH2Aux ∘ localInvAux n = id`. -/
-private lemma leftInverse_carryH2Aux_localInvAux : carryH2Aux.LeftInverse (localInvAux n) := by
+lemma leftInverse_carryH2Aux_localInvAux : carryH2Aux.LeftInverse (localInvAux n) := by
   have e : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) ≃ (ZMod n)ᵐ :=
     (groupCohomology.evenTrivialInt (by simp) _ even_two).toLinearEquiv.toEquiv
   have : Finite (H2 <| .trivial ℤ (ZMod n)ᵐ ℤ) := .of_equiv (ZMod n)ᵐ e.symm

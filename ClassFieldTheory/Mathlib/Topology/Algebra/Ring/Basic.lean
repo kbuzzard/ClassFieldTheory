@@ -1,5 +1,9 @@
-import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
+
+public section
 
 instance (M σ : Type*) [Semiring M] [TopologicalSpace M] [IsTopologicalSemiring M]
     [SetLike σ M] [SubsemiringClass σ M] (s : σ) : IsTopologicalSemiring s := .mk

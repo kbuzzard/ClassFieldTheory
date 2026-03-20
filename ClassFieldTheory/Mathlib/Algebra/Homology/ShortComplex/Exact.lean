@@ -1,6 +1,8 @@
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+module
 
-noncomputable section
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+
+@[expose] public noncomputable section
 
 namespace CategoryTheory.ShortComplex
 open Abelian

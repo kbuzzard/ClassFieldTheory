@@ -1,6 +1,8 @@
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+module
 
-noncomputable section
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+
+@[expose] public noncomputable section
 
 open CategoryTheory
 

@@ -1,12 +1,16 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
-import ClassFieldTheory.Mathlib.LinearAlgebra.Isomorphisms
-import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+public import ClassFieldTheory.Mathlib.LinearAlgebra.Isomorphisms
+public import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
 
 /-!
 # Herbrand quotient of a finite representation
 
 In this file, we show the Herbrand quotient of a trivial representation is `1`.
 -/
+
+public section
 
 variable {R G A : Type} [CommRing R] [Group G] [IsCyclic G]
   [AddCommGroup A] [Module R A] (ρ : Representation R G A)

@@ -1,5 +1,9 @@
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Monotone.Defs
+
+public section
 
 namespace Filter.HasBasis
 

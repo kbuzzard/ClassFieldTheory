@@ -4,12 +4,14 @@ Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Nailin Guan, Gareth Ma, Arend Mellendijk, Yannis Monbru, Michał Mrugała
 -/
-import ClassFieldTheory.Cohomology.IndCoind.Finite
-import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
+module
+
+public import ClassFieldTheory.Cohomology.IndCoind.Finite
+public import ClassFieldTheory.Cohomology.TrivialCohomology
+public import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 
 /-!
 # (Co)induced modules have trivial (co)homology
@@ -22,7 +24,7 @@ trivial cohomology. In the case that `G` is a finite group, we show that all fou
 representations have trivial Tate cohomology.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open
   Finsupp
