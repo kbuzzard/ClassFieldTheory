@@ -1,6 +1,10 @@
-import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import ClassFieldTheory.Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import ClassFieldTheory.Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+
+public section
 
 namespace IsDiscreteValuationRing
 

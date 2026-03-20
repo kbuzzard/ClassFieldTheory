@@ -1,10 +1,13 @@
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
-import Mathlib.NumberTheory.LocalField.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.NumberTheory.LocalField.Basic
+
 /-!
-
 # Instances for nonarch local fields
-
 -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 

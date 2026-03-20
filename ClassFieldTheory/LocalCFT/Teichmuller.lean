@@ -3,11 +3,13 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
-import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
-import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
-import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
+public import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
+public import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
+public import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-! # Teichmüller character
 
@@ -16,6 +18,8 @@ Teichmüller character `k →* R` (a monoid homomorphism, i.e. preserves only mu
 
 ... but we don't have CDVR so we will just do it for local fields.
 -/
+
+@[expose] public section
 
 namespace IsNonarchimedeanLocalField
 

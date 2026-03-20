@@ -1,7 +1,9 @@
-import ClassFieldTheory.Cohomology.IndCoind.Finite
-import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
-import ClassFieldTheory.Cohomology.TateCohomology
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+module
+
+public import ClassFieldTheory.Cohomology.IndCoind.Finite
+public import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
+public import ClassFieldTheory.Cohomology.TateCohomology
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
 We define functors `up` and `down` from `Rep R G` to itself.
@@ -27,6 +29,8 @@ so we have:
 
 -/
 
+@[expose] public noncomputable section
+
 open
   Function
   Rep
@@ -37,8 +41,6 @@ open
   Limits
   groupCohomology
   HomologicalComplex
-
-noncomputable section
 
 variable {R G : Type} [CommRing R] [Group G] (M : Rep R G)
 

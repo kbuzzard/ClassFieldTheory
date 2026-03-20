@@ -1,9 +1,11 @@
-import ClassFieldTheory.Cohomology.Functors.Inflation
-import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.FieldTheory.Galois.NormalBasis
-import Mathlib.RepresentationTheory.FiniteIndex
+module
+
+public import ClassFieldTheory.Cohomology.Functors.Inflation
+public import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+public import Mathlib.Data.Finsupp.Notation
+public import Mathlib.FieldTheory.Galois.NormalBasis
+public import Mathlib.RepresentationTheory.FiniteIndex
 
 /-!
 Let `G` be a group. We define two functors:
@@ -53,6 +55,8 @@ the defeq with the general construction, we provide `ind₁AsFinsupp`/`coind₁A
 pointwise computations.
 -/
 
+@[expose] public noncomputable section
+
 open
   Finsupp
   Representation
@@ -62,8 +66,6 @@ open
   ConcreteCategory
   Limits
   groupCohomology
-
-noncomputable section
 
 variable (R G : Type) [CommRing R] [Group G]
 
@@ -200,7 +202,7 @@ lemma ind₁'_apply₂ (f : G →₀ V) (g x : G) : ρ.ind₁' g f x = ρ g (f (
   rw [this, mapDomain_apply (mul_left_injective g⁻¹)]
   simp
 
-private abbrev ind₁'_map (f : V →ₗ[R] W) : (G →₀ V) →ₗ[R] (G →₀ W) := mapRange.linearMap f
+abbrev ind₁'_map (f : V →ₗ[R] W) : (G →₀ V) →ₗ[R] (G →₀ W) := mapRange.linearMap f
 
 omit [Group G] in
 private lemma ind₁'_map_comp_lsingle (f : V →ₗ[R] W) (x : G) :

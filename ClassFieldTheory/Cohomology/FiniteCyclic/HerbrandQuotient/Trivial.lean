@@ -1,6 +1,8 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
-import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
-import Mathlib.Data.ZMod.QuotientRing
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
+public import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Herbrand quotient of the trivial representation
@@ -8,6 +10,8 @@ import Mathlib.Data.ZMod.QuotientRing
 In this file, we show that if `G` is cyclic of order `n` then the Herbrand quotient of
 `ℤ` with the trivial `G`-action is `n`.
 -/
+
+@[expose] public section
 
 variable {G : Type} [Group G]
 

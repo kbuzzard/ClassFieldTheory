@@ -1,4 +1,8 @@
-import Mathlib.Data.Int.WithZero
+module
+
+public import Mathlib.Data.Int.WithZero
+
+public section
 
 open NNReal
 

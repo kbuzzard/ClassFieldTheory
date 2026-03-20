@@ -3,13 +3,17 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
+module
+
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
 
 /-! # "Forgetful functors" preserve completeness
 
 where we mean e.g. the functor that goes from Subrep to Submodule.
 
 -/
+
+public section
 
 -- Question: should we have the class `SetLike.HasForget`?
 

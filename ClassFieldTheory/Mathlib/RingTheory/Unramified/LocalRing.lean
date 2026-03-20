@@ -1,6 +1,10 @@
-import ClassFieldTheory.Mathlib.FieldTheory.Separable
-import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Unramified.LocalRing
+module
+
+public import ClassFieldTheory.Mathlib.FieldTheory.Separable
+public import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Unramified.LocalRing
+
+public section
 
 /-- Extra flexibility in the choice of:
 1. A localisation `R'` of `R` at `p`.

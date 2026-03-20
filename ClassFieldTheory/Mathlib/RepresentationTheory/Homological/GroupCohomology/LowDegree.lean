@@ -1,6 +1,10 @@
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import ClassFieldTheory.Mathlib.GroupTheory.Torsion
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import ClassFieldTheory.Mathlib.GroupTheory.Torsion
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+
+public section
 
 open CategoryTheory Limits
 

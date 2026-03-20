@@ -1,7 +1,9 @@
-import ClassFieldTheory.Cohomology.Subrep.ShortExact
-import ClassFieldTheory.IsNonarchimedeanLocalField.Actions
-import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
+module
+
+public import ClassFieldTheory.Cohomology.Subrep.ShortExact
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Actions
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 
 /-!
 # 1 → 𝒪[L]ˣ → Lˣ → ℤ → 0 as G-module
@@ -9,6 +11,8 @@ import Mathlib.FieldTheory.Galois.IsGaloisGroup
 If L/K is a finite Galois extension of nonarch local fields, we construct the
 short exact sequence `0 → Additive 𝒪[K]ˣ → Additive (Kˣ) → ℤ → 0` in `Rep ℤ G`
 -/
+
+@[expose] public section
 
 /-- The `G`-module `Mˣ` where `G` acts on `M` distributively. -/
 noncomputable abbrev Rep.units

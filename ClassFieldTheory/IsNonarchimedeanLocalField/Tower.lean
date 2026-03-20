@@ -3,7 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
 
 /-! # Local field extensions in a scalar tower
 
@@ -11,6 +13,8 @@ Let `F/L/K` be a scalar tower of **fields**, each of which is a **local field**.
 If `L/K` and `F/K` are extensions of **local fields**, then so is `F/L`.
 
 -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 

@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+
+public section
 
 namespace UniqueFactorizationMonoid
 

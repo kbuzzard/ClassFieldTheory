@@ -1,5 +1,9 @@
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-import Mathlib.Algebra.Homology.HomologySequenceLemmas
+module
+
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+
+public section
 
 open CategoryTheory ShortComplex
 

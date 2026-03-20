@@ -1,5 +1,9 @@
-import Mathlib.GroupTheory.FiniteAbelian.Basic
-import Mathlib.GroupTheory.Solvable
+module
+
+public import Mathlib.GroupTheory.FiniteAbelian.Basic
+public import Mathlib.GroupTheory.Solvable
+
+public section
 
 theorem CommGroup.exists_mulHom_zmod_surjective_of_finite (G : Type*) [CommGroup G] [Finite G]
     [Nontrivial G] :

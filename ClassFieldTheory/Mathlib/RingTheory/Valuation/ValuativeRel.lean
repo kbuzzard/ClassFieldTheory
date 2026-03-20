@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+
+public section
 
 namespace ValuativeRel
 

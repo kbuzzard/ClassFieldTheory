@@ -1,6 +1,10 @@
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.LinearAlgebra.Quotient.Card
-import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.LinearAlgebra.Quotient.Card
+public import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
+
+public section
 
 open scoped QuotientAddGroup
 open LinearMap QuotientAddGroup

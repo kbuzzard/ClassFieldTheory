@@ -1,4 +1,8 @@
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+
+public section
 
 open CategoryTheory
 

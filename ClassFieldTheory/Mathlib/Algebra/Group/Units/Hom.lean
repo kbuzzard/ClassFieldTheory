@@ -1,5 +1,9 @@
-import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Group.Units.Hom
+module
+
+public import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Group.Units.Hom
+
+public section
 
 theorem isLocalHom_iff_one {R S F : Type*} [Monoid R] [Monoid S]
     [FunLike F R S] [MulHomClass F R S] {f : F} (hf : (⇑f).Surjective) :

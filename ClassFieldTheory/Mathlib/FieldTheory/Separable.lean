@@ -1,4 +1,8 @@
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.FieldTheory.Separable
+
+public section
 
 theorem Algebra.IsSeparable.iff_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*}
     [Field A₁] [Ring B₁] [Field A₂] [Ring B₂] [Algebra A₁ B₁] [Algebra A₂ B₂]

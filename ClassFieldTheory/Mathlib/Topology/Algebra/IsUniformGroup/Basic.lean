@@ -1,4 +1,8 @@
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+module
+
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+
+public section
 
 instance IsUniformAddGroup.addSubgroupClass {α S : Type*} [UniformSpace α] [AddGroup α]
     [SetLike S α] [AddSubgroupClass S α] [IsUniformAddGroup α] (s : S) :

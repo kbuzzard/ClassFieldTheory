@@ -3,12 +3,15 @@ Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Aaron Liu, Yunzhou Xie
 -/
-import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
-import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+module
+
+public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
+public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
+public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
+public import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
+public import
+  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 # Corestriction
@@ -33,7 +36,7 @@ Arguably this filename has too large a number.
 cores o res = multiplication by index
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open
   Rep

@@ -1,21 +1,23 @@
-import ClassFieldTheory.LocalCFT.Continuity
-import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
-import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
-import ClassFieldTheory.Mathlib.Data.Int.WithZero
-import ClassFieldTheory.Mathlib.RingTheory.DiscreteValuationRing.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
-import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
-import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.NumberTheory.LocalField.Basic
-import Mathlib.NumberTheory.Padics.ProperSpace
-import Mathlib.NumberTheory.Padics.ValuativeRel
-import Mathlib.NumberTheory.RamificationInertia.Basic
+module
+
+public import ClassFieldTheory.LocalCFT.Continuity
+public import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
+public import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import ClassFieldTheory.Mathlib.Data.Int.WithZero
+public import ClassFieldTheory.Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
+public import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.NumberTheory.LocalField.Basic
+public import Mathlib.NumberTheory.Padics.ProperSpace
+public import Mathlib.NumberTheory.Padics.ValuativeRel
+public import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
 # Non-Archimedean Local Fields
@@ -47,6 +49,8 @@ Basic properties of nonarch local fields.
   (in the sense that an appropriate valuative structure and topology exist).
 * `IsNonarchimedeanLocalField.ext_extension`: uniqueness of these structures.
 -/
+
+@[expose] public section
 
 open ValuativeRel
 

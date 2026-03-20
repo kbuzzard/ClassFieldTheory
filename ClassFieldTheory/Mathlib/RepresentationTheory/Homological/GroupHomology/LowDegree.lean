@@ -1,6 +1,8 @@
-import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+module
 
-noncomputable section
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+
+@[expose] public noncomputable section
 
 open Finsupp
 

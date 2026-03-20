@@ -1,4 +1,8 @@
-import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+module
+
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+
+public section
 
 open CategoryTheory ShortComplex
 

@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+
+public section
 
 namespace WithZero
 variable {M : Type*} [Preorder M] [Zero M] {x : M}

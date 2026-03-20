@@ -3,12 +3,14 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
-import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
-import ClassFieldTheory.LocalCFT.Teichmuller
-import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
-import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
+public import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
+public import ClassFieldTheory.LocalCFT.Teichmuller
+public import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
+public import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-! # Unramified extension of local field of a given degree
 
@@ -17,7 +19,7 @@ then there is a unique (up to in general non-unique isomorphism) unramified exte
 degree `n`.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 namespace IsNonarchimedeanLocalField
 

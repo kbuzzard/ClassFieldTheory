@@ -1,5 +1,9 @@
-import ClassFieldTheory.Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Group.Basic
+
+public section
 
 instance (M σ : Type*) [Neg M] [TopologicalSpace M] [ContinuousNeg M]
     [SetLike σ M] [NegMemClass σ M] (s : σ) : ContinuousNeg s :=

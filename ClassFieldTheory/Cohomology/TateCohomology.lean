@@ -1,8 +1,14 @@
-import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
-import Mathlib.Algebra.Homology.Embedding.Connect
+module
+
+public import ClassFieldTheory.Cohomology.Functors.Restriction
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import
+  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public
+  import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+public import Mathlib.Algebra.Homology.Embedding.Connect
+
+@[expose] public noncomputable section
 
 open
   CategoryTheory
@@ -15,8 +21,6 @@ open
 universe u v w
 
 variable {R G H : Type u} [CommRing R] [Group G] [Fintype G] [Group H] [Fintype H]
-
-noncomputable section
 
 namespace groupCohomology
 
@@ -263,12 +267,12 @@ variable (M : Rep R G)
 namespace zeroIso
 
 /-- The concrete short complex computing `0`-th Tate cohomology. -/
-@[simps] private def sc : ShortComplex (ModuleCat R) :=
+@[simps] def sc : ShortComplex (ModuleCat R) :=
   .mk M.norm.hom (d₀₁ M) (norm_comp_d_eq_zero M)
 
 /-- The isomorphism between the concrete short complex computing `0`-th Tate cohomology
   and the corresponding parts of the Tate complex. -/
-@[simps!] private def isoShortComplexH0 :
+@[simps!] def isoShortComplexH0 :
     (tateComplex M).sc 0 ≅ sc M :=
   (tateComplex M).isoSc' (-1) 0 1 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (by exact chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
@@ -296,11 +300,11 @@ namespace negOneIso
 variable (M : Rep R G)
 
 /-- The concrete short complex computing `-1`-st Tate cohomology. -/
-@[simps] private def sc : ShortComplex (ModuleCat R) := .mk (d₁₀ M) M.norm.hom (comp_eq_zero M)
+@[simps] def sc : ShortComplex (ModuleCat R) := .mk (d₁₀ M) M.norm.hom (comp_eq_zero M)
 
 /-- The isomorphism between the concrete short complex computing `-1`-st Tate cohomology
 and the corresponding parts of the Tate complex. -/
-@[simps!] private def isoShortComplexHneg1 :
+@[simps!] def isoShortComplexHneg1 :
     (tateComplex M).sc (-1) ≅ sc M :=
   (tateComplex M).isoSc' (-2) (-1) 0 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (chainsIso₁ M) (chainsIso₀ M) (cochainsIso₀ M)

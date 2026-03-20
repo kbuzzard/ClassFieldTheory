@@ -1,4 +1,8 @@
-import Mathlib.Data.Finsupp.Single
+module
+
+public import Mathlib.Data.Finsupp.Single
+
+public section
 
 namespace Finsupp
 variable {α M : Type*} [Zero M]

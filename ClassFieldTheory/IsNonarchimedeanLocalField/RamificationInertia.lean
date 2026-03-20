@@ -3,14 +3,18 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
-import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 
 /-! # Basic facts about e and f and unramified
 
 todo: totally ramified
 -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 variable (K L L₁ L₂ F : Type*)

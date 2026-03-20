@@ -1,5 +1,7 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # Herbrand quotient of short exact sequences of representations
@@ -9,7 +11,7 @@ This file shows that the Herbrand quotient is multiplicative, in the sense that 
 of `B` is the product of the Herbrand quotients of `A` and `C`.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 variable {R G : Type} [CommRing R] [Group G] [Finite G] [IsCyclic G]
 

@@ -1,7 +1,9 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
-import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.RepresentationTheory.Coinvariants
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
+public import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # Explicit description of the `0`-th and `-1`-st Tate cohomology groups for finite cyclic groups
@@ -10,7 +12,7 @@ In this file, we provide an explicit description of the `0`-th and `-1`-st Tate 
 of a representation of a finite cyclic group in terms of its norm map.
 -/
 
-noncomputable section
+public noncomputable section
 
 open IsCyclic LinearMap groupCohomology
 

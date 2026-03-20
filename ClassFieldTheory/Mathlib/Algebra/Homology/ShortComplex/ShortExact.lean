@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+
+public section
 
 namespace CategoryTheory.ShortComplex
 open Limits

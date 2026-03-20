@@ -1,12 +1,14 @@
-import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+module
+
+public import ClassFieldTheory.Cohomology.Functors.Restriction
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
 
 /-!
 # Helper lemmas about the left regular representation
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open
   Finsupp

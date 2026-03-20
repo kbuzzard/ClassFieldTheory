@@ -1,8 +1,12 @@
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.Valued.ValuativeRel
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+public section
 
 /-!
 # Main theorems

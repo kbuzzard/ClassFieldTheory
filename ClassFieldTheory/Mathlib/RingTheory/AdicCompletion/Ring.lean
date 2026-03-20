@@ -3,13 +3,17 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
+module
+
+public import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-! # Duplication of API for IsAdicComplete
 
 Specialised to the situation `IsAdicComplete I R`.
 
 -/
+
+public section
 
 open Ideal Quotient
 

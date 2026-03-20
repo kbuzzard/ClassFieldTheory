@@ -1,4 +1,8 @@
-import Mathlib.Topology.Algebra.Monoid
+module
+
+public import Mathlib.Topology.Algebra.Monoid
+
+public section
 
 instance (M σ : Type*) [Add M] [TopologicalSpace M] [ContinuousAdd M]
     [SetLike σ M] [AddMemClass σ M] (s : σ) : ContinuousAdd s :=
