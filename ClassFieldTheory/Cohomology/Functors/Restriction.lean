@@ -3,10 +3,11 @@ module
 public import
   ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
-public import Mathlib.Algebra.Homology.HomologySequenceLemmas
-public import Mathlib.RepresentationTheory.Coinduced
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-public import Mathlib.RepresentationTheory.Induced
+-- public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+-- public import Mathlib.RepresentationTheory.Coinduced
+-- public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+-- public import Mathlib.RepresentationTheory.Induced
+public import Mathlib
 
 /-!
 TODO : Although we made `Rep.res` a `def` there is still places we need to unfold the definition
@@ -27,17 +28,17 @@ open
   groupCohomology
   BigOperators
 
-universe u
-variable {R G H : Type u} [CommRing R] [Group G] [Group H] {M : Rep R G}
+universe t w w' u v0 v1 v2
+variable {R : Type u} {G : Type v0} {H : Type v1} {K : Type v2} [CommRing R]
 
 noncomputable section
 
 namespace Rep
 
-/--
-The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
--/
-def res (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) f
+-- /--
+-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
+-- -/
+-- def res (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) f
 
 /--
 If `M` is an object of `Rep R G` and `φ : H →* G` then `M ↓ φ` is the restriction of the
@@ -46,74 +47,110 @@ representation `M` to `H`, as an object of `Rep R H`.
 This is notation for `(Rep.res H).obj M`, which is an abbreviation of
 `(Action.res (ModuleCat R) H.subtype).obj M`
 -/
-notation3:60 M:60 " ↓ " f:61 => (res f).obj M
+notation3:60 M:60 " ↓ " f:61 => res f M
 
-variable (f : H →* G)
+-- lemma res_obj_ρ' : (M ↓ f).ρ = M.ρ.comp f := rfl
 
-lemma res_obj_ρ' : (M ↓ f).ρ = M.ρ.comp f := rfl
+-- lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
 
-lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
+-- lemma res_obj_V : (M ↓ f).V = M.V := rfl
 
-lemma res_obj_V : (M ↓ f).V = M.V := rfl
-
-@[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N) : ((res f).map p).hom = p.hom := rfl
+-- @[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N) : ((res f).map p).hom = p.hom := rfl
 
 section
 
-local notation3:max "res% " R':max f:max => res (R := R') f
+-- local notation3:max "res% " R':max f:max => res (R := R') f
 
-instance : (res% R f).Faithful :=
-  inferInstanceAs (Action.res _ _).Faithful
+-- instance : (res% R f).Faithful :=
+--   inferInstanceAs (Action.res _ _).Faithful
 
-theorem full_res (hf : (⇑f).Surjective) : (res% R f).Full :=
-  Action.full_res _ _ hf
+-- theorem full_res (hf : (⇑f).Surjective) : (res% R f).Full :=
+--   Action.full_res _ _ hf
 
-instance : (res% R f).Additive :=
-  inferInstanceAs <| (Action.res _ _).Additive
+-- instance : (res% R f).Additive :=
+--   inferInstanceAs <| (Action.res _ _).Additive
 
-instance : (res% R f).Linear R :=
-  inferInstanceAs <| (Action.res _ _).Linear R
+-- instance : (res% R f).Linear R :=
+--   inferInstanceAs <| (Action.res _ _).Linear R
 
-variable (R) in
-@[simps! unit_app_hom_hom counit_app_hom_hom]
-noncomputable def indResAdjunction' : indFunctor R f ⊣ res% R f :=
-  indResAdjunction ..
+-- variable (R) in
+-- @[simps! unit_app_hom_hom counit_app_hom_hom]
+-- noncomputable def indResAdjunction' : indFunctor R f ⊣ res% R f :=
+--   indResAdjunction ..
 
-variable (R) in
-@[simps! counit_app_hom_hom unit_app_hom_hom]
-noncomputable abbrev resCoindAdjunction' : res% R f ⊣ coindFunctor R f :=
-  resCoindAdjunction ..
+-- variable (R) in
+-- @[simps! counit_app_hom_hom unit_app_hom_hom]
+-- noncomputable abbrev resCoindAdjunction' : res% R f ⊣ coindFunctor R f :=
+--   resCoindAdjunction ..
 
-instance : (res% R f).IsRightAdjoint :=
-  (indResAdjunction' R f).isRightAdjoint
+-- instance : (res% R f).IsRightAdjoint :=
+--   (indResAdjunction' R f).isRightAdjoint
 
-instance : (res% R f).IsLeftAdjoint :=
-  (resCoindAdjunction' R f).isLeftAdjoint
+-- instance : (res% R f).IsLeftAdjoint :=
+--   (resCoindAdjunction' R f).isLeftAdjoint
+#check Rep.instIsLeftAdjointResFunctor
 
-instance (H : Subgroup G) : (res% R H.subtype).PreservesProjectiveObjects :=
-  inferInstanceAs (Action.res _ _).PreservesProjectiveObjects
+#check CategoryTheory.Functor.IsRightAdjoint
+variable [Monoid G] [Monoid H] (f : H →* G)
+#check Rep.instIsRightAdjointResFunctor (k := R) f
+-- #synth (resFunctor (k := R) f).PreservesMonomorphisms
+-- #synth (coindFunctor R f).PreservesEpimorphisms
+-- instance :
+--     (resFunctor (k := R) f).PreservesProjectiveObjects  :=
+--   (resFunctor f).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
+--     (resCoindAdjunction R f)
+-- #synth (Action.res (ModuleCat R) f).PreservesProjectiveObjects
+-- instance : (resFunctor (k := R) f).PreservesEpimorphisms where
+--   preserves {X Y} φ := by simp [Rep.epi_iff_surjective]
+
+  --   sorry
 
 end
-
-variable (R) in
-def resEquiv (f : H ≃* G) : Rep R G ≌ Rep R H := Action.resEquiv _ f
 
 section
-variable (f : H ≃* G)
 
-@[simp] lemma resEquiv_functor : (resEquiv R f).functor = res f := rfl
-@[simp] lemma resEquiv_inverse : (resEquiv R f).inverse = res f.symm := rfl
+variable [Monoid G] [Monoid H] [Monoid K]
+
+abbrev resComp (f : H →* G) (g : K →* H) :
+    resFunctor (f.comp g) ≅ resFunctor (k := R) f ⋙ resFunctor g :=
+  NatIso.ofComponents (fun A ↦ mkIso (.mk (LinearEquiv.refl _ _) <| fun _ ↦ by simp))
+
+abbrev resCongr {f1 f2 : H →* G} (h : f1 = f2) :
+    resFunctor.{w} (k := R) f1 ≅ resFunctor f2 :=
+  NatIso.ofComponents (fun A ↦ mkIso (.mk (LinearEquiv.refl _ _) <| fun _ ↦ by simp [h]))
+
+set_option backward.isDefEq.respectTransparency false in
+variable (R) in
+def resEquiv (f : H ≃* G) : Rep.{w} R G ≌ Rep.{w} R H where
+  functor := resFunctor f.toMonoidHom
+  inverse := resFunctor f.symm.toMonoidHom
+  unitIso := resCongr f.coe_monoidHom_comp_coe_monoidHom_symm.symm ≪≫ resComp _ _
+  counitIso := (resComp _ _).symm ≪≫ resCongr f.coe_monoidHom_symm_comp_coe_monoidHom
+
+@[simp] lemma resEquiv_functor (f : H ≃* G) :
+    (resEquiv R f).functor = resFunctor f := rfl
+@[simp] lemma resEquiv_inverse (f : H ≃* G) :
+    (resEquiv R f).inverse = resFunctor f.symm := rfl
 
 end
 
+#check Functor.PreservesMonomorphisms
+variable [Group G] [Group H] (φ : H →* G)
+#synth (resFunctor (k := R) φ).PreservesHomology
+-- set_option pp.universes true in
 /--
 The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
 preserves and reflects exactness.
 -/
-lemma res_map_ShortComplex_Exact (H : Type u) [Group H] (φ : H →* G) (S : ShortComplex (Rep R G)) :
-    (S.map (res φ)).Exact ↔ S.Exact := by
+lemma res_map_ShortComplex_Exact (φ : H →* G) (S : ShortComplex (Rep.{max t w} R G)) :
+    (S.map (resFunctor.{max t w} φ)).Exact ↔ S.Exact := by
+  -- have := Rep.instIsRightAdjointResFunctor.{max t w} (k := R) φ
+  -- have := Rep.instIsLeftAdjointResFunctor.{max t w} (k := R) φ
   rw [ShortComplex.exact_map_iff_of_faithful]
-
+  -- rw [@ShortComplex.exact_map_iff_of_faithful.{max t w} (Rep.{max t w} R G) (Rep.{max t w} R H) _ _ _ _ S _
+  --   (resFunctor φ) _ _ _ _]
+  sorry
+#exit
 /--
 An object of `Rep R G` is zero iff the underlying `R`-module is zero.
 -/

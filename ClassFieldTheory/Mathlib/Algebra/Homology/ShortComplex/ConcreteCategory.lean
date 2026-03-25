@@ -4,6 +4,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 
 public section
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CategoryTheory.ShortComplex.cocyclesMk_surjective {C : Type*} [Category C]
     {FC : C → C → Type*} {CC : C → Type*} [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory C FC] [HasForget₂ C Ab] [Preadditive C] [(forget₂ C Ab).Additive]
