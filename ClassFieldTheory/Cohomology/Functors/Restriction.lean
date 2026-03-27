@@ -3,10 +3,9 @@ module
 public import
   ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
--- public import Mathlib.Algebra.Homology.HomologySequenceLemmas
--- public import Mathlib.RepresentationTheory.Coinduced
--- public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
--- public import Mathlib.RepresentationTheory.Induced
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+
 public import Mathlib
 
 /-!
@@ -86,28 +85,9 @@ section
 -- instance : (res% R f).IsRightAdjoint :=
 --   (indResAdjunction' R f).isRightAdjoint
 
--- instance : (res% R f).IsLeftAdjoint :=
---   (resCoindAdjunction' R f).isLeftAdjoint
-#check Rep.instIsLeftAdjointResFunctor
-
-#check CategoryTheory.Functor.IsRightAdjoint
-variable [Monoid G] [Monoid H] (f : H →* G)
-#check Rep.instIsRightAdjointResFunctor (k := R) f
--- #synth (resFunctor (k := R) f).PreservesMonomorphisms
--- #synth (coindFunctor R f).PreservesEpimorphisms
--- instance :
---     (resFunctor (k := R) f).PreservesProjectiveObjects  :=
---   (resFunctor f).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
---     (resCoindAdjunction R f)
--- #synth (Action.res (ModuleCat R) f).PreservesProjectiveObjects
--- instance : (resFunctor (k := R) f).PreservesEpimorphisms where
---   preserves {X Y} φ := by simp [Rep.epi_iff_surjective]
-
-  --   sorry
-
 end
 
-section
+section monoid
 
 variable [Monoid G] [Monoid H] [Monoid K]
 
@@ -132,31 +112,48 @@ def resEquiv (f : H ≃* G) : Rep.{w} R G ≌ Rep.{w} R H where
 @[simp] lemma resEquiv_inverse (f : H ≃* G) :
     (resEquiv R f).inverse = resFunctor f.symm := rfl
 
-end
+variable (φ : H →* G)
 
-#check Functor.PreservesMonomorphisms
-variable [Group G] [Group H] (φ : H →* G)
-#synth (resFunctor (k := R) φ).PreservesHomology
--- set_option pp.universes true in
+instance : Limits.HasLimits (Rep.{w} R G) :=
+  Adjunction.has_limits_of_equivalence toModuleMonoidAlgebra
+
+instance : Limits.HasColimits (Rep.{w} R G) :=
+  Adjunction.has_colimits_of_equivalence toModuleMonoidAlgebra
+
+instance : Limits.ReflectsLimitsOfSize.{w, w} (forget₂ (Rep.{w} R G) (ModuleCat R)) :=
+  Limits.reflectsLimits_of_reflectsIsomorphisms
+
+instance : Limits.PreservesLimits (resFunctor.{w} (k := R) φ) :=
+  have : PreservesLimitsOfSize.{w, w} (resFunctor φ ⋙ forget₂ (Rep.{w} R H) (ModuleCat R)) :=
+    inferInstanceAs (PreservesLimitsOfSize.{w, w} (forget₂ (Rep.{w} R G) (ModuleCat R)))
+  preservesLimits_of_reflects_of_preserves _ (forget₂ (Rep.{w} R H) (ModuleCat R))
+
+instance : Limits.ReflectsColimitsOfSize.{w, w} (forget₂ (Rep.{w} R H) (ModuleCat R)) :=
+  reflectsColimits_of_reflectsIsomorphisms
+
+instance : Limits.PreservesColimits (resFunctor.{w} (k := R) φ) :=
+  have : PreservesColimitsOfSize.{w, w} (resFunctor (k := R) φ ⋙
+      forget₂ (Rep.{w} R H) (ModuleCat R)) :=
+    inferInstanceAs (PreservesColimitsOfSize.{w, w} (forget₂ (Rep.{w} R G) (ModuleCat R)))
+  preservesColimits_of_reflects_of_preserves _ (forget₂ (Rep.{w} R H) (ModuleCat R))
+
 /--
 The instances above show that the restriction functor `res φ : Rep R G ⥤ Rep R H`
 preserves and reflects exactness.
+TODO : generalize the universe
 -/
-lemma res_map_ShortComplex_Exact (φ : H →* G) (S : ShortComplex (Rep.{max t w} R G)) :
-    (S.map (resFunctor.{max t w} φ)).Exact ↔ S.Exact := by
-  -- have := Rep.instIsRightAdjointResFunctor.{max t w} (k := R) φ
-  -- have := Rep.instIsLeftAdjointResFunctor.{max t w} (k := R) φ
+lemma res_map_ShortComplex_Exact (φ : H →* G)
+    (S : ShortComplex (Rep.{u} R G)) [Small.{u} R] :
+    (S.map (resFunctor φ)).Exact ↔ S.Exact := by
   rw [ShortComplex.exact_map_iff_of_faithful]
-  -- rw [@ShortComplex.exact_map_iff_of_faithful.{max t w} (Rep.{max t w} R G) (Rep.{max t w} R H) _ _ _ _ S _
-  --   (resFunctor φ) _ _ _ _]
-  sorry
-#exit
+
 /--
 An object of `Rep R G` is zero iff the underlying `R`-module is zero.
 -/
-lemma isZero_iff (M : Rep R G) : IsZero M ↔ IsZero (M.V) := by
-  simp only [IsZero.iff_id_eq_zero]
-  apply Action.hom_ext_iff
+lemma isZero_iff (M : Rep R G) : IsZero M ↔ Subsingleton M.V := by
+  simp [IsZero.iff_id_eq_zero, Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff,
+    ← ModuleCat.isZero_of_iff_subsingleton (R := R), ModuleCat.hom_ext_iff]
+
 
 /--
 An object of `Rep R G` is zero iff its restriction to `H` is zero.
@@ -169,8 +166,8 @@ lemma isZero_res_iff (M : Rep R G) {H : Type u} [Group H] (φ : H →* G) :
 The restriction functor `res φ : Rep R G ⥤ Rep R H` takes short exact sequences to short
 exact sequences.
 -/
-@[simp] lemma shortExact_res {H : Type u} [Group H] (φ : H →* G) {S : ShortComplex (Rep R G)} :
-    (S.map (Rep.res φ)).ShortExact ↔ S.ShortExact := by
+@[simp] lemma shortExact_res (φ : H →* G) {S : ShortComplex (Rep.{u} R G)} :
+    (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
   constructor
   · intro h
     have h₁ := h.1
@@ -178,40 +175,40 @@ exact sequences.
     have h₃ := h.3
     rw [ShortComplex.exact_map_iff_of_faithful] at h₁
     simp only [ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_f,
-      Functor.mono_map_iff_mono, ShortComplex.map_X₃, ShortComplex.map_g,
-      Functor.epi_map_iff_epi] at h₂ h₃
-    exact {
-      exact := h₁
-      mono_f := h₂
-      epi_g := h₃
-    }
-  · intro h
-    have h₁ := h.1
-    have h₂ := h.2
-    have h₃ := h.3
+      Representation.IntertwiningMap.coe_eq_toLinearMap, mono_iff_injective, hom_ofHom,
+      Representation.IntertwiningMap.coe_mk, Representation.IntertwiningMap.coe_toLinearMap,
+      ShortComplex.map_X₃, ShortComplex.map_g, epi_iff_surjective] at h₂ h₃
+    exact {exact := h₁, mono_f := mono_iff_injective _|>.2 h₂, epi_g := epi_iff_surjective _|>.2 h₃}
+  · rintro ⟨h⟩
     exact {
       exact := by rwa [ShortComplex.exact_map_iff_of_faithful]
-      mono_f := by simpa using h₂
-      epi_g := by simpa using h₃
+      mono_f := by simp_all [mono_iff_injective]
+      epi_g := by simp_all [epi_iff_surjective]
     }
+end monoid
 
-@[simp] lemma norm_hom_res [Fintype G] [Fintype H] (M : Rep R G) (e : H ≃* G) :
-    (M ↓ e.toMonoidHom).norm.hom = M.norm.hom := by
+section
+
+set_option linter.unusedFintypeInType false
+
+@[simp] lemma norm_hom_res [Group G] [Group H] [Fintype G] [Fintype H] (M : Rep.{w} R G)
+    (e : H ≃* G) : (res e.toMonoidHom M).norm.hom.toLinearMap = M.norm.hom.toLinearMap := by
   ext
-  simp [res_obj_V, Representation.norm, res_obj_ρ',← e.toEquiv.sum_comp]
+  simp [res_obj_V, norm, Representation.norm, res_obj_ρ, ← e.toEquiv.sum_comp]
+
+end
 
 end Rep
 
 namespace groupCohomology
 
-variable
-  {S : Type u} [Group S] (φ : S →* G)
-  {S' : Type u} [Group S'] (ψ : S' →* S)
+variable {G S S' : Type u} [Group G] [Group S] (φ : S →* G) [Group S'] (ψ : S' →* S)
+  {M : Rep.{u} R G}
 
 /--
 The restriction map `Hⁿ(G,M) ⟶ Hⁿ(H,M)`, defined as a morphism of functors
 -/
-def rest (n : ℕ) : functor R G n ⟶ Rep.res φ ⋙ functor R S n  where
+def rest (n : ℕ) : functor R G n ⟶ Rep.resFunctor φ ⋙ functor R S n  where
   app M               := map φ (𝟙 (M ↓ φ)) n
   naturality M₁ M₂ f  := by
     simp only [functor_obj, Functor.comp_obj, functor_map, Functor.comp_map]
@@ -226,13 +223,13 @@ lemma rest_id (n : ℕ) : rest (MonoidHom.id G) (R := R) n = 𝟙 (functor R G n
   rw [rest_app]
   apply map_id
 
-lemma rest_comp (n : ℕ) : rest (φ.comp ψ) n = rest φ (R := R) n ≫ (𝟙 (res φ) ◫ rest ψ n) := by
+set_option backward.isDefEq.respectTransparency false in
+lemma rest_comp (n : ℕ) : rest (φ.comp ψ) n = rest φ (R := R) n ≫ (𝟙 _ ◫ rest ψ n) := by
   ext M : 2
-  rw [rest_app]
   simp only [functor_obj, Functor.comp_obj, Functor.id_hcomp, NatTrans.comp_app,
       Functor.whiskerLeft_app, rest_app]
-  rw [←map_comp]
-  rfl
+  rw [← map_comp]
+  exact map_congr rfl rfl n
 
 
 /--
@@ -255,30 +252,31 @@ lemma rest_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
     δ hS i j hij ≫ (rest φ j).app S.X₁ = (rest φ i).app S.X₃ ≫ δ ((shortExact_res φ).2 hS) i j hij
     := by
   let C₁ := S.map (cochainsFunctor R G)
-  let C₂ := (S.map (res φ)).map (cochainsFunctor R H)
+  let C₂ := (S.map (resFunctor φ)).map (cochainsFunctor R H)
   have ses₁ : C₁.ShortExact := map_cochainsFunctor_shortExact hS
   have ses₂ : C₂.ShortExact := by
     apply map_cochainsFunctor_shortExact
     rwa [shortExact_res]
   let this : C₁ ⟶ C₂ := {
-    τ₁ := cochainsMap φ (𝟙 ((res φ).obj S.X₁))
-    τ₂ := cochainsMap φ (𝟙 ((res φ).obj S.X₂))
-    τ₃ := cochainsMap φ (𝟙 ((res φ).obj S.X₃))
+    τ₁ := cochainsMap φ (𝟙 (res φ S.X₁))
+    τ₂ := cochainsMap φ (𝟙 (res φ S.X₂))
+    τ₃ := cochainsMap φ (𝟙 (res φ S.X₃))
   }
   exact HomologicalComplex.HomologySequence.δ_naturality this ses₁ ses₂ i j hij
 
-noncomputable def resSubtypeRangeIso (M : Rep R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ)
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def resSubtypeRangeIso (M : Rep.{u} R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ)
     (hf : Function.Injective f) :
     groupCohomology (M ↓ f.range.subtype) n ≅ groupCohomology (M ↓ f) n where
-  hom := groupCohomology.map f.rangeRestrict (𝟙 (M ↓ f)) _
+  hom := groupCohomology.map f.rangeRestrict (Rep.ofHom ⟨LinearMap.id, by simp⟩) _
   inv := groupCohomology.map (MonoidHom.ofInjective hf).symm.toMonoidHom
-    ⟨by dsimp; exact 𝟙 M.V, by simp [res]⟩ _
+      (Rep.ofHom ⟨LinearMap.id, by simp⟩) _
   hom_inv_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    exact groupCohomology.map_congr (by ext; simp) (by simp [res]) n
+    exact groupCohomology.map_congr (by ext; simp) (by simp) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    refine groupCohomology.map_congr (MonoidHom.ext fun x ↦ ?_) (by simp [res]) n
+    refine groupCohomology.map_congr (MonoidHom.ext fun x ↦ ?_) (by simp) n
     rw [MonoidHom.comp_apply]
     exact (MonoidHom.ofInjective hf).symm_apply_apply _
 
@@ -286,17 +284,22 @@ end groupCohomology
 
 namespace groupHomology
 
+variable {G S S' : Type u} [Group G] [Group S] (φ : S →* G) [Group S'] (ψ : S' →* S)
+  {M : Rep.{u} R G}
+
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def resSubtypeRangeIso (M : Rep R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ)
     (hf : Function.Injective f) :
     groupHomology (M ↓ f.range.subtype) n ≅ groupHomology (M ↓ f) n where
-  hom := groupHomology.map (MonoidHom.ofInjective hf).symm.toMonoidHom ⟨𝟙 M.V, by simp [res]⟩ _
-  inv := groupHomology.map f.rangeRestrict ⟨𝟙 M.V, by simp [res]⟩ _
+  hom := groupHomology.map (MonoidHom.ofInjective hf).symm.toMonoidHom
+      (Rep.ofHom ⟨LinearMap.id (M := M.V), by simp⟩) _
+  inv := groupHomology.map f.rangeRestrict (Rep.ofHom ⟨.id (M := M.V), by simp⟩) _
   hom_inv_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    exact groupHomology.map_congr (by ext; simp) (by simp [res]) n
+    exact groupHomology.map_congr (by ext; simp) (by simp) n
   inv_hom_id := by
     rw [← groupHomology.map_comp, ← groupHomology.map_id]
-    refine groupHomology.map_congr (MonoidHom.ext fun x ↦ ?_) (by simp [res]) n
+    refine groupHomology.map_congr (MonoidHom.ext fun x ↦ ?_) (by simp) n
     rw [MonoidHom.comp_apply]
     exact (MonoidHom.ofInjective hf).symm_apply_apply _
 

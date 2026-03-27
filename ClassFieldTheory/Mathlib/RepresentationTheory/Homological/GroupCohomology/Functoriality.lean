@@ -20,6 +20,16 @@ lemma cochainsMap_congr (hfg : f = g) (hφψ : φ.hom.toLinearMap = ψ.hom.toLin
     cochainsMap f φ = cochainsMap g ψ := by
   subst hfg; congr; ext; simp [hφψ]
 
+@[simp]
+lemma _root_.Representation.IntertwiningMap.coe_eq_toLinearMap {A G V W : Type*} [Semiring A]
+    [Monoid G] [AddCommMonoid V] [AddCommMonoid W] [Module A V] [Module A W]
+    (ρ : Representation A G V) (σ : Representation A G W) (f : ρ.IntertwiningMap σ) :
+    SemilinearMapClass.semilinearMap f = f.toLinearMap := rfl
+
+@[simp]
+lemma res_id : res (MonoidHom.id G) M = M := rfl
+
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def mapIso (e : G ≃* H) (e' : M.V ≃ₗ[R] N.V) (he : ∀ g, e' ∘ₗ M.ρ g = N.ρ (e g) ∘ₗ e') (n : ℕ) :
     groupCohomology M n ≅ groupCohomology N n where
@@ -32,10 +42,7 @@ def mapIso (e : G ≃* H) (e' : M.V ≃ₗ[R] N.V) (he : ∀ g, e' ∘ₗ M.ρ g
       simp [LinearMap.comp_assoc, ← he g]⟩) n
   hom_inv_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
-    exact map_congr (by simp) e'.symm_comp n
-    -- simp only [res_obj_ρ, hom_ofHom, Rep.hom_comp,
-    --    Representation.IntertwiningMap.comp_toLinearMap]
-    -- exact LinearEquiv.symm_comp e'
+    refine map_congr (by simp) (by simp) n
   inv_hom_id := by
     rw [← groupCohomology.map_comp, ← groupCohomology.map_id]
     exact groupCohomology.map_congr (by simp) e'.comp_symm n

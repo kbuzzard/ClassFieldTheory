@@ -68,9 +68,11 @@ lemma quotientToInvariantsFunctor'_obj_ρ (M : Rep R G) :
     (QuotientGroup.quotientKerEquivOfSurjective φ hφ).symm (φ x) = x :=
   MulEquiv.symm_apply_eq _ |>.mpr rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotientToInvariantsFunctor'_obj_ρ_apply (M : Rep R G) (g : G) :
     (M ↑ surj).ρ (φ g) = (M.quotientToInvariants φ.ker).ρ g := by
-  simp [quotientToInvariantsFunctor'_obj_V, quotientToInvariantsFunctor'_obj_ρ]
+  simp [quotientToInvariantsFunctor'_obj_V, quotientToInvariantsFunctor'_obj_ρ,
+    quotientToInvariantsFunctor]
 
 @[simp] lemma quotientToInvariantsFunctor'_obj_ρ_apply₂ (M : Rep R G) (g : G)
     (v : (quotientToInvariantsFunctor' surj).obj M) :
@@ -82,9 +84,9 @@ instance : (quotientToInvariantsFunctor' (R := R) surj).PreservesZeroMorphisms w
   map_zero _ _ := rfl
 
 @[simps!] noncomputable def res_quotientToInvariantsFunctor'_ι (M : Rep R G) :
-    ((M ↑ surj) ↓ φ) ⟶ M where
-  hom := ModuleCat.ofHom (Submodule.subtype _)
-  comm g := by ext; exact quotientToInvariantsFunctor'_obj_ρ_apply₂ surj ..
+    ((M ↑ surj) ↓ φ) ⟶ M :=
+  ofHom ⟨Submodule.subtype _, fun g ↦ by
+    ext; exact quotientToInvariantsFunctor'_obj_ρ_apply₂ surj ..⟩
 
 end Rep
 namespace groupCohomology

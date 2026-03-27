@@ -3,9 +3,7 @@ module
 public import ClassFieldTheory.Cohomology.Functors.Inflation
 public import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
-public import Mathlib.Data.Finsupp.Notation
-public import Mathlib.FieldTheory.Galois.NormalBasis
-public import Mathlib.RepresentationTheory.FiniteIndex
+public import Mathlib
 
 /-!
 Let `G` be a group. We define two functors:
@@ -67,34 +65,41 @@ open
   Limits
   groupCohomology
 
-variable (R G : Type) [CommRing R] [Group G]
+universe t w w' u u' v v'
+
+-- variable (R : Type u) (G : Type v) [CommRing R] [Monoid G]
 
 namespace Representation
 
-variable (V W : Type) [AddCommGroup V] [Module R V] [AddCommGroup W] [Module R W]
+variable (R G V W : Type*) 
 
-abbrev coind₁V := coindV (⊥ : Subgroup G).subtype (trivial R _ V)
+section meaninglessgeneral 
+
+variable [Semiring R] [Monoid G] [AddCommGroup V] [Module R V]
+  [AddCommGroup W] [Module R W]
+
+abbrev coind₁V := coindV (⊥ : Submonoid G).subtype (trivial R _ V)
 
 instance : FunLike (coind₁V R G V) G V where
   coe f := f.val
   coe_injective' := Subtype.val_injective
 
 instance : Coe (G → V) (coind₁V R G V) where
-  coe f := ⟨f,by
-    intro ⟨g, hg⟩ x
-    rw [Subgroup.mem_bot] at hg
-    simp [hg]
-  ⟩
+  coe f := ⟨f, fun ⟨g, hg⟩ x ↦ by simp [Submonoid.mem_bot.1 hg]⟩
 
 /--
 The representation of `G` on the space `G → V` by right-translation on `G`.
 (`V` is an `R`-module with no action of `G`).
 -/
-abbrev coind₁ := coind (⊥ : Subgroup G).subtype (trivial R _ V)
+abbrev coind₁ := coind (⊥ : Submonoid G).subtype (trivial R _ V)
 
 @[simp] lemma coind₁_apply₃ (f : coind₁V R G V) (g x : G) : coind₁ R G V g f x = f (x * g) := rfl
 
-abbrev Ind₁V := IndV (⊥ : Subgroup G).subtype (trivial R _ V)
+end meaninglessgeneral 
+
+variable [CommRing R] [Group G] [AddCommGroup V] [Module R V] 
+abbrev Ind₁V := IndV (⊥ : Subgroup G).subtype (.trivial R _ V)
+
 abbrev Ind₁V.mk := IndV.mk (⊥ : Subgroup G).subtype (trivial R _ V)
 /--
 The induced representation of a group `G` on `G →₀ V`, where the action of `G` is by
@@ -269,6 +274,7 @@ def ind₁'_invlmap : Ind₁V R G V →ₗ[R] (G →₀ V) :=
     simpa [Coinvariants.ker, sub_eq_zero]
      using fun a ↦ by exact LinearMap.congr_fun TensorProduct.map_id a)).toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The linear automorphism of `G →₀ V`, which gives an isomorphism
 between `ind₁' ρ` and `ind₁ R G V`.
@@ -363,7 +369,7 @@ lemma ind₁'_lequiv_coind₁'_comm' [Finite G] (g : G) :
   rw [ind₁'_lequiv_coind₁'_comm, LinearMap.comp_apply, LinearEquiv.coe_coe,
     LinearEquiv.apply_symm_apply]
 
-lemma coind₁'_ι_app_injective : Function.Injective (@coind₁'_ι R G _ V _ _) := by
+lemma coind₁'_ι_app_injective : Function.Injective (@coind₁'_ι R G V _ _ _) := by
   intro _ _ h
   change Function.const _ _ = Function.const _ _ at h
   simpa using h
@@ -372,14 +378,15 @@ end Representation
 
 namespace Rep
 
-variable {R} (M : Rep R G) (A : ModuleCat R)
+variable {R : Type u} {G : Type v} {Q : Type v'} [CommRing R] [Group G] [Group Q]
+variable (M : Rep.{w} R G) (A : ModuleCat R)
 
+variable (G) in
 abbrev coind₁ : ModuleCat R ⥤ Rep R G :=
   trivialFunctor R (⊥ : Subgroup G) ⋙ coindFunctor R (⊥ : Subgroup G).subtype
 
-variable {G}
-
-def coind₁_quotientToInvariants_iso_aux1 {Q : Type} [Group Q] (φ : G →* Q) :
+set_option backward.isDefEq.respectTransparency false in
+def coind₁_quotientToInvariants_iso_aux1 (φ : G →* Q) :
     invariants (((coind₁ G).obj A).ρ.comp φ.ker.subtype) ≃ₗ[R]
       coindV (⊥ : Subgroup (G ⧸ φ.ker)).subtype (trivial R (⊥ : Subgroup (G ⧸ φ.ker)) A).ρ where
   toFun x := ⟨Quotient.lift x.1.1 (fun a b hab ↦ by
@@ -395,16 +402,17 @@ def coind₁_quotientToInvariants_iso_aux1 {Q : Type} [Group Q] (φ : G →* Q) 
     simp
   invFun x := ⟨⟨x.1.comp QuotientGroup.mk, by simp [coindV, trivialFunctor]⟩, fun a ↦ by
     simpa [← Subtype.val_inj] using funext (by simp)⟩
-  left_inv := by simpa [Function.LeftInverse] using fun _ _ _ ↦ funext (by simp)
+  left_inv := fun ⟨⟨f, hf1⟩, hf2⟩ ↦ by simpa using Quotient.lift_comp_mk f _
   right_inv := by
     simp only [Function.RightInverse, Function.LeftInverse, trivialFunctor_obj_V,
-      Functor.comp_obj, coindFunctor_obj, of_ρ, Subtype.forall, Subtype.mk.injEq]
+      Functor.comp_obj, coindFunctor_obj, Subtype.forall, Subtype.mk.injEq]
     intro _ _
     ext x
     induction x using QuotientGroup.induction_on
     simp
 
-def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) :
+set_option backward.isDefEq.respectTransparency false in
+def coind₁_quotientToInvariants_iso_aux2 {H : Type v'} [Group H] (φ : G ≃* H) :
     (coindV (⊥ : Subgroup G).subtype
     ((trivialFunctor R (⊥ : Subgroup G)).obj A).ρ) ≃ₗ[R]
     ↥(coindV (⊥ : Subgroup H).subtype ((trivialFunctor R (⊥ : Subgroup H)).obj A).ρ) where
@@ -418,7 +426,7 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type} [Group H] (φ : G ≃* H) 
     simpa [Function.RightInverse, Function.LeftInverse] using
       fun a ha ↦ by simp [Function.comp_assoc]
 
-def coind₁_quotientToInvariants_iso {Q : Type} [Group Q] {φ : G →* Q}
+def coind₁_quotientToInvariants_iso {φ : G →* Q}
     (surj : Function.Surjective φ) :
     (((coind₁ G).obj A) ↑ surj) ≅ (coind₁ Q).obj A := by
   refine mkIso _ _ ((coind₁_quotientToInvariants_iso_aux1 A φ).trans <|
