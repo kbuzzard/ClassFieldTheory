@@ -42,15 +42,16 @@ open CategoryTheory
   groupCohomology
   HomologicalComplex
 
-variable {R G : Type} [CommRing R] [Group G]
-
-variable {Q : Type} [Group Q] {φ : G →* Q} (surj : Function.Surjective φ)
+universe w u v v'
 
 namespace Rep
 
+variable {R : Type u} {G : Type v} {Q : Type v'} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
+  (surj : Function.Surjective φ)
+
 @[simps! (isSimp := false) obj_V] noncomputable def quotientToInvariantsFunctor' :
     Rep R G ⥤ Rep R Q :=
-  quotientToInvariantsFunctor R φ.ker ⋙
+  quotientToInvariantsFunctor.{w} R φ.ker ⋙
     (Rep.resEquiv R (QuotientGroup.quotientKerEquivOfSurjective _ surj)).inverse
 
 /--
@@ -89,7 +90,11 @@ instance : (quotientToInvariantsFunctor' (R := R) surj).PreservesZeroMorphisms w
     ext; exact quotientToInvariantsFunctor'_obj_ρ_apply₂ surj ..⟩
 
 end Rep
+
 namespace groupCohomology
+
+variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
+  (surj : Function.Surjective φ)
 
 noncomputable def cochain_infl :
     quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G where
