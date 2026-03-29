@@ -51,7 +51,9 @@ def prodQuotEquiv (H : Subgroup G) : H × G ⧸ H ≃ G := .ofBijective _ biject
 
 end FINDMEINMATHLIB
 
-variable {R G A : Type} [CommRing R] [Group G] {M : Rep R G} {A : ModuleCat R}
+universe u
+
+variable {R G A : Type u} [CommRing R] [Group G] {M : Rep.{u} R G} {A : ModuleCat.{u} R}
 
 namespace Rep
 
@@ -73,23 +75,23 @@ lemma resCoind₁AsPiLinearEquiv_apply (H : Subgroup G) (f : G → A) (h : H) (x
 
 def resInd₁AsFinsuppIso (H : Subgroup G) :
     ind₁AsFinsupp G A ↓ H.subtype ≅ ind₁AsFinsupp H (.of R <| G ⧸ H →₀ A) :=
-  Rep.mkIso _ _ (resInd₁AsFinsuppLinearEquiv H) fun g f ↦ by
-    ext; simp [Rep.res_obj_V, Rep.res_obj_ρ', mul_assoc]
+  Rep.mkIso <| .mk (resInd₁AsFinsuppLinearEquiv H) fun g ↦ by
+    classical
+    ext; simp [Finsupp.single_apply, mul_inv_eq_iff_eq_mul, mul_assoc]
 
 def resCoind₁AsPiIso (H : Subgroup G) :
     coind₁AsPi G A ↓ H.subtype ≅ coind₁AsPi H (.of R <| G ⧸ H → A) :=
-  Rep.mkIso _ _ (resCoind₁AsPiLinearEquiv H) fun g f ↦ by
-    ext; simp [Rep.res_obj_V, Rep.res_obj_ρ',mul_assoc]
+  Rep.mkIso <| .mk (resCoind₁AsPiLinearEquiv H) fun g ↦ by ext; simp [mul_assoc]
 
-instance trivialHomology_ind₁AsFinsupp : TrivialHomology (ind₁AsFinsupp G A) := by
+instance trivialHomology_ind₁AsFinsupp : TrivialHomology (ind₁AsFinsupp.{u, u, u} G A) := by
   classical
   -- Let `H` be a subgroup of `G`.
   refine ⟨fun H n ↦ ?_⟩
   -- The restriction to `H` of `ind₁ᴳ A` is isomorphic (after choosing coset representatives)
   -- to `ind₁^H (G ⧸ H →₀ A)`.
   -- By Shapiro's lemma, this has trivial homology.
-  exact (isZero_of_trivialHomology ..).of_iso  <| ((groupHomology.functor _ _ _).mapIso <|
-    (resInd₁AsFinsuppIso H).trans (ind₁AsFinsuppIso _)).trans (indIso ..)
+  exact isZero_of_trivialHomology.of_iso <| ((groupHomology.functor _ _ _).mapIso <|
+    (resInd₁AsFinsuppIso H) ≪≫ (ind₁AsFinsuppIso _)) ≪≫ (indIso ..)
 
 instance trivialCohomology_coind₁AsPi : TrivialCohomology (coind₁AsPi G A) := by
   classical
@@ -98,7 +100,7 @@ instance trivialCohomology_coind₁AsPi : TrivialCohomology (coind₁AsPi G A) :
   -- The restriction to `H` of `coind₁ᴳ A` is isomorphic (after choosing coset representatives)
   -- to `coind₁^H (G ⧸ H → A)`.
   -- By Shapiro's lemma, this has trivial cohomology.
-  exact (isZero_of_trivialCohomology ..).of_iso  <| ((groupCohomology.functor _ _ _).mapIso <|
+  exact isZero_of_trivialCohomology.of_iso  <| ((groupCohomology.functor _ _ _).mapIso <|
     (resCoind₁AsPiIso H).trans (coind₁AsPiIso _)).trans (groupCohomology.coindIso ..)
 
 instance trivialHomology_ind₁ (A : ModuleCat R) : TrivialHomology ((ind₁ G).obj A) :=
@@ -130,6 +132,7 @@ instance trivialHomology_coind₁' : TrivialCohomology (coind₁'.obj M) :=
 instance trivialHomology_coind₁AsPi : TrivialHomology (coind₁AsPi G A) :=
   .of_iso (coind₁AsPiIso _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `coind₁` considered as the concrete left-regular action on `G →₀ A` has trivial Tate cohomology.
 -/
 instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind₁AsPi G A) := by
@@ -147,30 +150,32 @@ instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind�
     simp [eq_mul_inv_iff_mul_eq]
   refine ⟨.of_iso ?_ <| TateCohomology.zeroIso _, .of_iso ?_ <| TateCohomology.negOneIso _⟩
   · -- First, let's prove the 0-th cohomology group is trivial.
-    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.Quotient.subsingleton_iff,
-      Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff, res_obj_ρ',
-      res_obj_V, of_ρ, Representation.mem_invariants, MonoidHom.coe_comp,
-      Function.comp_apply, LinearMap.mem_range, Representation.coind₁AsPi_apply,
-      LinearMap.coe_sum, Finset.sum_apply]
-    -- This is equivalent to...
-    change ∀ f : G → A, (∀ (h : H) x, f (x * h) = f x) → ∃ g : G → A, ∀ x, ∑ h : H, g (x * h) = f x
-    -- Assume we have such `f`.
+    simp only [res_obj_V, res_obj_ρ, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
+      Function.comp_apply, ModuleCat.isZero_of_iff_subsingleton,
+      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, SetLike.le_def,
+      Representation.mem_invariants, funext_iff, Representation.coind₁AsPi_apply, Subtype.forall,
+      LinearMap.mem_range, LinearMap.coe_sum, Finset.sum_apply]
     intro f hf
+    -- Assume we have such `f`.
     -- We claim we can take `g := ∑ y : G ⧸ H, Pi.single y.out (f y.out)`, where `out` is an
     -- arbitrary section `G ⧸ H → G`.
     refine ⟨∑ y : G ⧸ H, Pi.single y.out (f y.out), fun x ↦ ?_⟩
     -- This is true because, when evaluated at a point `x`, the sum has exactly one non-zero term,
     -- which turns out to be exactly `f x`.
-    simpa only [Finset.sum_apply, Pi.single_apply, hf, Finset.sum_comm (α := H), ← Subgroup.coe_inv]
-      using aux f x
+    rw [← aux f x]
+    conv_lhs => simp +contextual only [Finset.sum_apply, Pi.single_apply,
+      eq_comm (a := _ * _), SetLike.coe_mem, hf]
+    simp only [← Subgroup.coe_inv]
+    simp +contextual [Finset.sum_comm (α := H) (s := Finset.univ), eq_comm (b := Quotient.out _),
+      mul_assoc, ← Subgroup.coe_mul H, -Subgroup.coe_inv, -InvMemClass.coe_inv]
   · -- Second, let's prove the -1-st cohomology group is trivial.
-    simp only [ModuleCat.isZero_of_iff_subsingleton, Submodule.Quotient.subsingleton_iff,
-      Submodule.submoduleOf_eq_top, SetLike.le_def, Representation.norm, funext_iff,
-      res_obj_V, res_obj_ρ', of_ρ, MonoidHom.coe_comp, Function.comp_apply,
-      LinearMap.mem_ker, LinearMap.coe_sum, Finset.sum_apply,
-      Representation.coind₁AsPi_apply, Pi.zero_apply]
+    simp only [res_obj_V, res_obj_ρ, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
+      Function.comp_apply, ModuleCat.isZero_of_iff_subsingleton,
+      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, SetLike.le_def,
+      LinearMap.mem_ker, LinearMap.coe_sum, Finset.sum_apply, funext_iff,
+      Representation.coind₁AsPi_apply, Pi.ofNat_apply]
     -- This is equivalent to...
-    change ∀ f : G → A, (∀ x, ∑ h : H, f (x * h) = 0) → f ∈ Representation.Coinvariants.ker _
+    -- change ∀ f : G → A, (∀ x, ∑ h : H, f (x * h) = 0) → f ∈ Representation.Coinvariants.ker _
     -- Assume we have such `f`.
     intro f hf
     replace hf x : ∑ h : H, f (x * (↑h)⁻¹) = 0 := by
@@ -206,16 +211,17 @@ instance trivialTateCohomology_coind₁' : TrivialTateCohomology (coind₁'.obj 
 /--
 The `H`-invariants of `(coind₁ G).obj A` form an representation of `G ⧸ H` with trivial cohomology.
 -/
-instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type} [Group Q]
+instance coind₁_quotientToInvariants_trivialCohomology (A : ModuleCat R) {Q : Type u} [Group Q]
     {φ : G →* Q} (surj : Function.Surjective φ) :
     ((coind₁ G ⋙ quotientToInvariantsFunctor' surj).obj A).TrivialCohomology :=
   .of_iso (Rep.coind₁_quotientToInvariants_iso A surj)
 
-instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type} [Group Q] {φ : G →* Q}
+instance coind₁'_quotientToInvariants_trivialCohomology {Q : Type u} [Group Q] {φ : G →* Q}
     (surj : Function.Surjective φ) : ((coind₁'.obj M) ↑ surj).TrivialCohomology := by
   have iso := (quotientToInvariantsFunctor' surj).mapIso (coind₁'_obj_iso_coind₁ M)
-  have : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj M.V)).TrivialCohomology :=
-    coind₁_quotientToInvariants_trivialCohomology M.V surj
+  have : ((quotientToInvariantsFunctor' surj).obj ((coind₁ G).obj
+    (ModuleCat.of R M.V))).TrivialCohomology :=
+    coind₁_quotientToInvariants_trivialCohomology _ _
   exact .of_iso iso
 
 end Rep

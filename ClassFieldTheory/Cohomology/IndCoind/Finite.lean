@@ -500,6 +500,7 @@ The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to 
 values of `f`.
 -/
 -- @[simps! app_hom]
+@[implicit_reducible]
 def ind₁'_π : ind₁' ⟶ 𝟭 (Rep.{max w v} R G) where
   app M := ofHom ⟨Representation.ind₁'_π, fun g ↦ ind₁'_π_comm _ _⟩
   naturality _ _ x := by
@@ -507,10 +508,12 @@ def ind₁'_π : ind₁' ⟶ 𝟭 (Rep.{max w v} R G) where
     ext
     simp [ind₁']
 
-set_option backward.isDefEq.respectTransparency false in
 instance instEpiAppInd₁'_π (M : Rep R G) : Epi (ind₁'_π.app M) := by
-  refine (epi_iff_surjective (ind₁'_π.app M)).2 fun m ↦ ⟨single 1 m, ?_⟩
-  simp [ind₁'_π]
+  refine (epi_iff_surjective (ind₁'_π.app M)).2 fun (m : M.V) ↦ ⟨single 1 m, ?_⟩
+  classical
+  simp only [Functor.id_obj, ind₁'_obj, ind₁'_π, hom_ofHom]
+  change Representation.ind₁'_π _ = m
+  simp
 
 def ind₁'_obj_iso_ind₁ (M : Rep.{u} R G) : ind₁'.obj M ≅ (ind₁ G).obj (ModuleCat.of R M.V) :=
   mkIso <| .mk (M.ρ.ind₁'_lequiv) fun g ↦ ind₁'_lequiv_comm M.ρ g
@@ -524,8 +527,7 @@ variable (G) in
 abbrev coind₁AsPi : Rep R G := .of <| Representation.coind₁AsPi R G A
 
 /-- `ind₁AsFinsupp` is isomorphic to `ind₁` pointwise. -/
-def ind₁AsFinsuppIso (A : Rep.{u} R G) : ind₁AsFinsupp G (ModuleCat.of R A.V) ≅
-    (ind₁ G).obj (ModuleCat.of R A.V) :=
+def ind₁AsFinsuppIso (A : ModuleCat.{u} R) : ind₁AsFinsupp G A ≅ (ind₁ G).obj A :=
   mkIso (.mk (.refl R (G →₀ A)) <| fun g ↦ by simp [Representation.ind₁AsFinsupp]) ≪≫
   ind₁'_obj_iso_ind₁ (.trivial _ _ _)
 
@@ -535,19 +537,19 @@ def coind₁AsPiIso : coind₁AsPi G A ≅ (coind₁ G).obj (.of R A) :=
 
 section FiniteGroup
 
+variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] (M : Rep.{u} R G)
 variable (A : ModuleCat R)
 
 -- Hack:
 instance : DecidableRel ⇑(QuotientGroup.rightRel (⊥ : Subgroup G)) :=
   Classical.decRel _
 
-#exit
-abbrev ind₁_obj_iso_coind₁_obj [Finite G] : (ind₁ G).obj A ≅ (coind₁ G).obj A :=
+abbrev ind₁_obj_iso_coind₁_obj [Finite G] : (ind₁.{u} G).obj A ≅ (coind₁.{u} G).obj A :=
   indCoindIso _
 
 def ind₁'_iso_coind₁' [Finite G] : ind₁' (R := R) (G := G) ≅ coind₁' :=
   NatIso.ofComponents fun M ↦
-    Rep.mkIso _ _ ind₁'_lequiv_coind₁' fun _ _ ↦ congr(⇑$(ind₁'_lequiv_coind₁'_comm _ _) _)
+    Rep.mkIso <| .mk ind₁'_lequiv_coind₁' <| ind₁'_lequiv_coind₁'_comm _
 
 lemma ind₁'_iso_coind₁'_app_apply [Finite G] (f : G →₀ M.V) (x : G) :
     (ind₁'_iso_coind₁'.app M).hom f x = f x := by
@@ -555,25 +557,18 @@ lemma ind₁'_iso_coind₁'_app_apply [Finite G] (f : G →₀ M.V) (x : G) :
 
 end FiniteGroup
 
-variable (K L : Type) [Field K] [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L]
+variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] (M : Rep.{u} R G)
+variable (K L : Type u) [Field K] [Field L] [Algebra K L] [IsGalois K L] [FiniteDimensional K L]
 
 /-- For a finite Galois extension `L/K`, the isomorphism between `ind₁` of `K`
 and `L` in the category of `(L ≃ₐ[K] L)`-representations. -/
 noncomputable def iso_ind₁ :
     (Rep.ind₁ (L ≃ₐ[K] L)).obj (.of K K) ≅ .of (AlgEquiv.toLinearMapHom K L) := by
   classical
-  refine (Rep.ind₁AsFinsuppIso (G := (L ≃ₐ[K] L)) (.of K K)).symm ≪≫
-    mkIso _ _ ((IsGalois.normalBasis K L).reindex (.inv (L ≃ₐ[K] L))).repr.symm ?_
-  intro x f
-  simp only [AlgEquiv.toLinearMapHom, of_ρ, Module.Basis.repr_symm_apply, Module.Basis.coe_reindex,
-    Equiv.inv_symm, Equiv.inv_apply, MonoidHom.coe_comp, Function.comp_apply,
-    AlgEquiv.toAlgHomHom_apply, AlgEquiv.toAlgHom_eq_coe, AlgHom.toEnd_apply,
-    AlgEquiv.toAlgHom_toLinearMap, AlgEquiv.toLinearMap_apply]
-  rw [Finsupp.linearCombination_apply, Finsupp.linearCombination_apply,
-    Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _,
-    Finsupp.sum_fintype _ _ fun i ↦ by exact zero_smul K _]
-  simp only [Function.comp_apply, map_sum, map_smul]
-  apply Fintype.sum_equiv (.mulRight x)
-  simp [IsGalois.normalBasis_apply _⁻¹, IsGalois.normalBasis_apply (_ * _)]
+  refine (Rep.ind₁AsFinsuppIso (R := K) (G := (L ≃ₐ[K] L)) (.of K K)).symm ≪≫
+    mkIso (.mk ((IsGalois.normalBasis K L).reindex (.inv (L ≃ₐ[K] L))).repr.symm ?_)
+  intro x
+  ext f
+  simp [IsGalois.normalBasis_apply (x * f⁻¹), IsGalois.normalBasis_apply f⁻¹]
 
 end Rep
