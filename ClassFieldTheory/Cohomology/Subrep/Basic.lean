@@ -28,7 +28,7 @@ instance : AddSubmonoidClass (Subrepresentation ρ) W where
 
 /-- `w ⟶ A`. -/
 @[simps!, implicit_reducible]
-noncomputable def subtype (w : Subrepresentation ρ) :
+def subtype (w : Subrepresentation ρ) :
     w.toRepresentation.IntertwiningMap ρ where
   __ := w.toSubmodule.subtype
   isIntertwining' g := by rfl
@@ -80,6 +80,7 @@ end semiring_monoid
 
 namespace Subrepresentation
 
+
 variable [Ring k] [Monoid G] [AddCommGroup W] [Module k W]
   (ρ : Representation k G W) [AddCommGroup V] [Module k V]
   (σ : Representation k G V)
@@ -89,44 +90,81 @@ instance : AddSubgroupClass (Subrepresentation ρ) W where
   zero_mem {w} := w.toSubmodule.zero_mem
   neg_mem {w} := w.toSubmodule.neg_mem
 
+variable {ρ}
 /-- `w` interpreted as a `G`-rep. -/
-noncomputable abbrev toRep (w : Subrepresentation ρ) : Rep k G := .of w.toRepresentation
+abbrev toRep (w : Subrepresentation ρ) : Rep k G := .of w.toRepresentation
 
-noncomputable abbrev toRepTopIso (A : Rep.{w} k G) :
+abbrev toRepSubtype (w : Subrepresentation ρ) : w.toRep ⟶ Rep.of ρ :=
+  Rep.ofHom w.subtype
+
+abbrev toRepTopIso (A : Rep.{w} k G) :
     (⊤ : Subrepresentation A.ρ).toRep ≅ A :=
-  Rep.mkIso <| topEquiv A.ρ
+  Rep.mkIso <| Subrepresentation.topEquiv A.ρ
 
--- /-- `A ⧸ w` interpreted as a `G`-rep. -/
--- noncomputable def quotient (w : Subrep A) : Rep k G :=
---   .quotient _ w.toSubmodule w.le_comap
+/-- `A ⟶ A ⧸ w`. -/
+abbrev quotient (w : Subrepresentation ρ) :
+    Representation k G (W ⧸ w.toSubmodule) :=
+  .quotient ρ w.1 w.2
 
--- /-- `A ⟶ A ⧸ w`. -/
--- @[simps!] noncomputable def mkQ (w : Subrep A) : A ⟶ w.quotient :=
---   A.mkQ _ _
+@[simps!, implicit_reducible]
+def mkQ (w : Subrepresentation ρ) : ρ.IntertwiningMap w.quotient where
+  __ := Submodule.mkQ _
+  isIntertwining' g := by rfl
 
-#exit
-noncomputable def isoOfEqTop {w : Subrep A} (h : w = ⊤) : w.toRep ≅ A :=
-  Action.mkIso <| (LinearEquiv.ofTop _ congr(($h).toSubmodule)).toModuleIso
+/-- `A ⧸ w` interpreted as a `G`-rep. -/
+abbrev toRepQuot (w : Subrepresentation ρ) : Rep k G := .of w.quotient
 
-noncomputable def subrepOf (w₁ w₂ : Subrep A) : Subrep w₂.toRep where
-  toSubmodule := w₁.submoduleOf w₂.toSubmodule
-  le_comap g := fun ⟨_, _⟩ h ↦ w₁.le_comap g h
+/-- `A ⟶ A ⧸ w`. -/
+abbrev toRepMkQ (w : Subrepresentation ρ) : Rep.of ρ ⟶ w.toRepQuot :=
+  Rep.ofHom w.mkQ
 
-noncomputable def subrepOfIsoOfLE {w₁ w₂ : Subrep A} (h : w₁ ≤ w₂) :
-    (w₁.subrepOf w₂).toRep ≅ w₁.toRep :=
-  Action.mkIso (Submodule.submoduleOfEquivOfLe h).toModuleIso
+@[simps!, implicit_reducible]
+def equivOfEqTop {w : Subrepresentation ρ} (h : w = ⊤) : w.toRepresentation.Equiv ρ :=
+  .mk (LinearEquiv.ofTop _ congr(toSubmodule $h)) fun _ ↦ rfl
 
-noncomputable def inclusion {w₁ w₂ : Subrep A} (h : w₁ ≤ w₂) : w₁.toRep ⟶ w₂.toRep where
-  hom := ModuleCat.ofHom <| Submodule.inclusion h
+abbrev toRepIsoOfEqTop {w : Subrepresentation ρ} (h : w = ⊤) : w.toRep ≅ .of ρ :=
+  Rep.mkIso <| .mk (LinearEquiv.ofTop _ congr(toSubmodule $h)) fun _ ↦ rfl
 
-open CategoryTheory in
-@[reassoc (attr := simp), elementwise (attr := simp)]
-theorem inclusion_comp_subtype {w₁ w₂ : Subrep A} {h : w₁ ≤ w₂} :
-    w₁.inclusion h ≫ w₂.subtype = w₁.subtype :=
+@[simps, implicit_reducible]
+def subrepresentationOf (w₁ w₂ : Subrepresentation ρ) :
+    Subrepresentation w₂.toRepresentation where
+  toSubmodule := w₁.1.submoduleOf w₂.1
+  apply_mem_toSubmodule g _ h := w₁.2 g h
+
+@[implicit_reducible]
+def subrepresentationEquivOfLE {w₁ w₂ : Subrepresentation ρ} (h : w₁ ≤ w₂) :
+    (w₁.subrepresentationOf w₂).toRepresentation.Equiv w₁.toRepresentation :=
+  .mk (Submodule.submoduleOfEquivOfLe h) fun _ ↦ rfl
+
+abbrev subrepOfIsoOfLE {w₁ w₂ : Subrepresentation ρ} (h : w₁ ≤ w₂) :
+    (w₁.subrepresentationOf w₂).toRep ≅ w₁.toRep :=
+  Rep.mkIso <| subrepresentationEquivOfLE h
+
+@[simps!, implicit_reducible]
+def inclusion {w₁ w₂ : Subrepresentation ρ} (h : w₁ ≤ w₂) :
+    w₁.toRepresentation.IntertwiningMap w₂.toRepresentation where
+  __ := Submodule.inclusion h
+  isIntertwining' _ := rfl
+
+abbrev toRepInclusion {w₁ w₂ : Subrepresentation ρ} (h : w₁ ≤ w₂) :
+    w₁.toRep ⟶ w₂.toRep := Rep.ofHom (inclusion h)
+
+lemma inclusion_comp_subtype {w₁ w₂ : Subrepresentation ρ} {h : w₁ ≤ w₂} :
+    w₂.subtype.comp (w₁.inclusion h) = w₁.subtype :=
   rfl
 
+open CategoryTheory in
+@[reassoc (attr := simp), elementwise nosimp (attr := simp)]
+lemma toRepInclusion_comp_subtype {w₁ w₂ : Subrepresentation ρ} {h : w₁ ≤ w₂} :
+    (w₁.toRepInclusion h) ≫ w₂.toRepSubtype = w₁.toRepSubtype :=
+  Rep.hom_ext inclusion_comp_subtype
+
 /-- `w₁ ⧸ (w₁ ⊓ w₂)` -/
-noncomputable def subquotient (w₁ w₂ : Subrep A) : Rep k G :=
-  (w₂.subrepOf w₁).quotient
+def subquotient (w₁ w₂ : Subrepresentation ρ) :
+    Representation k G (w₁.toSubmodule ⧸ (w₂.subrepresentationOf w₁).1) :=
+  (w₂.subrepresentationOf w₁).quotient
+
+abbrev toRepSubquot (w₁ w₂ : Subrepresentation ρ) : Rep k G :=
+  .of (w₁.subquotient w₂)
 
 end Subrepresentation
