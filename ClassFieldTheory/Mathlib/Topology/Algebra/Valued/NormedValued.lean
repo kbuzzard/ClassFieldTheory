@@ -2,6 +2,7 @@ module
 
 public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
 public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 @[expose] public section
@@ -16,7 +17,8 @@ variable (K)
 
 /-- Given an ultrametric normed field, make a canonical `ValuativeRel` instance. This instance is
 scoped to avoid instance looping. -/
-def toValuativeRel : ValuativeRel K :=
+@[implicit_reducible]
+noncomputable def toValuativeRel : ValuativeRel K :=
   .ofValuation valuation
 scoped [NormedField] attribute [instance] toValuativeRel
 
@@ -45,7 +47,7 @@ variable (K) in
 omit [IsUltrametricDist K] in
 lemma trivial_or_non_trivial : (∀ x : K, x = 0 ∨ ‖x‖ = 1) ∨ (∃ x : K, 1 < ‖x‖) := by
   by_contra h
-  push_neg at h
+  push Not at h
   obtain ⟨⟨x, hx0, hx1⟩, hk⟩ := h
   obtain hx1 | h1x := lt_or_gt_of_ne hx1
   · exact absurd (hk x⁻¹) (not_le_of_gt <| by rwa [norm_inv, one_lt_inv₀ (norm_pos_iff.2 hx0)])
@@ -66,6 +68,7 @@ theorem nhds_zero_basis_norm {K : Type*} [NormedField K] :
         refine ⟨(x⁻¹) ^ n, norm_pow x⁻¹ n ▸ pow_pos ix_pos n, by rwa [norm_pow]⟩
     · exact Metric.nhds_basis_ball.mem_iff.2 ⟨_, x_pos, fun y hy ↦ hxs (by simpa using hy)⟩
 
+omit [IsUltrametricDist K] in
 theorem _root_.DiscreteTopology.of_trivial_norm (trivial : ∀ x : K, x = 0 ∨ ‖x‖ = 1) :
     DiscreteTopology K :=
   DiscreteTopology.of_forall_le_norm one_pos fun x hx ↦ by rw [(trivial x).resolve_left hx]
@@ -74,7 +77,8 @@ section IsValuativeTopology
 
 open NormedField Valued ValuativeRel
 
-def valuativeRel (K : Type*) [NormedField K] [IsUltrametricDist K] : ValuativeRel K :=
+@[implicit_reducible]
+noncomputable def valuativeRel (K : Type*) [NormedField K] [IsUltrametricDist K] : ValuativeRel K :=
   .ofValuation valuation
 attribute [local instance] valuativeRel
 

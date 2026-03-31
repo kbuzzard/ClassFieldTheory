@@ -21,6 +21,7 @@ theorem factors_maximalIdeal_pow (n : ℕ) :
     (Multiset.mem_replicate.not.mpr <| mt And.right not_a_field'.symm)
     (by simp) (by simp [Multiset.mem_replicate])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factors_maximalIdeal :
     UniqueFactorizationMonoid.factors (IsLocalRing.maximalIdeal R) = {IsLocalRing.maximalIdeal R} :=
   by simpa using factors_maximalIdeal_pow (n := 1)

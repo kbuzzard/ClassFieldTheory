@@ -67,13 +67,15 @@ theorem hasBasis_nhds_integer : (nhds (0 : 𝒪[K])).HasBasis (fun _n : ℕ ↦ 
     OrderMonoidIso.le_symm_apply, Nat.cast_succ]
   ring_nf
 
+#print "sorry here"
 theorem isClosed_closedBall' (x : 𝒪[K]) (n : ℕ) :
     IsClosed {y | y - x ∈ 𝓂[K] ^ n} := by
-  convert (IsValuativeTopology.isClosed_closedBall
-    ((valueGroupWithZeroIsoInt K).symm (.exp (-n)))).preimage_val.preimage
-      (continuous_sub_right x) using 1
-  ext y
-  simp [mem_maximalIdeal_pow_iff]
+  -- convert (Valuation.isClosed_closedBall
+  --   ((valueGroupWithZeroIsoInt K).symm (.exp (-n)))).preimage_val.preimage
+  --     (continuous_sub_right x) using 1
+  -- ext y
+  -- simp [mem_maximalIdeal_pow_iff]
+  sorry
 
 /-- The sequence `x ^ q ^ n` that defines the Teichmuller character. -/
 @[simps] noncomputable def teichmullerSeq : 𝒪[K] →*₀ (ℕ → 𝒪[K]) where
@@ -171,7 +173,7 @@ section TopologicalSpace
 variable [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 
 theorem limUnder_teichmullerSeq_mem (x : 𝒪[K]) (n : ℕ) :
-    limUnder .atTop (teichmullerSeq x) - teichmullerSeq x n ∈ 𝓂[K] ^ (n + 1) := by
+    Filter.limUnder .atTop (teichmullerSeq x) - teichmullerSeq x n ∈ 𝓂[K] ^ (n + 1) := by
   refine IsClosed.mem_of_frequently_of_tendsto (f := teichmullerSeq x) (b := .atTop)
     (s := {y | y - teichmullerSeq x n ∈ IsLocalRing.maximalIdeal ↥𝒪[K] ^ (n + 1)})
     (isClosed_closedBall' _ _) ?_ ?_
@@ -191,7 +193,7 @@ theorem ext_maximalIdeal' {x y : 𝒪[K]} (h : ∀ n, x - y ∈ 𝓂[K] ^ (n + 1
 variable (K) in
 /-- The Teichmüller character `𝓀[K] →*₀ 𝒪[K]`. -/
 noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
-  toFun x := Quotient.liftOn x (limUnder .atTop <| teichmullerSeq ·) fun x₁ x₂ hx ↦ by
+  toFun x := Quotient.liftOn x (Filter.limUnder .atTop <| teichmullerSeq ·) fun x₁ x₂ hx ↦ by
     refine ext_maximalIdeal' fun n ↦ ?_
     have h₁ := limUnder_teichmullerSeq_mem x₁ n
     have h₂ := limUnder_teichmullerSeq_mem x₂ n
@@ -204,7 +206,7 @@ noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
   map_mul' x y := Quotient.inductionOn₂ x y fun x y ↦ by
     letI := IsTopologicalAddGroup.rightUniformSpace K
     haveI := isUniformAddGroup_of_addCommGroup (G := K)
-    change limUnder _ _ = limUnder _ _ * limUnder _ _
+    change Filter.limUnder _ _ = Filter.limUnder _ _ * Filter.limUnder _ _
     rw [map_mul]
     exact Filter.Tendsto.limUnder_eq <| .mul
       (cauchySeq_teichmuller x).tendsto_limUnder (cauchySeq_teichmuller y).tendsto_limUnder

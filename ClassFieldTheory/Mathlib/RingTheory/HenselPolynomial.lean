@@ -333,11 +333,11 @@ theorem map_surjective_of_sqZero (mf : f.Monic) :
   -- a(f-pq) = qr+s
   let r := a * (f - p * q) /ₘ q
   let s := a * (f - p * q) %ₘ q
-  have hrs : a * (f - p * q) = s + q * r := (modByMonic_add_div _ mq).symm
+  have hrs : a * (f - p * q) = s + q * r := (modByMonic_add_div _ q).symm
   -- b(f-pq) = pt+u
   let t := b * (f - p * q) /ₘ p
   let u := b * (f - p * q) %ₘ p
-  have htu : b * (f - p * q) = u + p * t := (modByMonic_add_div _ mp).symm
+  have htu : b * (f - p * q) = u + p * t := (modByMonic_add_div _ p).symm
   have hfpq : f - p * q ∈ RingHom.ker (mapRingHom φ) := by simp [hpq, φ]
   have hs : s ∈ RingHom.ker (mapRingHom φ) :=
     hφ ▸ (modByMonic_mem_map <| mul_mem_left _ _ <| hφ ▸ hfpq)
