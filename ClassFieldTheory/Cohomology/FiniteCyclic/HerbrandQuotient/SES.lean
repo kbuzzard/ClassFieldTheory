@@ -26,6 +26,7 @@ variable {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
 
 include hS
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of representations of a finite cyclic group, the long exact
 sequence in cohomology is periodic with period six. -/
 def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
@@ -63,6 +64,7 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
     · rw [← ShortComplex.map_f]
       erw [(mapShortComplex₁ hS (Eq.refl 2)).zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS).ExactAt i := by
   fin_cases i <;>
       change ShortComplex.Exact (ShortComplex.mk ..) <;>
@@ -78,7 +80,7 @@ lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS)
       ((periodicCohomology 3 1 <| by decide).app S.X₂) ?_ ?_
     · cat_disch
     · dsimp only [herbrandSixTermSequence, Fin.reduceFinMk, Fin.reduceAdd]
-      rw [Iso.app_hom, ← NatTrans.naturality]
+      rw [Iso.app_hom, ← (periodicCohomology 3 1 _).hom.naturality]
       cat_disch
   · exact mapShortComplex₂_exact hS 1
   · exact mapShortComplex₃_exact hS (Eq.refl 2)

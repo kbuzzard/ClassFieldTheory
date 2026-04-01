@@ -21,8 +21,8 @@ variable (R G : Type) [Group G] [CommRing R]
 /-- `norm' R G` for `G` finite, is the element `∑ g` in the `invariants` submodule of
 `R[G]`, the `leftRegular` representation of `G`. -/
 abbrev norm' [Fintype G] : (leftRegular R G).ρ.invariants :=
-  ⟨∑ g : G, leftRegular.of g, fun g ↦ by
-    simpa [leftRegular.of] using show ∑ x : G, leftRegular.of (g * x) = _ from
+  ⟨∑ g : G, single g 1, fun g ↦ by
+    simpa using show ∑ x : G, single (g * x) _ = _ from
     Finset.sum_equiv (Equiv.mulLeft g) (by grind) <| fun _ _ ↦ rfl⟩
 
 /--
@@ -39,10 +39,8 @@ representation `R[G]`, the sum being over `h : H`.
 -/
 abbrev res_norm' {H : Type} [Group H] [Fintype H] (g : G) (φ : H →* G) :
     (leftRegular R G ↓ φ).ρ.invariants :=
-  ⟨∑ h : H, leftRegular.of (φ h * g), fun h ↦ by
-    simpa [leftRegular.of] using by
-      simpa [← leftRegular.of_def] using Finset.sum_equiv (Equiv.mulLeft h) (by grind)
-        (by simp [Rep.res_obj_V, Rep.res_obj_ρ', mul_assoc, of])⟩
+  ⟨∑ h : H, single (φ h * g) 1, fun h ↦ by
+    simpa using Finset.sum_equiv (Equiv.mulLeft h) (by simp) (by simp [mul_assoc])⟩
 
 variable {G} in
 /--
@@ -58,7 +56,7 @@ def res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
 open RepresentationTheory.groupCohomology
 
 lemma zeroι_norm [Fintype G] :
-    (zeroι _).hom (leftRegular.norm R G) = ∑ g : G, leftRegular.of g := by
+    (zeroι _).hom (leftRegular.norm R G) = ∑ g : G, single g 1 := by
   have := (groupCohomology.H0Iso (leftRegular R G)).toLinearEquiv.apply_symm_apply
     ⟨∑ g : G, MonoidAlgebra.of _ _ g,
     fun g ↦ by simpa using show ∑ x : G, MonoidAlgebra.of _ _ (g * x) = _ from
@@ -70,18 +68,18 @@ lemma H0Iso_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
   (groupCohomology.H0Iso _).toLinearEquiv.apply_symm_apply _
 
 lemma zeroι_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
-    zeroι _ (res_norm R φ g) = ∑ h : H, leftRegular.of (φ h * g) := by
+    zeroι _ (res_norm R φ g) = ∑ h : H, single (φ h * g) 1 := by
   dsimp [zeroι]
   exact congr(Subtype.val $(leftRegular.H0Iso_res_norm R G φ g))
 
 lemma span_norm' [Fintype G] :
     Submodule.span R {norm' R G} = ⊤ := by
   ext ⟨x, hx⟩
-  simp only [of_ρ, Submodule.mem_span_singleton, Subtype.ext_iff, SetLike.val_smul,
+  simp only [Submodule.mem_span_singleton, Subtype.ext_iff, SetLike.val_smul,
     Submodule.mem_top, iff_true]
   replace hx : ∃ a : R, ∀ g : G, x g = a := ⟨x 1, fun g ↦ by
     simpa using Finsupp.ext_iff.1 (hx g⁻¹) 1⟩
-  exact ⟨hx.choose, Finsupp.ext_iff.2 fun g ↦ by simp [← hx.choose_spec g, leftRegular.of]⟩
+  exact ⟨hx.choose, Finsupp.ext_iff.2 fun g ↦ by simp [← hx.choose_spec g]⟩
 
 variable {G} in
 lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
@@ -89,25 +87,24 @@ lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
   classical
   cases nonempty_fintype G
   ext x
-  simp only [res_obj_V, res_obj_ρ', of_ρ, Submodule.mem_top, iff_true]
+  simp only [res_obj_V, res_obj_ρ, Submodule.mem_top, iff_true]
   choose σ hσ using Quotient.mk_surjective (s := QuotientGroup.rightRel φ.range)
   have : x = ∑ i, (show G →₀ _ from x.1) (σ i) • res_norm' R (σ i) φ := by
-    ext;
-    simp only [res_obj_V, res_obj_ρ', of_ρ, AddSubmonoidClass.coe_finset_sum,
-      Submodule.coe_smul_of_tower, Finsupp.ext_iff,
-      coe_finset_sum, coe_smul, Finset.sum_apply, Pi.smul_apply, leftRegular.of_apply (R := R),
-      Finset.sum_boole, smul_eq_mul]
-    intro a
+    ext a
+    simp only [res_obj_V, res_obj_ρ, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul,
+      coe_finset_sum, coe_smul, Finset.sum_apply, Pi.smul_apply, single_apply, Finset.sum_boole,
+      smul_eq_mul]
+    -- intro a
     rw [Finset.sum_eq_single (Quotient.mk _ a)]
     · have (i j : G) : QuotientGroup.rightRel φ.range i j → (show G →₀ R from x.1) i =
         (show G →₀ R from x.1) j := fun hij ↦ by
         obtain ⟨x, hx⟩ := x
         obtain ⟨k, hk⟩ := by simpa [QuotientGroup.rightRel_apply] using hij
         have := by simpa [Rep.res_obj_V, Representation.ofMulAction_def,
-          Finsupp.ext_iff, Rep.res_obj_ρ'] using hx k
+          Finsupp.ext_iff, Rep.res_obj_ρ] using hx k
         simpa [mapDomain, Finsupp.sum_fintype, Finsupp.single_apply, hk,
             mul_assoc, inv_mul_eq_one] using this j
-      simp only [res_obj_V, res_obj_ρ', of_ρ] at this
+      simp only [res_obj_V, res_obj_ρ] at this
       rw [this a (σ ⟦a⟧) (by rw [← Quotient.eq, hσ])]
       suffices @Finset.card H {x | φ x * σ ⟦a⟧ = a} = 1 by simp [this]
       rw [Finset.card_eq_one]
@@ -150,29 +147,29 @@ def _root_.groupCohomology.H0trivial : groupCohomology.H0 (trivial R G R) ≅ Mo
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| Submodule.topEquiv.symm ≪≫ₗ LinearEquiv.ofEq _ _
   (by ext; simp) ≪≫ₗ (CategoryTheory.Iso.toLinearEquiv (groupCohomology.H0Iso (trivial R G R))).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[elementwise]
 lemma _root_.groupCohomology.map_comp_H0trivial {ρ : Rep R G} (f : ρ ⟶ trivial R G R) :
-    groupCohomology.map (.id _) f 0 ≫ (groupCohomology.H0trivial R G).hom = zeroι _ ≫ f.hom := by
+    groupCohomology.map (.id _) f 0 ≫ (groupCohomology.H0trivial R G).hom = zeroι _ ≫
+      f.toModuleCatHom := by
   ext x
-  simp only [groupCohomology.H0trivial, of_ρ, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
+  simp only [groupCohomology.H0trivial, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
     LinearEquiv.ofEq_symm, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
-    Submodule.topEquiv_apply, LinearEquiv.coe_ofEq_apply]
+    Submodule.topEquiv_apply, LinearEquiv.coe_ofEq_apply,
+    Representation.IntertwiningMap.coe_toLinearMap]
   rw [Iso.toLinearEquiv_apply, ← LinearMap.comp_apply, ← ModuleCat.hom_comp,
     groupCohomology.map_id_comp_H0Iso_hom]
   simp [zeroι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma groupCoh_map_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
-    groupCohomology.map (.id _) ((res φ).map (ε R G)) 0 (res_norm R φ g) =
+    groupCohomology.map (.id _) ((resFunctor φ).map (ε R G)) 0 (res_norm R φ g) =
       (groupCohomology.H0trivial R H).toLinearEquiv.symm (Fintype.card H : R) := by
   apply (groupCohomology.H0trivial R H).toLinearEquiv.eq_symm_apply.mpr
   change (groupCohomology.H0trivial R H).hom.hom ((groupCohomology.map _ _ 0).hom _) = _
   rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, groupCohomology.map_comp_H0trivial,
     ModuleCat.hom_comp, LinearMap.comp_apply, leftRegular.zeroι_res_norm]
-  simp only [res_obj_V, res_map_hom, map_sum]
-  -- conv_lhs => enter [2, x]; tactic => with_reducible rw [ε_of] -- works
-  -- simp [ε_of] -- doesn't work
-  -- simp_rw [ε_of] -- doesn't work
-  simp [ε, of] -- this shows that `ε_of` may be a bad `simp` lemma but I don't know why
+  simp
 
 end Rep.leftRegular

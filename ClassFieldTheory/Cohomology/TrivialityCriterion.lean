@@ -37,6 +37,7 @@ open
 variable {R : Type} [CommRing R]
 variable {G : Type} [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `H²ⁿ⁺²(H,M)` and `H²ᵐ⁺¹(H,M)` are both zero for every subgroup `H` of `G` then `M` is acyclic.
 -/
@@ -59,7 +60,7 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Finite G] 
         (QuotientGroup.mk' (K.subgroupOf H)).ker.subtype) (i + 1)) := by
       refine fun i ↦ .of_iso (h3 (n := i)) <| groupCohomology.mapIso ((MulEquiv.subgroupCongr <|
         QuotientGroup.ker_mk' _).trans <| Subgroup.subgroupOfEquivOfLe h12)
-        (by exact Iso.refl _) (by simp [res]) _
+        (LinearEquiv.refl _ _) (by simp) _
     have : ∀ n, IsIso ((infl (QuotientGroup.mk'_surjective
         (K.subgroupOf H)) (n + 1)).app (M ↓ H.subtype)) := by
       intro n
@@ -143,17 +144,15 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
       refine .of_iso (h_even H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
       apply (functor R H (2 * n + 2)).mapIso
-      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
-      apply (res φ).mapIso
-      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
+      exact (Rep.resComp (R := R) (S.subtype.comp v.toSubgroup.subtype) φ).trans
+        (NatIso.hcomp (Rep.resComp _ _) (Iso.refl _)) |>.symm.app M
     · -- the odd trivial cohomology for `G` lifts to `v`
       intro H  _ φ hφ
       refine .of_iso (h_odd H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
       apply (functor R H (2 * m + 1)).mapIso
-      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
-      apply (res φ).mapIso
-      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
+      exact (Rep.resComp (R := R) (S.subtype.comp v.toSubgroup.subtype) φ).trans
+        (NatIso.hcomp (Rep.resComp _ _) (Iso.refl _)) |>.symm.app M
 
 instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (up.obj M).TrivialCohomology := open scoped Classical in
@@ -168,6 +167,7 @@ instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.T
     (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (δDownResIso M hφ 19).symm)
     (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (δDownResIso M hφ 74).symm)
 
+set_option linter.unusedFintypeInType false in
 instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialTateCohomology := by
   constructor

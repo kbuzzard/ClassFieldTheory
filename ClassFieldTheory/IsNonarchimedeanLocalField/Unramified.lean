@@ -34,15 +34,19 @@ deriving Field, Algebra K, FiniteDimensional K
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 variable (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ValuativeRel (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ValuativeExtension K (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose
 
+set_option backward.isDefEq.respectTransparency false in
 instance : TopologicalSpace (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose_spec.choose
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsNonarchimedeanLocalField (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose_spec.choose_spec
 
@@ -289,12 +293,14 @@ instance [IsUnramified K L] : IsGalois K L :=
 def maximalUnramified : IntermediateField K L :=
   (nonempty_unramifiedExtension_alghom_of_dvd_f K L (f K L) dvd_rfl).some.fieldRange
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsUnramified K (maximalUnramified K L) := by
   unfold maximalUnramified
   infer_instance
 
 variable {K L} (E : IntermediateField K L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maximal unramified subextension is maximal. -/
 theorem le_maximalUnramified_iff : E ≤ maximalUnramified K L ↔ IsUnramified K E := by
   refine ⟨fun h ↦ .comap <| show E →ₐ[K] maximalUnramified K L from Subalgebra.inclusion h,

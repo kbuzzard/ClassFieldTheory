@@ -44,17 +44,11 @@ noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
   X₁ := repUnitsInteger G K L
   X₂ := .units G L
   X₃ := .trivial ℤ G ℤ
-  f :=
-  { hom := ModuleCat.ofHom (kerV L).toIntLinearMap
-    comm g := rfl }
-  g :=
-  { hom := ModuleCat.ofHom (v L).toIntLinearMap
-    comm g := by
-      ext (u : Additive Lˣ)
-      obtain ⟨u, rfl⟩ := Additive.ofMul.surjective u
-      simp [Rep.units]
-      simp [Rep.ofMulDistribMulAction, valuationInt, valuation_smul K]
-      rfl }
+  f := Rep.ofHom ⟨(kerV L).toIntLinearMap, fun _ ↦ rfl⟩
+  g := Rep.ofHom ⟨(v L).toIntLinearMap, fun g ↦ by
+    ext (u : Additive Lˣ)
+    obtain ⟨u, rfl⟩ := Additive.ofMul.surjective u
+    simp [valuationInt, valuation_smul K]⟩
   zero := by ext; exact exact_kerV_v.apply_apply_eq_zero _
 
 variable {G K L : Type} [Group G] [Finite G]

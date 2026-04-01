@@ -32,7 +32,7 @@ variable [Fintype G]
 
 variable [IsCyclic G]
 
-def tateH0TrivIntAddEquivQuotCard :
+noncomputable def tateH0TrivIntAddEquivQuotCard :
     (trivial ℤ G ℤ).TateH0 ≃ₗ[ℤ] ℤ ⧸ Ideal.span {(Nat.card G : ℤ)} :=
   Submodule.Quotient.equiv _ _
     (LinearEquiv.ofEq _ _ tateZ0_trivial_int_eq_top ≪≫ₗ Submodule.topEquiv) <| by

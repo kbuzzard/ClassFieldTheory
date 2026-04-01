@@ -242,6 +242,7 @@ attribute [local instance] inhabitedIoo
 
 open NNReal
 
+#print "needs fixing"
 -- by Anand Rao and Mohit Hulse
 instance : FiniteDimensional K L := by
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]

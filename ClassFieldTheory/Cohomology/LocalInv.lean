@@ -72,7 +72,7 @@ variable (n) in
 def carryCocycle : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ) where
   val ij := carry ij.1.toAdd ij.2.toAdd
   property := by
-    simp only [mem_cocycles₂_def, Rep.of_ρ, Representation.isTrivial_def, LinearMap.id_coe, id_eq,
+    simp only [mem_cocycles₂_def,  Representation.isTrivial_def, LinearMap.id_coe, id_eq,
       toAdd_mul, add_comm, Multiplicative.forall, toAdd_ofAdd, sub_eq_iff_eq_add, add_zero, ←
       add_sub_assoc]
     rintro i j k
@@ -116,6 +116,7 @@ def localInvAux : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) →+ ZMod n := by
 def carryH2Aux (i : ZMod n) : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) :=
   i.val • (H2Iso _).inv.hom (QuotientAddGroup.mk (carryCocycle n))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- By a computation, `localInvAux n ∘ carryH2Aux = id`. -/
 lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (localInvAux n) := by
   intro i
@@ -149,6 +150,7 @@ def localInv : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) ≃+ ZMod n where
   right_inv := rightInverse_carryH2Aux_localInvAux
   map_add' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma localInv_H2π_hom (f : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ)) :
     localInv n ((H2π _).hom f) = ∑ i : ZMod n, Int.cast (f (.ofAdd i, .ofAdd 1)) := by
   simp [localInv, localInvAux]; rfl
