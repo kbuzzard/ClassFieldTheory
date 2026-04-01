@@ -26,20 +26,15 @@ theorem maximalIdeal_pow_eq (n : ℕ) : ((𝓂[K] ^ n :) : Set 𝒪[K]) =
     (Valuation.integer.integers _).dvd_iff_le, map_pow, Algebra.algebraMap_ofSubsemiring_apply,
     valuation_irreducible hϖ, ← map_pow, ← exp_nsmul, smul_neg, Int.nsmul_eq_mul, mul_one]
 
-#print "needs fixing"
 theorem isAdic : IsAdic 𝓂[K] := by
   refine isAdic_iff.mpr ⟨fun n ↦ isOpen_induced_iff.mpr ?_, fun s hs ↦ ?_⟩
   · rw [maximalIdeal_pow_eq K]
-    exact ⟨{x | (valuation K) x ≤ (valueGroupWithZeroIsoInt K).symm (exp (-↑n))}, by
-      -- conv =>
-      --   enter [1, 1, x];
-      --   change _ ≤ (valueGroupWithZeroIsoInt K).toOrderIso.symm _
-      --   rw [OrderIso.le_symm_apply]
-      -- simp
-      -- refine Valuation.isOpen_closedBall ?_
-      -- convert Valuation.isOpen_closedBall sorry
-      sorry, rfl⟩
-    -- exact ⟨_, IsValuativeTopology.isOpen_closedBall (by simp), rfl⟩
+    refine ⟨_, ?_, rfl⟩
+    convert Valuation.isOpen_closedBall (v := valuation K)
+      (r := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation K)
+        ((valueGroupWithZeroIsoInt K).symm (exp (-↑n)))) ?_ using 1
+    · ext x; simp [Valuation.restrict_le_iff_le_embedding]
+    · simp
   · simp_rw [maximalIdeal_pow_eq K]
     obtain ⟨t, ht, hts⟩ := (mem_nhds_induced _ _ _).mp hs;
     obtain ⟨n, hn, hnt⟩ := (IsValuativeTopology.hasBasis_nhds_zero' _).mem_iff.mp ht

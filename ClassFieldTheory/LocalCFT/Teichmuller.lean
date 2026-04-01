@@ -67,15 +67,16 @@ theorem hasBasis_nhds_integer : (nhds (0 : 𝒪[K])).HasBasis (fun _n : ℕ ↦ 
     OrderMonoidIso.le_symm_apply, Nat.cast_succ]
   ring_nf
 
-#print "sorry here"
 theorem isClosed_closedBall' (x : 𝒪[K]) (n : ℕ) :
     IsClosed {y | y - x ∈ 𝓂[K] ^ n} := by
-  -- convert (Valuation.isClosed_closedBall
-  --   ((valueGroupWithZeroIsoInt K).symm (.exp (-n)))).preimage_val.preimage
-  --     (continuous_sub_right x) using 1
-  -- ext y
-  -- simp [mem_maximalIdeal_pow_iff]
-  sorry
+  suffices IsClosed {y : 𝒪[K] | y ∈ 𝓂[K] ^ n} from this.preimage (continuous_sub_right x)
+  cases n with
+  | zero => simp [isClosed_univ]
+  | succ n =>
+    have hmem : {y : 𝒪[K] | y ∈ 𝓂[K] ^ (n + 1)} ∈ nhds (0 : 𝒪[K]) :=
+      (hasBasis_nhds_integer K).mem_of_mem trivial
+    exact (𝓂[K] ^ (n + 1)).toAddSubgroup.isClosed_of_isOpen
+      ((𝓂[K] ^ (n + 1)).toAddSubgroup.isOpen_of_mem_nhds (by simpa using hmem))
 
 /-- The sequence `x ^ q ^ n` that defines the Teichmuller character. -/
 @[simps] noncomputable def teichmullerSeq : 𝒪[K] →*₀ (ℕ → 𝒪[K]) where

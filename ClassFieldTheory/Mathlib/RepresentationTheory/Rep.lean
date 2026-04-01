@@ -19,44 +19,6 @@ variable {R : Type u} {G : Type v} {H : Type v'} [Ring R] [Monoid G] {A B : Rep.
 
 lemma ρ_apply (g : G) : (leftRegular R G).ρ g = Finsupp.lmapDomain R R (g * ·) := rfl
 
--- @[simp] lemma ρ_mul_eq_comp (M : Rep R G) (x y : G) :
---     Action.ρ M (x * y) = Action.ρ M y ≫ Action.ρ M x := map_mul (Action.ρ M) x y
-
--- TODO : add in mathlib, see GroupCohomology.IndCoind.TrivialCohomology
---attribute [simps obj_ρ] trivialFunctor
-
--- @[simps]
--- def mkIso (M₁ M₂ : Rep R G) (f : M₁ ≃ₗ[R] M₂)
---     (hf : ∀ g : G, ∀ m : M₁, f (M₁.ρ g m) = M₂.ρ g (f m) := by aesop) : M₁ ≅ M₂ where
---   hom.hom := ofHom f
---   inv.hom := ofHom f.symm
---   inv.comm g := by ext; aesop (add simp [LinearEquiv.symm_apply_eq])
-
--- instance richards : LinearMapClass (Action.HomSubtype _ _ A B) R A B where
---   map_add f := map_add f.val
---   map_smulₛₗ f := map_smul f.val
-
--- -- This hack instance will be removed after the relevant PR is merged.
--- instance [MulAction G H] :
---     LinearMapClass (Action.HomSubtype _ _ A (ofMulAction R G H)) R A (ofMulAction R G H) := richards
-
--- @[simp] lemma coe_hom (f : A ⟶ B) : ⇑f.hom = f := rfl
--- @[simp] lemma hom_apply (f : A ⟶ B) (x : A) : f.hom x = f x := rfl
-
--- example (A B : Rep R G) (f : A ⟶ B) (a b : A) (c : R) : f (a + c • b) = f a + c • f b := by simp
-
--- @[simp] lemma zero_apply (v : A) : (0 : A ⟶ B) v = 0 := rfl
--- @[simp] lemma add_apply (f₁ f₂ : A ⟶ B) (v : A) : (f₁ + f₂) v = f₁ v + f₂ v := rfl
-
--- @[simp]
--- lemma sub_apply (f₁ f₂ : A ⟶ B) (v : A) : (f₁ - f₂) v = f₁ v - f₂ v := by
---   rw [← hom_apply, Action.sub_hom, ← ModuleCat.Hom.hom, ModuleCat.hom_sub, LinearMap.sub_apply,
---     hom_apply, hom_apply]
-
--- @[simp] lemma smul_apply (c : R) (f : A ⟶ B) (v : A) : (c • f) v = c • (f v) := rfl
-
--- lemma comp_apply {A B C : Rep R G} (f : A ⟶ B) (g : B ⟶ C) (v : A.V) : (f ≫ g) v = g (f v) := rfl
-
 lemma leftRegularHomEquiv_symm_comp {R : Type u} [CommRing R] {A B : Rep R G} (f : A ⟶ B) (a : A) :
     (leftRegularHomEquiv A).symm a ≫ f = (leftRegularHomEquiv B).symm (f.hom a) := by
   ext g
