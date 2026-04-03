@@ -242,7 +242,7 @@ attribute [local instance] inhabitedIoo
 
 open NNReal
 
-#print "needs fixing"
+-- set_option backward.isDefEq.respectTransparency false in
 -- by Anand Rao and Mohit Hulse
 instance : FiniteDimensional K L := by
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
@@ -282,19 +282,37 @@ instance : FiniteDimensional K L := by
   refine b₁.ext b₂ (fun i hi ↦ ?_) fun i hi ↦ ?_
   · have : 0 < Valuation.RankOne.hom (valuation K)
       (ValuativeRel.ValueGroupWithZero.orderMonoidIso _ i) := by
-      -- convert (Valuation.RankOne.strictMono (valuation K)) (zero_lt_iff.2 hi);
-      -- simp
-      sorry
+      simpa using (Valuation.RankOne.strictMono (valuation K)) (zero_lt_iff.2 (by simpa using hi))
     obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one this hϖ1
     refine ⟨ε ^ n, pow_pos ε.2.1 n, fun p hp ↦ ?_⟩
-    sorry
-    -- refine (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mp ?_
-    -- change dist _ _ < _ at hp; rw [dist_comm] at hp
-    -- rw [← coe_lt_coe] at hn ⊢
-    -- convert hp.trans hn
-    -- change (v₂ (p.2 - p.1) : ℝ) = ‖iKL p.2 - iKL p.1‖
-    -- rw [← map_sub]
-    -- exact congr($eq.symm _)
+    simp only [Set.mem_setOf_eq]
+    rw [← map_lt_map_iff (ValuativeRel.ValueGroupWithZero.orderMonoidIso vK)]
+    refine (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mp ?_
+    change dist _ _ < _ at hp; rw [dist_comm] at hp
+    rw [← coe_lt_coe] at hn ⊢
+    convert hp.trans hn
+    convert_to (v₂ (p.2 - p.1) : ℝ) = ‖iKL p.2 - iKL p.1‖
+    · simp only [ValueGroupWithZero.orderMonoidIso_valuation_eq_restrict₀, coe_inj, v₂]
+      rw [← MonoidWithZeroHom.comp_apply (Valuation.RankOne.hom vK)]
+      if h1 : vK (p.2 - p.1) = 0 then
+        simp only [MonoidWithZeroHom.coe_comp, Function.comp_apply,
+          MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.2 h1, map_zero, valuationOfIoo,
+          WithZeroMulInt.toNNReal, one_div, Valuation.map_apply, MonoidWithZeroHom.coe_mk,
+          ZeroHom.coe_mk, MonoidWithZeroHom.coe_coe, EmbeddingLike.map_eq_zero_iff, map_eq_zero,
+          left_eq_dite_iff]
+        simp at h1
+        simp [h1]
+      else
+      simp only [MonoidWithZeroHom.coe_comp, Function.comp_apply,
+        MonoidWithZeroHom.ValueGroup₀.restrict₀_of_ne_zero h1, valuationOfIoo,
+        WithZeroMulInt.toNNReal, one_div, Valuation.map_apply, MonoidWithZeroHom.coe_mk,
+        ZeroHom.coe_mk, MonoidWithZeroHom.coe_coe, EmbeddingLike.map_eq_zero_iff, h1, ↓reduceDIte]
+      simp only [ε]
+      ext
+      simp only [coe_zpow, coe_mk, inv_zpow', zpow_neg]
+      sorry
+    rw [← map_sub]
+    exact congr($eq.symm _)
   · obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one hi hϖ1
     refine ⟨(valuation K ϖ) ^ n, pow_ne_zero _ <| (map_ne_zero _).mpr hϖ.ne_zero', fun p hp ↦ ?_⟩
     -- replace hp := (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.2 hp
