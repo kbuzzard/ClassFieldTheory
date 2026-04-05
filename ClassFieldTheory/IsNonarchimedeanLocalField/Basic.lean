@@ -115,14 +115,18 @@ open NNReal WithZero
 
 /-- A chosen valuation to `ℝ≥0` that sends any uniformiser to the given `ε`. -/
 noncomputable def valuationOfIoo (ε : Set.Ioo (0 : ℝ) 1) : Valuation K ℝ≥0 := by
-  refine (valuation K).map ((WithZeroMulInt.toNNReal (e := ⟨1/ε, ?_⟩) ?_).comp
-    (valueGroupWithZeroIsoInt K)) ?_
+  refine (valuation K).restrict.map ((WithZeroMulInt.toNNReal (e := ⟨1/ε, ?_⟩) ?_).comp
+      (valueGroupWithZeroIsoInt K|>.toMonoidWithZeroHom.comp
+        MonoidWithZeroHom.ValueGroup₀.embedding)) ?_
   · exact one_div_nonneg.mpr ε.2.1.le
   · exact coe_ne_zero.mp <| one_div_ne_zero ε.2.1.ne'
   · simp only [MonoidWithZeroHom.coe_comp]
-    refine (WithZeroMulInt.toNNReal_strictMono ?_).monotone.comp
-      (OrderMonoidIso.strictMono _).monotone
-    exact NNReal.coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
+    refine (WithZeroMulInt.toNNReal_strictMono ?_).monotone.comp ?_
+    · exact NNReal.coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
+    · intro x y h
+      simp only [OrderMonoidIso.toMulEquiv_eq_coe, Function.comp_apply,
+        MulEquiv.toMonoidWithZeroHom_apply, OrderMonoidIso.coe_mulEquiv, map_le_map_iff]
+      exact MonoidWithZeroHom.ValueGroup₀.embedding_strictMono.monotone h
 
 variable {K}
 
@@ -231,12 +235,16 @@ instance _root_.Valued.toNormedField.compatible (K : Type*) [Field K] [Valuative
 
 instance (ε) : (valuationOfIoo K ε).Compatible where
   vle_iff_le x t := by
-    simp only [Valuation.Compatible.vle_iff_le (v := valuation K), valuationOfIoo,
-      Valuation.map_apply]
-    refine symm <| StrictMono.le_iff_le ?_
-    exact (WithZeroMulInt.toNNReal_strictMono (e := ⟨1/ε, one_div_nonneg.mpr ε.2.1.le⟩)
+    simp only [Valuation.Compatible.vle_iff_le (v := valuation K), valuationOfIoo, one_div,
+      OrderMonoidIso.toMulEquiv_eq_coe, Valuation.map_apply, MonoidWithZeroHom.coe_comp,
+      Function.comp_apply, Valuation.embedding_restrict, MulEquiv.toMonoidWithZeroHom_apply,
+      OrderMonoidIso.coe_mulEquiv]
+    refine symm <| StrictMono.le_iff_le
+        (f := (WithZeroMulInt.toNNReal _) ∘ ((valueGroupWithZeroIsoInt K))) ?_
+    convert (WithZeroMulInt.toNNReal_strictMono (e := ⟨1/ε, one_div_nonneg.mpr ε.2.1.le⟩)
       (by exact_mod_cast one_lt_one_div ε.2.1 ε.2.2)).comp
       (valueGroupWithZeroIsoInt K).strictMono
+    simp
 
 attribute [local instance] inhabitedIoo
 
@@ -267,7 +275,7 @@ instance : FiniteDimensional K L := by
   -- Showing `uniformity_dist` for `K`
   let ε : Set.Ioo (0 : ℝ) 1 := ⟨‖ϖ‖, norm_pos_iff.mpr hϖ.ne_zero, hϖ1⟩
   -- install the rank one structure for `K` where `ϖK` goes to `‖iKL ϖK‖`.
-  letI : (valuation K).RankOne := rankOneOfIoo K ε
+  letI vKrk1 : (valuation K).RankOne := rankOneOfIoo K ε
   -- Showing that the two valuations on `K` are the same by comparing them on `ϖ`
   let v₁ : Valuation K ℝ≥0 := NormedField.valuation.comap iKL
   let v₂ : Valuation K ℝ≥0 := valuationOfIoo K ε
@@ -280,53 +288,39 @@ instance : FiniteDimensional K L := by
   have b₂ := Filter.hasBasis_biInf_principal' (ι := ℝ) (p := (· > 0))
     (s := ({p : K × K | dist p.1 p.2 < ·})) (fun ε₁ hε₁ ε₂ hε₂ ↦ ⟨min ε₁ ε₂, by aesop⟩) ⟨1, by simp⟩
   refine b₁.ext b₂ (fun i hi ↦ ?_) fun i hi ↦ ?_
-  · have : 0 < Valuation.RankOne.hom (valuation K)
-      (ValuativeRel.ValueGroupWithZero.orderMonoidIso _ i) := by
-      simpa using (Valuation.RankOne.strictMono (valuation K)) (zero_lt_iff.2 (by simpa using hi))
+  · obtain ⟨a, ha⟩ := ValuativeRel.valuation_surjective i
+    let i0 := Valuation.restrict vK a
+    have hi0 : i0 ≠ 0 := by
+      intro h
+      subst i0
+      simp_all
+    have : 0 < Valuation.RankOne.hom (valuation K) i0 := by
+      convert (Valuation.RankOne.strictMono (valuation K)) (zero_lt_iff.2 hi0); simp
     obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one this hϖ1
     refine ⟨ε ^ n, pow_pos ε.2.1 n, fun p hp ↦ ?_⟩
-    simp only [Set.mem_setOf_eq]
-    rw [← map_lt_map_iff (ValuativeRel.ValueGroupWithZero.orderMonoidIso vK)]
+    dsimp
+    rw [← ha, ← Valuation.restrict_lt_iff]
     refine (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mp ?_
     change dist _ _ < _ at hp; rw [dist_comm] at hp
     rw [← coe_lt_coe] at hn ⊢
     convert hp.trans hn
-    convert_to (v₂ (p.2 - p.1) : ℝ) = ‖iKL p.2 - iKL p.1‖
-    · simp only [ValueGroupWithZero.orderMonoidIso_valuation_eq_restrict₀, coe_inj, v₂]
-      rw [← MonoidWithZeroHom.comp_apply (Valuation.RankOne.hom vK)]
-      if h1 : vK (p.2 - p.1) = 0 then
-        simp only [MonoidWithZeroHom.coe_comp, Function.comp_apply,
-          MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.2 h1, map_zero, valuationOfIoo,
-          WithZeroMulInt.toNNReal, one_div, Valuation.map_apply, MonoidWithZeroHom.coe_mk,
-          ZeroHom.coe_mk, MonoidWithZeroHom.coe_coe, EmbeddingLike.map_eq_zero_iff, map_eq_zero,
-          left_eq_dite_iff]
-        simp at h1
-        simp [h1]
-      else
-      simp only [MonoidWithZeroHom.coe_comp, Function.comp_apply,
-        MonoidWithZeroHom.ValueGroup₀.restrict₀_of_ne_zero h1, valuationOfIoo,
-        WithZeroMulInt.toNNReal, one_div, Valuation.map_apply, MonoidWithZeroHom.coe_mk,
-        ZeroHom.coe_mk, MonoidWithZeroHom.coe_coe, EmbeddingLike.map_eq_zero_iff, h1, ↓reduceDIte]
-      simp only [ε]
-      ext
-      simp only [coe_zpow, coe_mk, inv_zpow', zpow_neg]
-      sorry
+    change (v₂ (p.2 - p.1) : ℝ) = ‖iKL p.2 - iKL p.1‖
     rw [← map_sub]
     exact congr($eq.symm _)
   · obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one hi hϖ1
     refine ⟨(valuation K ϖ) ^ n, pow_ne_zero _ <| (map_ne_zero _).mpr hϖ.ne_zero', fun p hp ↦ ?_⟩
-    -- replace hp := (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.2 hp
-    -- rw [← coe_lt_coe, map_pow, coe_pow] at hp
-    -- replace hp := (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mpr
-    -- rw [← coe_lt_coe, map_pow, coe_pow] at hp
-    -- change dist _ _ < i; rw [dist_comm]
-    -- change _ < (v₂ _ ^ n : ℝ) at hp
-    -- rw [← eq] at hp
-    -- convert hp.trans hn
-    -- change ‖iKL p.2 - iKL p.1‖ = _
-    -- rw [← map_sub]
-    -- exact congr($eq _)
-    sorry
+    dsimp at ⊢ hp
+    rw [← Valuation.map_pow] at hp
+    replace hp := (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mpr
+        ((valuation K).restrict_lt_iff.mpr hp)
+    erw [← coe_lt_coe, map_pow, map_pow] at hp
+    change dist _ _ < i; rw [dist_comm]
+    change _ < (v₂ _ ^ n : ℝ) at hp
+    rw [← eq] at hp
+    convert hp.trans hn
+    change ‖iKL p.2 - iKL p.1‖ = _
+    rw [← map_sub]
+    exact congr($eq _)
 
 instance isModuleTopology : IsModuleTopology K L :=
   let := IsTopologicalAddGroup.rightUniformSpace K
