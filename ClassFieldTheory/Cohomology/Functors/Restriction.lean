@@ -6,8 +6,6 @@ public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHom
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
-public import Mathlib
-
 /-!
 TODO : Although we made `Rep.res` a `def` there is still places we need to unfold the definition
 -- inside `simp`. The goal usually involves `groupCohomology.map` and the reason being is that

@@ -2,6 +2,8 @@ module
 
 public import ClassFieldTheory.Cohomology.Functors.Inflation
 public import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.FieldTheory.Galois.NormalBasis
+public import Mathlib.RepresentationTheory.FiniteIndex
 
 /-!
 Let `G` be a group. We define two functors:
@@ -284,7 +286,7 @@ between `ind₁' ρ` and `ind₁ R G V`.
         ind₁'_lmap_apply, LinearMap.coe_comp, Coinvariants.mk, Function.comp_apply,
         TensorProduct.mk_apply, map_zero, TensorProduct.tmul_zero, sum_single_index]
       change (TensorProduct.lift ρ.ind₁'_invlmap_aux)
-        (LinearMap.id (R := R) ((fun₀ | g => (1 : R)) ⊗ₜ[R] (ρ g) v)) = fun₀ | g => v
+        (LinearMap.id (R := R) ((.single g 1) ⊗ₜ[R] (ρ g) v)) = .single g v
       simp [ind₁'_invlmap_aux]
   right_inv f := by
     rw [LinearMap.toFun_eq_coe]
