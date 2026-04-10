@@ -34,11 +34,6 @@ noncomputable section
 
 namespace Rep
 
--- /--
--- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
--- -/
--- def res (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) f
-
 /--
 If `M` is an object of `Rep R G` and `φ : H →* G` then `M ↓ φ` is the restriction of the
 representation `M` to `H`, as an object of `Rep R H`.
@@ -47,45 +42,6 @@ This is notation for `(Rep.res H).obj M`, which is an abbreviation of
 `(Action.res (ModuleCat R) H.subtype).obj M`
 -/
 notation3:60 M:60 " ↓ " f:61 => res f M
-
--- lemma res_obj_ρ' : (M ↓ f).ρ = M.ρ.comp f := rfl
-
--- lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
-
--- lemma res_obj_V : (M ↓ f).V = M.V := rfl
-
--- @[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N) : ((res f).map p).hom = p.hom := rfl
-
-section
-
--- local notation3:max "res% " R':max f:max => res (R := R') f
-
--- instance : (res% R f).Faithful :=
---   inferInstanceAs (Action.res _ _).Faithful
-
--- theorem full_res (hf : (⇑f).Surjective) : (res% R f).Full :=
---   Action.full_res _ _ hf
-
--- instance : (res% R f).Additive :=
---   inferInstanceAs <| (Action.res _ _).Additive
-
--- instance : (res% R f).Linear R :=
---   inferInstanceAs <| (Action.res _ _).Linear R
-
--- variable (R) in
--- @[simps! unit_app_hom_hom counit_app_hom_hom]
--- noncomputable def indResAdjunction' : indFunctor R f ⊣ res% R f :=
---   indResAdjunction ..
-
--- variable (R) in
--- @[simps! counit_app_hom_hom unit_app_hom_hom]
--- noncomputable abbrev resCoindAdjunction' : res% R f ⊣ coindFunctor R f :=
---   resCoindAdjunction ..
-
--- instance : (res% R f).IsRightAdjoint :=
---   (indResAdjunction' R f).isRightAdjoint
-
-end
 
 section monoid
 
@@ -188,8 +144,6 @@ exact sequences.
 end monoid
 
 section
-
-set_option linter.unusedFintypeInType false
 
 @[simp] lemma norm_hom_res [Group G] [Group H] [Fintype G] [Fintype H] (M : Rep.{w} R G)
     (e : H ≃* G) : (res e.toMonoidHom M).norm.hom.toLinearMap = M.norm.hom.toLinearMap := by

@@ -2,8 +2,6 @@ module
 
 public import ClassFieldTheory.Cohomology.Functors.Inflation
 public import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
-public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
-public import Mathlib
 
 /-!
 Let `G` be a group. We define two functors:
@@ -67,8 +65,6 @@ open
 
 universe t w w' u u' v v'
 
--- variable (R : Type u) (G : Type v) [CommRing R] [Monoid G]
-
 namespace Representation
 
 variable (R G V W : Type*)
@@ -101,6 +97,7 @@ variable [CommRing R] [Group G] [AddCommGroup V] [Module R V]
 abbrev Ind₁V := IndV (⊥ : Subgroup G).subtype (.trivial R _ V)
 
 abbrev Ind₁V.mk := IndV.mk (⊥ : Subgroup G).subtype (trivial R _ V)
+
 /--
 The induced representation of a group `G` on `G →₀ V`, where the action of `G` is by
 left-translation on `G`; no action of `G` on `V` is assumed.
@@ -182,12 +179,6 @@ with value `V`. If `ρ` is a representation of `G` on `V`, then this map intertw
   toFun     := Function.const G
   map_add'  := by simp
   map_smul' := by simp
-
--- /--
--- The map `coind₁'_ι` intertwines a representation `ρ` of `G` on `V` with the
--- representation `ρ.coind₁'` of `G` on `G → V`.
--- -/
--- lemma coind₁'_ι_comm (g : G) : coind₁' ρ g ∘ₗ coind₁'_ι = coind₁'_ι ∘ₗ ρ g := by ext; simp
 
 variable {W X : Type*} [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R X]
 
