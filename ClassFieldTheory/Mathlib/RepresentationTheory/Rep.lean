@@ -1,7 +1,6 @@
 module
 
 public import Mathlib.Data.Finsupp.Single
--- public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Rep.Iso
 
 @[expose] public noncomputable section
@@ -13,9 +12,6 @@ namespace Rep
 universe w u v v'
 
 variable {R : Type u} {G : Type v} {H : Type v'} [Ring R] [Monoid G] {A B : Rep.{w} R G}
-
--- TODO: Rename `of_ρ` to `ρ_of`
-@[simp] lemma of_ρ' (M : Rep R G) : of M.ρ = M := rfl
 
 lemma ρ_apply (g : G) : (leftRegular R G).ρ g = Finsupp.lmapDomain R R (g * ·) := rfl
 
@@ -35,8 +31,6 @@ lemma exists_kernelι_eq {R : Type u} [CommRing R] {M₁ M₂ : Rep.{max u v} R 
   have : g ≫ f = 0 := by rw [leftRegularHomEquiv_symm_comp]; ext1; rw [hm, map_zero]
   use leftRegularHomEquiv (kernel f) (kernel.lift f g this)
   simp [homEquiv, kernel.lift_ι_apply, g]
-
--- @[simp] lemma forget₂_map (f : A ⟶ B) : (forget₂ (Rep R G) (ModuleCat R)).map f = f.hom := rfl
 
 end Rep
 
@@ -80,17 +74,6 @@ lemma ε_comp_ρ_apply (g : G) (v : G →₀ R) :
 
 @[simp]
 lemma ε_of (g : G) : (ε R G).hom (.single g 1) = (1 : R) := by simp
-
--- instance :
---     AddMonoidHomClass (Action.HomSubtype (ModuleCat R) G (leftRegular R G) (trivial R G R))
---       (leftRegular R G) (trivial R G R) where
---   map_add f := map_add f.val
---   map_zero f := map_zero f.val
-
--- instance :
---     MulActionHomClass (Action.HomSubtype (ModuleCat R) G (leftRegular R G) (trivial R G R))
---       R (leftRegular R G) (trivial R G R) where
-  -- map_smulₛₗ f := map_smul f.val
 
 lemma ε_eq_sum' (v : leftRegular R G) : (ε R G).hom v = ∑ x ∈ v.support, v x := by
   simp [Finsupp.sum]

@@ -1,105 +1,107 @@
-import ClassFieldTheory.Cohomology.AugmentationModule
-import ClassFieldTheory.Cohomology.Examples.Examples
-import ClassFieldTheory.Cohomology.FiniteCyclic.ExplicitTate
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Finite
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Trivial
-import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
-import ClassFieldTheory.Cohomology.Functors.Corestriction
-import ClassFieldTheory.Cohomology.Functors.Inflation
-import ClassFieldTheory.Cohomology.Functors.InflationRestriction
-import ClassFieldTheory.Cohomology.Functors.Restriction
-import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Cohomology.IndCoind.Finite
-import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
-import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
-import ClassFieldTheory.Cohomology.IsFilterComplete.Forget
-import ClassFieldTheory.Cohomology.IsFilterComplete.Submodule
-import ClassFieldTheory.Cohomology.LeftRegular
-import ClassFieldTheory.Cohomology.LocalInv
-import ClassFieldTheory.Cohomology.SerreApproximation
-import ClassFieldTheory.Cohomology.SplittingModule
-import ClassFieldTheory.Cohomology.Subrep.Basic
-import ClassFieldTheory.Cohomology.Subrep.ShortExact
-import ClassFieldTheory.Cohomology.TateCohomology
-import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Cohomology.TrivialityCriterion
-import ClassFieldTheory.IsNonarchimedeanLocalField.Actions
-import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import ClassFieldTheory.IsNonarchimedeanLocalField.HerbrandQuotient
-import ClassFieldTheory.IsNonarchimedeanLocalField.Instances
-import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
-import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
-import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
-import ClassFieldTheory.IsNonarchimedeanLocalField.Unramified
-import ClassFieldTheory.IsNonarchimedeanLocalField.UnramifiedCohomology
-import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
-import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
-import ClassFieldTheory.LocalCFT.Continuity
-import ClassFieldTheory.LocalCFT.Teichmuller
-import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
-import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
-import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
-import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Rep
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
-import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
-import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
-import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
-import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
-import ClassFieldTheory.Mathlib.Data.Int.WithZero
-import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
-import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
-import ClassFieldTheory.Mathlib.FieldTheory.Separable
-import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
-import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
-import ClassFieldTheory.Mathlib.GroupTheory.Torsion
-import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
-import ClassFieldTheory.Mathlib.LinearAlgebra.Isomorphisms
-import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
-import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
-import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
-import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
-import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
-import ClassFieldTheory.Mathlib.RingTheory.AdicCompletion.Ring
-import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import ClassFieldTheory.Mathlib.RingTheory.DiscreteValuationRing.Basic
-import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
-import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
-import ClassFieldTheory.Mathlib.RingTheory.LiftingCoprime
-import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Nilpotent.Lemmas
-import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.Basic
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import ClassFieldTheory.Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
-import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
-import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
-import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
-import ClassFieldTheory.Mathlib.Topology.Algebra.Monoid
-import ClassFieldTheory.Mathlib.Topology.Algebra.Ring.Basic
-import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
-import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
-import ClassFieldTheory.Tactic.Dualize
+module
+
+public import ClassFieldTheory.Cohomology.AugmentationModule
+public import ClassFieldTheory.Cohomology.Examples.Examples
+public import ClassFieldTheory.Cohomology.FiniteCyclic.ExplicitTate
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Finite
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Trivial
+public import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
+public import ClassFieldTheory.Cohomology.Functors.Corestriction
+public import ClassFieldTheory.Cohomology.Functors.Inflation
+public import ClassFieldTheory.Cohomology.Functors.InflationRestriction
+public import ClassFieldTheory.Cohomology.Functors.Restriction
+public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import ClassFieldTheory.Cohomology.IndCoind.Finite
+public import ClassFieldTheory.Cohomology.IndCoind.TrivialCohomology
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Forget
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Submodule
+public import ClassFieldTheory.Cohomology.LeftRegular
+public import ClassFieldTheory.Cohomology.LocalInv
+public import ClassFieldTheory.Cohomology.SerreApproximation
+public import ClassFieldTheory.Cohomology.SplittingModule
+public import ClassFieldTheory.Cohomology.Subrep.Basic
+public import ClassFieldTheory.Cohomology.Subrep.ShortExact
+public import ClassFieldTheory.Cohomology.TateCohomology
+public import ClassFieldTheory.Cohomology.TrivialCohomology
+public import ClassFieldTheory.Cohomology.TrivialityCriterion
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Actions
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import ClassFieldTheory.IsNonarchimedeanLocalField.HerbrandQuotient
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Instances
+public import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
+public import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Unramified
+public import ClassFieldTheory.IsNonarchimedeanLocalField.UnramifiedCohomology
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Valuation
+public import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
+public import ClassFieldTheory.LocalCFT.Continuity
+public import ClassFieldTheory.LocalCFT.Teichmuller
+public import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
+public import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
+public import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Rep
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
+public import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
+public import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
+public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
+public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
+public import ClassFieldTheory.Mathlib.Data.Int.WithZero
+public import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
+public import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
+public import ClassFieldTheory.Mathlib.FieldTheory.Separable
+public import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
+public import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import ClassFieldTheory.Mathlib.GroupTheory.Torsion
+public import ClassFieldTheory.Mathlib.LinearAlgebra.Finsupp.Defs
+public import ClassFieldTheory.Mathlib.LinearAlgebra.Isomorphisms
+public import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
+public import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep
+public import ClassFieldTheory.Mathlib.RingTheory.AdicCompletion.Ring
+public import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import ClassFieldTheory.Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
+public import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
+public import ClassFieldTheory.Mathlib.RingTheory.LiftingCoprime
+public import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Nilpotent.Lemmas
+public import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import ClassFieldTheory.Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+public import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Monoid
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Ring.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
+public import ClassFieldTheory.Tactic.Dualize

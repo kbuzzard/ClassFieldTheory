@@ -94,7 +94,6 @@ lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
     simp only [res_obj_V, res_obj_ρ, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul,
       coe_finset_sum, coe_smul, Finset.sum_apply, Pi.smul_apply, single_apply, Finset.sum_boole,
       smul_eq_mul]
-    -- intro a
     rw [Finset.sum_eq_single (Quotient.mk _ a)]
     · have (i j : G) : QuotientGroup.rightRel φ.range i j → (show G →₀ R from x.1) i =
         (show G →₀ R from x.1) j := fun hij ↦ by

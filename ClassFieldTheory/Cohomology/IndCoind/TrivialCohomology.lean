@@ -174,8 +174,6 @@ instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind�
       Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, SetLike.le_def,
       LinearMap.mem_ker, LinearMap.coe_sum, Finset.sum_apply, funext_iff,
       Representation.coind₁AsPi_apply, Pi.ofNat_apply]
-    -- This is equivalent to...
-    -- change ∀ f : G → A, (∀ x, ∑ h : H, f (x * h) = 0) → f ∈ Representation.Coinvariants.ker _
     -- Assume we have such `f`.
     intro f hf
     replace hf x : ∑ h : H, f (x * (↑h)⁻¹) = 0 := by
