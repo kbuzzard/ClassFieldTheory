@@ -78,16 +78,20 @@ theorem f_congr (φ : L₁ ≃ₐ[K] L₂) : f K L₁ = f K L₂ :=
 theorem IsUnramified.ofAlgEquiv (φ : L₁ ≃ₐ[K] L₂) [IsUnramified K L₁] : IsUnramified K L₂ :=
   ⟨by rw [← e_congr φ, e_eq_one]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem InUnramified.intermediateField [IsUnramified K L] (E : IntermediateField K L) :
     IsUnramified K E :=
   ⟨Nat.dvd_one.mp <| IsUnramified.e_eq_one (K := K) (L := L) ▸ e_dvd_e (Algebra.algHom ..)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem e_fieldRange (φ : L₁ →ₐ[K] L₂) : e K φ.fieldRange = e K L₁ :=
   e_congr <| (AlgEquiv.ofInjective _ φ.toRingHom.injective).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem f_fieldRange (φ : L₁ →ₐ[K] L₂) : f K φ.fieldRange = f K L₁ :=
   f_congr <| (AlgEquiv.ofInjective _ φ.toRingHom.injective).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsUnramified K L₁] (φ : L₁ →ₐ[K] L₂) : IsUnramified K φ.fieldRange := ⟨by simp⟩
 
 theorem IsUnramified.comap [IsUnramified K L₂] (φ : L₁ →ₐ[K] L₂) : IsUnramified K L₁ :=

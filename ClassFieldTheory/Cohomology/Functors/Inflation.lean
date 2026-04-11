@@ -42,15 +42,16 @@ open CategoryTheory
   groupCohomology
   HomologicalComplex
 
-variable {R G : Type} [CommRing R] [Group G]
-
-variable {Q : Type} [Group Q] {φ : G →* Q} (surj : Function.Surjective φ)
+universe w u v v'
 
 namespace Rep
 
+variable {R : Type u} {G : Type v} {Q : Type v'} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
+  (surj : Function.Surjective φ)
+
 @[simps! (isSimp := false) obj_V] noncomputable def quotientToInvariantsFunctor' :
     Rep R G ⥤ Rep R Q :=
-  quotientToInvariantsFunctor R φ.ker ⋙
+  quotientToInvariantsFunctor.{w} R φ.ker ⋙
     (Rep.resEquiv R (QuotientGroup.quotientKerEquivOfSurjective _ surj)).inverse
 
 /--
@@ -68,9 +69,11 @@ lemma quotientToInvariantsFunctor'_obj_ρ (M : Rep R G) :
     (QuotientGroup.quotientKerEquivOfSurjective φ hφ).symm (φ x) = x :=
   MulEquiv.symm_apply_eq _ |>.mpr rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotientToInvariantsFunctor'_obj_ρ_apply (M : Rep R G) (g : G) :
     (M ↑ surj).ρ (φ g) = (M.quotientToInvariants φ.ker).ρ g := by
-  simp [quotientToInvariantsFunctor'_obj_V, quotientToInvariantsFunctor'_obj_ρ]
+  simp [quotientToInvariantsFunctor'_obj_V, quotientToInvariantsFunctor'_obj_ρ,
+    quotientToInvariantsFunctor]
 
 @[simp] lemma quotientToInvariantsFunctor'_obj_ρ_apply₂ (M : Rep R G) (g : G)
     (v : (quotientToInvariantsFunctor' surj).obj M) :
@@ -82,12 +85,16 @@ instance : (quotientToInvariantsFunctor' (R := R) surj).PreservesZeroMorphisms w
   map_zero _ _ := rfl
 
 @[simps!] noncomputable def res_quotientToInvariantsFunctor'_ι (M : Rep R G) :
-    ((M ↑ surj) ↓ φ) ⟶ M where
-  hom := ModuleCat.ofHom (Submodule.subtype _)
-  comm g := by ext; exact quotientToInvariantsFunctor'_obj_ρ_apply₂ surj ..
+    ((M ↑ surj) ↓ φ) ⟶ M :=
+  ofHom ⟨Submodule.subtype _, fun g ↦ by
+    ext; exact quotientToInvariantsFunctor'_obj_ρ_apply₂ surj ..⟩
 
 end Rep
+
 namespace groupCohomology
+
+variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
+  (surj : Function.Surjective φ)
 
 noncomputable def cochain_infl :
     quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G where

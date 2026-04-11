@@ -87,7 +87,7 @@ theorem invariant {M : Type*} [Monoid M] [MulSemiringAction M L] [SMulCommClass 
 
 instance : IsInvariantSubring (L ≃ₐ[K] L) 𝒪[L] := invariant K
 
-example {M : Type*} [Monoid M] [MulSemiringAction M L] [SMulCommClass M K L] :
+noncomputable example {M : Type*} [Monoid M] [MulSemiringAction M L] [SMulCommClass M K L] :
     MulSemiringAction M 𝒪[L] :=
   have := invariant (M := M) K (L := L)
   inferInstance

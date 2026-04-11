@@ -37,7 +37,8 @@ variable (G : Type u) [Group G]
 -- this is the inhomogeneous cocycles so useful for computation
 example (n : ℕ) : cocycles M n ⟶ groupCohomology M n := groupCohomology.π M n
 
-example (n : ℕ) : Epi (groupCohomology.π M n) := inferInstance
+example (n : ℕ) : Epi (groupCohomology.π M n) :=
+  (inferInstance : Epi ((inhomogeneousCochains M).homologyπ n))
 
 -- Here `P` is *any* projective resolution of the trivial G-module R
 example (P : ProjectiveResolution (Rep.trivial R G R)) :

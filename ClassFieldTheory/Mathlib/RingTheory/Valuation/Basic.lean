@@ -54,9 +54,6 @@ variable {Γ' : Type*} [LinearOrderedCommMonoidWithZero Γ']
   {v : Valuation R Γ} {v' : Valuation R Γ'} (h : IsEquiv v v') {x y : R}
 include h
 
-theorem le_iff_le : v x ≤ v y ↔ v' x ≤ v' y :=
-  h x y
-
 variable (x)
 
 theorem ball_eq_ball : v.ball (v x) = v'.ball (v' x) := by
@@ -66,7 +63,7 @@ theorem closedBall_eq_closedBall : v.closedBall (v x) = v'.closedBall (v' x) := 
   ext y; simp_rw [mem_closedBall_iff, h.le_iff_le]
 
 theorem sphere_eq_sphere : v.sphere (v x) = v'.sphere (v' x) := by
-  ext y; simp_rw [mem_sphere_iff, h.val_eq]
+  ext y; simp_rw [mem_sphere_iff, Valuation.IsEquiv.eq_iff h]
 
 end IsEquiv
 

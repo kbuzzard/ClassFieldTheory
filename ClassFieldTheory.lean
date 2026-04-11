@@ -56,7 +56,6 @@ public import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
 public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
-public import ClassFieldTheory.Mathlib.Data.Finsupp.Single
 public import ClassFieldTheory.Mathlib.Data.Int.WithZero
 public import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 public import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
@@ -70,14 +69,11 @@ public import ClassFieldTheory.Mathlib.LinearAlgebra.Quotient.Card
 public import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
-public import
-  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
-public import
-  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
-public import
-  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Invariants
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Rep

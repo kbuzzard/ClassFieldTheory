@@ -34,7 +34,8 @@ theorem Rep.herbrandQuotient_isNonarchimedeanLocalField_integer_units :
 /-- herbrand quotient of `Lˣ is [L:K]` -/
 theorem Rep.herbrandQuotient_isNonarchimedeanLocalField_units :
     herbrandQuotient
-    ((Rep.res (IsGaloisGroup.mulEquivAlgEquiv G K L)).obj (Rep.ofAlgebraAutOnUnits K L) : Rep ℤ G)
+    ((Rep.resFunctor (IsGaloisGroup.mulEquivAlgEquiv G K L).toMonoidHom).obj
+      (Rep.ofAlgebraAutOnUnits K L) : Rep ℤ G)
     = Module.finrank K L := by
   have := Fintype.ofFinite G
   have h1 : (valuationShortComplex G K L).X₁.herbrandQuotient = 1 :=

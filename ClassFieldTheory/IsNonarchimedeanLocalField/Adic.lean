@@ -29,7 +29,12 @@ theorem maximalIdeal_pow_eq (n : ℕ) : ((𝓂[K] ^ n :) : Set 𝒪[K]) =
 theorem isAdic : IsAdic 𝓂[K] := by
   refine isAdic_iff.mpr ⟨fun n ↦ isOpen_induced_iff.mpr ?_, fun s hs ↦ ?_⟩
   · rw [maximalIdeal_pow_eq K]
-    exact ⟨_, IsValuativeTopology.isOpen_closedBall (by simp), rfl⟩
+    refine ⟨_, ?_, rfl⟩
+    convert Valuation.isOpen_closedBall (v := valuation K)
+      (r := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation K)
+        ((valueGroupWithZeroIsoInt K).symm (exp (-↑n)))) ?_ using 1
+    · ext x; simp [Valuation.restrict_le_iff_le_embedding]
+    · simp
   · simp_rw [maximalIdeal_pow_eq K]
     obtain ⟨t, ht, hts⟩ := (mem_nhds_induced _ _ _).mp hs;
     obtain ⟨n, hn, hnt⟩ := (IsValuativeTopology.hasBasis_nhds_zero' _).mem_iff.mp ht

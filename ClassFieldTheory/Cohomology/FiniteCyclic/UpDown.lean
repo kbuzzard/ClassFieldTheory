@@ -3,6 +3,7 @@ module
 public import ClassFieldTheory.Cohomology.Functors.UpDown
 public import ClassFieldTheory.Cohomology.IndCoind.Finite
 public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Rep
 public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
 
@@ -47,10 +48,10 @@ open Limits hiding im
 variable {R G : Type} [CommRing R] [Group G] [IsCyclic G]
 
 @[simp] lemma ofHom_sub (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
-    (ofHom (f₁ - f₂) : A ⟶ B) = ofHom f₁ - ofHom f₂ := rfl
+    (ofHom (f₁ - f₂) : A ⟶ B) = ModuleCat.ofHom f₁ - ModuleCat.ofHom f₂ := rfl
 
 @[simp] lemma ofHom_add (A B : ModuleCat R) (f₁ f₂ : A →ₗ[R] B) :
-    (ofHom (f₁ + f₂) : A ⟶ B) = ofHom f₁ + ofHom f₂ := rfl
+    (ofHom (f₁ + f₂) : A ⟶ B) = ModuleCat.ofHom f₁ + ModuleCat.ofHom f₂ := rfl
 
 @[simp] lemma ofHom_zero (A B : ModuleCat R) : (ofHom 0 : A ⟶ B) = 0 := rfl
 @[simp] lemma ofHom_one (A : ModuleCat R) : (ofHom 1 : A ⟶ A) = 𝟙 A := rfl
@@ -188,7 +189,7 @@ lemma map₂_range [Finite G] :
             congr
             apply Finset.Icc_sub_one_right_eq_Ico_of_not_isMin
             rw [isMin_iff_forall_not_lt]
-            push_neg
+            push Not
             use 0, Fintype.card_pos
           _ = ∑ x ∈ (Finset.Ico 0 (Fintype.card G)).image (gen G ^ ·), w x := by
             rw [Finset.sum_image]
@@ -222,17 +223,13 @@ end Representation
 
 namespace Rep
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The map `coind₁'.obj M ⟶ coind₁' M` which takes a function `f : G → M.V` to
 `x ↦ f x - f ((gen G)⁻¹ * x)`.
 -/
 def map₁ : coind₁' (R := R) (G := G) ⟶ coind₁' where
-  app M := {
-    hom := ofHom Representation.map₁
-    comm _ := by
-      ext : 1
-      exact Representation.map₁_comm _ _
-  }
+  app M := Rep.ofHom ⟨Representation.map₁, fun g ↦ Representation.map₁_comm _ _⟩
   naturality _ _ _ := by
     ext v
     dsimp only [Representation.map₁, coind₁']
@@ -247,20 +244,21 @@ lemma coind_ι_gg_map₁ : coind₁'_ι ≫ map₁ (R := R) (G := G) = 0 := by
   ext : 2
   exact coind_ι_gg_map₁_app _
 
+set_option backward.isDefEq.respectTransparency false in
 def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
-  app M := {
-    hom := ofHom Representation.map₂
-    comm g := by
-      ext : 1
-      exact Representation.map₂_comm _ _
-  }
+  app M := ofHom ⟨Representation.map₂, fun _ ↦ Representation.map₂_comm _ _⟩
+  -- {
+  --   hom := ofHom Representation.map₂
+  --   comm g := by
+  --     ext : 1
+  --     exact Representation.map₂_comm _ _
+  -- }
   naturality X Y f:= by
     ext (w : G →₀ X.V)
-    simp only [Action.comp_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom, LinearMap.coe_comp,
-      Function.comp_apply]
-    change (_ : G →₀ _) = _
+    simp only [ind₁'_obj, hom_comp, hom_ofHom, Representation.IntertwiningMap.comp_toLinearMap,
+      LinearMap.coe_comp, Representation.IntertwiningMap.coe_toLinearMap, Function.comp_apply]
     ext g
-    simp [ind₁', Representation.map₂_apply, -Representation.map₂_apply_apply]
+    simp [ind₁', Representation.map₂, Finsupp.mapDomain_mapRange, -Representation.map₂_apply_apply]
 
 lemma map₂_app_gg_ind₁'_π_app (M : Rep R G) :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
@@ -272,6 +270,7 @@ lemma map₂_gg_ind₁'_π : map₂ (R := R) (G := G) ≫ ind₁'_π = 0 := by
 
 variable [Finite G] (M : Rep R G)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M` be a representation of a finite cyclic group `G`.
 Then the following square commutes
@@ -288,13 +287,19 @@ and the horizontal maps are `map₁` and `map₂`.
 lemma map₁_comp_ind₁'_iso_coind₁' :
     map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv = (ind₁'_iso_coind₁'.app M).inv ≫ map₂.app M := by
   ext x
-  simp only [coind₁', ind₁', Iso.app_inv, Action.comp_hom, ModuleCat.hom_comp, LinearMap.coe_comp,
-    Function.comp_apply] at x ⊢
+  simp only [coind₁', ind₁', Iso.app_inv, hom_comp, Representation.IntertwiningMap.comp_toLinearMap,
+    LinearMap.coe_comp, Representation.IntertwiningMap.coe_toLinearMap, Function.comp_apply] at x ⊢
   ext d
   simp only [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', linearEquivFunOnFinite,
-    ModuleCat.hom_ofHom, map₁, map₂, Representation.map₂_apply]
-  simp
+    Equiv.invFun_as_coe, NatIso.ofComponents_inv_app, map₁, hom_ofHom,
+    Representation.IntertwiningMap.coe_mk, Rep.mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
+    Representation.Equiv.mk_apply, LinearEquiv.coe_symm_mk', equivFunOnFinite_symm_apply_apply,
+    Representation.map₁_apply, map₂, Representation.map₂_apply_apply]
+  congr
+  classical simp [equivFunOnFinite, mapDomain, Finsupp.sum, Finsupp.single_apply,
+    eq_comm (b := d), ← inv_mul_eq_iff_eq_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The first short complex in the periodicity sequence. -/
 @[simps] def periodSeq₁ (M : Rep R G) : ShortComplex (Rep R G) where
   X₁ := M
@@ -302,8 +307,9 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
   X₃ := ind₁'.obj M
   f := coind₁'_ι.app M
   g := map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv
-  zero := by simp [reassoc_of% coind_ι_gg_map₁_app]
+  zero := by ext; simp [map₁, ind₁'_iso_coind₁', Representation.map₁, funext_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The second short complex in the periodicity sequence. -/
 @[simps] def periodSeq₂ : ShortComplex (Rep R G) where
   X₁ := coind₁'.obj M
@@ -312,45 +318,44 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
   f := map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv
   g := ind₁'_π.app M
   zero := by
-    rw [ Category.assoc, reassoc_of% map₁_comp_ind₁'_iso_coind₁']; simp [map₂_app_gg_ind₁'_π_app]
+    rw [ Category.assoc, reassoc_of% map₁_comp_ind₁'_iso_coind₁'];
+    simp [map₂_app_gg_ind₁'_π_app]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The first short complex in the periodicity sequence as a functor. -/
 @[simps] def periodSeq₁Functor : Rep R G ⥤ ShortComplex (Rep R G) where
   obj := periodSeq₁
   map {M N} f := ShortComplex.homMk f (coind₁'.map f) (ind₁'.map f) (by cat_disch) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The second short complex in the periodicity sequence as a functor. -/
 @[simps] def periodSeq₂Functor : Rep R G ⥤ ShortComplex (Rep R G) where
   obj := periodSeq₂
   map {M N} f := ShortComplex.homMk (coind₁'.map f) (ind₁'.map f) f (by cat_disch) (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   -- `S` is `ShortComplex (Rep R G)` here, but `Rep R G` is equivalent to `ModuleCat R[G]`.
   -- This step transfers our task to exactness in `ModuleCat R[G]`.
-  apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
-  -- A sequence of `R`-modules is exact if `LinearMap.range _ = LinearMap.ker _`
-  -- In fact, `range ≤ ker` in complexes, so we just need `ker ≤ range`.
-  refine .moduleCat_of_ker_le_range _ ?_
-  simp only [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra, toModuleMonoidAlgebraMap,
-    Lean.Elab.WF.paramLet, ShortComplex.map_X₂, periodSeq₁_X₂, coind₁'_obj, of_ρ,
-    ShortComplex.map_X₃, periodSeq₁_X₃, ind₁'_obj, ShortComplex.map_g, periodSeq₁_g, Iso.app_inv,
-    Action.comp_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom, ShortComplex.map_X₁, periodSeq₁_X₁,
-    ShortComplex.map_f, periodSeq₁_f, coind₁'_ι_app_hom, Functor.id_obj]
-  -- Now, we get `w` with `w ∈ ker`.
-  intro (w : G → M.V) hw
-  simp only [LinearMap.mem_range, LinearMap.coe_mk]
+  simp only [M.periodSeq₁.rep_exact_iff, periodSeq₁_X₂, coind₁'_obj, periodSeq₁_X₃, ind₁'_obj,
+    periodSeq₁_g, map₁, ind₁'_iso_coind₁', NatIso.ofComponents.app, hom_comp, hom_ofHom,
+    periodSeq₁_X₁, periodSeq₁_f, coind₁'_ι_app, SetLike.le_def,
+    Representation.IntertwiningMap.mem_ker, Representation.IntertwiningMap.comp_apply,
+    Representation.IntertwiningMap.coe_mk, mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
+    Representation.Equiv.mk_apply, EmbeddingLike.map_eq_zero_iff,
+    Representation.IntertwiningMap.mem_range]
+  intro w hw
   change w ∈ LinearMap.range Representation.coind₁'_ι
-  simpa [← Representation.map₁_ker] using (LinearEquiv.symm_apply_eq _).mp hw
+  simp [← Representation.map₁_ker, hw]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
-  classical
-  apply Functor.reflects_exact_of_faithful equivalenceModuleMonoidAlgebra.functor
-  apply ShortComplex.Exact.moduleCat_of_ker_le_range
-  simp only [equivalenceModuleMonoidAlgebra, toModuleMonoidAlgebra, toModuleMonoidAlgebraMap,
-    Lean.Elab.WF.paramLet, ShortComplex.map_X₂, periodSeq₂_X₂, ind₁'_obj, of_ρ, ShortComplex.map_X₃,
-    periodSeq₂_X₃, ShortComplex.map_g, periodSeq₂_g, ind₁'_π_app_hom, ModuleCat.hom_ofHom,
-    ShortComplex.map_X₁, periodSeq₂_X₁, coind₁'_obj, ShortComplex.map_f, periodSeq₂_f, Iso.app_inv,
-    Action.comp_hom, ModuleCat.hom_comp]
+  simp only [M.periodSeq₂.rep_exact_iff, periodSeq₂_X₂, ind₁'_obj, periodSeq₂_X₃, periodSeq₂_g,
+    periodSeq₂_X₁, coind₁'_obj, periodSeq₂_f, map₁, ind₁'_iso_coind₁', NatIso.ofComponents.app,
+    hom_comp, hom_ofHom, SetLike.le_def, Representation.IntertwiningMap.mem_ker,
+    Representation.IntertwiningMap.mem_range, Representation.IntertwiningMap.comp_apply,
+    Representation.IntertwiningMap.coe_mk, mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
+    Representation.Equiv.mk_apply]
   intro w hw_ker
   change w ∈ LinearMap.ker (Representation.ind₁'_π (R := R)) at hw_ker
   rw [← Representation.map₂_range] at hw_ker

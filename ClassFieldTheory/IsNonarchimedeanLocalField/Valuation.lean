@@ -20,7 +20,7 @@ injective, the second is surjective, and the pair is `Function.Exact`.
 
 namespace ValuativeRel
 
-def kerV (K : Type*) [CommRing K] [ValuativeRel K] : Additive 𝒪[K]ˣ →+ Additive Kˣ :=
+noncomputable def kerV (K : Type*) [CommRing K] [ValuativeRel K] : Additive 𝒪[K]ˣ →+ Additive Kˣ :=
   (Units.map 𝒪[K].subtype).toAdditive
 
 variable {K : Type*} [CommRing K] [ValuativeRel K]
@@ -76,6 +76,7 @@ noncomputable def v (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K]
   let f₄ : (ℤᵐ⁰)ˣ →* Multiplicative ℤ := (WithZero.unitsWithZeroEquiv.toMonoidHom)⁻¹
   (f₄.comp f₃).toAdditiveLeft
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma v_apply (x : Additive Kˣ) : v K x = -(valuationInt K x.toMul).log := by
   obtain ⟨x, rfl⟩ := Additive.ofMul.surjective x
   rw [toMul_ofMul]

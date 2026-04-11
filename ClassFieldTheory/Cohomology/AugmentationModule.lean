@@ -57,16 +57,16 @@ abbrev ι : aug R G ⟶ leftRegular R G := kernel.ι (ε R G)
 
 lemma ε_comp_ι : ι R G ≫ ε R G = 0 := kernel.condition (ε R G)
 
-lemma ε_apply_ι (v : aug R G) : (ε R G).hom.hom (ι R G|>.hom v) = 0 := congr($(ε_comp_ι R G) v)
+lemma ε_apply_ι (v : aug R G) : (ε R G).hom (ι R G|>.hom v) = 0 := congr($(ε_comp_ι R G) v)
 
-lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, (ι R G|>.hom.hom v) g = 0 := by
+lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, (ι R G).hom v g = 0 := by
   rw [← ε_apply_ι R G v, ε_eq_sum]
 
 /--
 There is an element of `aug R G` whose image in the left regular representation is `of g - of 1`.
 -/
-lemma exists_ofSubOfOne (g : G) : ∃ v : aug R G, (ι R G).hom.hom v =
-    leftRegular.of g - leftRegular.of 1 := by
+lemma exists_ofSubOfOne (g : G) : ∃ v : aug R G, (ι R G).hom v =
+    Finsupp.single g 1 - Finsupp.single 1 1 := by
   apply exists_kernelι_eq
   rw [map_sub, ε_of, ε_of, sub_self]
 
@@ -76,7 +76,7 @@ The element of `aug R G` whose image in `leftRegular R G` is `of g - of 1`.
 def ofSubOfOne (g : G) : aug R G := (exists_ofSubOfOne R G g).choose
 
 @[simp] lemma ofSubOfOne_spec (g : G) :
-    ι R G (ofSubOfOne R G g) = leftRegular.of g - leftRegular.of 1 :=
+    ι R G (ofSubOfOne R G g) = .single g 1 - .single 1 1 :=
   (exists_ofSubOfOne R G g).choose_spec
 
 /-- The short exact sequence `0 ⟶ aug R G ⟶ R[G] ⟶ R ⟶ 0`. -/
@@ -108,7 +108,7 @@ The sequence
 is a short exact sequence of `H`-modules for any `H →* G`.
 -/
 lemma aug_isShortExact' {H : Type} [Group H] (φ : H →* G) :
-    ((aug_shortExactSequence R G).map (res φ)).ShortExact :=
+    ((aug_shortExactSequence R G).map (resFunctor φ)).ShortExact :=
   CategoryTheory.ShortComplex.ShortExact.map_of_exact (aug_isShortExact R G) _
 
 open Finsupp
@@ -125,18 +125,12 @@ lemma leftRegularToInd₁'_comp_lsingle (x : G) :
 
 lemma leftRegularToInd₁'_comm (g : G) : leftRegularToInd₁' R G ∘ₗ (leftRegular R G).ρ g
     = (Representation.trivial R G R).ind₁' g ∘ₗ leftRegularToInd₁' R G := by
-  ext : 1
-  rw [LinearMap.comp_assoc, ρ_comp_lsingle, leftRegularToInd₁'_comp_lsingle,
-    LinearMap.comp_assoc, leftRegularToInd₁'_comp_lsingle, Representation.ind₁'_comp_lsingle,
-    mul_inv_rev, Representation.isTrivial_def, LinearMap.comp_id]
+  ext; simp
 
 lemma leftRegularToInd₁'_comm' (g : G) :
     leftRegularToInd₁' R G ∘ₗ (Representation.trivial R G R).ind₁' g =
     (leftRegular R G).ρ g ∘ₗ leftRegularToInd₁' R G := by
-  ext : 1
-  rw [LinearMap.comp_assoc, Representation.ind₁'_comp_lsingle, Representation.isTrivial_def,
-    LinearMap.comp_id, leftRegularToInd₁'_comp_lsingle, LinearMap.comp_assoc,
-    leftRegularToInd₁'_comp_lsingle, ρ_comp_lsingle, mul_inv_rev, inv_inv]
+  ext; simp
 
 lemma leftRegularToInd₁'_comp_leftRegularToInd₁' :
     leftRegularToInd₁' R G ∘ₗ leftRegularToInd₁' R G = 1 := by
@@ -149,18 +143,8 @@ lemma leftRegularToInd₁'_comp_leftRegularToInd₁' :
 The left regular representation is isomorphic to `ind₁'.obj (trivial R G R)`
 -/
 def _root_.Rep.leftRegular.iso_ind₁' : leftRegular R G ≅ ind₁'.obj (trivial R G R) where
-  hom := {
-    hom := ofHom (leftRegularToInd₁' R G)
-    comm g := by
-      ext : 1
-      apply leftRegularToInd₁'_comm
-  }
-  inv := {
-    hom := ofHom (leftRegularToInd₁' R G)
-    comm g := by
-      ext : 1
-      apply leftRegularToInd₁'_comm'
-  }
+  hom := ofHom ⟨leftRegularToInd₁' R G, fun g ↦ leftRegularToInd₁'_comm R G g⟩
+  inv := ofHom ⟨leftRegularToInd₁' R G, fun g ↦ leftRegularToInd₁'_comm' R G g⟩
   hom_inv_id := by
     ext : 2
     apply leftRegularToInd₁'_comp_leftRegularToInd₁'
@@ -180,6 +164,7 @@ The left regular representation is acyclic for homology.
 instance _root_.Rep.leftRegular.trivialHomology :
     (leftRegular R G).TrivialHomology := .of_iso (iso_ind₁' R G)
 
+set_option linter.unusedFintypeInType false in
 /--
 For a finite group, the left regular representation is acyclic for Tate cohomology.
 -/
@@ -237,7 +222,7 @@ lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
   i.e. the sum of all elements of `G`. The image of the norm element in `H⁰(G,R)` is `|G|`,
   since every element of the group is mapped by `ε` to `1`.
   -/
-
+set_option backward.isDefEq.respectTransparency false in
 def H1_iso [Fintype G] :
     H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) :=
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| by
@@ -266,7 +251,7 @@ def H1_iso [Fintype G] :
       Function.comp_apply, smul_eq_mul]
     conv_lhs => enter [2, 2]; tactic => convert leftRegular.zeroι_norm R G
     rw [map_sum]
-    simp [ε, leftRegular.of] -- here we should use `ε_of` but somehow this requires `erw` and `conv`
+    simp
   · change _ ≤ Submodule.map (H0trivial R G).symm.toLinearEquiv.toLinearMap _
     rw [Submodule.map_equiv_eq_comap_symm]
     rw [LinearMap.range_eq_map, ← leftRegular.span_norm, Submodule.map_le_iff_le_comap,
@@ -280,7 +265,7 @@ def H1_iso [Fintype G] :
       SetLike.mem_coe]
     rw [Iso.toLinearEquiv_symm, Iso.symm_symm_eq, Iso.toLinearEquiv_apply, map_comp_H0trivial_apply,
       leftRegular.zeroι_norm, map_sum]
-    simpa [ε, leftRegular.of, Ideal.mem_span_singleton'] using ⟨1, one_mul _⟩
+    simpa [Ideal.mem_span_singleton'] using ⟨1, one_mul _⟩
 
   /-
   If Tate cohomology is defined, then this is proved in the same way as a previous
@@ -294,7 +279,7 @@ def H1_iso [Fintype G] :
   The image of such a function in `H⁰(H,R)` is `|H|`, since every element of the
   group is mapped by `ε` to `1`.
   -/
-
+set_option backward.isDefEq.respectTransparency false in
 def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
     (inj : Function.Injective φ) :
     H1 (aug R G ↓ φ) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card H : R)}) := by
@@ -310,14 +295,19 @@ def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
   rw [LinearMap.range_eq_map, ← leftRegular.res_span_norm R G φ inj, Submodule.map_span,
     ← Set.range_comp, Ideal.span, Submodule.map_span]
   congr 1
-  ext
-  simp only [Nat.card_eq_fintype_card, Set.image_singleton, Set.mem_singleton_iff, Nat.reduceAdd,
-    ShortComplex.SnakeInput.L₁'_X₂, HomologicalComplex.HomologySequence.snakeInput_L₀,
-    Functor.mapShortComplex_obj, ShortComplex.map_X₃, cochainsFunctor_obj,
-    HomologicalComplex.homologyFunctor_obj, ShortComplex.SnakeInput.L₁'_X₁, ShortComplex.map_X₂,
-    ShortComplex.SnakeInput.L₁'_f, ShortComplex.map_g, cochainsFunctor_map,
+  ext x
+  simp only [Iso.toLinearMap_toLinearEquiv, Iso.symm_hom, Set.image_singleton,
+    Nat.card_eq_fintype_card, Set.mem_singleton_iff, Nat.reduceAdd, ShortComplex.SnakeInput.L₁'_X₂,
+    HomologicalComplex.HomologySequence.snakeInput_L₀, Functor.mapShortComplex_obj,
+    ShortComplex.map_X₃, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj,
+    ShortComplex.SnakeInput.L₁'_X₁, ShortComplex.map_X₂, ShortComplex.SnakeInput.L₁'_f,
+    ShortComplex.map_g, hom_ofHom, Representation.isTrivial_def, LinearMap.id_coe, id_eq,
+    Representation.IntertwiningMap.coe_eq_toLinearMap, cochainsFunctor_map,
     HomologicalComplex.homologyFunctor_map, Set.mem_range, Function.comp_apply]
-  change _ ↔ ∃ y : G, (groupCohomology.map (.id H) _ 0).hom (res_norm R φ y) = _
-  simpa [leftRegular.groupCoh_map_res_norm, eq_comm] using by rfl
+  have : (resFunctor φ).map (ε R G) = ofHom ⟨lift R R G (fun _ ↦ 1), fun _ ↦ by ext; simp⟩ := rfl
+  change _  ↔ ∃ g, groupCohomology.map (MonoidHom.id H) (ofHom _) 0 _ = _
+  rw [← this]
+  simp only [leftRegular.groupCoh_map_res_norm R G φ, eq_comm, exists_const]
+  rfl
 
 end Rep.aug

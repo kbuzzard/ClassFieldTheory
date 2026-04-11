@@ -48,7 +48,7 @@ def representation : Representation R G (carrier σ) where
   toFun g := {
     toFun v := {
       fst := (aug R G).ρ g v.fst
-      snd := M.ρ g v.snd + ∑ x : G, (aug.ι R G).hom.hom v.fst x • cocycle σ ⟨g, x⟩
+      snd := M.ρ g v.snd + ∑ x : G, (aug.ι R G).hom v.fst x • cocycle σ ⟨g, x⟩
     }
     map_add' x y := by
       ext
@@ -125,31 +125,15 @@ lemma apply_snd (g : G) (vm : carrier σ) :
 The natural inclusion of a `G`-module `M` in the splitting module
 of a 2-cocycle `σ : Z²(G,M)`.
 -/
-def ι : M ⟶ split σ := by
-  apply ofHom
-  exact {
-    val := LinearMap.inr R (aug R G) M
-    property g := by
-      ext m : 1
-      simp only [ρ_hom, Function.comp_apply]
-      rw [apply]
-      ext
-      · change 0 = (aug R G).ρ g 0
-        rw [map_zero]
-      · change M.ρ g m = (M.ρ g) m + ∑ x : G, (aug.ι R G) 0 x • cocycle σ (g, x)
-        rw [map_zero]
-        simp
-  }
+def ι : M ⟶ split σ := ofHom ⟨LinearMap.inr R (aug R G) M, fun g ↦ by
+  ext m <;> simp [representation]⟩
 
 lemma ι_apply (m : M) : ι σ m = ⟨0,m⟩ := rfl
 
 /--
 The projection from the splitting module of a 2-cocycle to `aug R G`.
 -/
-def π : split σ ⟶ aug R G :=
-  ofHom
-  { val := LinearMap.fst R (aug R G) M
-    property _ := rfl }
+def π : split σ ⟶ aug R G := ofHom ⟨LinearMap.fst R (aug R G) M, fun _ ↦ rfl⟩
 
 def shortExactSequence : ShortComplex (Rep R G) where
   X₁ := M
@@ -159,6 +143,7 @@ def shortExactSequence : ShortComplex (Rep R G) where
   g := π σ
   zero := by ext; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The sequence
 
@@ -182,7 +167,7 @@ The sequence
 is a short exact sequence in `Rep R H` for every subgroup `H` of `G`.
 -/
 lemma res_isShortExact {H : Type} [Group H] (φ : H →* G) :
-    ((shortExactSequence σ).map (res φ)).ShortExact := by
+    ((shortExactSequence σ).map (resFunctor φ)).ShortExact := by
   rw [shortExact_res]
   exact isShortExact ..
 
@@ -201,19 +186,20 @@ open leftRegular
 Given a 2-cocycle `σ`, the image of `σ` in the splitting module of `σ` is equal to the
 coboundary of `τ σ`.
 -/
-lemma τ_property (g h : G) : (split σ).ρ g (τ σ h) - τ σ (g * h) + τ σ g = ι σ (cocycle σ (g,h))
-    := by
+lemma τ_property (g h : G) :
+    (split σ).ρ g (τ σ h) - τ σ (g * h) + τ σ g = ι σ (cocycle σ (g,h)) := by
   classical
   rw [τ, apply, τ, τ, ι_apply]
   ext
-  · simp only [aug.ofSubOfOne_spec, Finsupp.coe_sub, Pi.sub_apply, add_fst, sub_fst]
-    apply (Rep.mono_iff_injective _).mp (inferInstanceAs (Mono (aug.ι R G)))
-    simp only [map_add, map_sub, map_zero]
-    rw [Rep.hom_comm_apply]
-    simp only [of_ρ]
-    erw [Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec, Rep.aug.ofSubOfOne_spec]
-    simp [of_def]
-  · simp [leftRegular.of, Finsupp.single_apply, sub_smul]
+  · simp only [equalizer_as_kernel, map_mul, Module.End.mul_apply, add_fst, sub_fst]
+    apply (Rep.mono_iff_injective _).mp (inferInstance : (Mono (aug.ι R G)))
+    simp only [equalizer_as_kernel, map_add, map_sub, aug.ofSubOfOne_spec R G, map_zero]
+    rw [Rep.hom_comm_apply, Rep.aug.ofSubOfOne_spec]
+    simp
+  · classical simp only [equalizer_as_kernel, Rep.aug.ofSubOfOne_spec R G, Finsupp.coe_sub,
+      Pi.sub_apply, Finsupp.single_apply, sub_smul, ite_smul, one_smul, zero_smul,
+      Finset.sum_sub_distrib, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, map_mul,
+      Module.End.mul_apply, add_snd, sub_snd, add_sub_cancel_left]
     have : (cocycle σ) (g, 1) = (M.ρ g) ((cocycle σ) (1, 1)) := by
       simpa [add_comm] using (mem_cocycles₂_iff (cocycle σ)).mp (cocycle σ).2 g 1 1
     simp [this]
@@ -253,6 +239,7 @@ class FiniteClassFormation (σ : H2 M) where
 
 def H2Map₂ {A B : Rep R G} (f : A ⟶ B) : H2 A ⟶ H2 B := map (MonoidHom.id G) f 2
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fintype G] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2Map₂_H2π {A B : Rep R G} (f : A ⟶ B) :
@@ -269,8 +256,8 @@ include inj in
 /--
 If `σ` generates `H²(G,M)` then the map `H²(G,M) ⟶ H²(G,split σ)` is zero.
 -/
-lemma TateTheorem_lemma_1 [FiniteClassFormation σ] : H2Map₂ ((res φ).map (ι σ)) = 0 := by
-  suffices ⊤ ≤ LinearMap.ker (H2Map₂ ((res φ).map (ι σ))).hom by
+lemma TateTheorem_lemma_1 [FiniteClassFormation σ] : H2Map₂ ((resFunctor φ).map (ι σ)) = 0 := by
+  suffices ⊤ ≤ LinearMap.ker (H2Map₂ ((resFunctor φ).map (ι σ))).hom by
     ext x; simpa using this Submodule.mem_top
   rw [← FiniteClassFormation.hypothesis₂ (σ := σ) inj, Submodule.span_le, Set.singleton_subset_iff]
   simp only [H2res, SetLike.mem_coe, LinearMap.mem_ker]
@@ -291,6 +278,7 @@ example (I : Ideal R) (f : R ⧸ I →ₗ[R] R ⧸ I) (surj : Function.Surjectiv
     Function.Injective f :=
   OrzechProperty.injective_of_surjective_endomorphism f surj
 
+set_option backward.isDefEq.respectTransparency false in
 include inj in
 /--
 For any subgroup H of `G`, the connecting hommorphism in the splitting module long exact sequence
@@ -337,6 +325,7 @@ lemma TateTheorem_lemma_3 [FiniteClassFormation σ] [Finite H] : IsZero (H1 (spl
   apply Limits.IsZero.of_mono_eq_zero S.L₁'.f
   exact S.L₁'_exact.mono_g_iff.mp (inferInstanceAs (Mono (δ (res_isShortExact σ φ) 1 2 rfl)))
 
+set_option backward.isDefEq.respectTransparency false in
 include inj in
 lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
     IsZero (H2 (split σ ↓ φ)) := by
@@ -369,6 +358,7 @@ lemma isIso_δ [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
   have : TrivialTateCohomology (split σ) := inferInstance
   exact TateCohomology.isIso_δ _ this _
 
+set_option backward.isDefEq.respectTransparency false in
 def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
     (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M :=
   -- first go from H^n(trivial) to H^{n+1}(aug)

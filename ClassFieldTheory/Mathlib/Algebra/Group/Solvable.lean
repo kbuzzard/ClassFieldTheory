@@ -21,7 +21,8 @@ theorem exists_isCyclic_quotient_of_finite {G : Type*} [Group G] [Finite G] {H :
     [H.Normal] (hH : H ≠ ⊤) (comm : IsMulCommutative (G ⧸ H)) :
     ∃ H' ∈ Set.Ico H ⊤, ∃ (_ : H'.Normal), IsCyclic (G ⧸ H') := by
   have := QuotientGroup.nontrivial_iff.2 hH
-  obtain ⟨n, hn, f, hf⟩ := CommGroup.exists_mulHom_zmod_surjective_of_finite (G ⧸ H)
+  obtain ⟨n, hn, f, hf⟩ := @CommGroup.exists_mulHom_zmod_surjective_of_finite (G ⧸ H)
+    comm.instCommGroup _ _
   refine ⟨(f.comp (QuotientGroup.mk' H)).ker, ?_, inferInstance, ?_⟩
   · rw [Set.mem_Ico, ← MonoidHom.comap_ker, ← Subgroup.map_le_iff_le_comap,
       QuotientGroup.map_mk'_self, and_iff_right bot_le, lt_top_iff_ne_top,
