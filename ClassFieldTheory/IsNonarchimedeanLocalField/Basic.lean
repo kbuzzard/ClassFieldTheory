@@ -115,7 +115,7 @@ open NNReal WithZero
 
 /-- A chosen valuation to `ℝ≥0` that sends any uniformiser to the given `ε`. -/
 noncomputable def valuationOfIoo (ε : Set.Ioo (0 : ℝ) 1) : Valuation K ℝ≥0 := by
-  refine (valuation K).restrict.map ((WithZeroMulInt.toNNReal (e := ⟨1/ε, ?_⟩) ?_).comp
+  refine (valuation K).restrict.map ((WithZeroMulInt.toNNReal (e := .mk (1/ε) ?_) ?_).comp
       (valueGroupWithZeroIsoInt K|>.toMonoidWithZeroHom.comp
         MonoidWithZeroHom.ValueGroup₀.embedding)) ?_
   · exact one_div_nonneg.mpr ε.2.1.le
@@ -243,7 +243,7 @@ instance (ε) : (valuationOfIoo K ε).Compatible where
         (f := (WithZeroMulInt.toNNReal _) ∘ ((valueGroupWithZeroIsoInt K))) ?_
     convert (WithZeroMulInt.toNNReal_strictMono (e := ⟨1/ε, one_div_nonneg.mpr ε.2.1.le⟩)
       (by exact_mod_cast one_lt_one_div ε.2.1 ε.2.2)).comp
-      (valueGroupWithZeroIsoInt K).strictMono
+      (valueGroupWithZeroIsoInt K).strictMono using 5
     simp
 
 attribute [local instance] inhabitedIoo
