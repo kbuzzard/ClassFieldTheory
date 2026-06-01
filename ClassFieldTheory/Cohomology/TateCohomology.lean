@@ -38,7 +38,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma tateNorm_eq (M : Rep R G) :
     tateNorm M = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
   ext
-  simp only [CochainComplex.of_x, tateNorm, ChainComplex.of_x, chainsIso₀,
+  simp only [CochainComplex.of_X, tateNorm, ChainComplex.of_X, chainsIso₀,
     LinearEquiv.toModuleIso_hom, Rep.norm, cochainsIso₀, LinearEquiv.toModuleIso_inv,
     ModuleCat.hom_comp, ModuleCat.hom_ofHom, hom_ofHom, coe_comp, LinearEquiv.coe_coe,
     LinearEquiv.funUnique_symm_apply, Function.comp_apply, Finsupp.lsingle_apply,
@@ -69,7 +69,7 @@ lemma comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
 
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ tateNorm M = 0 := by
-  simp only [ChainComplex.of_x, CochainComplex.of_x, tateNorm, ← Category.assoc]
+  simp only [ChainComplex.of_X, CochainComplex.of_X, tateNorm, ← Category.assoc]
   simp [← comp_d₁₀_eq]
 
 /-- The Tate norm connecting complexes of inhomogeneous chains and cochains. -/

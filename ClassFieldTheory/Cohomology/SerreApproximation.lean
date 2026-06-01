@@ -158,7 +158,7 @@ noncomputable def _root_.Subrepresentation.toCocyclesIso (w : Subrepresentation 
     rw [LinearEquiv.symm_apply_apply, Subtype.coe_mk, iCocycles_d_apply]
     rfl
   invFun x := ⟨cocyclesMap (.id G) w.toRepSubtype q x, by
-    simp only [Subrepresentation.toCocycles, CochainComplex.of_x, Submodule.mem_comap,
+    simp only [Subrepresentation.toCocycles, CochainComplex.of_X, Submodule.mem_comap,
       cocyclesMap_comp_iCocycles_apply, cochainsMap_id_f_hom_eq_compLeft]
     exact ((w.toCochainsIso q).symm (iCocycles w.toRep q x)).2⟩
   map_add' _ _ := iCocycles_injective <| by
@@ -166,7 +166,7 @@ noncomputable def _root_.Subrepresentation.toCocyclesIso (w : Subrepresentation 
   map_smul' _ _ := iCocycles_injective <| by
     simp_rw [map_smul, iCocycles_mk, Submodule.coe_smul, map_smul]; rfl
   left_inv x := Subtype.ext <| iCocycles_injective <| by
-    simp only [CochainComplex.of_x, cocyclesMap_comp_iCocycles_apply,
+    simp only [CochainComplex.of_X, cocyclesMap_comp_iCocycles_apply,
       cochainsMap_id_f_hom_eq_compLeft]
     erw [iCocycles_mk]
     rfl
