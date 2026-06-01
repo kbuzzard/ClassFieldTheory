@@ -265,7 +265,7 @@ def H1_iso [Fintype G] :
       SetLike.mem_coe]
     rw [Iso.toLinearEquiv_symm, Iso.symm_symm_eq, Iso.toLinearEquiv_apply, map_comp_H0trivial_apply,
       leftRegular.zeroι_norm, map_sum]
-    simpa [Ideal.mem_span_singleton'] using ⟨1, one_mul _⟩
+    simp
 
   /-
   If Tate cohomology is defined, then this is proved in the same way as a previous
@@ -293,7 +293,7 @@ def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
     (mapShortComplex₃_exact (aug_isShortExact' R G φ) rfl).moduleCat_range_eq_ker.symm]
   simp only [ShortComplex.map_X₃]
   rw [LinearMap.range_eq_map, ← leftRegular.res_span_norm R G φ inj, Submodule.map_span,
-    ← Set.range_comp, Ideal.span, Submodule.map_span]
+    Submodule.map_span, ← Set.range_comp]
   congr 1
   ext x
   simp only [Iso.toLinearMap_toLinearEquiv, Iso.symm_hom, Set.image_singleton,
