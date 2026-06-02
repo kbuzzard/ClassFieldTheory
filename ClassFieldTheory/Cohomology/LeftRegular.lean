@@ -91,8 +91,8 @@ lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
   choose σ hσ using Quotient.mk_surjective (s := QuotientGroup.rightRel φ.range)
   have : x = ∑ i, (show G →₀ _ from x.1) (σ i) • res_norm' R (σ i) φ := by
     ext a
-    simp only [res_obj_V, res_obj_ρ, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul,
-      coe_finset_sum, coe_smul, Finset.sum_apply, Pi.smul_apply, single_apply, Finset.sum_boole,
+    simp only [res_obj_V, res_obj_ρ, AddSubmonoidClass.coe_finsetSum, SetLike.val_smul,
+      coe_finsetSum, coe_smul, Finset.sum_apply, Pi.smul_apply, single_apply, Finset.sum_boole,
       smul_eq_mul]
     rw [Finset.sum_eq_single (Quotient.mk _ a)]
     · have (i j : G) : QuotientGroup.rightRel φ.range i j → (show G →₀ R from x.1) i =
