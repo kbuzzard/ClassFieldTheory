@@ -88,11 +88,10 @@ lemma exists_valuation_algebraMap_le_valuation
 variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
   [IsTopologicalAddGroup K]
   [Field L] [ValuativeRel L] [TopologicalSpace L] [IsValuativeTopology L]
-  [IsTopologicalAddGroup L]
   [Algebra K L] [Algebra.IsAlgebraic K L] [ValuativeExtension K L]
 
 /-- Maddy's Lemma : Density implies continuity. -/
-@[fun_prop] instance continuous_algebraMap_of_density :
+@[fun_prop] lemma continuous_algebraMap_of_density :
     Continuous (algebraMap K L) := by
   apply continuous_of_continuousAt_zero _ _
   simp only [ContinuousAt, map_zero]

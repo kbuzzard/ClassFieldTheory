@@ -35,7 +35,7 @@ open ValuativeRel CategoryTheory
   Rep.units G 𝒪[L]
 
 /-- The short complex `0 ⟶ 𝒪[L]ˣ ⟶ Lˣ ⟶ ℤ ⟶ 0` of `G`-modules where `G = Gal(L/K)`. -/
-noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
+noncomputable def valuationShortComplex (G K L : Type) [Group G]
     [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
     [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
     [MulSemiringAction G L]
@@ -51,7 +51,7 @@ noncomputable def valuationShortComplex (G K L : Type) [Group G] [Finite G]
     simp [valuationInt, valuation_smul K]⟩
   zero := by ext; exact exact_kerV_v.apply_apply_eq_zero _
 
-variable {G K L : Type} [Group G] [Finite G]
+variable {G K L : Type} [Group G]
   [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
   [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
   [MulSemiringAction G L]
