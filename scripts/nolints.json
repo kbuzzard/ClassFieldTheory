@@ -101,7 +101,6 @@
  ["docBlame", "groupCohomology.TateCohomology.map"],
  ["docBlame", "groupCohomology.TateCohomology.res_iso"],
  ["docBlame", "groupCohomology.tateComplex.normNatEnd"],
- ["nonClassInstance", "continuous_algebraMap_of_density"],
  ["simpNF", "Finsupp.coe_mapDomainLinearEquiv"],
  ["simpNF",
   "IsNonarchimedeanLocalField.val_inv_repUnitsInteger_ρ_apply_apply_coe"],
@@ -141,6 +140,4 @@
  ["simpNF",
   "groupCohomology.TateCohomology.zeroIso.isoShortComplexH0_inv_τ₂_hom_apply"],
  ["simpNF",
-  "groupCohomology.TateCohomology.zeroIso.isoShortComplexH0_inv_τ₃_hom_apply"],
- ["unusedArguments", "IsNonarchimedeanLocalField.valuationShortComplex"],
- ["unusedArguments", "Rep.split.carrier"]]
+  "groupCohomology.TateCohomology.zeroIso.isoShortComplexH0_inv_τ₃_hom_apply"]]

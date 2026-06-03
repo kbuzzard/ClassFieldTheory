@@ -24,6 +24,7 @@ variable {M : Rep R G}
 namespace Rep.split
 
 set_option linter.unusedVariables false in
+@[nolint unusedArguments]
 abbrev carrier (σ : H2 M) : Type := (aug R G) × M
 
 variable (σ : H2 M)
