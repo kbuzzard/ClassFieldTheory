@@ -162,9 +162,16 @@ noncomputable def _root_.Subrepresentation.toCocyclesIso (w : Subrepresentation 
       cocyclesMap_comp_iCocycles_apply, cochainsMap_id_f_hom_eq_compLeft]
     exact ((w.toCochainsIso q).symm (iCocycles w.toRep q x)).2⟩
   map_add' _ _ := iCocycles_injective <| by
-    simp_rw [map_add, iCocycles_mk, Submodule.coe_add, map_add]; rfl
+    rw [iCocycles_mk, map_add]
+    simp_rw [Submodule.coe_add, map_add]
+    erw [iCocycles_mk, iCocycles_mk]
+    rfl
+    -- simp_rw [map_add, iCocycles_mk, Submodule.coe_add, map_add]; rfl
   map_smul' _ _ := iCocycles_injective <| by
-    simp_rw [map_smul, iCocycles_mk, Submodule.coe_smul, map_smul]; rfl
+    rw [iCocycles_mk, map_smul]
+    simp_rw [Submodule.coe_smul, map_smul]
+    erw [iCocycles_mk]
+    rfl
   left_inv x := Subtype.ext <| iCocycles_injective <| by
     simp only [CochainComplex.of_X, cocyclesMap_comp_iCocycles_apply,
       cochainsMap_id_f_hom_eq_compLeft]
@@ -232,13 +239,16 @@ set_option backward.isDefEq.respectTransparency false in
     LinearMap.ker ((inhomogeneousCochains M).d q (q + 1)).hom ≃ₗ[k] cocycles M q where
   toFun x := cocyclesMk x.val <| by
     have := x.2
-    simp_rw [LinearMap.mem_ker, inhomogeneousCochains.d_def] at this
+    simp_rw [LinearMap.mem_ker, CochainComplex.of_d] at this
     exact this -- simpa is very slow
   invFun x := ⟨iCocycles _ _ x, by simp [iCocycles_d'_apply]⟩
   left_inv x := by ext : 1; exact iCocycles_mk ..
   right_inv x := iCocycles_injective <| iCocycles_mk ..
-  map_add' _ _ := iCocycles_injective <| by simp_rw [map_add, iCocycles_mk, Submodule.coe_add]
-  map_smul' _ _ := iCocycles_injective <| by simp_rw [map_smul, iCocycles_mk]; rfl
+  map_add' _ _ := iCocycles_injective <| by
+    rw [iCocycles_mk, map_add, iCocycles_mk, iCocycles_mk, Submodule.coe_add]
+  map_smul' _ _ := iCocycles_injective <| by
+    simp_rw [Submodule.coe_smul, map_smul, RingHom.id_apply]
+    rw [iCocycles_mk, iCocycles_mk]
 
 instance [IsFilterComplete M_] (q : ℕ) : IsFilterComplete fun i ↦ (M_ i).toCocycles q :=
   let help (i) := ((M_ i).toCochains q).submoduleOf
@@ -248,7 +258,7 @@ instance [IsFilterComplete M_] (q : ℕ) : IsFilterComplete fun i ↦ (M_ i).toC
   .of_iso (kerDEquivCocycles M q) (M_ := help) <| by
     refine (kerDEquivCocycles M q).symm.surjective.forall.mpr fun _ _ ↦ ?_
     simp_rw [LinearEquiv.apply_symm_apply, help, Submodule.submoduleOf, Submodule.mem_comap,
-      Submodule.subtype_apply, kerDEquivCocycles_symm_apply_coe]
+      Submodule.subtype_apply]
     rfl
 
 -- (kerDEquivCocycles M q)

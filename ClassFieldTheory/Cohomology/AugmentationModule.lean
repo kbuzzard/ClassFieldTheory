@@ -246,7 +246,7 @@ def H1_iso [Fintype G] :
     rw [show (mapShortComplex₃ ..).f = map (.id G) (ε R G) 0 by simp, ← LinearMap.comp_apply,
       ← ModuleCat.hom_comp, map_comp_H0trivial]
     simp only [ShortComplex.SnakeInput.L₁'_X₁, HomologicalComplex.HomologySequence.snakeInput_L₀,
-      Functor.mapShortComplex_obj, ShortComplex.map_X₂, cochainsFunctor_obj,
+      Functor.mapShortComplex_obj, ShortComplex.map_X₂,
       HomologicalComplex.homologyFunctor_obj, ModuleCat.hom_comp, map_smul, LinearMap.coe_comp,
       Function.comp_apply, smul_eq_mul]
     conv_lhs => enter [2, 2]; tactic => convert leftRegular.zeroι_norm R G
@@ -258,7 +258,7 @@ def H1_iso [Fintype G] :
       Submodule.span_le, Set.singleton_subset_iff]
     simp only [Nat.reduceAdd, ShortComplex.SnakeInput.L₁'_X₁,
       HomologicalComplex.HomologySequence.snakeInput_L₀, Functor.mapShortComplex_obj,
-      ShortComplex.map_X₂, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj,
+      ShortComplex.map_X₂, HomologicalComplex.homologyFunctor_obj,
       ShortComplex.SnakeInput.L₁'_X₂, ShortComplex.map_X₃, ShortComplex.SnakeInput.L₁'_f,
       ShortComplex.map_g, cochainsFunctor_map, HomologicalComplex.homologyFunctor_map,
       Nat.card_eq_fintype_card, Submodule.comap_coe, LinearEquiv.coe_coe, Set.mem_preimage,
@@ -299,7 +299,7 @@ def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
   simp only [Iso.toLinearMap_toLinearEquiv, Iso.symm_hom, Set.image_singleton,
     Nat.card_eq_fintype_card, Set.mem_singleton_iff, Nat.reduceAdd, ShortComplex.SnakeInput.L₁'_X₂,
     HomologicalComplex.HomologySequence.snakeInput_L₀, Functor.mapShortComplex_obj,
-    ShortComplex.map_X₃, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj,
+    ShortComplex.map_X₃, HomologicalComplex.homologyFunctor_obj,
     ShortComplex.SnakeInput.L₁'_X₁, ShortComplex.map_X₂, ShortComplex.SnakeInput.L₁'_f,
     ShortComplex.map_g, hom_ofHom, Representation.isTrivial_def, LinearMap.id_coe, id_eq,
     Representation.IntertwiningMap.coe_eq_toLinearMap, cochainsFunctor_map,
