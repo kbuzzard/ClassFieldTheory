@@ -38,29 +38,15 @@ set_option backward.isDefEq.respectTransparency false in
 lemma tateNorm_eq (M : Rep R G) :
     tateNorm M = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
   ext
-  simp only [CochainComplex.of_X, tateNorm, ChainComplex.of_X, chainsIso₀,
-    LinearEquiv.toModuleIso_hom, Rep.norm, cochainsIso₀, LinearEquiv.toModuleIso_inv,
-    ModuleCat.hom_comp, ModuleCat.hom_ofHom, hom_ofHom, coe_comp, LinearEquiv.coe_coe,
-    LinearEquiv.funUnique_symm_apply, Function.comp_apply, Finsupp.lsingle_apply,
-    Finsupp.LinearEquiv.finsuppUnique_apply, AddEquiv.funUnique_symm_apply,
-    Finsupp.lsum_comp_lsingle, pi_apply]
-  congr
-  simp only [Finsupp.single_apply, ite_eq_left_iff]
-  exact fun h ↦ False.elim <| h <| Unique.eq_default _
+  simp_all [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
 
 @[reassoc (attr := simp), elementwise]
 lemma norm_comp_d_eq_zero (M : Rep R G) : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
-  ext1
-  simp only [ModuleCat.hom_comp, ModuleCat.hom_zero, Rep.norm, ModuleCat.hom_ofHom]
-  ext1
-  simp only [LinearMap.comp_apply, LinearMap.zero_apply]
-  rw [← LinearMap.mem_ker, d₀₁_ker_eq_invariants]
-  intro g
-  simp
+  ext
+  simp [Pi.zero_apply _]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tateNorm_comp_d (M : Rep R G) : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
-  simp [tateNorm]
+  simp [tateNorm, eq_d₀₁_comp_inv M]
 
 @[simp]
 lemma comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
@@ -69,8 +55,8 @@ lemma comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
 
 set_option backward.isDefEq.respectTransparency false in
 lemma d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ tateNorm M = 0 := by
-  simp only [ChainComplex.of_X, CochainComplex.of_X, tateNorm, ← Category.assoc]
-  simp [← comp_d₁₀_eq]
+  simp only [tateNorm, ← Category.assoc, Preadditive.IsIso.comp_right_eq_zero]
+  simp [← comp_d₁₀_eq _]
 
 /-- The Tate norm connecting complexes of inhomogeneous chains and cochains. -/
 @[simps]
@@ -168,6 +154,7 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
   · exact .map_of_natIso _ (tateComplex.eval_neg _).symm <| map_chainsFunctor_eval_shortExact _ hS
 
 instance : (tateComplexFunctor (R := R) (G := G)).Additive where
+  map_add {_ _ _ _} := by ext (i | i) <;> { dsimp [tateComplex]; ext; rfl }
 
 /-
 The next two statements say that `tateComplexFunctor` is an exact functor.
@@ -409,4 +396,3 @@ lemma isZero_neg_one_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [Is
   .of_iso (by simp [subsingleton_iff]) <| negOneIsoOfIsTrivial _
 
 end groupCohomology.TateCohomology
-end
