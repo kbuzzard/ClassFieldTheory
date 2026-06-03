@@ -20,6 +20,7 @@ lemma Algebra.isUnramifiedAt_iff_map_eq' {R : Type*} {S : Type*} [CommRing R] [C
     Algebra.IsUnramifiedAt R q ↔
     Algebra.IsSeparable (IsLocalRing.ResidueField R') (IsLocalRing.ResidueField S') ∧
     Ideal.map (algebraMap R S') p = IsLocalRing.maximalIdeal S' := by
+  let := Localization.AtPrime.algebraOfLiesOver p q
   rw [Algebra.isUnramifiedAt_iff_map_eq R p]
   refine and_congr ?_ ?_
   · refine Algebra.IsSeparable.iff_of_equiv_equiv
