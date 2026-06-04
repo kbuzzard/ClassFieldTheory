@@ -19,7 +19,7 @@ weak.linter.style.header = false
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4.git"
-rev = "bedd3945670e15f9544e7ac6682e801e551d1ea7"
+rev = "70b9cc50cba48ea84824152deebe9e81f1bafb05"
 
 [[require]]
 name = "checkdecls"
