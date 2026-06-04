@@ -180,7 +180,7 @@ instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.Tr
     rw [Nat.cast_add, Nat.cast_one]
     exact .of_iso (TrivialCohomology.isZero H) ((TateCohomology.isoGroupCohomology (n + 1)).app _)
   · classical
-    induction n, hn using Int.le_induction_down generalizing M with
+    induction n, hn using Int.leInductionDown generalizing M with
     | base =>
       refine .of_iso ?_ (δDownResIsoTate M H.subtype_injective _)
       refine .of_iso ?_ ((TateCohomology.isoGroupCohomology 1).app _)
