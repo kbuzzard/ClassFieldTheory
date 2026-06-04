@@ -295,7 +295,8 @@ instance : FiniteDimensional K L := by
       subst i0
       simp_all
     have : 0 < Valuation.RankOne.hom (valuation K) i0 := by
-      convert (Valuation.RankOne.strictMono (valuation K)) (zero_lt_iff.2 hi0); simp
+      rw [pos_iff_ne_zero, ne_eq, Valuation.RankOne.hom_eq_zero_iff]
+      exact hi0
     obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one this hϖ1
     refine ⟨ε ^ n, pow_pos ε.2.1 n, fun p hp ↦ ?_⟩
     dsimp
