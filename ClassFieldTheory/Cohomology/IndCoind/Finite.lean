@@ -112,7 +112,7 @@ lemma ind₁_apply (g x : G) : (ind₁ R G V) g ∘ₗ Ind₁V.mk R G V x = Ind�
 /-- A version of `ind₁` that's actually defined as an action on `G →₀ A`. -/
 def ind₁AsFinsupp : Representation R G (G →₀ V) where
   toFun g := (mapDomain.linearEquiv _ _ <| .symm <| .mulRight g).toLinearMap
-  map_one' := by simp [Module.End.one_eq_id]
+  map_one' := by simp [Module.End.one_eq_id, pull_end]
   map_mul' := by simp [Module.End.mul_eq_comp, -Equiv.mulRight_mul, ← Finsupp.lmapDomain_comp]
 
 /-- A version of `coind₁` that's actually defined as `G → A` with some action. -/
