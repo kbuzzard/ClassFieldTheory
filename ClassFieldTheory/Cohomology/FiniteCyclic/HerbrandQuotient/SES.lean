@@ -26,6 +26,11 @@ variable {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
 
 include hS
 
+-- TODO : upstream this into mathlib
+omit [IsCyclic G] [Finite G] hS in
+lemma _root_.Rep.res_id_map (X Y : Rep R G) (f : X ⟶ Y) :
+    (resFunctor (MonoidHom.id G)).map f = f := rfl
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of representations of a finite cyclic group, the long exact
@@ -52,18 +57,18 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
     subst hij hjk
     fin_cases i <;>
         dsimp only [Fin.reduceFinMk, Fin.reduceAdd]
-    · erw [← Functor.map_comp, S.zero, Functor.map_zero]
-    · erw [← Category.assoc, ← ShortComplex.map_g]
-      erw [(mapShortComplex₃ hS (Eq.refl 3)).zero]
-      rw [Limits.zero_comp]
-    · erw [Category.assoc, ← NatTrans.naturality, ← ShortComplex.map_f]
-      erw [(mapShortComplex₁ hS (Eq.refl 3)).zero_assoc]
-      rw [Limits.zero_comp]
-    · erw [← Functor.map_comp, S.zero, Functor.map_zero]
+    · simp [-functor_map, ← Functor.map_comp, S.zero]
+    · simpa [-functor_map, ← Category.assoc, ← ShortComplex.map_g] using!
+        (mapShortComplex₃ hS (Eq.refl 3)).zero
+    · simp only [Fin.isValue, Category.assoc, ← NatTrans.naturality, functor_obj]
+      rw [← S.map_f]
+      simpa using! (mapShortComplex₁ hS (Eq.refl 3)).zero_assoc <|
+        (periodicCohomology 3 1 _).hom.app S.X₂
+    · simp [-functor_map, ← Functor.map_comp]
     · rw [← ShortComplex.map_g]
-      erw [(mapShortComplex₃ hS (Eq.refl 2)).zero]
+      simpa using! (mapShortComplex₃ hS (Eq.refl 2)).zero
     · rw [← ShortComplex.map_f]
-      erw [(mapShortComplex₁ hS (Eq.refl 2)).zero]
+      simpa using! (mapShortComplex₁ hS (Eq.refl 2)).zero
 
 set_option backward.isDefEq.respectTransparency false in
 lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS).ExactAt i := by

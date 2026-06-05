@@ -270,7 +270,6 @@ lemma commSqₙ (n : ℕ) (M : Rep R G) :
       (rest_δ_naturality (shortExact_upSES M) S.subtype (n + 1) (n + 2) rfl).symm ?_
     simp [-up_obj, coresNatTrans, cores_obj, δUpNatIso, δUpIso]
 
-
 set_option backward.isDefEq.respectTransparency false in
 lemma cores_res (n : ℕ) :
     (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =
