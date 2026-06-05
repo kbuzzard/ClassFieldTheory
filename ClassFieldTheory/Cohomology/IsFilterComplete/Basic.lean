@@ -191,7 +191,7 @@ variable {M ι σ : Type*} [AddCommGroup M] [Preorder ι] [Preorder σ] [SetLike
 theorem FilterCauchySeq.mk_surjective (y : FilterCauchySeq (F ∘ toDual)) :
     ∃ x hx, .mk x hx = y :=
   ⟨y.val, fun _ _ hij ↦ sup_le (α := AddSubgroup M) le_rfl
-    (by simpa [← SetLike.coe_subset_coe] using F.2 hij) (y.2 hij), rfl⟩
+    (by simpa [← SetLike.coe_subset_coe] using F.2 (toDual_le_toDual.2 hij)) (y.2 hij), rfl⟩
 
 end Antitone
 
@@ -208,7 +208,6 @@ variable {M N σ τ : Type*} [AddCommGroup M] [AddCommGroup N]
 -- and Kenny thinks that under reasonable assumptions, `ℕ` will just be cofinal in `ι`.
 def partialSum : ((i : ℕ) → F (toDual i)) →+ FilterCauchySeq (F ∘ toDual) where
   toFun a := .mk (fun i ↦ ∑ j ∈ Finset.range i, a j) fun i₁ i₂ h ↦ by
-    dsimp only
     rw [← Finset.sum_range_add_sum_Ico _ h, sub_mem_comm_iff, add_sub_cancel_left]
     exact sum_mem fun j hj ↦ SetLike.coe_subset_coe.2 (F.2 (Finset.mem_Ico.mp hj).1) (a j).2
   map_zero' := by ext; simp; rfl
@@ -221,7 +220,7 @@ noncomputable def sum [IsFilterComplete (F ∘ toDual)] : ((i : ℕ) → F (toDu
 
 theorem sum_sub_mem [IsFilterComplete (F ∘ toDual)] {x : ∀ i, F (toDual i)} {i : ℕ} :
     sum F x - ∑ j ∈ Finset.range i, x j ∈ F (toDual i) :=
-  limit_sub_mem (F ∘ toDual) _
+  limit_sub_mem (F ∘ toDual) (partialSum F x)
 
 variable {F G} {Φ : Type*} [FunLike Φ M N] [AddMonoidHomClass Φ M N] {φ : Φ}
   (h : ∀ ⦃i x⦄, x ∈ F i → φ x ∈ G i)

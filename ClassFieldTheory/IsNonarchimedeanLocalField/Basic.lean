@@ -338,7 +338,7 @@ lemma algebraMap_mem_integer (x : 𝒪[K]) : (algebraMap 𝒪[K] L) x ∈ 𝒪[L
   simpa only [map_one] using (ValuativeExtension.algebraMap_le (B := L)).mpr hx
 
 -- by David Ang
-instance : Algebra 𝒪[K] 𝒪[L] where
+noncomputable instance : Algebra 𝒪[K] 𝒪[L] where
   smul r a := ⟨r • a, Algebra.smul_def r (a : L) ▸ mul_mem (algebraMap_mem_integer ..) a.2⟩
   algebraMap := (algebraMap K L).restrict 𝒪[K] 𝒪[L] fun x hx => algebraMap_mem_integer K L ⟨x, hx⟩
   commutes' _ _ := Subtype.ext (Algebra.commutes _ _)

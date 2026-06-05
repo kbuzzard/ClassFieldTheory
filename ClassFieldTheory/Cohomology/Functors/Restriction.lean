@@ -7,12 +7,6 @@ public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
-TODO : Although we made `Rep.res` a `def` there is still places we need to unfold the definition
--- inside `simp`. The goal usually involves `groupCohomology.map` and the reason being is that
--- `groupCohomology.map` uses `Action.res` directly, so what we should do is
--- 1. PR `Rep.res` into mathlib and change the defition of `groupCohomology.map` to use `Rep.res`
--- 2. refactor `Rep` in mathlib to be a `def` instead of `abbrev` which (after test in CFT repo)
--- seems to solve some of our problems.
 -/
 
 @[expose] public section
@@ -116,6 +110,7 @@ lemma isZero_res_iff (M : Rep R G) {H : Type u} [Group H] (φ : H →* G) :
     IsZero (M ↓ φ) ↔ IsZero M := by
   rw [isZero_iff, isZero_iff, Rep.res_obj_V]
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The restriction functor `res φ : Rep R G ⥤ Rep R H` takes short exact sequences to short
 exact sequences.
@@ -157,6 +152,7 @@ namespace groupCohomology
 variable {G S S' : Type u} [Group G] [Group S] (φ : S →* G) [Group S'] (ψ : S' →* S)
   {M : Rep.{u} R G}
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The restriction map `Hⁿ(G,M) ⟶ Hⁿ(H,M)`, defined as a morphism of functors
 -/
@@ -178,8 +174,7 @@ lemma rest_id (n : ℕ) : rest (MonoidHom.id G) (R := R) n = 𝟙 (functor R G n
 set_option backward.isDefEq.respectTransparency false in
 lemma rest_comp (n : ℕ) : rest (φ.comp ψ) n = rest φ (R := R) n ≫ (𝟙 _ ◫ rest ψ n) := by
   ext M : 2
-  simp only [functor_obj, Functor.comp_obj, Functor.id_hcomp, NatTrans.comp_app,
-      Functor.whiskerLeft_app, rest_app]
+  simp only [rest_app, Functor.id_hcomp, NatTrans.comp_app, Functor.whiskerLeft_app]
   rw [← map_comp]
   exact map_congr rfl rfl n
 
