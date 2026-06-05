@@ -221,7 +221,7 @@ theorem teichmuller'_def (x : 𝒪[K]) :
 theorem residue_teichmuller' (x : 𝓀[K]) :
     IsLocalRing.residue 𝒪[K] (teichmuller' K x) = x :=
   Quotient.inductionOn x fun x ↦ (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr <| by
-    convert limUnder_teichmullerSeq_mem x 0 <;> simp
+    convert! limUnder_teichmullerSeq_mem x 0 <;> simp
 
 theorem residue_comp_teichmuller' :
     (IsLocalRing.residue 𝒪[K] : 𝒪[K] →*₀ 𝓀[K]).comp (teichmuller' K) = .id _ :=

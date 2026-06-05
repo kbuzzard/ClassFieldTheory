@@ -241,9 +241,10 @@ instance (ε) : (valuationOfIoo K ε).Compatible where
       OrderMonoidIso.coe_mulEquiv]
     refine symm <| StrictMono.le_iff_le
         (f := (WithZeroMulInt.toNNReal _) ∘ ((valueGroupWithZeroIsoInt K))) ?_
-    convert (WithZeroMulInt.toNNReal_strictMono (e := ⟨1/ε, one_div_nonneg.mpr ε.2.1.le⟩)
+    convert (WithZeroMulInt.toNNReal_strictMono (e := NNReal.mk (1/ε) <|
+      one_div_nonneg.mpr ε.2.1.le)
       (by exact_mod_cast one_lt_one_div ε.2.1 ε.2.2)).comp
-      (valueGroupWithZeroIsoInt K).strictMono using 5
+      (valueGroupWithZeroIsoInt K).strictMono using 4
     simp
 
 attribute [local instance] inhabitedIoo
@@ -304,7 +305,7 @@ instance : FiniteDimensional K L := by
     refine (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mp ?_
     change dist _ _ < _ at hp; rw [dist_comm] at hp
     rw [← coe_lt_coe] at hn ⊢
-    convert hp.trans hn
+    convert! hp.trans hn
     change (v₂ (p.2 - p.1) : ℝ) = ‖iKL p.2 - iKL p.1‖
     rw [← map_sub]
     exact congr($eq.symm _)
@@ -318,7 +319,7 @@ instance : FiniteDimensional K L := by
     change dist _ _ < i; rw [dist_comm]
     change _ < (v₂ _ ^ n : ℝ) at hp
     rw [← eq] at hp
-    convert hp.trans hn
+    convert! hp.trans hn
     change ‖iKL p.2 - iKL p.1‖ = _
     rw [← map_sub]
     exact congr($eq _)
