@@ -106,6 +106,7 @@ def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : tateComplex X ⟶ tateCompl
 @[simp]
 lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by aesop_cat
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking a representation of `G` to its Tate complex. -/
 @[simps]
@@ -153,6 +154,7 @@ lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.Sho
       map_cochainsFunctor_eval_shortExact _ hS
   · exact .map_of_natIso _ (tateComplex.eval_neg _).symm <| map_chainsFunctor_eval_shortExact _ hS
 
+set_option backward.defeqAttrib.useBackward true in
 instance : (tateComplexFunctor (R := R) (G := G)).Additive where
   map_add {_ _ _ _} := by ext (i | i) <;> { dsimp [tateComplex]; ext; rfl }
 
@@ -254,7 +256,8 @@ lemma map_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep R H} {P
 lemma map_id {M : Rep R G} (n : ℤ) :
     map (MulEquiv.refl G) (𝟙 M) n = 𝟙 ((tateCohomology n).obj M) := by
   unfold map
-  simp [cochinasMap_id, tateCohomology, tateComplex]
+  simp [cochinasMap_id, tateCohomology]
+  rfl
 
 lemma map_congr {M : Rep R G} {N : Rep R H} {e1 e2 : G ≃* H} (he : e1 = e2) {φ : M ⟶ N ↓ e1}
     {ψ : M ⟶ N ↓ e2} (h : φ.hom.toLinearMap = ψ.hom.toLinearMap) (n : ℤ) :
@@ -328,7 +331,7 @@ and the corresponding parts of the Tate complex. -/
   (tateComplex M).isoSc' (-2) (-1) 0 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (chainsIso₁ M) (chainsIso₀ M) (cochainsIso₀ M)
       (groupHomology.comp_d₁₀_eq M)
-      (by simp [sc, tateComplex, tateNorm])
+      (by simp [sc, tateComplex, tateNorm]; rfl)
 
 end negOneIso
 
@@ -349,7 +352,7 @@ def negOneIso (M : Rep R G) :
     rw [← range_d₁₀_eq_coinvariantsKer, Submodule.submoduleOf, Submodule.map_comap_eq_of_le,
       ← Submodule.map_comp, ← LinearMap.range_comp]
     · rfl
-    · simpa [LinearMap.range_le_iff_comap, ← ker_comp, -comp_eq_zero] using
+    · simpa [LinearMap.range_le_iff_comap, ← ker_comp, -comp_eq_zero] using!
         congr(($(comp_eq_zero M)).hom)
 
 variable [M.ρ.IsTrivial] {n : ℤ} {N : ℕ}
