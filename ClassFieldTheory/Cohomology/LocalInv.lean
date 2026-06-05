@@ -120,7 +120,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- By a computation, `localInvAux n ∘ carryH2Aux = id`. -/
 lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (localInvAux n) := by
   intro i
-  simp only [localInvAux, ShortComplex.moduleCatLeftHomologyData_H, carryH2Aux,
+  simp only [localInvAux, carryH2Aux,
     AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe, Function.comp_apply,
     Iso.inv_hom_id_apply, map_nsmul, nsmul_eq_mul, ZMod.natCast_val, ZMod.cast_id', id_eq]
   convert mul_one _

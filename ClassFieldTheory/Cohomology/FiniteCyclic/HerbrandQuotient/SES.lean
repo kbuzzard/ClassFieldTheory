@@ -26,6 +26,7 @@ variable {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
 
 include hS
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of representations of a finite cyclic group, the long exact
 sequence in cohomology is periodic with period six. -/
@@ -51,14 +52,14 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
     subst hij hjk
     fin_cases i <;>
         dsimp only [Fin.reduceFinMk, Fin.reduceAdd]
-    · rw [← Functor.map_comp, S.zero, Functor.map_zero]
-    · rw [← Category.assoc, ← ShortComplex.map_g]
+    · erw [← Functor.map_comp, S.zero, Functor.map_zero]
+    · erw [← Category.assoc, ← ShortComplex.map_g]
       erw [(mapShortComplex₃ hS (Eq.refl 3)).zero]
       rw [Limits.zero_comp]
-    · rw [Category.assoc, ← NatTrans.naturality, ← ShortComplex.map_f]
+    · erw [Category.assoc, ← NatTrans.naturality, ← ShortComplex.map_f]
       erw [(mapShortComplex₁ hS (Eq.refl 3)).zero_assoc]
       rw [Limits.zero_comp]
-    · rw [← Functor.map_comp, S.zero, Functor.map_zero]
+    · erw [← Functor.map_comp, S.zero, Functor.map_zero]
     · rw [← ShortComplex.map_g]
       erw [(mapShortComplex₃ hS (Eq.refl 2)).zero]
     · rw [← ShortComplex.map_f]
@@ -80,7 +81,7 @@ lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS)
       ((periodicCohomology 3 1 <| by decide).app S.X₂) ?_ ?_
     · cat_disch
     · dsimp only [herbrandSixTermSequence, Fin.reduceFinMk, Fin.reduceAdd]
-      rw [Iso.app_hom, ← (periodicCohomology 3 1 _).hom.naturality]
+      erw [Iso.app_hom, ← (periodicCohomology 3 1 _).hom.naturality]
       cat_disch
   · exact mapShortComplex₂_exact hS 1
   · exact mapShortComplex₃_exact hS (Eq.refl 2)
@@ -91,10 +92,10 @@ lemma herbrandQuotient_ne_zero_of_shortExact₃
   rw [herbrandQuotient_ne_zero] at *
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 2).X₃ ∧
-      Finite ((herbrandSixTermSequence hS).sc 5).X₃ := by simpa using h₁
+      Finite ((herbrandSixTermSequence hS).sc 5).X₃ := by simpa using! h₁
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 5).X₁ ∧
-      Finite ((herbrandSixTermSequence hS).sc 2).X₁ := by simpa using h₂
+      Finite ((herbrandSixTermSequence hS).sc 2).X₁ := by simpa using! h₂
   exact ⟨(herbrandSixTermSequence_exactAt hS 5).moduleCat_finite,
     (herbrandSixTermSequence_exactAt hS 2).moduleCat_finite⟩
 
@@ -104,10 +105,10 @@ lemma herbrandQuotient_ne_zero_of_shortExact₂
   rw [herbrandQuotient_ne_zero] at *
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 4).X₁ ∧
-      Finite ((herbrandSixTermSequence hS).sc 1).X₁ := by simpa using h₁
+      Finite ((herbrandSixTermSequence hS).sc 1).X₁ := by simpa using! h₁
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 4).X₃ ∧
-      Finite ((herbrandSixTermSequence hS).sc 1).X₃ := by simpa using h₃
+      Finite ((herbrandSixTermSequence hS).sc 1).X₃ := by simpa using! h₃
   exact ⟨(herbrandSixTermSequence_exactAt hS 4).moduleCat_finite,
     (herbrandSixTermSequence_exactAt hS 1).moduleCat_finite⟩
 
@@ -117,10 +118,10 @@ lemma herbrandQuotient_ne_zero_of_shortExact₁
   rw [herbrandQuotient_ne_zero] at *
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 3).X₃ ∧
-      Finite ((herbrandSixTermSequence hS).sc 0).X₃ := by simpa using h₂
+      Finite ((herbrandSixTermSequence hS).sc 0).X₃ := by simpa using! h₂
   obtain ⟨_, _⟩ :
       Finite ((herbrandSixTermSequence hS).sc 0).X₁ ∧
-      Finite ((herbrandSixTermSequence hS).sc 3).X₁ := by simpa using h₃
+      Finite ((herbrandSixTermSequence hS).sc 3).X₁ := by simpa using! h₃
   exact ⟨(herbrandSixTermSequence_exactAt hS 3).moduleCat_finite,
     (herbrandSixTermSequence_exactAt hS 0).moduleCat_finite⟩
 

@@ -244,6 +244,7 @@ lemma coind_ι_gg_map₁ : coind₁'_ι ≫ map₁ (R := R) (G := G) = 0 := by
   ext : 2
   exact coind_ι_gg_map₁_app _
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
   app M := ofHom ⟨Representation.map₂, fun _ ↦ Representation.map₂_comm _ _⟩
@@ -299,6 +300,7 @@ lemma map₁_comp_ind₁'_iso_coind₁' :
   classical simp [equivFunOnFinite, mapDomain, Finsupp.sum, Finsupp.single_apply,
     eq_comm (b := d), ← inv_mul_eq_iff_eq_mul]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The first short complex in the periodicity sequence. -/
 @[simps] def periodSeq₁ (M : Rep R G) : ShortComplex (Rep R G) where
@@ -333,6 +335,7 @@ set_option backward.isDefEq.respectTransparency false in
   obj := periodSeq₂
   map {M N} f := ShortComplex.homMk (coind₁'.map f) (ind₁'.map f) f (by cat_disch) (by cat_disch)
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   -- `S` is `ShortComplex (Rep R G)` here, but `Rep R G` is equivalent to `ModuleCat R[G]`.
@@ -348,6 +351,7 @@ lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   change w ∈ LinearMap.range Representation.coind₁'_ι
   simp [← Representation.map₁_ker, hw]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
   simp only [M.periodSeq₂.rep_exact_iff, periodSeq₂_X₂, ind₁'_obj, periodSeq₂_X₃, periodSeq₂_g,
@@ -458,7 +462,7 @@ namespace TateCohomology
 
 /-- The even Tate cohomology of a trivial representation of a finite cyclic group of order `N` is
 `ℤ/Nℤ`. -/
-def evenTrivialInt [IsCyclic G] (hG : Nat.card G = N) (hn : Even n) :
+def evenTrivialInt (hG : Nat.card G = N) (hn : Even n) :
     (tateCohomology n).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := calc
   (tateCohomology n).obj (trivial ℤ G ℤ)
     ≅ (tateCohomology 0).obj (trivial ℤ G ℤ) :=

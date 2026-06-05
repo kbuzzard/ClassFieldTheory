@@ -196,6 +196,7 @@ def cores_obj : (M : Rep R G) → (n : ℕ) →
   let ih := cores_obj (up.obj M) (d + 1)
   (asIso (δ htopexact (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
     (resFunctor S.subtype ⋙ functor R (↥S) (n + 1)).map f ≫ cores_obj Y (n + 1) =
@@ -236,6 +237,7 @@ lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group 
 
 -- `simp` does a lot of work here, and it was quite some effort getting
 -- it to do so, so I hope this proof never breaks...
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma cores_res₀ : rest (R := R) (S.subtype) 0 ≫ cores₀ = S.index • (.id _) := by
   ext M v
@@ -253,6 +255,7 @@ Hⁿ(G, up M) ---> Hⁿ(S, upM ↓ S.subtype) ---> Hⁿ(G, up M)
 Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
 
 -/
+set_option backward.defeqAttrib.useBackward true in
 lemma commSqₙ (n : ℕ) (M : Rep R G) :
     (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (shortExact_upSES M) n (n + 1) rfl =
       δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫
@@ -267,6 +270,7 @@ lemma commSqₙ (n : ℕ) (M : Rep R G) :
       (rest_δ_naturality (shortExact_upSES M) S.subtype (n + 1) (n + 2) rfl).symm ?_
     simp [-up_obj, coresNatTrans, cores_obj, δUpNatIso, δUpIso]
 
+
 set_option backward.isDefEq.respectTransparency false in
 lemma cores_res (n : ℕ) :
     (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =
@@ -275,12 +279,12 @@ lemma cores_res (n : ℕ) :
   | zero => exact cores_res₀
   | succ n ih =>
     ext M : 2
-    haveI : Epi (δ (shortExact_upSES M) n (n + 1) rfl) :=
-    match n with
-    | 0 => δ_up_zero_epi ..
-    | m + 1 => δ_up_isIso M m|>.epi_of_iso _
+    have : Epi (δ (shortExact_upSES M) n (n + 1) rfl) :=
+      match n with
+      | 0 => δ_up_zero_epi ..
+      | m + 1 => δ_up_isIso M m|>.epi_of_iso _
     rw [← cancel_epi (δ (shortExact_upSES M) n (n + 1) rfl), ← commSqₙ n M, ih]
-    simp
+    simp; rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
@@ -320,6 +324,7 @@ lemma pTorsion_eq_sylowTorsion {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
   mpr h := ⟨(Nat.card G).factorization p, P.card_eq_multiplicity ▸ by
     simpa [Nat.cast_smul_eq_nsmul] using h⟩
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
     (p : ℕ) [Fact p.Prime] (P : Sylow p G) : Function.Injective
@@ -349,6 +354,7 @@ lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
     ← Nat.gcd_eq_gcd_ab, Nat.coprime_iff_gcd_eq_one.1 (Sylow.card_coprime_index P)] at h
   simpa using h
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) [Fact p.Prime] (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)

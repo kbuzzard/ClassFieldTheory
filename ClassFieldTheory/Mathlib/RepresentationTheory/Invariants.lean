@@ -22,6 +22,7 @@ lemma groupCohomology.zeroι_naturality {X Y : Rep k G} (f : X ⟶ Y) :
     groupCohomology.map (.id _) f 0 ≫ groupCohomology.zeroι Y = zeroι X ≫ f.toModuleCatHom := by
   aesop (add simp zeroι)
 
+set_option backward.defeqAttrib.useBackward true in
 variable (k G) in
 /-- `zeroEmb` is the natural transformation from the `H0 : Rep k G ⥤ ModuleCat k` functor to
 the forgetful functor `Rep k G ⥤ ModuleCat k`. -/
