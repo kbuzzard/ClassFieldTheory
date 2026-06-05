@@ -220,7 +220,7 @@ variable {n} in
 variable {n} in
 @[simp] theorem f_unramifiedExtension (hn : n ≠ 0) :
     f K (UnramifiedExtension K n) = n := by
-  refine le_antisymm ?_ (by simpa [hn, f] using (finrank_unramifiedExtension_and_residue K hn).2)
+  refine le_antisymm ?_ (by simpa [hn, f] using! (finrank_unramifiedExtension_and_residue K hn).2)
   conv_rhs => rw [← finrank_unramifiedExtension K hn]
   exact f_le_n _ _
 

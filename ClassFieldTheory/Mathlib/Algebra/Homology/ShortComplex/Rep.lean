@@ -16,11 +16,7 @@ variable {k : Type u} {G : Type v} [CommRing k] [Monoid G] {A : Rep.{w} k G}
 
 open CategoryTheory ShortComplex ShortExact Limits
 
--- instance : HasForget₂ (Rep.{w} k G) Ab where
---   forget₂ := forget₂ (Rep k G) (ModuleCat k) ⋙ (forget₂ _ _)
-
--- instance : (forget₂ (Rep.{w} k G) Ab).Additive := ⟨rfl⟩
-
+set_option backward.defeqAttrib.useBackward true in
 /-- `CategoryTheory.Limits.compNatIso` weirdly uses `Functor.IsEquivalence` -/
 def CategoryTheory.Limits.compNatIso' {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C]
     {X Y : C} {f : X ⟶ Y} [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms] :

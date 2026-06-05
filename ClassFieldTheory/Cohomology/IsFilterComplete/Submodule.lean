@@ -63,7 +63,7 @@ end Submodule
 
 def FilterCauchySeq.mkSubmodule (x : ι → M) (hx : ∀ ⦃i j : ι⦄, i ≤ j → x i - x j ∈ M_ i ⊔ M_ j) :
     FilterCauchySeq M_ :=
-  ⟨x, by simpa [set, AddSubgroup.mem_sup, mem_sup] using hx⟩
+  ⟨x, by simpa [set, AddSubgroup.mem_sup, mem_sup] using! hx⟩
 
 namespace Filtration
 
@@ -80,7 +80,7 @@ theorem mk_submodule (haus : ⨅ i, M_ i = ⊥)
       ∃ L, ∀ i, x i - L ∈ M_ i) :
     IsFilterComplete M_ where
   haus' x hx := (mem_bot R).mp <| haus ▸ (mem_iInf _).mpr hx
-  prec' := by simpa [AddSubgroup.mem_sup, Submodule.mem_sup] using prec
+  prec' := by simpa [AddSubgroup.mem_sup, Submodule.mem_sup] using! prec
 
 variable (M_) [IsFilterComplete M_]
 

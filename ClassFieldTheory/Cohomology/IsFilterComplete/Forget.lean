@@ -25,5 +25,5 @@ theorem IsFilterComplete.forget {M σ τ ι : Type*} [LE ι]
   prec' x hx :=
     have this (s : σ) : AddSubgroup.ofClass (forget s) = .ofClass s :=
       AddSubgroup.ext (faithful ·)
-    let f : FilterCauchySeq F := ⟨x, by simpa [this] using hx⟩
+    let f : FilterCauchySeq F := ⟨x, by simpa [this] using! hx⟩
     ⟨limit F <| .mk _ f, fun i ↦ by simpa [faithful] using sub_limit_mem F f⟩
