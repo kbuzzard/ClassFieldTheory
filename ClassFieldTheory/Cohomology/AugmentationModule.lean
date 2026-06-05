@@ -210,6 +210,7 @@ lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
   groupCohomology.isIso_δ_of_isZero _ _ (isZero_of_injective _ _ _ (by omega) inj) <|
     isZero_of_injective _ _ _ (by omega) inj
 
+set_option backward.defeqAttrib.useBackward true in
   /-
   If Tate cohomology is defined, then this is proved in the same way as a previous
   lemma. If not, then using usual cohomology we have a long exact sequence containing the
@@ -267,6 +268,7 @@ def H1_iso [Fintype G] :
       leftRegular.zeroι_norm, map_sum]
     simp
 
+set_option backward.defeqAttrib.useBackward true in
   /-
   If Tate cohomology is defined, then this is proved in the same way as a previous
   lemma. If not, then using usual cohomology we have a long exact sequence containing the

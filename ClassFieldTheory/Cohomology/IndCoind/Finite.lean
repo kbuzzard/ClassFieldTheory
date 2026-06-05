@@ -193,6 +193,7 @@ variable {W X : Type*} [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R 
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 lemma ind₁'_apply₂ (f : G →₀ V) (g x : G) : ρ.ind₁' g f x = ρ g (f (x * g)) := by
   dsimp only [ind₁'_apply, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
     lmapDomain_apply]
@@ -378,6 +379,7 @@ variable (G) in
 abbrev coind₁ : ModuleCat.{w} R ⥤ Rep R G :=
   trivialFunctor R (⊥ : Subgroup G) ⋙ coindFunctor R (⊥ : Subgroup G).subtype
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def coind₁_quotientToInvariants_iso_aux1 (φ : G →* Q) :
     invariants (((coind₁ G).obj A).ρ.comp φ.ker.subtype) ≃ₗ[R]
@@ -404,6 +406,7 @@ def coind₁_quotientToInvariants_iso_aux1 (φ : G →* Q) :
     induction x using QuotientGroup.induction_on
     simp
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def coind₁_quotientToInvariants_iso_aux2 {H : Type v'} [Group H] (φ : G ≃* H) :
     (coindV (⊥ : Subgroup G).subtype
@@ -419,6 +422,7 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type v'} [Group H] (φ : G ≃* 
     simpa [Function.RightInverse, Function.LeftInverse] using
       fun a ha ↦ by simp [Function.comp_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 def coind₁_quotientToInvariants_iso {φ : G →* Q}
     (surj : Function.Surjective φ) :
@@ -488,6 +492,7 @@ def ind₁' : Rep.{w} R G ⥤ Rep R G where -- # why???????
   obj M := of M.ρ.ind₁'
   map f := ofHom ⟨Representation.ind₁'_map f.hom.toLinearMap, fun g ↦ by ext; simp [hom_comm_apply]⟩
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to the sum of the
 values of `f`.
@@ -504,7 +509,7 @@ def ind₁'_π : ind₁' ⟶ 𝟭 (Rep.{max w v} R G) where
 instance instEpiAppInd₁'_π (M : Rep R G) : Epi (ind₁'_π.app M) := by
   refine (epi_iff_surjective (ind₁'_π.app M)).2 fun (m : M.V) ↦ ⟨single 1 m, ?_⟩
   classical
-  simp only [Functor.id_obj, ind₁'_obj, ind₁'_π, hom_ofHom]
+  simp only [Functor.id_obj, ind₁'_π]
   change Representation.ind₁'_π _ = m
   simp
 

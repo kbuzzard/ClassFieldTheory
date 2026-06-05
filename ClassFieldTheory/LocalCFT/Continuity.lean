@@ -26,7 +26,7 @@ theorem Valuation.sum_eq_iSup {ι R Γ₀ : Type*} (f : ι → R) (s : Finset ι
     v (∑ i ∈ s, f i) = s.sup (v ∘ f) := by
   classical
   induction s using Finset.induction with
-  | empty => simp [bot_eq_zero'']
+  | empty => simp [bot_eq_zero]
   | insert a s has IH =>
     obtain rfl | hs := s.eq_empty_or_nonempty
     · simp
@@ -38,10 +38,10 @@ theorem Valuation.sum_eq_iSup {ι R Γ₀ : Type*} (f : ι → R) (s : Finset ι
       rw [← le_zero_iff]
       exact Valuation.map_add_le _ (by simp [H₁]) (by simp [H₂])
     · rw [Valuation.map_add_eq_of_lt_right, max_eq_right]
-      · rw [H₁]; exact zero_le'
+      · rw [H₁]; exact zero_le
       · rwa [H₁, zero_lt_iff]
     · rw [Valuation.map_add_eq_of_lt_left, max_eq_left]
-      · rw [H₂]; exact zero_le'
+      · rw [H₂]; exact zero_le
       · rwa [H₂, zero_lt_iff]
     rw [v.map_add_of_distinct_val]
     obtain ⟨i, his : i ∈ s, hi : v (f i) = _⟩ := Finset.sup_mem_of_nonempty (f := v ∘ f) hs
@@ -69,8 +69,8 @@ theorem exists_valuation_algebraMap_eq_valuation_pow
     apply H ((minpoly K y).coeff i / (minpoly K y).coeff (i + k)) k (by simpa using hij)
     apply mul_left_injective₀ (b := (valuation L) y ^ i) (by simp [hy])
     simp [*, -mul_eq_mul_right_iff, div_mul_eq_mul_div, pow_add, mul_comm]
-  · simp only [map_zero, ← bot_eq_zero'', Finset.sup_eq_bot_iff] at this
-    simp only [Finset.mem_range, Function.comp_apply, bot_eq_zero'', map_eq_zero, smul_eq_zero,
+  · simp only [map_zero, ← bot_eq_zero, Finset.sup_eq_bot_iff] at this
+    simp only [Finset.mem_range, Function.comp_apply, bot_eq_zero, map_eq_zero, smul_eq_zero,
       pow_eq_zero_iff', hy, ne_eq, false_and, or_false, Nat.lt_succ_iff] at this
     exact minpoly.coeff_zero_ne_zero (Algebra.IsIntegral.isIntegral _) hy (this 0 (by simp))
 

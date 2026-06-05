@@ -250,7 +250,7 @@ set_option backward.isDefEq.respectTransparency false in
     simp_rw [Submodule.coe_smul, map_smul, RingHom.id_apply]
     rw [iCocycles_mk, iCocycles_mk]
 
-instance [IsFilterComplete M_] (q : ℕ) : IsFilterComplete fun i ↦ (M_ i).toCocycles q :=
+instance (q : ℕ) : IsFilterComplete fun i ↦ (M_ i).toCocycles q :=
   let help (i) := ((M_ i).toCochains q).submoduleOf
     (LinearMap.ker ((inhomogeneousCochains M).d q (q + 1)).hom)
   have : IsFilterComplete help := .ker (N_ := fun i ↦ (M_ i).toCochains _)

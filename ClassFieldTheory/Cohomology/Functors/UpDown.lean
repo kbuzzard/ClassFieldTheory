@@ -66,7 +66,7 @@ def up : Rep R G ⥤ Rep R G where
     apply cokernel.desc _ (coind₁'.map f ≫ cokernel.π _)
     rw [←Category.assoc, ←coind₁'_ι.naturality, Category.assoc, cokernel.condition, comp_zero]
   map_comp f g := by
-    simp only [Functor.id_obj, coind₁'_obj, coind₁'_ι_app, Functor.map_comp, Category.assoc]
+    simp only [Functor.id_obj, Functor.map_comp, Category.assoc]
     apply coequalizer.hom_ext
     simp
 
@@ -167,7 +167,7 @@ of the homology of `M`.
   map φ := kernel.lift _ (kernel.ι _ ≫ ind₁'.map φ) (by
     rw [Category.assoc, ind₁'_π.naturality, ←Category.assoc, kernel.condition, zero_comp])
   map_comp f g := by
-    simp only [ind₁'_obj, Functor.id_obj, Functor.map_comp]
+    simp only [Functor.id_obj, Functor.map_comp]
     apply equalizer.hom_ext
     simp
 
@@ -275,16 +275,16 @@ instance instIsIso_shortExact_upSES (M : Rep R G) (n : ℤ) :
   have _ : TrivialTateCohomology (coind₁'.obj M) := inferInstance
   exact ShortComplex.ShortExact.isIso_δ
     (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_upSES M))
-    n (n + 1) rfl (by simpa using isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
-    (by simpa using isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
+    n (n + 1) rfl (by simpa using! isZero_of_trivialTateCohomology' (coind₁'.obj M) n)
+    (by simpa using! isZero_of_trivialTateCohomology' (coind₁'.obj M) (n + 1))
 
 instance instIsIso_shortExact_downSES (M : Rep R G) (n : ℤ) :
     IsIso (TateCohomology.δ (shortExact_downSES M) n) := by
   have _ : TrivialTateCohomology (ind₁'.obj M) := inferInstance
   exact ShortComplex.ShortExact.isIso_δ
     (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_downSES M))
-    n (n + 1) rfl (by simpa using isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
-    (by simpa using isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
+    n (n + 1) rfl (by simpa using! isZero_of_trivialTateCohomology' (ind₁'.obj M) n)
+    (by simpa using! isZero_of_trivialTateCohomology' (ind₁'.obj M) (n + 1))
 
 @[simps! hom]
 def δUpIsoTate (M : Rep R G) (n : ℤ) :
