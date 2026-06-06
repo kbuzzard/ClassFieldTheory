@@ -47,7 +47,7 @@ theorem Rep.herbrandQuotient_isNonarchimedeanLocalField_units :
   have h3' : (valuationShortComplex G K L).X₃.herbrandQuotient ≠ 0 := by
     simp [h3]
   have := herbrandQuotient_eq_of_shortExact valuationShortComplex.shortExact h1' ?_ h3'
-  · convert this
+  · convert! this
     simp [h1, h3, -Nat.card_eq_fintype_card, IsGaloisGroup.card_eq_finrank G K L]
   · apply Rep.herbrandQuotient_ne_zero_of_shortExact₂
       valuationShortComplex.shortExact h1' h3'

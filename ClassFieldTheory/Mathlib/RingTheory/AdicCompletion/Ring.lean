@@ -55,7 +55,7 @@ theorem AdicCompletion.mk_ofLinearEquiv_symm_mkRing
   generalize hx : (ofLinearEquiv I R).symm _ = x
   rw [LinearEquiv.symm_apply_eq] at hx
   have h : I ^ n • ⊤ = I ^ n := by simp
-  convert congr(quotEquivOfEq h ($(hx.symm).val n))
+  convert! congr(quotEquivOfEq h ($(hx.symm).val n))
   simp_rw [mkRing, ← RingEquiv.trans_apply, quotEquivOfEq_trans, quotEquivOfEq_rfl]
   rfl
 

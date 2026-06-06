@@ -232,7 +232,7 @@ theorem map_sum [IsFilterComplete (F ∘ toDual)] [IsFilterComplete (G ∘ toDua
   have h₁ := h <| sum_sub_mem (x := x) (i := i)
   have h₂ := sum_sub_mem (x := fun i ↦ ⟨φ (x i), h (x i).2⟩) (i := i)
   rw [map_sub, _root_.map_sum] at h₁
-  convert sub_mem h₁ h₂ using 1
+  convert! sub_mem h₁ h₂ using 1
   exact (sub_sub_sub_cancel_right ..).symm
 
 end IsFilterComplete
