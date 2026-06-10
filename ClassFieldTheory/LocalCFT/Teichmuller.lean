@@ -224,7 +224,7 @@ theorem residue_teichmuller' (x : 𝓀[K]) :
     convert! limUnder_teichmullerSeq_mem x 0 <;> simp
 
 theorem residue_comp_teichmuller' :
-    (IsLocalRing.residue 𝒪[K] : 𝒪[K] →*₀ 𝓀[K]).comp (teichmuller' K) = .id _ :=
+    (.ofClass <| IsLocalRing.residue 𝒪[K] : 𝒪[K] →*₀ 𝓀[K]).comp (teichmuller' K) = .id _ :=
   MonoidWithZeroHom.ext residue_teichmuller'
 
 theorem leftInverse_teichmuller' :
@@ -237,7 +237,7 @@ theorem teichmuller'_injective : Function.Injective (teichmuller' K) :=
 variable (K) in
 /-- The Teichmüller character `𝓀[K] →*₀ K`. -/
 noncomputable def teichmuller : 𝓀[K] →*₀ K :=
-  (algebraMap 𝒪[K] K : 𝒪[K] →*₀ K).comp <| teichmuller' K
+  (.ofClass <| algebraMap 𝒪[K] K : 𝒪[K] →*₀ K).comp <| teichmuller' K
 
 theorem teichmuller_def (x : 𝒪[K]) :
     Filter.Tendsto (fun n ↦ (teichmullerSeq x n : K)) .atTop

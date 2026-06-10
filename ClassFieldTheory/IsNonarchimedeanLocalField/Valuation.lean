@@ -47,7 +47,8 @@ a uniformiser to `.exp (-1)`.
 -/
 noncomputable def valuationInt (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K]
     [IsNonarchimedeanLocalField K] : Valuation K ℤᵐ⁰ :=
-  (valuation K).map (valueGroupWithZeroIsoInt K) <| OrderHomClass.mono <| valueGroupWithZeroIsoInt K
+  (valuation K).map (.ofClass <| valueGroupWithZeroIsoInt K) <|
+    OrderHomClass.mono <| valueGroupWithZeroIsoInt K
 
 variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K]
   [IsNonarchimedeanLocalField K]
