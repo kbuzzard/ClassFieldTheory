@@ -80,7 +80,7 @@ abbrev coind₁V := coindV (⊥ : Subgroup G).subtype (trivial R _ V)
 
 instance : FunLike (coind₁V R G V) G V where
   coe f := f.val
-  coe_injective' := Subtype.val_injective
+  coe_injective := Subtype.val_injective
 
 instance : Coe (G → V) (coind₁V R G V) where
   coe f := ⟨f, fun ⟨g, hg⟩ x ↦ by simp [Submonoid.mem_bot.1 hg]⟩
