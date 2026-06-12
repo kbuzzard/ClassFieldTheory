@@ -428,22 +428,22 @@ end Rep
 
 /-- Auxiliary definition for `periodicTateCohomology`. -/
 def periodicTateCohomologyAux [Fintype G] (n : ℤ) :
-    ∀ k : ℕ, tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 2 * k)
+    ∀ k : ℕ, tateCohomologyFunctor (R := R) (G := G) n ≅ tateCohomologyFunctor (n + 2 * k)
   | 0 => eqToIso <| by simp
   | k + 1 => calc
-    tateCohomology n
-      ≅ tateCohomology (n + 2 * k) := periodicTateCohomologyAux n k
-    _ ≅ down ⋙ tateCohomology (n + 2 * k + 1) := δDownNatIsoTate _
-    _ ≅ up ⋙ tateCohomology (n + 2 * k + 1) := Functor.isoWhiskerRight upIsoDown.symm _
-    _ ≅ tateCohomology (n + 2 * k + 1 + 1) := δUpNatIsoTate _
-    _ ≅ tateCohomology (n + 2 * (k + 1)) := eqToIso <| by congr 1; omega
+    tateCohomologyFunctor n
+      ≅ tateCohomologyFunctor (n + 2 * k) := periodicTateCohomologyAux n k
+    _ ≅ down ⋙ tateCohomologyFunctor (n + 2 * k + 1) := δDownNatIsoTate _
+    _ ≅ up ⋙ tateCohomologyFunctor (n + 2 * k + 1) := Functor.isoWhiskerRight upIsoDown.symm _
+    _ ≅ tateCohomologyFunctor (n + 2 * k + 1 + 1) := δUpNatIsoTate _
+    _ ≅ tateCohomologyFunctor (n + 2 * (k + 1)) := eqToIso <| by congr 1; omega
 
 /-- The Tate cohomology of a finite cyclic group is 2-periodic. -/
 def periodicTateCohomology [Fintype G] (m n : ℤ) (hmn : m ≡ n [ZMOD 2]) :
-    tateCohomology (R := R) (G := G) m ≅ tateCohomology n := calc
-  tateCohomology m
-    ≅ tateCohomology (m + 2 * ↑((max m n - m).natAbs / 2)) := periodicTateCohomologyAux ..
-  _ ≅ tateCohomology (n + 2 * ↑((max m n - n).natAbs / 2)) := by
+    tateCohomologyFunctor (R := R) (G := G) m ≅ tateCohomologyFunctor n := calc
+  tateCohomologyFunctor m
+    ≅ tateCohomologyFunctor (m + 2 * ↑((max m n - m).natAbs / 2)) := periodicTateCohomologyAux ..
+  _ ≅ tateCohomologyFunctor (n + 2 * ↑((max m n - n).natAbs / 2)) := by
     refine eqToIso ?_
     congr 1
     norm_cast
@@ -452,7 +452,7 @@ def periodicTateCohomology [Fintype G] (m n : ℤ) (hmn : m ≡ n [ZMOD 2]) :
     all_goals cases le_total m n <;> simp [← even_iff_two_dvd, *]
     · simpa [even_iff_two_dvd] using hmn.symm.dvd
     · simpa [even_iff_two_dvd] using hmn.dvd
-  _ ≅ tateCohomology n := (periodicTateCohomologyAux ..).symm
+  _ ≅ tateCohomologyFunctor n := (periodicTateCohomologyAux ..).symm
 
 variable {n : ℤ} {N : ℕ} {G : Type} [Group G] [IsCyclic G] [Fintype G] {M : Rep ℤ G} [M.IsTrivial]
 
@@ -463,17 +463,18 @@ namespace TateCohomology
 /-- The even Tate cohomology of a trivial representation of a finite cyclic group of order `N` is
 `ℤ/Nℤ`. -/
 def evenTrivialInt (hG : Nat.card G = N) (hn : Even n) :
-    (tateCohomology n).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := calc
-  (tateCohomology n).obj (trivial ℤ G ℤ)
-    ≅ (tateCohomology 0).obj (trivial ℤ G ℤ) :=
+    (tateCohomologyFunctor n).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := calc
+  (tateCohomologyFunctor n).obj (trivial ℤ G ℤ)
+    ≅ (tateCohomologyFunctor 0).obj (trivial ℤ G ℤ) :=
     (periodicTateCohomology _ _ <| by simp [Int.modEq_iff_dvd, hn.two_dvd]).app _
-  _ ≅ .of ℤ (ZMod N) := zeroTrivialInt hG
+  _ ≅ .of ℤ (ZMod N) := TateCohomology.zeroTrivialInt hG
 
 /-- A trivial torsion-free representation of a finite cyclic group has trivial odd Tate cohomology.
 -/
 lemma isZero_odd_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M]
-    (hn : Odd n) : IsZero ((tateCohomology n).obj <| trivial ℤ G M) :=
-  isZero_neg_one_trivial_of_isAddTorsionFree.of_iso <| (periodicTateCohomology _ (-1) <| by
+    (hn : Odd n) : IsZero (tateCohomology (trivial ℤ G M) n) :=
+  TateCohomology.isZero_neg_one_trivial_of_isAddTorsionFree.of_iso <|
+  (periodicTateCohomology _ (-1) <| by
     rw [Int.modEq_comm]; simp [Int.modEq_iff_dvd, hn.add_one.two_dvd]).app _
 
 end TateCohomology
@@ -483,7 +484,8 @@ end TateCohomology
 def evenTrivialInt (hG : Nat.card G = N) (n : ℕ) [NeZero n] (hn : Even n) :
     groupCohomology (trivial ℤ G ℤ) n ≅ .of ℤ (ZMod N) := calc
   groupCohomology (trivial ℤ G ℤ) n
-    ≅ (tateCohomology n).obj (trivial ℤ G ℤ) := ((TateCohomology.isoGroupCohomology _).app _).symm
+    ≅ (tateCohomologyFunctor n).obj (trivial ℤ G ℤ) :=
+      ((TateCohomology.isoGroupCohomology _).app _).symm
   _ ≅ .of ℤ (ZMod N) := TateCohomology.evenTrivialInt hG (mod_cast hn)
 
 omit [Fintype G] in

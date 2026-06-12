@@ -78,13 +78,13 @@ abbrev TateH0 : Type := ρ.tateZ0 ⧸ (ρ.tateB0.submoduleOf ρ.tateZ0)
 abbrev TateHNeg1 : Type := ρ.tateZNeg1 ⧸ (ρ.tateBNeg1.submoduleOf ρ.tateZNeg1)
 
 /-- The explicit description of the 0-th Tate cohomology group is isomorphic to it. -/
-def tateH0LinearEquiv : ρ.TateH0 ≃ₗ[R] (tateCohomology 0).obj (.of ρ)  :=
+def tateH0LinearEquiv : ρ.TateH0 ≃ₗ[R] tateCohomology (.of ρ) 0  :=
   (Submodule.Quotient.equiv _ _ (.ofEq _ _ ρ.tateZ0_eq_invariants) <| by
-    erw [Submodule.map_equiv_eq_comap_symm]; rfl).trans
+    ext; simp [Submodule.map_equiv_eq_comap_symm, Submodule.submoduleOf]).trans
       (TateCohomology.zeroIso (.of ρ)).symm.toLinearEquiv
 
 /-- The explicit description of the -1-st Tate cohomology group is isomorphic to it. -/
-def tateHNeg1LinearEquiv : ρ.TateHNeg1 ≃ₗ[R] (tateCohomology (-1)).obj (.of ρ) :=
+def tateHNeg1LinearEquiv : ρ.TateHNeg1 ≃ₗ[R] tateCohomology (.of ρ) (-1) :=
   (Submodule.quotEquivOfEq _ _ <| congrArg _ ρ.tateBNeg1_eq_coinvariantsKer).trans
     (TateCohomology.negOneIso <| .of ρ).symm.toLinearEquiv
 

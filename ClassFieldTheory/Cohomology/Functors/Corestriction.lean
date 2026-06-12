@@ -10,8 +10,6 @@ public import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
 public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
 public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 public import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
-public import
-  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 # Corestriction

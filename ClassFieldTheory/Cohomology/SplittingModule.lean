@@ -92,8 +92,8 @@ def representation : Representation R G (carrier σ) where
       rw [← Finset.sum_smul, Rep.aug.sum_coeff_ι, zero_smul, sub_zero, add_right_inj]
       conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft g₂)]
       refine Finset.sum_congr rfl fun x _ ↦ ?_
-      erw [Rep.hom_comm_apply]
-      simp [-equalizer_as_kernel] -- removes a `rfl` here shows I'm in the right direction
+      rw [Rep.hom_comm_apply]
+      simp [-equalizer_as_kernel]
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
         Function.comp_apply, map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
         Finset.sum_const_zero, add_zero, Module.End.mul_apply]
@@ -361,7 +361,7 @@ lemma isIso_δ [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
 
 set_option backward.isDefEq.respectTransparency false in
 def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
-    (tateCohomology n).obj (trivial R G R) ≅ (tateCohomology (n + 2)).obj M :=
+    tateCohomology (trivial R G R) n ≅ tateCohomology M (n + 2) :=
   -- first go from H^n(trivial) to H^{n+1}(aug)
   have first_iso := Rep.aug.tateCohomology_auc_succ_iso R G n
   -- now go from H^{n+1}(aug) to H^{n+2}(M)
@@ -369,15 +369,13 @@ def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
   -- map starts here
   (CategoryTheory.asIso (TateCohomology.δ (aug.aug_isShortExact R G) n)) ≪≫
   (CategoryTheory.asIso (TateCohomology.δ (Rep.split.isShortExact σ) (n + 1))) ≪≫
-  eqToIso (by
-    congr 2;
-    ring)
+  eqToIso (by simp [shortExactSequence]; congr 1; ring)
 
 def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
-    (tateCohomology 0).obj N ≅ .of ℤ (Additive (Abelianization G)) := calc
-  (tateCohomology 0).obj N
-    ≅ (tateCohomology (-2 + 2)).obj N := .refl _
-  _ ≅ (tateCohomology (-2)).obj (trivial ℤ G ℤ) := (tateCohomologyIso τ (-2)).symm
+    tateCohomology N 0 ≅ .of ℤ (Additive (Abelianization G)) := calc
+  tateCohomology N 0
+    ≅ tateCohomology N (-2 + 2) := .refl _
+  _ ≅ tateCohomology (trivial ℤ G ℤ) (-2) := (tateCohomologyIso τ (-2)).symm
   _ ≅ groupHomology (trivial ℤ G ℤ) 1 := (TateCohomology.isoGroupHomology _ 1 rfl).app _
   _ ≅ .of ℤ (Additive (Abelianization G)) :=
     groupHomology.H1TrivialAddEquiv.toIntLinearEquiv.toModuleIso

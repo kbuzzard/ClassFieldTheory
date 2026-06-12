@@ -2,11 +2,8 @@ module
 
 public import ClassFieldTheory.Cohomology.Functors.Restriction
 public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import
-  ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
-public
-  import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LongExactSequence
 public import Mathlib.Algebra.Homology.Embedding.Connect
+public import Mathlib.RepresentationTheory.Homological.TateCohomology.Basic
 
 @[expose] public noncomputable section
 
@@ -22,195 +19,7 @@ universe u v w
 
 variable {R G H : Type u} [CommRing R] [Group G] [Fintype G] [Group H] [Fintype H]
 
-namespace groupCohomology
-
-/-- This is the map from the coinvariants of `M : Rep R G` to the invariants, induced by the map
-`m ↦ ∑ g : G, M.ρ g m`. -/
-def tateNorm (M : Rep R G) : (inhomogeneousChains M).X 0 ⟶ (inhomogeneousCochains M).X 0 :=
-  (chainsIso₀ M).hom ≫ M.norm.toModuleCatHom ≫ (cochainsIso₀ M).inv
-
--- FIXME: `@[simps!] def tateNorm` produces a lemma mentioning `ModuleCat.Hom.hom'`!
--- We are missing `initialize_simps_projections ModuleCat (hom' → hom)`
-@[simp] lemma tateNorm_hom_apply (M : Rep R G) (x : (Fin 0 → G) →₀ ↑M.V) (y : Fin 0 → G) :
-    (tateNorm M).hom x y = (cochainsIso₀ M).inv.hom (M.ρ.norm <| (chainsIso₀ M).hom.hom x) y := rfl
-
-set_option backward.isDefEq.respectTransparency false in
-lemma tateNorm_eq (M : Rep R G) :
-    tateNorm M = ModuleCat.ofHom (Finsupp.lsum R fun _ ↦ LinearMap.pi fun _ ↦ M.ρ.norm) := by
-  ext
-  simp_all [tateNorm, chainsIso₀, cochainsIso₀, Unique.eq_default]
-
-@[reassoc (attr := simp), elementwise]
-lemma norm_comp_d_eq_zero (M : Rep R G) : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
-  ext
-  simp [Pi.zero_apply _]
-
-lemma tateNorm_comp_d (M : Rep R G) : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
-  simp [tateNorm, eq_d₀₁_comp_inv M]
-
-@[simp]
-lemma comp_eq_zero (M : Rep R G) : d₁₀ M ≫ M.norm.toModuleCatHom = 0 := by
-  ext
-  simp [d₁₀_single M, Rep.norm, ← LinearMap.comp_apply]
-
-set_option backward.isDefEq.respectTransparency false in
-lemma d_comp_tateNorm (M : Rep R G) : (inhomogeneousChains M).d 1 0 ≫ tateNorm M = 0 := by
-  simp only [tateNorm, ← Category.assoc, Preadditive.IsIso.comp_right_eq_zero]
-  simp [← comp_d₁₀_eq _]
-
-/-- The Tate norm connecting complexes of inhomogeneous chains and cochains. -/
-@[simps]
-def tateComplexConnectData (M : Rep R G) :
-    CochainComplex.ConnectData (inhomogeneousChains M) (inhomogeneousCochains M) where
-  d₀ := tateNorm M
-  comp_d₀ := d_comp_tateNorm _
-  d₀_comp := tateNorm_comp_d _
-
-/-- The Tate complex defined by connecting inhomogeneous chains and cochains with the Tate norm. -/
-@[simps! X]
-def tateComplex (M : Rep R G) : CochainComplex (ModuleCat R) ℤ :=
-  CochainComplex.ConnectData.cochainComplex (tateComplexConnectData M)
-
-lemma tateComplex_d_neg_one (M : Rep R G) : (tateComplex M).d (-1) 0 = tateNorm M := by rfl
-
-lemma tateComplex_d_ofNat (M : Rep R G) (n : ℕ) :
-    (tateComplex M).d n (n + 1) = (inhomogeneousCochains M).d n (n + 1) := rfl
-
-lemma tateComplex_d_neg (M : Rep R G) (n : ℕ) :
-    (tateComplex M).d (-(n + 2 : ℤ)) (-(n + 1 : ℤ)) = (inhomogeneousChains M).d (n + 1) n := rfl
-
-@[reassoc]
-lemma tateComplex.norm_comm {A B : Rep R G} (φ : A ⟶ B) : φ ≫ B.norm = A.norm ≫ φ := by
-  ext
-  simp [Rep.norm_comm]
-
-@[reassoc]
-lemma tateComplex.norm_hom_comm {A B : Rep R G} (φ : A ⟶ B) :
-    φ.toModuleCatHom ≫ B.norm.toModuleCatHom = A.norm.toModuleCatHom ≫ φ.toModuleCatHom := by
-  rw [← ModuleCat.ofHom_comp, ← Representation.IntertwiningMap.comp_toLinearMap,
-    ← Rep.hom_comp, A.norm_comm φ]
-  simp
-
-def tateComplex.normNatEnd : End (forget₂ (Rep R G) (ModuleCat R)) where
-  app M := M.norm.toModuleCatHom
-  naturality _ _ := tateComplex.norm_hom_comm
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The chain map on the Tate complex induced by a morphism of representations. -/
-@[reducible]
-def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : tateComplex X ⟶ tateComplex Y := by
-  refine CochainComplex.ConnectData.map _ _ (chainsMap (.id G) φ) (cochainsFunctor R G |>.map φ) ?_
-  ext
-  simp [tateComplexConnectData_d₀, tateNorm_eq, Representation.norm, hom_comm_apply]
-
-@[simp]
-lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by aesop_cat
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-/-- The functor taking a representation of `G` to its Tate complex. -/
-@[simps]
-def tateComplexFunctor : Rep R G ⥤ CochainComplex (ModuleCat R) ℤ where
-  obj M := tateComplex M
-  map := tateComplex.map
-
-/-- The functor taking a representation of `G` to its `n`-th Tate cohomology group. -/
-def tateCohomology (n : ℤ) : Rep R G ⥤ ModuleCat R :=
-  tateComplexFunctor ⋙ HomologicalComplex.homologyFunctor _ _ n
-
 namespace TateCohomology
-
-section Exact
-
-set_option backward.isDefEq.respectTransparency false in
-instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
-  map_zero X Y := by simp
-
-/-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
-  `n`-cochains for `0 ≤ n`. -/
-def tateComplex.eval_nonneg (n : ℕ) :
-    tateComplexFunctor ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.up ℤ) n ≅
-    cochainsFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.up ℕ) n :=
-  .refl _
-
-/-- The natural isomorphism between the `n`-th index of the Tate complex and inhomogeneous
-  `n`-chains for `n < 0`. -/
-def tateComplex.eval_neg (n : ℕ) :
-    tateComplexFunctor ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.up ℤ) (.negSucc n) ≅
-    chainsFunctor R G ⋙ HomologicalComplex.eval (ModuleCat R) (ComplexShape.down ℕ) n :=
-  .refl _
-
-instance : (tateComplexFunctor (R := R) (G := G)).PreservesZeroMorphisms where
-  map_zero X Y := by
-    ext
-    simp_rw [tateComplexFunctor]
-    aesop_cat
-
-lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
-    (S.map tateComplexFunctor).ShortExact := by
-  simp_rw [HomologicalComplex.shortExact_iff_degreewise_shortExact, ← ShortComplex.map_comp]
-  rintro (_ | _)
-  · exact .map_of_natIso _ (tateComplex.eval_nonneg _).symm <|
-      map_cochainsFunctor_eval_shortExact _ hS
-  · exact .map_of_natIso _ (tateComplex.eval_neg _).symm <| map_chainsFunctor_eval_shortExact _ hS
-
-set_option backward.defeqAttrib.useBackward true in
-instance : (tateComplexFunctor (R := R) (G := G)).Additive where
-  map_add {_ _ _ _} := by ext (i | i) <;> { dsimp [tateComplex]; ext; rfl }
-
-/-
-The next two statements say that `tateComplexFunctor` is an exact functor.
--/
-instance preservesFiniteLimits_tateComplexFunctor :
-    PreservesFiniteLimits (tateComplexFunctor (R := R) (G := G)) :=
-  (((tateComplexFunctor (R := R) (G := G)).exact_tfae.out 0 3 rfl rfl).mp
-    fun _ ↦ map_tateComplexFunctor_shortExact).1
-
-instance preservesFiniteColimits_tateComplexFunctor :
-    PreservesFiniteColimits (tateComplexFunctor (R := R) (G := G)) :=
-  (((tateComplexFunctor (R := R) (G := G)).exact_tfae.out 0 3 rfl rfl).mp
-    fun _ ↦ map_tateComplexFunctor_shortExact).2
-
-end Exact
-
-/-- The connecting homomorphism in group cohomology induced by a short exact sequence
-  of `G`-modules. -/
-noncomputable abbrev δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
-    (tateCohomology n).obj S.X₃ ⟶ (tateCohomology (n + 1)).obj S.X₁ :=
-  (map_tateComplexFunctor_shortExact hS).δ n (n + 1) rfl
-
-lemma map_δ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
-    (tateCohomology n).map S.g ≫ δ hS n = 0 :=
-  (map_tateComplexFunctor_shortExact hS).comp_δ _ _ _
-
-lemma δ_map {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
-    δ hS n ≫ (tateCohomology (n + 1)).map S.f = 0 :=
-  (map_tateComplexFunctor_shortExact hS).δ_comp _ _ _
-
-lemma exact₃ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
-    (ShortComplex.mk _ _ (map_δ hS n)).Exact :=
-  (map_tateComplexFunctor_shortExact hS).homology_exact₃ ..
-
-lemma exact₁ {S : ShortComplex (Rep R G)} (hS : S.ShortExact) (n : ℤ) :
-    (ShortComplex.mk _ _ (δ_map hS n)).Exact :=
-  (map_tateComplexFunctor_shortExact hS).homology_exact₁ ..
-
-set_option backward.isDefEq.respectTransparency false in
-/-- The isomorphism between the `n`-th Tate cohomology and `n`-th group cohomology for `n : ℕ`
-non-zero. -/
-def isoGroupCohomology (n : ℕ) [NeZero n] :
-    tateCohomology.{u} n ≅ groupCohomology.functor.{u} R G n :=
-  NatIso.ofComponents (fun M ↦ (tateComplexConnectData M).homologyIsoPos _ _ rfl) fun {X Y} f ↦ by
-    simp [tateCohomology, CochainComplex.ConnectData.homologyMap_map_of_eq_succ (n := n)]
-
-set_option backward.isDefEq.respectTransparency false in
-
-/-- The isomorphism between the `-n-1`-th Tate cohomology and `n`-th group homology for `n : ℕ`
-non-zero. -/
-def isoGroupHomology (m : ℤ) (n : ℕ) (hmn : m = -↑(n + 1)) [NeZero n] :
-    tateCohomology m ≅ groupHomology.functor R G n :=
-  NatIso.ofComponents (fun M ↦ (tateComplexConnectData M).homologyIsoNeg _ _ hmn) fun {X Y} f ↦ by
-    simp [tateCohomology, CochainComplex.ConnectData.homologyMap_map_of_eq_neg_succ (hmn := hmn)]
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable abbrev cochainsMap {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ : M ⟶ N ↓ e) :
@@ -243,7 +52,7 @@ lemma cochinasMap_id {M : Rep R G} : cochainsMap (MulEquiv.refl G) (𝟙 M) = �
   simp [← chainsMap_id]
 
 noncomputable abbrev map {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ : M ⟶ N ↓ e) (n : ℤ) :
-    (tateCohomology n).obj M ⟶ (tateCohomology n).obj N :=
+    tateCohomology M n ⟶ tateCohomology N n :=
   HomologicalComplex.homologyMap (cochainsMap e φ) _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -254,7 +63,7 @@ lemma map_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep R H} {P
   simp [map, ← HomologicalComplex.homologyMap_comp, ← cochainsMap_comp]
 
 lemma map_id {M : Rep R G} (n : ℤ) :
-    map (MulEquiv.refl G) (𝟙 M) n = 𝟙 ((tateCohomology n).obj M) := by
+    map (MulEquiv.refl G) (𝟙 M) n = 𝟙 (tateCohomology M n) := by
   unfold map
   simp [cochinasMap_id, tateCohomology]
   rfl
@@ -269,7 +78,7 @@ lemma map_congr {M : Rep R G} {N : Rep R H} {e1 e2 : G ≃* H} (he : e1 = e2) {�
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def res_iso {M : Rep R G} (e : G ≃* H) {N : Rep R H} (e' : M.V ≃ₗ[R] N.V)
     (he' : ∀ (g : G), e' ∘ₗ M.ρ g = N.ρ (e g) ∘ₗ e') (n : ℤ) :
-    (tateCohomology n).obj M ≅ (tateCohomology n).obj N where
+    tateCohomology M n ≅ tateCohomology N n where
   hom := map e (Rep.ofHom ⟨e', by simp [he']⟩) n
   inv := map e.symm (Rep.ofHom ⟨e'.symm, e.surjective.forall.mpr <| fun g ↦ by
       apply_fun (fun f ↦ e'.toLinearMap ∘ₗ f ∘ₗ e'.toLinearMap) using fun _ _ h ↦
@@ -297,15 +106,15 @@ set_option backward.isDefEq.respectTransparency false in
     (tateComplex M).sc 0 ≅ sc M :=
   (tateComplex M).isoSc' (-1) 0 1 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (by exact chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
-      (by simp [tateComplex_d_neg_one, tateNorm]) (comp_d₀₁_eq M)
+      (by simp [tateNorm]) (comp_d₀₁_eq M)
 
 end zeroIso
 
 /-- A concrete description of `0`-th Tate cohomology
   as the quotient of invariants by the image of the norm. -/
-def zeroIso (M : Rep R G) : (tateCohomology 0).obj M ≅
+def zeroIso (M : Rep R G) : tateCohomology M 0 ≅
     ModuleCat.of R (M.ρ.invariants ⧸ (range M.ρ.norm).submoduleOf M.ρ.invariants) := calc
-  (tateCohomology 0).obj M
+  tateCohomology M 0
     ≅ (zeroIso.sc M).homology := ShortComplex.homologyMapIso (zeroIso.isoShortComplexH0 M)
   _ ≅ ModuleCat.of R (LinearMap.ker (groupCohomology.d₀₁ M).hom ⧸ _) :=
     ShortComplex.moduleCatHomologyIso _
@@ -339,10 +148,10 @@ set_option backward.isDefEq.respectTransparency false in
 /-- A concrete description of the `-1`-st Tate cohomology group
 as the quotient of the kernel of the norm by the kernel of the coinvariants. -/
 def negOneIso (M : Rep R G) :
-    (tateCohomology (-1)).obj M ≅
+    tateCohomology M (-1) ≅
       ModuleCat.of R (ker M.ρ.norm ⧸
         (Representation.Coinvariants.ker M.ρ).submoduleOf (ker M.ρ.norm)) := calc
-  (tateCohomology (-1)).obj M
+  tateCohomology M (-1)
     ≅ (negOneIso.sc M).homology := ShortComplex.homologyMapIso (negOneIso.isoShortComplexHneg1 M)
   _ ≅ ModuleCat.of R (LinearMap.ker M.ρ.norm ⧸ _) := ShortComplex.moduleCatHomologyIso _
   _ ≅ _ := by
@@ -359,7 +168,7 @@ variable [M.ρ.IsTrivial] {n : ℤ} {N : ℕ}
 
 /-- A concrete description of the `0`-th Tate cohomology of a trivial representation. -/
 def zeroIsoOfIsTrivial :
-    (tateCohomology 0).obj M ≅ .of R (M.V ⧸ (range (Nat.card G : M.V →ₗ[R] M.V))) :=
+    tateCohomology M 0 ≅ .of R (M.V ⧸ (range (Nat.card G : M.V →ₗ[R] M.V))) :=
   haveI eq1 : M.ρ.invariants = ⊤ := Representation.invariants_eq_top M.ρ
   TateCohomology.zeroIso M ≪≫
   (LinearEquiv.toModuleIso <| Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ eq1 |>.trans
@@ -375,7 +184,7 @@ def zeroIsoOfIsTrivial :
 
 /-- A concrete description of the `-1`-st Tate cohomology of a trivial representation. -/
 def negOneIsoOfIsTrivial :
-    (tateCohomology (-1)).obj M ≅ ModuleCat.of R (ker (Nat.card G : M.V →ₗ[R] M.V)) :=
+    tateCohomology M (-1) ≅ ModuleCat.of R (ker (Nat.card G : M.V →ₗ[R] M.V)) :=
   TateCohomology.negOneIso M ≪≫
   (LinearEquiv.toModuleIso (Submodule.quotEquivOfEqBot _ (by
   ext m; simp [Submodule.submoduleOf, ← Module.End.one_eq_id, Representation.Coinvariants.ker]) ≪≫ₗ
@@ -386,7 +195,7 @@ variable {G : Type} [Group G] [Fintype G]
 /-- The zeroth Tate cohomology of a trivial representation of a finite group of order `N` is `ℤ/Nℤ`.
 -/
 def zeroTrivialInt (hG : Nat.card G = N) :
-    (tateCohomology 0).obj (trivial ℤ G ℤ) ≅ .of ℤ (ZMod N) := by
+    tateCohomology (trivial ℤ G ℤ) 0 ≅ .of ℤ (ZMod N) := by
   refine zeroIsoOfIsTrivial _ ≪≫ ((QuotientAddGroup.quotientAddEquivOfEq ?_).trans <|
     Int.quotientZMultiplesEquivZMod N).toIntLinearEquiv.toModuleIso
   ext
@@ -395,7 +204,7 @@ def zeroTrivialInt (hG : Nat.card G = N) :
 /-- A trivial torsion-free representation of a finite group of order `N` has trivial -1-st Tate
 cohomology. -/
 lemma isZero_neg_one_trivial_of_isAddTorsionFree {M : Type} [AddCommGroup M] [IsAddTorsionFree M] :
-    IsZero ((tateCohomology (-1)).obj <| trivial ℤ G M) :=
+    IsZero (tateCohomology (trivial ℤ G M) (-1)) :=
   .of_iso (by simp [subsingleton_iff]) <| negOneIsoOfIsTrivial _
 
-end groupCohomology.TateCohomology
+end TateCohomology
