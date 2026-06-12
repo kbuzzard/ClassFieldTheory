@@ -114,24 +114,24 @@ for all subgroups `S` of `G` and all integers `n`, `Hⁿ_{Tate}(S,M)=0`.
 class TrivialTateCohomology [Finite G] (M : Rep R G) : Prop where
     isZero (H : Subgroup G) {n : ℤ} :
       letI : Fintype H := Fintype.ofFinite _
-      IsZero ((tateCohomology n).obj (M ↓ H.subtype : Rep R H))
+      IsZero (tateCohomology (M ↓ H.subtype : Rep R H) n)
 
 lemma TrivialTateCohomology.of_iso [Finite G] {M N : Rep R G} (f : M ≅ N)
     [N.TrivialTateCohomology] :
     M.TrivialTateCohomology :=
   ⟨fun H ↦ (TrivialTateCohomology.isZero _).of_iso <|
     letI : Fintype H := Fintype.ofFinite _
-    (tateCohomology _).mapIso <| (resFunctor H.subtype).mapIso f⟩
+    (tateCohomologyFunctor _).mapIso <| (resFunctor H.subtype).mapIso f⟩
 
 lemma TrivialTateCohomology.of_injective [Finite G] {M : Rep R G} [Fintype H]
     (f : H →* G) (n : ℤ) (hf : Function.Injective f)
-    [M.TrivialTateCohomology] : IsZero ((tateCohomology n).obj (M ↓ f)) :=
+    [M.TrivialTateCohomology] : IsZero (tateCohomology (M ↓ f) n) :=
   let := Fintype.ofFinite f.range
   .of_iso (isZero (M := M) f.range (n := n)) <| TateCohomology.res_iso
     (MonoidHom.ofInjective hf) (LinearEquiv.refl _ _) (by simp [MonoidHom.ofInjective]) _
 
 lemma isZero_of_trivialTateCohomology [Fintype G] {M : Rep R G}
-    [M.TrivialTateCohomology] {n : ℤ} : IsZero ((tateCohomology n).obj M) :=
+    [M.TrivialTateCohomology] {n : ℤ} : IsZero (tateCohomology M n) :=
   TrivialTateCohomology.of_injective (.id G) n Function.injective_id
 
 instance TrivialTateCohomology.to_trivialCohomology [Finite G] {M : Rep R G}
@@ -152,8 +152,8 @@ lemma TrivialTateCohomology.of_cases [Finite G] {M : Rep R G}
     [M.TrivialCohomology] [M.TrivialHomology]
     (h : ∀ (H : Subgroup G),
       letI : Fintype H := Fintype.ofFinite _
-      IsZero ((tateCohomology 0).obj (M ↓ H.subtype : Rep R H)) ∧
-        IsZero ((tateCohomology (-1)).obj (M ↓ H.subtype : Rep R H))) :
+      IsZero (tateCohomology (M ↓ H.subtype : Rep R H) 0) ∧
+        IsZero (tateCohomology (M ↓ H.subtype : Rep R H) (-1))) :
     TrivialTateCohomology M where
   isZero H n := by
     match n with
@@ -195,8 +195,8 @@ instance [Finite G] [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := 
 
 noncomputable def _root_.TrivialTateCohomology.zeroIso_ofTrivial
     [Fintype G] (M : Rep R G) [M.IsTrivial] :
-    (tateCohomology 0).obj M ≅ ModuleCat.of R (M ⧸ LinearMap.range (Nat.card G : M →ₗ[R] M)) :=
-  groupCohomology.TateCohomology.zeroIso M|>.trans <| LinearEquiv.toModuleIso <|
+    (tateCohomology M 0) ≅ ModuleCat.of R (M ⧸ LinearMap.range (Nat.card G : M →ₗ[R] M)) :=
+  TateCohomology.zeroIso M|>.trans <| LinearEquiv.toModuleIso <|
   Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ (by ext; simp) ≪≫ₗ Submodule.topEquiv) <| by
     rw [Representation.norm_ofIsTrivial]
     ext m

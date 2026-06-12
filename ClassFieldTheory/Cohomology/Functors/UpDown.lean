@@ -267,7 +267,7 @@ open Rep
 An explicit version of `isZero_of_trivialTateCohomology`
 -/
 private lemma isZero_of_trivialTateCohomology' (M : Rep R G)
-    [M.TrivialTateCohomology] (n : ℤ) : IsZero ((tateComplexFunctor.obj M).homology n) :=
+    [M.TrivialTateCohomology] (n : ℤ) : IsZero (tateCohomology M n) :=
   TrivialTateCohomology.of_injective (.id G) _ Function.injective_id
 
 instance instIsIso_shortExact_upSES (M : Rep R G) (n : ℤ) :
@@ -288,31 +288,33 @@ instance instIsIso_shortExact_downSES (M : Rep R G) (n : ℤ) :
 
 @[simps! hom]
 def δUpIsoTate (M : Rep R G) (n : ℤ) :
-    (tateCohomology n).obj (up.{u}.obj M) ≅ (tateCohomology (n + 1)).obj M :=
+    tateCohomology (up.{u}.obj M) n ≅ tateCohomology M (n + 1) :=
   have := instIsIso_shortExact_upSES M n
   asIso (TateCohomology.δ (shortExact_upSES M) n)
 
 @[simps! hom]
 def δDownIsoTate (M : Rep R G) (n : ℤ) :
-    (tateCohomology n).obj M ≅ (tateCohomology (n + 1)).obj (down.obj M) :=
+    tateCohomology M n ≅ tateCohomology (down.obj M) (n + 1) :=
   asIso (TateCohomology.δ (shortExact_downSES M) n)
 
 def δUpResIsoTate {S : Type u} [Group S] [Fintype S] {φ : S →* G} (inj : Injective φ) (n : ℤ) :
-    (tateCohomology n).obj (up.obj M ↓ φ) ≅ (tateCohomology (n + 1)).obj (M ↓ φ) := sorry
+    tateCohomology (up.obj M ↓ φ) n ≅ tateCohomology (M ↓ φ) (n + 1) := sorry
 
 def δDownResIsoTate {H : Type u} [Group H] [Fintype H] {φ : H →* G} (inj : Injective φ) (n : ℤ) :
-    (tateCohomology n).obj (M ↓ φ) ≅ (tateCohomology (n + 1)).obj (down.obj M ↓ φ) := sorry
+    tateCohomology (M ↓ φ) n ≅ tateCohomology (down.obj M ↓ φ) (n + 1) := sorry
 
-def δUpNatIsoTate (n : ℤ) : up ⋙ tateCohomology (R := R) (G := G) n ≅ tateCohomology (n + 1) :=
+def δUpNatIsoTate (n : ℤ) : up ⋙ tateCohomologyFunctor (R := R) (G := G) n ≅
+    tateCohomologyFunctor (n + 1) :=
   NatIso.ofComponents (fun M ↦ δUpIsoTate M n) fun {M N} f ↦ .symm <| HomologySequence.δ_naturality
-    ((upShortComplex ⋙ tateComplexFunctor.mapShortComplex).map f)
+    ((upShortComplex ⋙ (tateComplexFunctor R G).mapShortComplex).map f)
     (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_upSES M))
     (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_upSES N)) n (n + 1) rfl
 
-def δDownNatIsoTate (n : ℤ) : tateCohomology (R := R) (G := G) n ≅ down ⋙ tateCohomology (n + 1) :=
+def δDownNatIsoTate (n : ℤ) : tateCohomologyFunctor (R := R) (G := G) n ≅
+    down ⋙ tateCohomologyFunctor (n + 1) :=
   NatIso.ofComponents (fun M ↦ δDownIsoTate M n) fun {M N} f ↦ .symm <|
     HomologySequence.δ_naturality
-      ((downShortComplex ⋙ tateComplexFunctor.mapShortComplex).map f)
+      ((downShortComplex ⋙ (tateComplexFunctor R G).mapShortComplex).map f)
       (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_downSES M))
       (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_downSES N)) n (n + 1) rfl
 
