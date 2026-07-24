@@ -62,7 +62,8 @@ theorem hasBasis_nhds_integer : (nhds (0 : 𝒪[K])).HasBasis (fun _n : ℕ ↦ 
   convert (hasBasis_nhds K).comap Subtype.val using 1
   · exact nhds_subtype ..
   ext n x
-  simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Set.preimage_setOf_eq, Set.mem_setOf_eq]
+  simp only [SetLike.setOfPred_mem_eq, SetLike.mem_coe, Set.preimage_ofPred_eq,
+    Set.mem_ofPred_eq]
   rw [mem_maximalIdeal_pow_iff, OrderMonoidIso.lt_symm_apply, WithZero.lt_exp_iff,
     OrderMonoidIso.le_symm_apply, Nat.cast_succ]
   ring_nf

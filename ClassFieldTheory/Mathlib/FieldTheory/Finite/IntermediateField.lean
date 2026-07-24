@@ -123,6 +123,6 @@ theorem rootsOfUnity_eq_top : rootsOfUnity (Nat.card F - 1) F = ⊤ :=
 instance : HasEnoughRootsOfUnity F (Nat.card F - 1) := by
   have := Finite.one_lt_card (α := F)
   have : NeZero (Nat.card F - 1) := .mk <| by grind
-  exact .of_card_le <| by simp [Fintype.card_eq_nat_card, rootsOfUnity_eq_top, Nat.card_units]
+  exact .of_card_le <| by simp [rootsOfUnity_eq_top, Nat.card_units]
 
 end FiniteField

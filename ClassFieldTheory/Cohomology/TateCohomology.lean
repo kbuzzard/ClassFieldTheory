@@ -39,8 +39,7 @@ lemma cochainsMap_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep
       cochainsMap e1 φ ≫ cochainsMap e2 ψ := by
   rw [CochainComplex.ConnectData.map_comp_map]
   unfold cochainsMap
-  simp only [MulEquiv.coe_monoidHom_trans, MulEquiv.toMonoidHom_eq_coe,
-    Representation.IntertwiningMap.coe_eq_toLinearMap, Rep.hom_comp,
+  simp only [MulEquiv.coe_monoidHom_trans, MulEquiv.toMonoidHom_eq_coe, Rep.hom_comp,
     Representation.IntertwiningMap.comp_toLinearMap]
   congr
   simp [← chainsMap_comp]

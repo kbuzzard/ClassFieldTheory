@@ -49,7 +49,7 @@ def representation : Representation R G (carrier σ) where
   toFun g := {
     toFun v := {
       fst := (aug R G).ρ g v.fst
-      snd := M.ρ g v.snd + ∑ x : G, (aug.ι R G).hom v.fst x • cocycle σ ⟨g, x⟩
+      snd := M.ρ g v.snd + ∑ x : G, ((aug.ι R G).hom v.fst).coeff x • cocycle σ ⟨g, x⟩
     }
     map_add' x y := by
       ext
@@ -95,22 +95,24 @@ def representation : Representation R G (carrier σ) where
       rw [Rep.hom_comm_apply]
       simp [-equalizer_as_kernel]
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
-        Function.comp_apply, map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
-        Finset.sum_const_zero, add_zero, Module.End.mul_apply]
+        Function.comp_apply, map_zero, MonoidAlgebra.coeff_zero, Finsupp.coe_zero, Pi.zero_apply,
+        zero_smul, Finset.sum_const_zero, add_zero, Module.End.mul_apply]
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
-        Function.comp_apply, map_zero, Finsupp.coe_zero, Pi.zero_apply, zero_smul,
-        Finset.sum_const_zero, add_zero, Module.End.mul_apply]
+        Function.comp_apply, map_zero, MonoidAlgebra.coeff_zero, Finsupp.coe_zero, Pi.zero_apply,
+        zero_smul, Finset.sum_const_zero, add_zero, Module.End.mul_apply]
 
 def _root_.Rep.split : Rep R G := Rep.of (split.representation σ)
 
 lemma apply (g : G) (vm : carrier σ) : (split σ).ρ g vm
-    = ⟨(aug R G).ρ g vm.1, M.ρ g vm.2 + ∑ x : G, aug.ι R G vm.1 x • cocycle σ ⟨g, x⟩⟩ := rfl
+    = ⟨(aug R G).ρ g vm.1, M.ρ g vm.2 + ∑ x : G, (aug.ι R G vm.1).coeff x • cocycle σ ⟨g, x⟩⟩ :=
+  rfl
 
 lemma apply_fst (g : G) (vm : carrier σ) :
     ((split σ).ρ g vm).fst = (aug R G).ρ g vm.1 := rfl
 
 lemma apply_snd (g : G) (vm : carrier σ) :
-    ((split σ).ρ g vm).snd = M.ρ g vm.2 + ∑ x : G, aug.ι R G vm.1 x • cocycle σ ⟨g, x⟩ := rfl
+    ((split σ).ρ g vm).snd = M.ρ g vm.2 + ∑ x : G, (aug.ι R G vm.1).coeff x • cocycle σ ⟨g, x⟩ :=
+  rfl
 
 @[ext] lemma ext (vm vm' : split σ) (hv : vm.1 = vm'.1) (hm : vm.2 = vm'.2) : vm = vm' := by
   change (⟨vm.1,vm.2⟩ : aug R G × M) = ⟨vm'.1,vm'.2⟩
@@ -189,6 +191,7 @@ noncomputable def τ (g : G) : split σ :=
 
 open leftRegular
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a 2-cocycle `σ`, the image of `σ` in the splitting module of `σ` is equal to the
 coboundary of `τ σ`.
@@ -203,10 +206,11 @@ lemma τ_property (g h : G) :
     simp only [equalizer_as_kernel, map_add, map_sub, aug.ofSubOfOne_spec R G, map_zero]
     rw [Rep.hom_comm_apply, Rep.aug.ofSubOfOne_spec]
     simp
-  · classical simp only [equalizer_as_kernel, Rep.aug.ofSubOfOne_spec R G, Finsupp.coe_sub,
-      Pi.sub_apply, Finsupp.single_apply, sub_smul, ite_smul, one_smul, zero_smul,
-      Finset.sum_sub_distrib, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, map_mul,
-      Module.End.mul_apply, add_snd, sub_snd, add_sub_cancel_left]
+  · classical simp only [equalizer_as_kernel, Rep.aug.ofSubOfOne_spec R G,
+      MonoidAlgebra.coeff_sub, MonoidAlgebra.coeff_single, Finsupp.coe_sub, Pi.sub_apply,
+      Finsupp.single_apply, sub_smul, ite_smul, one_smul, zero_smul, Finset.sum_sub_distrib,
+      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, map_mul, Module.End.mul_apply, add_snd,
+      sub_snd, add_sub_cancel_left]
     have : (cocycle σ) (g, 1) = (M.ρ g) ((cocycle σ) (1, 1)) := by
       simpa [add_comm] using (mem_cocycles₂_iff (cocycle σ)).mp (cocycle σ).2 g 1 1
     simp [this]
