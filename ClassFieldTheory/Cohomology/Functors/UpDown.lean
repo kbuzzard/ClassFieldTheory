@@ -189,7 +189,8 @@ lemma shortExact_downSES : (downSES M).ShortExact where
   epi_g := (inferInstance : Epi (ind₁'_π.app M))
 
 lemma shortExact_downSES_res {H : Type*} [Group H] (φ : H →* G) :
-    ((downSES M).map (resFunctor φ)).ShortExact := by simpa using shortExact_downSES M
+    ((downSES M).map (resFunctor φ)).ShortExact :=
+  (shortExact_res φ).2 (shortExact_downSES M)
 
 /-- `down` as a functor from representations to short complexes.
 

@@ -371,7 +371,7 @@ instance : IsScalarTower 𝒪[K] 𝒪[L] L := .of_algebraMap_eq' rfl
 /-- The `e[L/K]` of an extension of local fields (also called the ramification index) is such that
 `vL(iKL ϖK) = vL(ϖL^e[L/K])`, or alternatively `𝓂[K] 𝒪[L] = 𝓂[L] ^ e`. -/
 noncomputable def e : ℕ :=
-  Ideal.ramificationIdx 𝓂[K] 𝓂[L]
+  Ideal.ramificationIdx' 𝓂[K] 𝓂[L]
 
 -- by Hanliu Jiang
 theorem e_spec {ϖK : 𝒪[K]} {ϖL : 𝒪[L]} (hϖk : Irreducible ϖK) (hϖl : Irreducible ϖL) :
@@ -384,7 +384,7 @@ theorem e_spec {ϖK : 𝒪[K]} {ϖL : 𝒪[L]} (hϖk : Irreducible ϖK) (hϖl : 
   rw [← Set.image_singleton, ← Ideal.map_span, ← Ideal.span_singleton_pow,
     ← (IsDiscreteValuationRing.irreducible_iff_uniformizer _).mp hϖk] at hr
   have := (IsDiscreteValuationRing.irreducible_iff_uniformizer _).mp hϖl
-  refine Ideal.ramificationIdx_spec ?_ ?_
+  refine Ideal.ramificationIdx'_spec ?_ ?_
   · rw [hr, this]
   rw [hr, ← this]
   exact (Ideal.pow_right_strictAnti _ IsDiscreteValuationRing.not_a_field'
@@ -404,7 +404,7 @@ theorem e_spec' :
 /-- The `f[L/K]` of an extension of local fields, which is `[𝓀[L] : 𝓀[K]]`. It is also called the
 inertia degree. -/
 noncomputable def f : ℕ :=
-  Ideal.inertiaDeg 𝓂[K] 𝓂[L]
+  Ideal.inertiaDeg' 𝓂[K] 𝓂[L]
 
 instance : 𝓂[L].LiesOver 𝓂[K] := by
   obtain ⟨ϖK, hϖK⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
@@ -432,7 +432,7 @@ instance : Algebra.IsSeparable 𝓀[K] 𝓀[L] := Algebra.IsAlgebraic.isSeparabl
 
 -- by Hanliu Jiang
 theorem f_spec : Module.finrank 𝓀[K] 𝓀[L] = f K L := by
-  simp only [f, Ideal.inertiaDeg, IsLocalRing.eq_maximalIdeal
+  simp only [f, Ideal.inertiaDeg', IsLocalRing.eq_maximalIdeal
     (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal 𝓂[L]), ↓reduceDIte,
     IsLocalRing.ResidueField]
   rfl
@@ -450,7 +450,7 @@ theorem e_pos : 0 < e K L := by
   rw [← Ideal.map_le_iff_le_comap, e_spec', h, pow_zero, Ideal.one_eq_top, top_le_iff] at this
   exact absurd this Ideal.IsPrime.ne_top'
 
-theorem f_pos : 0 < f K L := Ideal.inertiaDeg_pos 𝓂[K] 𝓂[L]
+theorem f_pos : 0 < f K L := Ideal.inertiaDeg'_pos 𝓂[K] 𝓂[L]
 
 lemma factors_map_maximalIdeal :
     UniqueFactorizationMonoid.factors (Ideal.map (algebraMap 𝒪[K] 𝒪[L]) 𝓂[K]) =

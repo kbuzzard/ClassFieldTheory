@@ -482,8 +482,9 @@ instance : IsLocalHom (Ideal.Quotient.mk I) := by
     exact Ideal.pow_mem_pow hr _
   refine isUnit_iff_exists_inv.mpr ⟨(ofLinearEquiv I R).symm <| .mk _ _ ⟨_, this⟩, ?_⟩
   generalize hy : (ofLinearEquiv I R).symm _ = y
-  simp_rw [LinearEquiv.symm_apply_eq, ofLinearEquiv_apply, AdicCompletion.ext_iff, of_apply,
-    AdicCompletion.mk_apply_coe, Submodule.mkQ_apply, Ideal.Quotient.mk_eq_mk] at hy
+  rw [LinearEquiv.symm_apply_eq] at hy
+  replace hy : ∀ n, Ideal.Quotient.mk (I ^ n • ⊤ : Ideal R) (∑ i ∈ Finset.range n, r ^ i) =
+      Ideal.Quotient.mk (I ^ n • ⊤ : Ideal R) y := fun n ↦ congrFun (congrArg Subtype.val hy) n
   refine (IsHausdorff.eq_iff_smodEq (I := I)).mpr fun n ↦ ?_
   simp_rw [SModEq, Ideal.Quotient.mk_eq_mk, map_mul, ← hy, ← map_mul, Ideal.Quotient.eq,
     mul_neg_geom_sum, sub_sub_cancel_left, smul_eq_mul, mul_top, neg_mem_iff]

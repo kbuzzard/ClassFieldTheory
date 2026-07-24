@@ -131,7 +131,7 @@ end FilterCauchySeq
 variable {F}
 
 theorem Completion.mk_surjective : (⇑(Completion.mk F)).Surjective := fun x ↦ by
-  refine ⟨⟨fun i ↦ (x.val i).out, fun i j h ↦ ?_⟩, by ext; simp⟩
+  refine ⟨⟨fun i ↦ (x.val i).out, fun i j h ↦ ?_⟩, by ext i; exact Quotient.out_eq _⟩
   have := x.2 h
   simp only
   generalize x.val i = xi at *

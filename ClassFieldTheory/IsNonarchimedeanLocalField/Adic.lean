@@ -22,7 +22,7 @@ theorem maximalIdeal_pow_eq (n : ℕ) : ((𝓂[K] ^ n :) : Set 𝒪[K]) =
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
   rw [(IsDiscreteValuationRing.irreducible_iff_uniformizer _).mp hϖ, Ideal.span_singleton_pow]
   ext x
-  simp_rw [SetLike.mem_coe, Set.mem_preimage, Set.mem_setOf, Ideal.mem_span_singleton,
+  simp_rw [SetLike.mem_coe, Set.mem_preimage, Set.mem_ofPred, Ideal.mem_span_singleton,
     (Valuation.integer.integers _).dvd_iff_le, map_pow, Algebra.algebraMap_ofSubsemiring_apply,
     valuation_irreducible hϖ, ← map_pow, ← exp_nsmul, smul_neg, Int.nsmul_eq_mul, mul_one]
 
@@ -43,7 +43,7 @@ theorem isAdic : IsAdic 𝓂[K] := by
     lift n to ℤ using hn
     obtain ⟨m, hmn⟩ : ∃ m : ℕ, -m < n := ⟨n.natAbs + 1, by grind⟩
     refine ⟨m, fun x hx ↦ hts <| hnt ?_⟩
-    simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq] at hx ⊢
+    simp only [Set.preimage_ofPred_eq, Set.mem_ofPred_eq] at hx ⊢
     exact hx.trans_lt <| (map_lt_map_iff ..).mpr <| exp_lt_exp.mpr hmn
 
 instance : IsAdicComplete 𝓂[K] 𝒪[K] :=

@@ -35,12 +35,13 @@ theorem exists_isCyclic_quotient_of_finite {G : Type*} [Group G] [Finite G] {H :
     exact not_subsingleton (ZMod n) Multiplicative.ofAdd.subsingleton
   · exact (QuotientGroup.quotientKerEquivRange _).isCyclic.2 inferInstance
 
-theorem solvable_ind {G : Type*} [Group G] [IsSolvable G] [Finite G] {motive : Subgroup G → Prop}
+theorem solvable_ind {G : Type*} [Group G] [Group.IsSolvable G] [Finite G]
+    {motive : Subgroup G → Prop}
     (bot : motive ⊥) (ind : ∀ (H H' : Subgroup G) (_ : H ≤ H') (normal : (H.subgroupOf H').Normal),
       IsCyclic (H' ⧸ H.subgroupOf H') → motive H → motive H') (t : Subgroup G) : motive t := by
   by_cases ht : t = ⊥
   · exact ht ▸ bot
-  · have hhh : ⁅t, t⁆ < t := IsSolvable.commutator_lt_of_ne_bot ht
+  · have hhh : ⁅t, t⁆ < t := Group.IsSolvable.commutator_lt_of_ne_bot ht
     have sub_eq : (⁅t, t⁆).subgroupOf t = commutator t := by
       apply Subgroup.map_injective t.subtype_injective
       rw [Subgroup.map_subgroupOf_eq_of_le hhh.le, map_commutator_eq, Subgroup.range_subtype]

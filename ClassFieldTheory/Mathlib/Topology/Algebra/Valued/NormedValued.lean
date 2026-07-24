@@ -36,7 +36,7 @@ variable {K}
 @[simp] theorem ball_norm_eq (x : K) :
     Metric.ball 0 ‖x‖ = { y : K | valuation y < valuation x } := by
   ext y
-  simp_rw [mem_ball_zero_iff, Set.mem_setOf_eq, valuation_apply, ← NNReal.coe_lt_coe, coe_nnnorm]
+  simp_rw [mem_ball_zero_iff, Set.mem_ofPred_eq, valuation_apply, ← NNReal.coe_lt_coe, coe_nnnorm]
 
 theorem valuation_ball_eq (x : K) :
     (valuation (K := K)).ball (valuation x) = Metric.ball 0 ‖x‖ := by

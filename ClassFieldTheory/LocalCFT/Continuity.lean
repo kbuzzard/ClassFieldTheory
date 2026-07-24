@@ -98,7 +98,7 @@ variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuat
   have B₁ := IsValuativeTopology.hasBasis_nhds_zero K
   have B₂ := IsValuativeTopology.hasBasis_nhds_zero L
   apply (Filter.HasBasis.tendsto_iff B₁ B₂).mpr
-  simp only [Set.mem_setOf_eq, true_and, true_imp_iff]
+  simp only [Set.mem_ofPred_eq, true_and, true_imp_iff]
   intro b
   obtain ⟨a, rfl⟩ := unitsMap_valuation_surjective b
   obtain ⟨a', ha'⟩ := exists_valuation_algebraMap_le_valuation K a

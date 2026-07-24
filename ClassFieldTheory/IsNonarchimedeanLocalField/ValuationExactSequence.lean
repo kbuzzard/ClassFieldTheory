@@ -34,6 +34,7 @@ open ValuativeRel CategoryTheory
   have := invariant (M := G) K (L := L)
   Rep.units G 𝒪[L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The short complex `0 ⟶ 𝒪[L]ˣ ⟶ Lˣ ⟶ ℤ ⟶ 0` of `G`-modules where `G = Gal(L/K)`. -/
 noncomputable def valuationShortComplex (G K L : Type) [Group G]
     [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]

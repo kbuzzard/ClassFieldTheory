@@ -59,14 +59,14 @@ lemma ε_comp_ι : ι R G ≫ ε R G = 0 := kernel.condition (ε R G)
 
 lemma ε_apply_ι (v : aug R G) : (ε R G).hom (ι R G|>.hom v) = 0 := congr($(ε_comp_ι R G) v)
 
-lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, (ι R G).hom v g = 0 := by
+lemma sum_coeff_ι [Fintype G] (v : aug R G) : ∑ g : G, ((ι R G).hom v).coeff g = 0 := by
   rw [← ε_apply_ι R G v, ε_eq_sum]
 
 /--
 There is an element of `aug R G` whose image in the left regular representation is `of g - of 1`.
 -/
 lemma exists_ofSubOfOne (g : G) : ∃ v : aug R G, (ι R G).hom v =
-    Finsupp.single g 1 - Finsupp.single 1 1 := by
+    .single g 1 - .single 1 1 := by
   apply exists_kernelι_eq
   rw [map_sub, ε_of, ε_of, sub_self]
 
@@ -87,6 +87,10 @@ abbrev aug_shortExactSequence : ShortComplex (Rep R G) where
   f := ι R G
   g := ε R G
   zero := ε_comp_ι R G
+
+lemma aug_shortExactSequence_X₁ : (aug_shortExactSequence R G).X₁ = aug R G := rfl
+
+lemma aug_shortExactSequence_X₃ : (aug_shortExactSequence R G).X₃ = trivial R G R := rfl
 
 /--
 The sequence in `Rep R G`:
@@ -113,44 +117,62 @@ lemma aug_isShortExact' {H : Type} [Group H] (φ : H →* G) :
 
 open Finsupp
 
-def leftRegularToInd₁' : (G →₀ R) →ₗ[R] G →₀ R := lmapDomain R R (fun x ↦ x⁻¹)
+def leftRegularToInd₁' : MonoidAlgebra R G →ₗ[R] G →₀ R :=
+  lmapDomain R R (fun x ↦ x⁻¹) ∘ₗ (MonoidAlgebra.coeffLinearEquiv R).toLinearMap
+
+/-- The inverse of `leftRegularToInd₁'`. -/
+def ind₁'ToLeftRegular : (G →₀ R) →ₗ[R] MonoidAlgebra R G :=
+  (MonoidAlgebra.coeffLinearEquiv R).symm.toLinearMap ∘ₗ lmapDomain R R (fun x ↦ x⁻¹)
 
 @[simp]
 lemma leftReugularToInd₁'_single (g : G) :
-    leftRegularToInd₁' R G (single g 1) = single g⁻¹ 1 := by
+    leftRegularToInd₁' R G (.single g 1) = single g⁻¹ 1 := by
   ext; simp [leftRegularToInd₁']
 
+@[simp]
+lemma ind₁'ToLeftRegular_single (g : G) :
+    ind₁'ToLeftRegular R G (single g 1) = .single g⁻¹ 1 := by
+  simp [ind₁'ToLeftRegular]
+
 lemma leftRegularToInd₁'_comp_lsingle (x : G) :
-    leftRegularToInd₁' R G ∘ₗ lsingle x = lsingle x⁻¹ := by ext; simp
+    leftRegularToInd₁' R G ∘ₗ MonoidAlgebra.lsingle x = lsingle x⁻¹ := by ext; simp
+
+lemma ind₁'ToLeftRegular_comp_lsingle (x : G) :
+    ind₁'ToLeftRegular R G ∘ₗ lsingle x = MonoidAlgebra.lsingle x⁻¹ := by ext; simp
 
 lemma leftRegularToInd₁'_comm (g : G) : leftRegularToInd₁' R G ∘ₗ (leftRegular R G).ρ g
     = (Representation.trivial R G R).ind₁' g ∘ₗ leftRegularToInd₁' R G := by
   ext; simp
 
-lemma leftRegularToInd₁'_comm' (g : G) :
-    leftRegularToInd₁' R G ∘ₗ (Representation.trivial R G R).ind₁' g =
-    (leftRegular R G).ρ g ∘ₗ leftRegularToInd₁' R G := by
+lemma ind₁'ToLeftRegular_comm (g : G) :
+    ind₁'ToLeftRegular R G ∘ₗ (Representation.trivial R G R).ind₁' g =
+    (leftRegular R G).ρ g ∘ₗ ind₁'ToLeftRegular R G := by
   ext; simp
 
-lemma leftRegularToInd₁'_comp_leftRegularToInd₁' :
-    leftRegularToInd₁' R G ∘ₗ leftRegularToInd₁' R G = 1 := by
-  ext : 1
-  rw [LinearMap.comp_assoc, leftRegularToInd₁'_comp_lsingle, leftRegularToInd₁'_comp_lsingle,
-    inv_inv]
-  rfl
+lemma ind₁'ToLeftRegular_comp_leftRegularToInd₁' :
+    ind₁'ToLeftRegular R G ∘ₗ leftRegularToInd₁' R G = LinearMap.id := by
+  ext x : 1
+  rw [LinearMap.comp_assoc, leftRegularToInd₁'_comp_lsingle, ind₁'ToLeftRegular_comp_lsingle,
+    inv_inv, LinearMap.id_comp]
+
+lemma leftRegularToInd₁'_comp_ind₁'ToLeftRegular :
+    leftRegularToInd₁' R G ∘ₗ ind₁'ToLeftRegular R G = LinearMap.id := by
+  ext x : 1
+  rw [LinearMap.comp_assoc, ind₁'ToLeftRegular_comp_lsingle, leftRegularToInd₁'_comp_lsingle,
+    inv_inv, LinearMap.id_comp]
 
 /--
 The left regular representation is isomorphic to `ind₁'.obj (trivial R G R)`
 -/
 def _root_.Rep.leftRegular.iso_ind₁' : leftRegular R G ≅ ind₁'.obj (trivial R G R) where
   hom := ofHom ⟨leftRegularToInd₁' R G, fun g ↦ leftRegularToInd₁'_comm R G g⟩
-  inv := ofHom ⟨leftRegularToInd₁' R G, fun g ↦ leftRegularToInd₁'_comm' R G g⟩
+  inv := ofHom ⟨ind₁'ToLeftRegular R G, fun g ↦ ind₁'ToLeftRegular_comm R G g⟩
   hom_inv_id := by
     ext : 2
-    apply leftRegularToInd₁'_comp_leftRegularToInd₁'
+    apply ind₁'ToLeftRegular_comp_leftRegularToInd₁'
   inv_hom_id := by
     ext : 2
-    apply leftRegularToInd₁'_comp_leftRegularToInd₁'
+    apply leftRegularToInd₁'_comp_ind₁'ToLeftRegular
 
 /--
 For a finite group, the left regular representation is acyclic for cohomology.
@@ -303,12 +325,10 @@ def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
     HomologicalComplex.HomologySequence.snakeInput_L₀, Functor.mapShortComplex_obj,
     ShortComplex.map_X₃, HomologicalComplex.homologyFunctor_obj,
     ShortComplex.SnakeInput.L₁'_X₁, ShortComplex.map_X₂, ShortComplex.SnakeInput.L₁'_f,
-    ShortComplex.map_g, hom_ofHom, Representation.isTrivial_def, LinearMap.id_coe, id_eq,
-    Representation.IntertwiningMap.coe_eq_toLinearMap, cochainsFunctor_map,
+    ShortComplex.map_g, cochainsFunctor_map,
     HomologicalComplex.homologyFunctor_map, Set.mem_range, Function.comp_apply]
-  have : (resFunctor φ).map (ε R G) = ofHom ⟨lift R R G (fun _ ↦ 1), fun _ ↦ by ext; simp⟩ := rfl
-  change _  ↔ ∃ g, groupCohomology.map (MonoidHom.id H) (ofHom _) 0 _ = _
-  rw [← this]
+  change _ ↔ ∃ g,
+    groupCohomology.map (MonoidHom.id H) ((resFunctor φ).map (ε R G)) 0 (res_norm R φ g) = x
   simp only [leftRegular.groupCoh_map_res_norm R G φ, eq_comm, exists_const]
   rfl
 

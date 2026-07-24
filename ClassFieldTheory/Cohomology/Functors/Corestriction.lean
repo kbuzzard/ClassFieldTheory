@@ -105,6 +105,7 @@ def cores₀ : Rep.resFunctor S.subtype ⋙ functor R S 0 ⟶ functor R G 0 wher
     ext x
     simp [Rep.cores₀_obj, hom_comm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `H¹(S, M↓S) ⟶ H¹(G, M)`. -/
 def cores₁_obj (M : Rep R G) :
     -- defining H¹(S, M↓S) ⟶ H¹(G, M) by a diagram chase
@@ -254,6 +255,7 @@ Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
 
 -/
 set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma commSqₙ (n : ℕ) (M : Rep R G) :
     (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (shortExact_upSES M) n (n + 1) rfl =
       δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫

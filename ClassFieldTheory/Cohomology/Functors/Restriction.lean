@@ -95,45 +95,6 @@ lemma res_map_ShortComplex_Exact (φ : H →* G)
     (S.map (resFunctor φ)).Exact ↔ S.Exact := by
   rw [ShortComplex.exact_map_iff_of_faithful]
 
-/--
-An object of `Rep R G` is zero iff the underlying `R`-module is zero.
--/
-lemma isZero_iff (M : Rep R G) : IsZero M ↔ Subsingleton M.V := by
-  simp [IsZero.iff_id_eq_zero, Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff,
-    ← ModuleCat.isZero_of_iff_subsingleton (R := R), ModuleCat.hom_ext_iff]
-
-
-/--
-An object of `Rep R G` is zero iff its restriction to `H` is zero.
--/
-lemma isZero_res_iff (M : Rep R G) {H : Type u} [Group H] (φ : H →* G) :
-    IsZero (M ↓ φ) ↔ IsZero M := by
-  rw [isZero_iff, isZero_iff, Rep.res_obj_V]
-
-set_option backward.defeqAttrib.useBackward true in
-/--
-The restriction functor `res φ : Rep R G ⥤ Rep R H` takes short exact sequences to short
-exact sequences.
--/
-@[simp] lemma shortExact_res (φ : H →* G) {S : ShortComplex (Rep.{u} R G)} :
-    (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
-  constructor
-  · intro h
-    have h₁ := h.1
-    have h₂ := h.2
-    have h₃ := h.3
-    rw [ShortComplex.exact_map_iff_of_faithful] at h₁
-    simp only [ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_f,
-      Representation.IntertwiningMap.coe_eq_toLinearMap, mono_iff_injective, hom_ofHom,
-      Representation.IntertwiningMap.coe_mk, Representation.IntertwiningMap.coe_toLinearMap,
-      ShortComplex.map_X₃, ShortComplex.map_g, epi_iff_surjective] at h₂ h₃
-    exact {exact := h₁, mono_f := mono_iff_injective _|>.2 h₂, epi_g := epi_iff_surjective _|>.2 h₃}
-  · rintro ⟨h⟩
-    exact {
-      exact := by rwa [ShortComplex.exact_map_iff_of_faithful]
-      mono_f := by simp_all [mono_iff_injective]
-      epi_g := by simp_all [epi_iff_surjective]
-    }
 end monoid
 
 section

@@ -128,7 +128,8 @@ lemma TrivialTateCohomology.of_injective [Finite G] {M : Rep R G} [Fintype H]
     [M.TrivialTateCohomology] : IsZero (tateCohomology (M ↓ f) n) :=
   let := Fintype.ofFinite f.range
   .of_iso (isZero (M := M) f.range (n := n)) <| TateCohomology.res_iso
-    (MonoidHom.ofInjective hf) (LinearEquiv.refl _ _) (by simp [MonoidHom.ofInjective]) _
+    (MonoidHom.ofInjective hf) (LinearEquiv.refl _ _)
+    (by simp [MonoidHom.ofInjective_apply]) _
 
 lemma isZero_of_trivialTateCohomology [Fintype G] {M : Rep R G}
     [M.TrivialTateCohomology] {n : ℤ} : IsZero (tateCohomology M n) :=

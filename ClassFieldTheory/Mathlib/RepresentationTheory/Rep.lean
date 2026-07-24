@@ -13,7 +13,8 @@ universe w u v v'
 
 variable {R : Type u} {G : Type v} {H : Type v'} [Ring R] [Monoid G] {A B : Rep.{w} R G}
 
-lemma ρ_apply (g : G) : (leftRegular R G).ρ g = Finsupp.lmapDomain R R (g * ·) := rfl
+lemma ρ_apply (g : G) :
+    (leftRegular R G).ρ g = MonoidAlgebra.mapDomainLinearMap R R (g * ·) := rfl
 
 lemma leftRegularHomEquiv_symm_comp {R : Type u} [CommRing R] {A B : Rep R G} (f : A ⟶ B) (a : A) :
     (leftRegularHomEquiv A).symm a ≫ f = (leftRegularHomEquiv B).symm (f.hom a) := by
@@ -68,26 +69,28 @@ lemma ε_comp_ρ (g : G) : (ε R G).hom.toLinearMap ∘ₗ (leftRegular R G).ρ 
   ext; simp
 
 open Representation.IntertwiningMap in
-lemma ε_comp_ρ_apply (g : G) (v : G →₀ R) :
+lemma ε_comp_ρ_apply (g : G) (v : leftRegular R G) :
     (ε R G).hom ((leftRegular R G).ρ g v) = ε R G v := by
   rw [← toLinearMap_apply, ← LinearMap.comp_apply, ε_comp_ρ, toLinearMap_apply]
 
 @[simp]
 lemma ε_of (g : G) : (ε R G).hom (.single g 1) = (1 : R) := by simp
 
-lemma ε_eq_sum' (v : leftRegular R G) : (ε R G).hom v = ∑ x ∈ v.support, v x := by
+lemma ε_eq_sum' (v : leftRegular R G) :
+    (ε R G).hom v = ∑ x ∈ v.coeff.support, v.coeff x := by
   simp [Finsupp.sum]
 
-lemma ε_eq_sum (v : leftRegular R G) [Fintype G] : (ε R G).hom v = ∑ g : G, v g := by
-  refine ε_eq_sum' v|>.trans <| (finsum_eq_sum_of_support_subset v (by simp)).symm.trans ?_
+lemma ε_eq_sum (v : leftRegular R G) [Fintype G] : (ε R G).hom v = ∑ g : G, v.coeff g := by
+  refine ε_eq_sum' v|>.trans <| (finsum_eq_sum_of_support_subset v.coeff (by simp)).symm.trans ?_
   simp [finsum_eq_sum_of_fintype]
 
 /--
 The left regular representation is nontrivial (i.e. non-zero) if and only if the coefficient
 ring is trivial.
 -/
-lemma nontrivial_iff_nontrivial : Nontrivial (leftRegular R G) ↔ Nontrivial R := by
-  simp only [Finsupp.nontrivial_iff, and_iff_right_iff_imp]; infer_instance
+lemma nontrivial_iff_nontrivial : Nontrivial (leftRegular R G) ↔ Nontrivial R :=
+  (MonoidAlgebra.coeffEquiv (R := R) (M := G)).nontrivial_congr.trans <|
+    Finsupp.nontrivial_iff.trans <| and_iff_right ⟨1⟩
 
 lemma ε_epi : Epi (ε R G) := epi_of_surjective _ fun r ↦ ⟨r • .single 1 1, by simp⟩
 
