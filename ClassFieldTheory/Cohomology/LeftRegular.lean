@@ -21,9 +21,9 @@ variable (R G : Type) [Group G] [CommRing R]
 /-- `norm' R G` for `G` finite, is the element `∑ g` in the `invariants` submodule of
 `R[G]`, the `leftRegular` representation of `G`. -/
 abbrev norm' [Fintype G] : (leftRegular R G).ρ.invariants :=
-  ⟨∑ g : G, single g 1, fun g ↦ by
-    simpa using show ∑ x : G, single (g * x) _ = _ from
-    Finset.sum_equiv (Equiv.mulLeft g) (by grind) <| fun _ _ ↦ rfl⟩
+  ⟨∑ g : G, .single g 1, fun g ↦ by
+    simp only [map_sum, Representation.ofMulAction_single, smul_eq_mul]
+    exact Fintype.sum_equiv (Equiv.mulLeft g) _ _ fun x ↦ rfl⟩
 
 /--
 `norm R G` for `G` finite, is the element `∑ g` in `H0 (leftRegular R G)`.
@@ -39,8 +39,9 @@ representation `R[G]`, the sum being over `h : H`.
 -/
 abbrev res_norm' {H : Type} [Group H] [Fintype H] (g : G) (φ : H →* G) :
     (leftRegular R G ↓ φ).ρ.invariants :=
-  ⟨∑ h : H, single (φ h * g) 1, fun h ↦ by
-    simpa using Finset.sum_equiv (Equiv.mulLeft h) (by simp) (by simp [mul_assoc])⟩
+  ⟨∑ h : H, .single (φ h * g) 1, fun h ↦ by
+    simp only [MonoidHom.comp_apply, map_sum, Representation.ofMulAction_single, smul_eq_mul]
+    exact Fintype.sum_equiv (Equiv.mulLeft h) _ _ fun h' ↦ by simp [mul_assoc]⟩
 
 variable {G} in
 /--
@@ -56,19 +57,16 @@ def res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
 open RepresentationTheory.groupCohomology
 
 lemma zeroι_norm [Fintype G] :
-    (zeroι _).hom (leftRegular.norm R G) = ∑ g : G, single g 1 := by
-  have := (groupCohomology.H0Iso (leftRegular R G)).toLinearEquiv.apply_symm_apply
-    ⟨∑ g : G, MonoidAlgebra.of _ _ g,
-    fun g ↦ by simpa using! show ∑ x : G, MonoidAlgebra.of _ _ (g * x) = _ from
-      Finset.sum_equiv (Equiv.mulLeft g) (by grind) <| fun _ _ ↦ rfl⟩
-  exact congr($this)
+    (zeroι _).hom (leftRegular.norm R G) = ∑ g : G, .single g 1 := by
+  have := (groupCohomology.H0Iso (leftRegular R G)).toLinearEquiv.apply_symm_apply (norm' R G)
+  exact congr(Subtype.val $this)
 
 lemma H0Iso_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
     (groupCohomology.H0Iso (leftRegular R G ↓ φ)).hom (res_norm R φ g) = res_norm' R g φ :=
   (groupCohomology.H0Iso _).toLinearEquiv.apply_symm_apply _
 
 lemma zeroι_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
-    zeroι _ (res_norm R φ g) = ∑ h : H, single (φ h * g) 1 := by
+    zeroι _ (res_norm R φ g) = ∑ h : H, .single (φ h * g) 1 := by
   dsimp [zeroι]
   exact congr(Subtype.val $(leftRegular.H0Iso_res_norm R G φ g))
 
@@ -77,9 +75,10 @@ lemma span_norm' [Fintype G] :
   ext ⟨x, hx⟩
   simp only [Submodule.mem_span_singleton, Subtype.ext_iff, SetLike.val_smul,
     Submodule.mem_top, iff_true]
-  replace hx : ∃ a : R, ∀ g : G, x g = a := ⟨x 1, fun g ↦ by
-    simpa using Finsupp.ext_iff.1 (hx g⁻¹) 1⟩
-  exact ⟨hx.choose, Finsupp.ext_iff.2 fun g ↦ by simp [← hx.choose_spec g]⟩
+  replace hx : ∃ a : R, ∀ g : G, x.coeff g = a := ⟨x.coeff 1, fun g ↦ by
+    simpa [Representation.coeff_ofMulAction] using congr(($(hx g⁻¹)).coeff 1)⟩
+  exact ⟨hx.choose, MonoidAlgebra.ext <| Finsupp.ext fun g ↦ by
+    simp [← hx.choose_spec g]⟩
 
 variable {G} in
 lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
@@ -89,20 +88,21 @@ lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
   ext x
   simp only [res_obj_V, res_obj_ρ, Submodule.mem_top, iff_true]
   choose σ hσ using Quotient.mk_surjective (s := QuotientGroup.rightRel φ.range)
-  have : x = ∑ i, (show G →₀ _ from x.1) (σ i) • res_norm' R (σ i) φ := by
+  have : x = ∑ i, x.1.coeff (σ i) • res_norm' R (σ i) φ := by
     ext a
     simp only [res_obj_V, res_obj_ρ, AddSubmonoidClass.coe_finsetSum, SetLike.val_smul,
-      coe_finsetSum, coe_smul, Finset.sum_apply, Pi.smul_apply, single_apply, Finset.sum_boole,
-      smul_eq_mul]
+      MonoidAlgebra.coeff_sum, MonoidAlgebra.coeff_smul, MonoidAlgebra.coeff_single,
+      Finsupp.coe_finsetSum, Finset.sum_apply, Finsupp.coe_smul, Pi.smul_apply, single_apply,
+      Finset.sum_boole, smul_eq_mul]
     rw [Finset.sum_eq_single (Quotient.mk _ a)]
-    · have (i j : G) : QuotientGroup.rightRel φ.range i j → (show G →₀ R from x.1) i =
-        (show G →₀ R from x.1) j := fun hij ↦ by
+    · have (i j : G) : QuotientGroup.rightRel φ.range i j → x.1.coeff i =
+        x.1.coeff j := fun hij ↦ by
         obtain ⟨x, hx⟩ := x
         obtain ⟨k, hk⟩ := by simpa [QuotientGroup.rightRel_apply] using hij
-        have := by simpa [Rep.res_obj_V, Representation.ofMulAction_def,
-          Finsupp.ext_iff, Rep.res_obj_ρ] using hx k
-        simpa [mapDomain, Finsupp.sum_fintype, Finsupp.single_apply, hk,
-            mul_assoc, inv_mul_eq_one] using this j
+        have h2 := congr(($(hx k)).coeff j)
+        simp only [MonoidHom.comp_apply, Representation.coeff_ofMulAction, smul_eq_mul] at h2
+        rw [← h2, hk]
+        simp [mul_assoc]
       simp only [res_obj_V, res_obj_ρ] at this
       rw [this a (σ ⟦a⟧) (by rw [← Quotient.eq, hσ])]
       suffices @Finset.card H {x | φ x * σ ⟦a⟧ = a} = 1 by simp [this]

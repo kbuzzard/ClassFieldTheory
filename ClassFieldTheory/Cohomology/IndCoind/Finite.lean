@@ -170,7 +170,9 @@ representations `coind₁' ρ` and `coind₁ R G V`.
 
 lemma coind₁'_lequiv_coind₁_comm (g : G) :
     coind₁'_lequiv_coind₁ ρ ∘ₗ coind₁' ρ g = coind₁ R G V g ∘ₗ coind₁'_lequiv_coind₁ ρ := by
-  ext; simp
+  ext f x
+  change ρ x (ρ g (f (x * g))) = ρ (x * g) (f (x * g))
+  rw [map_mul, Module.End.mul_apply]
 
 /--
 The linear map from `V` to `G → V` taking a vector `v : V` to the comstant function
@@ -252,11 +254,11 @@ def ind₁'_invlmap_aux : (G →₀ R) →ₗ[R] V →ₗ[R] G →₀ V where
     map_add' v1 v2 := by simp
     map_smul' r v := by simp [Finsupp.smul_sum, smul_smul, mul_comm]}
   map_add' f1 f2 := by
-    ext v g
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, sum_apply, LinearMap.add_apply, coe_add, coe_sum,
-      Pi.add_apply]
-    rw [Finsupp.sum_add_index' (f := f1) (g := f2) (by simp) (by simp [add_smul]),
-      Finsupp.sum_apply', Finsupp.sum_apply']
+    ext v : 1
+    change ((f1 + f2).sum fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
+      = (f1.sum fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
+        + (f2.sum fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
+    exact Finsupp.sum_add_index' (by simp) (by simp [add_smul])
   map_smul' r f := by
     ext : 1
     simp only [LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_apply]
@@ -264,9 +266,11 @@ def ind₁'_invlmap_aux : (G →₀ R) →ₗ[R] V →ₗ[R] G →₀ V where
     simp [smul_smul]
 
 def ind₁'_invlmap : Ind₁V R G V →ₗ[R] (G →₀ V) :=
-  (TensorProduct.lift (ind₁'_invlmap_aux ρ)).comp ((Coinvariants.ker _).quotEquivOfEqBot (by
-    simpa [Coinvariants.ker, sub_eq_zero]
-     using fun a ↦ by exact LinearMap.congr_fun TensorProduct.map_id a)).toLinearMap
+  (TensorProduct.lift (ind₁'_invlmap_aux ρ ∘ₗ
+    (MonoidAlgebra.coeffLinearEquiv R).toLinearMap)).comp
+    ((Coinvariants.ker _).quotEquivOfEqBot (by
+      simpa [Coinvariants.ker, sub_eq_zero]
+        using fun a ↦ by exact LinearMap.congr_fun TensorProduct.map_id a)).toLinearMap
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -286,8 +290,9 @@ between `ind₁' ρ` and `ind₁ R G V`.
       simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot, LinearEquiv.ofLinear_toLinearMap,
         ind₁'_lmap_apply, LinearMap.coe_comp, Coinvariants.mk, Function.comp_apply,
         TensorProduct.mk_apply, map_zero, TensorProduct.tmul_zero, sum_single_index]
-      change (TensorProduct.lift ρ.ind₁'_invlmap_aux)
-        (LinearMap.id (R := R) ((.single g 1) ⊗ₜ[R] (ρ g) v)) = .single g v
+      change (TensorProduct.lift (ρ.ind₁'_invlmap_aux ∘ₗ
+          (MonoidAlgebra.coeffLinearEquiv R).toLinearMap))
+        (LinearMap.id (R := R) ((MonoidAlgebra.single g 1) ⊗ₜ[R] (ρ g) v)) = .single g v
       simp [ind₁'_invlmap_aux]
   right_inv f := by
     rw [LinearMap.toFun_eq_coe]
@@ -300,22 +305,25 @@ between `ind₁' ρ` and `ind₁ R G V`.
     | tmul x y =>
     simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
       LinearEquiv.ofLinear_toLinearMap, LinearMap.coe_comp, Function.comp_apply]
-    change ρ.ind₁'_lmap (TensorProduct.lift ρ.ind₁'_invlmap_aux (LinearMap.id (R := R) (x ⊗ₜ[R] y)))
-      = Submodule.Quotient.mk (x ⊗ₜ[R] y)
-    simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul]
-    induction x using Finsupp.induction_linear with
+    change ρ.ind₁'_lmap (TensorProduct.lift (ρ.ind₁'_invlmap_aux ∘ₗ
+        (MonoidAlgebra.coeffLinearEquiv R).toLinearMap)
+      (LinearMap.id (R := R) (x ⊗ₜ[R] y))) = Submodule.Quotient.mk (x ⊗ₜ[R] y)
+    simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, Function.comp_apply, MonoidAlgebra.coeffLinearEquiv_apply]
+    induction x using MonoidAlgebra.induction_linear with
     | zero => simp
     | add f g h1 h2 =>
-      rw [map_add, LinearMap.add_apply, map_add, h1, h2, TensorProduct.add_tmul]
+      rw [MonoidAlgebra.coeff_add, map_add, LinearMap.add_apply, map_add, h1, h2,
+        TensorProduct.add_tmul]
       rfl
     | single g r =>
-      simp only [ind₁'_invlmap_aux, LinearMap.coe_mk, AddHom.coe_mk, zero_smul, single_zero,
-        sum_single_index, ind₁'_lmap_apply, LinearMap.coe_comp, Coinvariants.mk,
-        Function.comp_apply, TensorProduct.mk_apply, map_zero, TensorProduct.tmul_zero, map_smul,
-        self_inv_apply, TensorProduct.tmul_smul]
+      simp only [MonoidAlgebra.coeff_single, ind₁'_invlmap_aux, LinearMap.coe_mk, AddHom.coe_mk,
+        zero_smul, single_zero, sum_single_index, ind₁'_lmap_apply, LinearMap.coe_comp,
+        Coinvariants.mk, Function.comp_apply, TensorProduct.mk_apply, map_zero,
+        TensorProduct.tmul_zero, map_smul, self_inv_apply, TensorProduct.tmul_smul]
       rw [← map_smul, ← Submodule.mkQ_apply]
       congr
-      rw [TensorProduct.smul_tmul', Finsupp.smul_single, smul_eq_mul, mul_one]
+      rw [TensorProduct.smul_tmul', MonoidAlgebra.smul_single, smul_eq_mul, mul_one]
 
 @[simp] lemma ind₁'_lequiv_comp_lsingle (x : G) :
     ρ.ind₁'_lequiv ∘ₗ lsingle x = Ind₁V.mk R G V x ∘ₗ ρ x := by ext; simp
@@ -431,8 +439,8 @@ def coind₁_quotientToInvariants_iso {φ : G →* Q}
     coind₁_quotientToInvariants_iso_aux2 A <| QuotientGroup.quotientKerEquivOfSurjective φ surj)
     fun q ↦ ?_
   ext1 x
-  simp only [trivialFunctor_obj_V, quotientToInvariantsFunctor, IntertwiningMap.coe_eq_toLinearMap,
-    invariantsFunctor_map_hom, hom_ofHom, Functor.comp_obj, coindFunctor_obj,
+  simp only [trivialFunctor_obj_V, quotientToInvariantsFunctor,
+    invariantsFunctor_map_hom, Functor.comp_obj, coindFunctor_obj,
     MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply,
     LinearMap.coe_comp, LinearEquiv.coe_coe, LinearEquiv.trans_apply, coind_apply]
   ext q'

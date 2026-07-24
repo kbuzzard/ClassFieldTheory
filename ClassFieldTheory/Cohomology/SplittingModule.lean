@@ -144,6 +144,12 @@ def shortExactSequence : ShortComplex (Rep R G) where
   g := π σ
   zero := by ext; rfl
 
+lemma shortExactSequence_X₁ : (shortExactSequence σ).X₁ = M := rfl
+
+lemma shortExactSequence_X₂ : (shortExactSequence σ).X₂ = split σ := rfl
+
+lemma shortExactSequence_X₃ : (shortExactSequence σ).X₃ = aug R G := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 /--
 The sequence
@@ -356,8 +362,9 @@ instance trivialCohomology [FiniteClassFormation σ] [IsAddTorsionFree R] :
 
 lemma isIso_δ [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
     IsIso (TateCohomology.δ (Rep.split.isShortExact σ) n) := by
-  have : TrivialTateCohomology (split σ) := inferInstance
-  exact TateCohomology.isIso_δ _ this _
+  have h : TrivialTateCohomology ((shortExactSequence σ).X₂) :=
+    (shortExactSequence_X₂ σ).symm ▸ inferInstanceAs (TrivialTateCohomology (split σ))
+  exact TateCohomology.isIso_δ _ h _
 
 set_option backward.isDefEq.respectTransparency false in
 def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
@@ -366,10 +373,15 @@ def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
   have first_iso := Rep.aug.tateCohomology_auc_succ_iso R G n
   -- now go from H^{n+1}(aug) to H^{n+2}(M)
   have second_iso := Rep.split.isIso_δ σ (n + 1)
-  -- map starts here
+  -- map starts here; the `eqToIso` bridges keep every composition endpoint syntactic, so the
+  -- kernel never has to unfold the short exact sequences behind the `δ`s
+  eqToIso (congrArg (tateCohomology · n) (aug.aug_shortExactSequence_X₃ R G).symm) ≪≫
   (CategoryTheory.asIso (TateCohomology.δ (aug.aug_isShortExact R G) n)) ≪≫
+  eqToIso (congrArg (tateCohomology · (n + 1))
+    ((aug.aug_shortExactSequence_X₁ R G).trans (shortExactSequence_X₃ σ).symm)) ≪≫
   (CategoryTheory.asIso (TateCohomology.δ (Rep.split.isShortExact σ) (n + 1))) ≪≫
-  eqToIso (by simp [shortExactSequence]; congr 1; ring)
+  eqToIso ((congrArg (tateCohomology · (n + 1 + 1)) (shortExactSequence_X₁ σ)).trans
+    (congrArg (tateCohomology M) (by ring)))
 
 def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
     tateCohomology N 0 ≅ .of ℤ (Additive (Abelianization G)) := calc

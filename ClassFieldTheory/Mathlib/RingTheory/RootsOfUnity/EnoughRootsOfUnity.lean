@@ -15,7 +15,7 @@ theorem HasEnoughRootsOfUnity.of_splits {R : Type*} [CommRing R] [IsDomain R] {n
   have := NeZero.mk <| show n ≠ 0 by aesop
   refine .of_card_le ?_
   classical
-  rw [Fintype.card_eq_nat_card, ← SetLike.coe_sort_coe,
+  rw [← SetLike.coe_sort_coe,
     ← Nat.card_image_of_injective Units.val_injective, image_rootsOfUnity_eq_nthRoots this.out,
     SetLike.coe_sort_coe, Nat.card_eq_finsetCard, nthRootsFinset,
     Multiset.toFinset_card_of_nodup (nodup_nthRoots_one_of_natCast_ne_zero hn), nthRoots, C_1,

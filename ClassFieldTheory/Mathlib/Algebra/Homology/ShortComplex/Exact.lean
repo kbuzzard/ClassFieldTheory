@@ -13,6 +13,7 @@ variable {C D : Type*} [Category C] [Category D]
 section Abelian
 variable [Abelian C]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cokernel of the first map of an exact complex in an abelian category is naturally isomorphic
 to the coimage of the second map.
@@ -22,9 +23,10 @@ Note that we use the extra functor `F` to avoid talking about the category of ex
     F ⋙ gFunctor ⋙ ker C ≅ F ⋙ fFunctor ⋙ im :=
   NatIso.ofComponents fun X ↦
     have := (hF X).mono_cokernelDesc
-    kernel.congr _ _ (by simp) ≪≫
+    kernelIsoOfEq (by simp) ≪≫
       kernelCompMono _ (cokernel.desc (F.obj X).f (F.obj X).g (F.obj X).zero)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The cokernel of the first map of an exact complex in an abelian category is naturally isomorphic
 to the coimage of the second map.
@@ -34,7 +36,7 @@ Note that we use the extra functor `F` to avoid talking about the category of ex
     F ⋙ fFunctor ⋙ coker C ≅ F ⋙ gFunctor ⋙ coim :=
   NatIso.ofComponents fun X ↦
     have := (hF X).epi_kernelLift
-    cokernel.congr _ _ (by simp) ≪≫
+    cokernelIsoOfEq (by simp) ≪≫
       cokernelEpiComp (kernel.lift (F.obj X).g (F.obj X).f (F.obj X).zero) _
 
 end Abelian
