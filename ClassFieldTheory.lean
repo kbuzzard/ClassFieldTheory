@@ -33,6 +33,7 @@ public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
 public import ClassFieldTheory.IsNonarchimedeanLocalField.HerbrandQuotient
 public import ClassFieldTheory.IsNonarchimedeanLocalField.Instances
 public import ClassFieldTheory.IsNonarchimedeanLocalField.IntermediateField
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Qp
 public import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
 public import ClassFieldTheory.IsNonarchimedeanLocalField.Tower
 public import ClassFieldTheory.IsNonarchimedeanLocalField.Unramified

@@ -1,6 +1,7 @@
 module
 
 public import ClassFieldTheory.LocalCFT.Continuity
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Qp
 public import ClassFieldTheory.Mathlib.Algebra.Order.Group.OrderIso
 public import ClassFieldTheory.Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import ClassFieldTheory.Mathlib.Data.Int.WithZero
@@ -55,17 +56,6 @@ Basic properties of nonarch local fields.
 open ValuativeRel
 
 namespace IsNonarchimedeanLocalField
-
-section Padic
-
-variable (p : ℕ) [Fact p.Prime]
-
-instance : LocallyCompactSpace ℚ_[p] := inferInstance
-
-instance : IsNonarchimedeanLocalField ℚ_[p] where
-  mem_nhds_iff := sorry
-
-end Padic
 
 section TopologicalSpace
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
@@ -357,16 +347,95 @@ instance : FaithfulSMul 𝒪[K] 𝒪[L] :=
   (faithfulSMul_iff_algebraMap_injective _ _).mpr fun _ _ h ↦ Subtype.ext <|
     FaithfulSMul.algebraMap_injective K L congr($h)
 
+instance : IsScalarTower 𝒪[K] 𝒪[L] L := .of_algebraMap_eq' rfl
+
+/--
+**Bounded denominators**: if `b` is any finite `K`-basis of `L` and `ϖ` is a uniformiser of `K`,
+then a large enough power of `ϖ` multiplies every integer of `L` into the `𝒪[K]`-lattice
+spanned by `b`.
+
+This is the key analytic input both for `Module.Finite 𝒪[K] 𝒪[L]` (see below) and, applied to a
+normal basis, for the construction of an open cohomologically trivial subgroup of `𝒪[L]ˣ`
+(Serre's approximation argument, blueprint `lem:serre_approx`).
+-/
+theorem exists_pow_smul_integer_mem_span {ι : Type*} [Finite ι] (b : Module.Basis ι K L)
+    {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) :
+    ∃ m : ℕ, ∀ x ∈ 𝒪[L], (ϖ : K) ^ m • x ∈ Submodule.span 𝒪[K] (Set.range b) := by
+  have := Fintype.ofFinite ι
+  let : UniformSpace K := IsTopologicalAddGroup.rightUniformSpace K
+  let : IsUniformAddGroup K := isUniformAddGroup_of_addCommGroup (G := K)
+  let := rankOneOfIoo K default
+  let : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
+  have hcont : Continuous (b.equivFun : L → ι → K) :=
+    IsModuleTopology.continuous_of_linearMap (b.equivFun : L →ₗ[K] ι → K)
+  have hcpt : IsCompact (𝒪[L] : Set L) :=
+    IsNonarchimedeanLocalField.isCompact_closedBall L 1
+  obtain ⟨C, hC⟩ :=
+    isBounded_iff_forall_norm_le.mp (hcpt.image hcont).isBounded
+  simp only [Module.Basis.equivFun_apply, Set.mem_image, SetLike.mem_coe, forall_exists_index,
+    and_imp, forall_apply_eq_imp_iff₂] at hC
+  obtain ⟨m, hm⟩ : ∃ m : ℕ, ‖(ϖ : K)‖ ^ m < (max C 1)⁻¹ :=
+    exists_pow_lt_of_lt_one (by positivity) <| Valued.toNormedField.norm_lt_one_iff.mpr
+      (Valuation.integer.v_irreducible_lt_one hϖ)
+  refine ⟨m, fun x hx ↦ (b.mem_span_iff_repr_mem _ _).2 fun i ↦
+    ⟨⟨(ϖ : K) ^ m * b.repr x i, Valuation.mem_integer_iff _ _|>.2 <|
+    Valued.toNormedField.norm_le_one_iff.1 ?_⟩, by simp⟩⟩
+  grw [norm_mul, norm_pow, ((norm_le_pi_norm _ i).trans (hC _ hx)).trans (le_max_left _ 1),
+    hm, inv_mul_cancel₀ (by positivity)]
+
+omit [TopologicalSpace K] [IsNonarchimedeanLocalField K] in
+/--
+Every element of `L` is carried into the integers `𝒪[L]` by a large enough power of a
+uniformiser of `K`.
+-/
+theorem exists_pow_smul_mem_integer {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) (x : L) :
+    ∃ t : ℕ, (ϖ : K) ^ t • x ∈ 𝒪[L] := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · exact ⟨0, by simp⟩
+  let : UniformSpace L := IsTopologicalAddGroup.rightUniformSpace L
+  have : IsUniformAddGroup L := isUniformAddGroup_of_addCommGroup (G := L)
+  let : (Valued.v (R := L)).RankOne := rankOneOfIoo L default
+  let : NontriviallyNormedField L := Valued.toNontriviallyNormedField (L := L) _
+  have hϖ1 : ‖algebraMap K L ϖ‖ < 1 := Valued.toNormedField.norm_lt_one_iff.mpr
+    (valuation_map_irreducible_lt_one hϖ)
+  obtain ⟨t, ht⟩ := _root_.exists_pow_lt_of_lt_one (inv_pos.mpr (norm_pos_iff.mpr hx)) hϖ1
+  have h1 : ‖(ϖ : K) ^ t • x‖ ≤ 1 := by
+    rw [Algebra.smul_def, map_pow, norm_mul, norm_pow]
+    calc ‖algebraMap K L ϖ‖ ^ t * ‖x‖
+        ≤ ‖x‖⁻¹ * ‖x‖ := by gcongr
+      _ = 1 := inv_mul_cancel₀ (norm_ne_zero_iff.mpr hx)
+  exact ⟨t, Valued.toNormedField.norm_le_one_iff.mp h1⟩
+
 -- some power series shenanigans
 instance (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
     (L : Type*) [Field L] [ValuativeRel L] [TopologicalSpace L] [IsNonarchimedeanLocalField L]
     [Algebra K L] [ValuativeExtension K L] :
-  Module.Finite 𝒪[K] 𝒪[L] :=
-  sorry
+    Module.Finite 𝒪[K] 𝒪[L] := by
+  set n := Module.finrank K L with n_def
+  have hn' : NeZero n := ⟨Module.finrank_pos.ne'⟩
+  set b : Module.Basis (Fin n) K L := Module.finBasis K L with b_def
+  set M := Submodule.span 𝒪[K] (Set.range b)
+  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
+  obtain ⟨m, hm⟩ := exists_pow_smul_integer_mem_span K L b hϖ
+  have hMfin : Module.Finite 𝒪[K] M := .span_of_finite _ (Set.finite_range b)
+  -- `IsNoetherian 𝒪[K] M` now resolves by instance search
+  -- the 𝒪[K]-linear map  z ↦ ϖ^m • z  from 𝒪[L] into L
+  let g : 𝒪[L] →ₗ[𝒪[K]] L :=
+    { toFun := fun z ↦ ϖ ^ m • (z : L)
+      map_add' := fun z w ↦ by simp [smul_add]
+      map_smul' := fun c z ↦ smul_comm _ c _ }
+  have hg : ∀ z : 𝒪[L], g z ∈ M := fun z ↦ by
+    have h := hm _ z.2
+    rwa [show (ϖ : K) ^ m • (z : L) = ϖ ^ m • (z : L) by
+      rw [← SubmonoidClass.coe_pow]; rfl] at h
+  refine Module.Finite.of_injective (g.codRestrict M hg) fun z w hzw ↦ ?_
+  have h' : (ϖ : K) ^ m • (z : L) = (ϖ : K) ^ m • (w : L) := by
+    simpa [g, ← algebraMap_smul K, map_pow] using congrArg Subtype.val hzw
+  exact Subtype.ext <| smul_right_injective L
+    (pow_ne_zero m (by exact_mod_cast hϖ.ne_zero)) h'
 
 instance : IsScalarTower 𝒪[K] K L := inferInstance
 
-instance : IsScalarTower 𝒪[K] 𝒪[L] L := .of_algebraMap_eq' rfl
 
 /-- The `e[L/K]` of an extension of local fields (also called the ramification index) is such that
 `vL(iKL ϖK) = vL(ϖL^e[L/K])`, or alternatively `𝓂[K] 𝒪[L] = 𝓂[L] ^ e`. -/
