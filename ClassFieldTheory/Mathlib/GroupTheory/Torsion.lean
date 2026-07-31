@@ -8,16 +8,16 @@ public section
 variable {M N : Type*}
 
 @[simp] lemma isTorsion_additive [Monoid M] :
-    AddMonoid.IsTorsion (Additive M) ↔ Monoid.IsTorsion M := .rfl
+    IsAddTorsion (Additive M) ↔ IsMulTorsion M := .rfl
 
 @[simp] lemma isTorsion_multiplicative [AddMonoid M] :
-    Monoid.IsTorsion (Multiplicative M) ↔ AddMonoid.IsTorsion M := .rfl
+    IsMulTorsion (Multiplicative M) ↔ IsAddTorsion M := .rfl
 
-@[simp] lemma isTorsion_zmod_iff {n : ℕ} : AddMonoid.IsTorsion (ZMod n) ↔ n ≠ 0 where
-  mp h := by rintro rfl; exact not_isTorsion_of_isAddTorsionFree (G := ℤ) h
+lemma isTorsion_zmod_iff {n : ℕ} : IsAddTorsion (ZMod n) ↔ n ≠ 0 where
+  mp h := by rintro rfl; exact not_isAddTorsion_of_isAddTorsionFree (G := ℤ) h
   mpr hn := by
     have : NeZero n := ⟨hn⟩
-    simp [AddMonoid.IsTorsion, ← addOrderOf_ne_zero_iff, -addOrderOf_eq_zero_iff,
+    simp [IsAddTorsion, ← addOrderOf_ne_zero_iff, -addOrderOf_eq_zero_iff,
       ZMod.natCast_zmod_surjective.forall, ZMod.addOrderOf_coe, hn, Nat.gcd_le_left,
       Nat.pos_iff_ne_zero.2 hn]
 
@@ -26,7 +26,7 @@ variable [Monoid M] [Monoid N]
 variable (M N) in
 -- TODO: Make `Monoid.IsTorsion` a typeclass
 @[to_additive]
-lemma subsingleton_monoidHom_of_isTorsion_isMulTorsionFree (hM : Monoid.IsTorsion M)
+lemma subsingleton_monoidHom_of_isTorsion_isMulTorsionFree (hM : IsMulTorsion M)
     [IsMulTorsionFree N] : Subsingleton (M →* N) where
   allEq f g := by
     ext m
