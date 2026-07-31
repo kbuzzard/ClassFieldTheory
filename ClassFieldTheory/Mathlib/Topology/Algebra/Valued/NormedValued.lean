@@ -1,6 +1,11 @@
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
-import Mathlib.Topology.Algebra.Valued.NormedValued
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+
+@[expose] public section
 
 namespace NormedField
 
@@ -12,7 +17,8 @@ variable (K)
 
 /-- Given an ultrametric normed field, make a canonical `ValuativeRel` instance. This instance is
 scoped to avoid instance looping. -/
-def toValuativeRel : ValuativeRel K :=
+@[implicit_reducible]
+noncomputable def toValuativeRel : ValuativeRel K :=
   .ofValuation valuation
 scoped [NormedField] attribute [instance] toValuativeRel
 
@@ -30,7 +36,7 @@ variable {K}
 @[simp] theorem ball_norm_eq (x : K) :
     Metric.ball 0 ‖x‖ = { y : K | valuation y < valuation x } := by
   ext y
-  simp_rw [mem_ball_zero_iff, Set.mem_setOf_eq, valuation_apply, ← NNReal.coe_lt_coe, coe_nnnorm]
+  simp_rw [mem_ball_zero_iff, Set.mem_ofPred_eq, valuation_apply, ← NNReal.coe_lt_coe, coe_nnnorm]
 
 theorem valuation_ball_eq (x : K) :
     (valuation (K := K)).ball (valuation x) = Metric.ball 0 ‖x‖ := by
@@ -41,7 +47,7 @@ variable (K) in
 omit [IsUltrametricDist K] in
 lemma trivial_or_non_trivial : (∀ x : K, x = 0 ∨ ‖x‖ = 1) ∨ (∃ x : K, 1 < ‖x‖) := by
   by_contra h
-  push_neg at h
+  push Not at h
   obtain ⟨⟨x, hx0, hx1⟩, hk⟩ := h
   obtain hx1 | h1x := lt_or_gt_of_ne hx1
   · exact absurd (hk x⁻¹) (not_le_of_gt <| by rwa [norm_inv, one_lt_inv₀ (norm_pos_iff.2 hx0)])
@@ -62,6 +68,7 @@ theorem nhds_zero_basis_norm {K : Type*} [NormedField K] :
         refine ⟨(x⁻¹) ^ n, norm_pow x⁻¹ n ▸ pow_pos ix_pos n, by rwa [norm_pow]⟩
     · exact Metric.nhds_basis_ball.mem_iff.2 ⟨_, x_pos, fun y hy ↦ hxs (by simpa using hy)⟩
 
+omit [IsUltrametricDist K] in
 theorem _root_.DiscreteTopology.of_trivial_norm (trivial : ∀ x : K, x = 0 ∨ ‖x‖ = 1) :
     DiscreteTopology K :=
   DiscreteTopology.of_forall_le_norm one_pos fun x hx ↦ by rw [(trivial x).resolve_left hx]
@@ -70,7 +77,8 @@ section IsValuativeTopology
 
 open NormedField Valued ValuativeRel
 
-def valuativeRel (K : Type*) [NormedField K] [IsUltrametricDist K] : ValuativeRel K :=
+@[implicit_reducible]
+noncomputable def valuativeRel (K : Type*) [NormedField K] [IsUltrametricDist K] : ValuativeRel K :=
   .ofValuation valuation
 attribute [local instance] valuativeRel
 
@@ -97,7 +105,7 @@ theorem isValuativeTopology (K : Type*) [NormedField K] [IsUltrametricDist K] :
         convert hn
         ext
         simp [← map_pow, e.lt_iff_lt, ← NNReal.coe_lt_coe, dist_eq_norm, sub_eq_neg_add]
-      · obtain ⟨y, rfl⟩ := unitsMap_valuation_surjective γ
+      · obtain ⟨y, rfl⟩ := ValuativeRel.unitsMap_valuation_surjective γ
         refine Metric.mem_nhds_iff.mpr ⟨‖y.val‖, by simp, ?_⟩
         convert hγ
         ext
@@ -114,3 +122,5 @@ theorem isNontrivial (K : Type*) [NontriviallyNormedField K] [IsUltrametricDist 
       ← NNReal.coe_lt_coe, NNReal.coe_one, coe_nnnorm]
 
 scoped [NormedField] attribute [instance] isValuativeTopology isNontrivial
+
+end NormedField

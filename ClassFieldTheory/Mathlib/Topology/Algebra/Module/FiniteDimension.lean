@@ -1,4 +1,8 @@
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+
+public section
 
 /-- If `K` is a complete field and `L` is a finite dimensional vector space over `K`, and `K` is
 locally compact, then `L` is locally compact.

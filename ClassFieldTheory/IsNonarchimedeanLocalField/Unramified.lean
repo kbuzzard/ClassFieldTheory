@@ -3,12 +3,14 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
-import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
-import ClassFieldTheory.LocalCFT.Teichmuller
-import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
-import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Adic
+public import ClassFieldTheory.IsNonarchimedeanLocalField.RamificationInertia
+public import ClassFieldTheory.LocalCFT.Teichmuller
+public import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
+public import ClassFieldTheory.Mathlib.RingTheory.HenselPolynomial
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-! # Unramified extension of local field of a given degree
 
@@ -17,7 +19,7 @@ then there is a unique (up to in general non-unique isomorphism) unramified exte
 degree `n`.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 namespace IsNonarchimedeanLocalField
 
@@ -32,15 +34,19 @@ deriving Field, Algebra K, FiniteDimensional K
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 variable (n : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ValuativeRel (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ValuativeExtension K (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose
 
+set_option backward.isDefEq.respectTransparency false in
 instance : TopologicalSpace (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose_spec.choose
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsNonarchimedeanLocalField (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose_spec.choose_spec
 
@@ -214,7 +220,7 @@ variable {n} in
 variable {n} in
 @[simp] theorem f_unramifiedExtension (hn : n ≠ 0) :
     f K (UnramifiedExtension K n) = n := by
-  refine le_antisymm ?_ (by simpa [hn, f] using (finrank_unramifiedExtension_and_residue K hn).2)
+  refine le_antisymm ?_ (by simpa [hn, f] using! (finrank_unramifiedExtension_and_residue K hn).2)
   conv_rhs => rw [← finrank_unramifiedExtension K hn]
   exact f_le_n _ _
 
@@ -287,12 +293,14 @@ instance [IsUnramified K L] : IsGalois K L :=
 def maximalUnramified : IntermediateField K L :=
   (nonempty_unramifiedExtension_alghom_of_dvd_f K L (f K L) dvd_rfl).some.fieldRange
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsUnramified K (maximalUnramified K L) := by
   unfold maximalUnramified
   infer_instance
 
 variable {K L} (E : IntermediateField K L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The maximal unramified subextension is maximal. -/
 theorem le_maximalUnramified_iff : E ≤ maximalUnramified K L ↔ IsUnramified K E := by
   refine ⟨fun h ↦ .comap <| show E →ₐ[K] maximalUnramified K L from Subalgebra.inclusion h,

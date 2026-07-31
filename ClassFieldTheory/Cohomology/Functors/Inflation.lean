@@ -1,4 +1,6 @@
-import ClassFieldTheory.Cohomology.Functors.Restriction
+module
+
+public import ClassFieldTheory.Cohomology.Functors.Restriction
 
 /-!
 In this file we have a group homomorphism `φ : G →* Q` satisfying the condition
@@ -20,7 +22,8 @@ We define the natural map of `G`-representations
 
 Using this map, we define the inflation map as a morphism of functors
 
-  `groupCohomology.cochain_infl : quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G`.
+  `groupCohomology.cochain_infl` of type
+    `quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G`.
 
 Using this we define the inflation map on group cohomology:
 
@@ -30,6 +33,8 @@ Since this is defined on cochains first, we are able to deduce `δ`-naturality o
 on cohomology.
 -/
 
+@[expose] public section
+
 open CategoryTheory
   ConcreteCategory
   Limits
@@ -37,15 +42,16 @@ open CategoryTheory
   groupCohomology
   HomologicalComplex
 
-universe u
-
-variable {R G Q: Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q} (surj : Function.Surjective φ)
+universe w u v v'
 
 namespace Rep
 
+variable {R : Type u} {G : Type v} {Q : Type v'} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
+  (surj : Function.Surjective φ)
+
 @[simps! (isSimp := false) obj_V] noncomputable def quotientToInvariantsFunctor' :
     Rep R G ⥤ Rep R Q :=
-  quotientToInvariantsFunctor R φ.ker ⋙
+  quotientToInvariantsFunctor.{w} R φ.ker ⋙
     (Rep.resEquiv R (QuotientGroup.quotientKerEquivOfSurjective _ surj)).inverse
 
 /--
@@ -63,9 +69,12 @@ lemma quotientToInvariantsFunctor'_obj_ρ (M : Rep R G) :
     (QuotientGroup.quotientKerEquivOfSurjective φ hφ).symm (φ x) = x :=
   MulEquiv.symm_apply_eq _ |>.mpr rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma quotientToInvariantsFunctor'_obj_ρ_apply (M : Rep R G) (g : G) :
     (M ↑ surj).ρ (φ g) = (M.quotientToInvariants φ.ker).ρ g := by
-  simp [quotientToInvariantsFunctor'_obj_V, quotientToInvariantsFunctor'_obj_ρ]
+  simp [quotientToInvariantsFunctor'_obj_V, quotientToInvariantsFunctor'_obj_ρ,
+    quotientToInvariantsFunctor]
 
 @[simp] lemma quotientToInvariantsFunctor'_obj_ρ_apply₂ (M : Rep R G) (g : G)
     (v : (quotientToInvariantsFunctor' surj).obj M) :
@@ -77,12 +86,16 @@ instance : (quotientToInvariantsFunctor' (R := R) surj).PreservesZeroMorphisms w
   map_zero _ _ := rfl
 
 @[simps!] noncomputable def res_quotientToInvariantsFunctor'_ι (M : Rep R G) :
-    ((M ↑ surj) ↓ φ) ⟶ M where
-  hom := ModuleCat.ofHom (Submodule.subtype _)
-  comm g := by ext; exact quotientToInvariantsFunctor'_obj_ρ_apply₂ surj ..
+    ((M ↑ surj) ↓ φ) ⟶ M :=
+  ofHom ⟨Submodule.subtype _, fun g ↦ by
+    ext; exact quotientToInvariantsFunctor'_obj_ρ_apply₂ surj ..⟩
 
 end Rep
+
 namespace groupCohomology
+
+variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
+  (surj : Function.Surjective φ)
 
 noncomputable def cochain_infl :
     quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G where
@@ -116,7 +129,7 @@ where the horizontal maps are connecting homomorphisms
 and the vertical maps are inflation.
 -/
 lemma infl_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
-    (hS' : (S.map (quotientToInvariantsFunctor' surj)).ShortExact)  (i j : ℕ) (hij : i + 1 = j) :
+    (hS' : (S.map (quotientToInvariantsFunctor' surj)).ShortExact) (i j : ℕ) (hij : i + 1 = j) :
     δ hS' i j hij ≫ (infl surj j).app _ = (infl surj i).app _ ≫ δ hS i j hij
     := by
   let C := S.map (cochainsFunctor R G)
@@ -132,3 +145,5 @@ lemma infl_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
   have ses₁ : C.ShortExact := map_cochainsFunctor_shortExact hS
   have ses₂ : C'.ShortExact := map_cochainsFunctor_shortExact hS'
   exact HomologySequence.δ_naturality φ ses₂ ses₁ i j hij
+
+end groupCohomology

@@ -1,4 +1,8 @@
-import Mathlib.Algebra.Order.Hom.Monoid
+module
+
+public import Mathlib.Algebra.Order.Hom.Monoid
+
+public section
 
 namespace OrderMonoidIso
 
@@ -12,11 +16,5 @@ nonrec theorem surjective : (⇑e).Surjective :=
 
 @[simp] theorem symm_apply_le {x y} : e.symm x ≤ y ↔ x ≤ e y :=
   e.toOrderIso.symm_apply_le
-
-@[simp] theorem lt_symm_apply {x y} : x < e.symm y ↔ e x < y :=
-  e.toOrderIso.lt_symm_apply
-
-@[simp] theorem symm_apply_lt {x y} : e.symm x < y ↔ x < e y :=
-  e.toOrderIso.symm_apply_lt
 
 end OrderMonoidIso

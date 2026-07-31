@@ -3,11 +3,13 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
-import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
-import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
-import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import ClassFieldTheory.Mathlib.Algebra.Order.Hom.Monoid
+public import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
+public import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
+public import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-! # Teichmüller character
 
@@ -16,6 +18,8 @@ Teichmüller character `k →* R` (a monoid homomorphism, i.e. preserves only mu
 
 ... but we don't have CDVR so we will just do it for local fields.
 -/
+
+@[expose] public section
 
 namespace IsNonarchimedeanLocalField
 
@@ -58,18 +62,22 @@ theorem hasBasis_nhds_integer : (nhds (0 : 𝒪[K])).HasBasis (fun _n : ℕ ↦ 
   convert (hasBasis_nhds K).comap Subtype.val using 1
   · exact nhds_subtype ..
   ext n x
-  simp only [SetLike.setOf_mem_eq, SetLike.mem_coe, Set.preimage_setOf_eq, Set.mem_setOf_eq]
+  simp only [SetLike.setOfPred_mem_eq, SetLike.mem_coe, Set.preimage_ofPred_eq,
+    Set.mem_ofPred_eq]
   rw [mem_maximalIdeal_pow_iff, OrderMonoidIso.lt_symm_apply, WithZero.lt_exp_iff,
     OrderMonoidIso.le_symm_apply, Nat.cast_succ]
   ring_nf
 
 theorem isClosed_closedBall' (x : 𝒪[K]) (n : ℕ) :
     IsClosed {y | y - x ∈ 𝓂[K] ^ n} := by
-  convert (IsValuativeTopology.isClosed_closedBall
-    ((valueGroupWithZeroIsoInt K).symm (.exp (-n)))).preimage_val.preimage
-      (continuous_sub_right x) using 1
-  ext y
-  simp [mem_maximalIdeal_pow_iff]
+  suffices IsClosed {y : 𝒪[K] | y ∈ 𝓂[K] ^ n} from this.preimage (continuous_sub_right x)
+  cases n with
+  | zero => simp [isClosed_univ]
+  | succ n =>
+    have hmem : {y : 𝒪[K] | y ∈ 𝓂[K] ^ (n + 1)} ∈ nhds (0 : 𝒪[K]) :=
+      (hasBasis_nhds_integer K).mem_of_mem trivial
+    exact (𝓂[K] ^ (n + 1)).toAddSubgroup.isClosed_of_isOpen
+      ((𝓂[K] ^ (n + 1)).toAddSubgroup.isOpen_of_mem_nhds (by simpa using hmem))
 
 /-- The sequence `x ^ q ^ n` that defines the Teichmuller character. -/
 @[simps] noncomputable def teichmullerSeq : 𝒪[K] →*₀ (ℕ → 𝒪[K]) where
@@ -167,7 +175,7 @@ section TopologicalSpace
 variable [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 
 theorem limUnder_teichmullerSeq_mem (x : 𝒪[K]) (n : ℕ) :
-    limUnder .atTop (teichmullerSeq x) - teichmullerSeq x n ∈ 𝓂[K] ^ (n + 1) := by
+    Filter.limUnder .atTop (teichmullerSeq x) - teichmullerSeq x n ∈ 𝓂[K] ^ (n + 1) := by
   refine IsClosed.mem_of_frequently_of_tendsto (f := teichmullerSeq x) (b := .atTop)
     (s := {y | y - teichmullerSeq x n ∈ IsLocalRing.maximalIdeal ↥𝒪[K] ^ (n + 1)})
     (isClosed_closedBall' _ _) ?_ ?_
@@ -187,7 +195,7 @@ theorem ext_maximalIdeal' {x y : 𝒪[K]} (h : ∀ n, x - y ∈ 𝓂[K] ^ (n + 1
 variable (K) in
 /-- The Teichmüller character `𝓀[K] →*₀ 𝒪[K]`. -/
 noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
-  toFun x := Quotient.liftOn x (limUnder .atTop <| teichmullerSeq ·) fun x₁ x₂ hx ↦ by
+  toFun x := Quotient.liftOn x (Filter.limUnder .atTop <| teichmullerSeq ·) fun x₁ x₂ hx ↦ by
     refine ext_maximalIdeal' fun n ↦ ?_
     have h₁ := limUnder_teichmullerSeq_mem x₁ n
     have h₂ := limUnder_teichmullerSeq_mem x₂ n
@@ -200,7 +208,7 @@ noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
   map_mul' x y := Quotient.inductionOn₂ x y fun x y ↦ by
     letI := IsTopologicalAddGroup.rightUniformSpace K
     haveI := isUniformAddGroup_of_addCommGroup (G := K)
-    change limUnder _ _ = limUnder _ _ * limUnder _ _
+    change Filter.limUnder _ _ = Filter.limUnder _ _ * Filter.limUnder _ _
     rw [map_mul]
     exact Filter.Tendsto.limUnder_eq <| .mul
       (cauchySeq_teichmuller x).tendsto_limUnder (cauchySeq_teichmuller y).tendsto_limUnder
@@ -214,10 +222,10 @@ theorem teichmuller'_def (x : 𝒪[K]) :
 theorem residue_teichmuller' (x : 𝓀[K]) :
     IsLocalRing.residue 𝒪[K] (teichmuller' K x) = x :=
   Quotient.inductionOn x fun x ↦ (Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mpr <| by
-    convert limUnder_teichmullerSeq_mem x 0 <;> simp
+    convert! limUnder_teichmullerSeq_mem x 0 <;> simp
 
 theorem residue_comp_teichmuller' :
-    (IsLocalRing.residue 𝒪[K] : 𝒪[K] →*₀ 𝓀[K]).comp (teichmuller' K) = .id _ :=
+    (.ofClass <| IsLocalRing.residue 𝒪[K] : 𝒪[K] →*₀ 𝓀[K]).comp (teichmuller' K) = .id _ :=
   MonoidWithZeroHom.ext residue_teichmuller'
 
 theorem leftInverse_teichmuller' :
@@ -230,7 +238,7 @@ theorem teichmuller'_injective : Function.Injective (teichmuller' K) :=
 variable (K) in
 /-- The Teichmüller character `𝓀[K] →*₀ K`. -/
 noncomputable def teichmuller : 𝓀[K] →*₀ K :=
-  (algebraMap 𝒪[K] K : 𝒪[K] →*₀ K).comp <| teichmuller' K
+  (.ofClass <| algebraMap 𝒪[K] K : 𝒪[K] →*₀ K).comp <| teichmuller' K
 
 theorem teichmuller_def (x : 𝒪[K]) :
     Filter.Tendsto (fun n ↦ (teichmullerSeq x n : K)) .atTop

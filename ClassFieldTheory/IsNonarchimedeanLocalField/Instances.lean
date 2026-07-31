@@ -1,10 +1,13 @@
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
-import Mathlib.NumberTheory.LocalField.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.NumberTheory.LocalField.Basic
+
 /-!
-
 # Instances for nonarch local fields
-
 -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 
@@ -38,7 +41,7 @@ instance (K : Type*) [CommRing K] [ValuativeRel K]
     obtain ⟨s, hs⟩ := s
     rw [Valuation.mem_integer_iff] at hr hs ⊢
     rw [Algebra.smul_def, Valuation.map_mul]
-    apply mul_le_one₀ _ zero_le' hs
+    apply mul_le_one₀ _ zero_le hs
     rw [← map_one (valuation L), ← Valuation.Compatible.vle_iff_le,
       ← RingHom.map_one (algebraMap K L), ValuativeExtension.vle_iff_vle]
     rw [← map_one (valuation K), ← Valuation.Compatible.vle_iff_le] at hr

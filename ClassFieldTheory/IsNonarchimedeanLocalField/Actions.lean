@@ -1,5 +1,7 @@
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
 
 /-! # Actions on local fields
 
@@ -7,6 +9,8 @@ If `L/K` is an extension of local fields then `Gal(L/K)` preserves the valuation
 
 This is a sorry-free version of `Instances.lean`.
 -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 
@@ -83,7 +87,7 @@ theorem invariant {M : Type*} [Monoid M] [MulSemiringAction M L] [SMulCommClass 
 
 instance : IsInvariantSubring (L ≃ₐ[K] L) 𝒪[L] := invariant K
 
-example {M : Type*} [Monoid M] [MulSemiringAction M L] [SMulCommClass M K L] :
+noncomputable example {M : Type*} [Monoid M] [MulSemiringAction M L] [SMulCommClass M K L] :
     MulSemiringAction M 𝒪[L] :=
   have := invariant (M := M) K (L := L)
   inferInstance

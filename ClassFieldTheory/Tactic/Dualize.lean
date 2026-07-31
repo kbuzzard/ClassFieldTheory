@@ -1,10 +1,12 @@
-import Lean
-import Mathlib.Tactic.Translate.GuessName
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Lean
+public import Mathlib.Tactic.Translate.GuessName
+public import Lean.Meta.Tactic.TryThis
 
 open Lean Elab Meta Tactic Command
 
-def Lean.Syntax.replaceNames (f : Name → Name) : Syntax → Syntax
+meta def Lean.Syntax.replaceNames (f : Name → Name) : Syntax → Syntax
   | .node info kind args =>
     .node info kind (args.map <| replaceNames f)
   | .ident _ _ val _ =>
@@ -18,7 +20,7 @@ meta unsafe def Lean.Syntax.replaceNamesM (f : Name → MetaM Name) : Syntax →
     return mkIdent (← f val)
   | stx => return stx
 
-def Lean.TSyntax.replaceNames {ks} (f : Name → Name) : TSyntax ks → TSyntax ks :=
+meta def Lean.TSyntax.replaceNames {ks} (f : Name → Name) : TSyntax ks → TSyntax ks :=
   (⟨·.raw.replaceNames f⟩)
 
 meta unsafe def Lean.TSyntax.replaceNamesM {ks} (f : Name → MetaM Name) :
@@ -39,7 +41,7 @@ open Mathlib.Tactic.GuessName in
 Turn each element to lower-case, apply the `nameDict` and
 capitalize the output like the input.
 -/
-def applyNameDict (nameDict : String → List String) : List String → List String
+meta def applyNameDict (nameDict : String → List String) : List String → List String
   | x :: s => (decapitalizeFirstLike x (nameDict x.toLower)) ++ applyNameDict nameDict s
   | [] => []
 
@@ -51,8 +53,8 @@ This runs in several steps:
 2) Apply word-by-word translation rules.
 3) Fix up abbreviations that are not word-by-word translations, like "addComm" or "Nonneg".
 -/
-def guessName (nameDict : String → List String) (fixAbbreviation : List String → List String) :
-    String → String :=
+meta def guessName (nameDict : String → List String)
+    (fixAbbreviation : List String → List String) : String → String :=
   String.mapTokens '\'' <|
   fun s =>
     String.join <|
@@ -62,18 +64,18 @@ def guessName (nameDict : String → List String) (fixAbbreviation : List String
 
 end Renaming
 
-def dualizationNameDict : String → List String
+meta def dualizationNameDict : String → List String
   | "homology"   => ["cohomology"]
   | "cohomology" => ["homology"]
   | x            => [x]
 
-def dualizationFixAbbreviation : List String → List String
+meta def dualizationFixAbbreviation : List String → List String
   | "tate" :: "Homology" :: s => "tateCohomology" :: s
   | "Tate" :: "Homology" :: s => "tateCohomology" :: s
   | x :: s                    => x :: dualizationFixAbbreviation s
   | []                        => []
 
-def dualizationRename (name : Name) : Name :=
+meta def dualizationRename (name : Name) : Name :=
   let components := name.components
   let renamings := components.map fun cmp ↦
     guessName dualizationNameDict dualizationFixAbbreviation cmp.toString

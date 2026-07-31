@@ -3,12 +3,13 @@ Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Aaron Liu, Yunzhou Xie
 -/
-import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
-import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
-import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
-import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+module
+
+public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import ClassFieldTheory.Mathlib.Algebra.Module.Torsion.Basic
+public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Basic
+public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
+public import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Corestriction
@@ -33,7 +34,7 @@ Arguably this filename has too large a number.
 cores o res = multiplication by index
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open
   Rep
@@ -87,10 +88,11 @@ def _root_.Rep.cores₀_obj (V : Rep R G) :
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' := by simp [Finset.smul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The corestriction functor on H^0 for S ⊆ G a finite index subgroup, as a
 functor `H^0(S,-) → H^0(G,-)`. -/
 @[simps]
-def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
+def cores₀ : Rep.resFunctor S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
   app M :=
     (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (Rep.cores₀_obj M)) ≫ (H0Iso M).inv
   naturality := by
@@ -101,9 +103,9 @@ def cores₀ : Rep.res S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
     rw [functor_map, map_id_comp_H0Iso_hom, (H0Iso X).inv_hom_id_assoc, Functor.comp_map,
       functor_map, map_id_comp_H0Iso_hom_assoc, (H0Iso (X ↓ S.subtype)).cancel_iso_hom_left]
     ext x
-    have comm := congr(∑ i : G ⧸ S, ModuleCat.Hom.hom $(f.comm i.out) x.val)
-    simpa [Rep.cores₀_obj] using comm.symm
+    simp [Rep.cores₀_obj, hom_comm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `H¹(S, M↓S) ⟶ H¹(G, M)`. -/
 def cores₁_obj (M : Rep R G) :
     -- defining H¹(S, M↓S) ⟶ H¹(G, M) by a diagram chase
@@ -132,8 +134,8 @@ def cores₁_obj (M : Rep R G) :
     -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(G,(coind₁'^G M)) ⟶ H⁰(G, up_G M)
     let bar := cokernel.π (coind₁'_ι.app M)
     -- cores₀ : res S.subtype ⋙ functor R (↥S) 0 ⟶ functor R G 0
-    have baz := cores₀.naturality (F := (res S.subtype ⋙ functor R (↥S) 0)) bar
-    change ((res S.subtype ⋙ functor R (↥S) 0).map bar ≫ (cores₀.app (up.obj M))) ≫ _ = 0
+    have baz := cores₀.naturality (F := (resFunctor S.subtype ⋙ functor R (↥S) 0)) bar
+    change ((resFunctor S.subtype ⋙ functor R (↥S) 0).map bar ≫ (cores₀.app (up.obj M))) ≫ _ = 0
     change _ ≫ (cores₀.app (up.obj M)) = _ ≫ _ at baz
     rw [baz, Category.assoc]
     convert comp_zero -- cancel first functor
@@ -147,8 +149,8 @@ lemma commSq_cores₁ (M : Rep R G) :
     epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
   (mapShortComplex₃_exact (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
 
-theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) :
-    (res S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
+theorem cores₁_naturality (X Y : Rep R G) (f : X ⟶ Y) :
+    (resFunctor S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
   haveI : Epi (δ (shortExact_upSES_res X S.subtype) 0 1 rfl) :=
     epi_δ_up_zero_res (R := R) (φ := S.subtype) X S.subtype_injective
@@ -160,14 +162,14 @@ theorem cores₁_naturality  (X Y : Rep R G) (f : X ⟶ Y) :
     (δ (shortExact_upSES_res X S.subtype) 0 1 rfl) (δ (shortExact_upSES X) 0 1 rfl)
     (δ (shortExact_upSES_res Y S.subtype) 0 1 rfl) (δ (shortExact_upSES Y) 0 1 rfl)
     (cores₀.app (up.obj X)) _ (cores₀.app (up.obj Y)) _
-    (map (.id S) ((res S.subtype).map (up.map f)) 0) _
+    (map (.id S) ((resFunctor S.subtype).map (up.map f)) 0) _
     (map (.id G) (up.map f) 0) _
     ?_ ?_ ?_ ?_ (by exact (cores₀ (S := S)|>.naturality (X := up.obj X) (up.map f)).symm) this
   all_goals symm
   · exact commSq_cores₁ X
   · exact commSq_cores₁ Y
   · exact δ_naturality (shortExact_upSES_res X S.subtype) (shortExact_upSES_res Y S.subtype)
-      ((upShortComplex ⋙ (res (R := R) S.subtype).mapShortComplex).map f) 0 1 rfl
+      ((upShortComplex ⋙ (resFunctor S.subtype).mapShortComplex).map f) 0 1 rfl
   · exact δ_naturality (shortExact_upSES X) (shortExact_upSES Y)
       ⟨f, coind₁'.map f, up.map f, rfl, by aesop_cat⟩ 0 1 rfl
 
@@ -180,21 +182,23 @@ def cores_obj : (M : Rep R G) → (n : ℕ) →
   -- δ : H^{d+1}(G,up -) ≅ H^{d+2}(G,-)
   let up_δ_bottom_Iso := Rep.dimensionShift.δUpNatIso (R := R) (G := G) d
   -- `M ⟶ coind₁'^G M ⟶ up_G M` as a complex of S-modules
-  let upsc_top := (upShortComplex.obj M).map (res S.subtype)
+  let upsc_top := (upShortComplex.obj M).map (resFunctor S.subtype)
   -- the above complex of S-modules is exact
   have htopexact : upsc_top.ShortExact := shortExact_upSES_res M S.subtype
   -- so δ : H^{d+1}(S,up_G M) ≅ H^{d+2}(S,M)...
-  let up_δ_top_isIso : IsIso (δ (htopexact) (d + 1) (d + 2) rfl) := by
+  let up_δ_top_isIso : IsIso (δ htopexact (d + 1) (d + 2) rfl) := by
     -- ...because `coind₁'^G M` has trivial cohomology as S-module
     -- have := M.coind₁'_trivialCohomology
     have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res_subtype (coind₁'.obj M)
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
     all_goals simpa only [upSES_X₂] using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
-  (asIso (δ (htopexact) (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
+  (asIso (δ htopexact (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
-    (res S.subtype ⋙ functor R (↥S) (n + 1)).map f ≫ cores_obj Y (n + 1) =
+    (resFunctor S.subtype ⋙ functor R (↥S) (n + 1)).map f ≫ cores_obj Y (n + 1) =
     cores_obj X (n + 1) ≫ (functor R G (n + 1)).map f := by
   revert X Y f
   induction n with
@@ -202,7 +206,7 @@ theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
   | succ n ih =>
     intro X Y f
     have := δ_naturality (shortExact_upSES_res X S.subtype) (shortExact_upSES_res Y S.subtype)
-      ((upShortComplex ⋙ (res (R := R) S.subtype).mapShortComplex).map f) (n + 1) (n + 2) rfl
+      ((upShortComplex ⋙ (resFunctor S.subtype).mapShortComplex).map f) (n + 1) (n + 2) rfl
     simp only [Functor.comp_obj, functor_obj, Functor.comp_map, functor_map, cores_obj,
       ShortComplex.map_X₃, ShortComplex.map_X₁, asIso_inv, up_obj, Functor.id_obj, coind₁'_obj,
       δUpNatIso, δUpIso, NatIso.ofComponents_hom_app, asIso_hom, Category.assoc, IsIso.eq_inv_comp]
@@ -218,25 +222,27 @@ theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
 
 variable (R) (S) in
 /-- Corestriction as a natural transformation. -/
-def coresNatTrans (n : ℕ) : Rep.res S.subtype ⋙ functor R S n ⟶ functor R G n where
+def coresNatTrans (n : ℕ) : resFunctor S.subtype ⋙ functor R S n ⟶ functor R G n where
   app M := (groupCohomology.cores_obj M n)
   naturality X Y f := match n with
     | 0 => cores₀.naturality f
     | n + 1 => cores_succ_naturality n X Y f
 
-lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group H] {A : Rep k H} {B : Rep k G}
-    (f : G →* H) (φ : A ↓ f ⟶ B) (x : groupCohomology A 0) :
+lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group H] {A : Rep k H}
+    {B : Rep k G} (f : G →* H) (φ : A ↓ f ⟶ B) (x : groupCohomology A 0) :
     (H0Iso B).hom.hom ((map f φ 0).hom x) =
-    φ.hom.hom ((H0Iso A).hom.hom x : A) :=
+    φ.hom ((H0Iso A).hom.hom x : A) :=
   map_H0Iso_hom_f_apply ..
 
 -- `simp` does a lot of work here, and it was quite some effort getting
 -- it to do so, so I hope this proof never breaks...
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma cores_res₀ : rest (R := R) (S.subtype) 0 ≫ cores₀ = S.index • (.id _) := by
   ext M v
   apply (ConcreteCategory.injective_of_mono_of_preservesPullback (H0Iso M).hom)
   ext
-  simp [rest, Subgroup.index, groupCohomology.map_H0Iso_hom_f_apply' S.subtype,
+  simp [rest, Subgroup.index, cores₀_obj, groupCohomology.map_H0Iso_hom_f_apply' _,
     (M.ρ.mem_invariants ((H0Iso M).hom.hom v)).1 (Subtype.prop _)]
 
 /-!
@@ -248,9 +254,12 @@ Hⁿ(G, up M) ---> Hⁿ(S, upM ↓ S.subtype) ---> Hⁿ(G, up M)
 Hⁿ⁺¹(G, M)  ---> Hⁿ⁺¹(S, M ↓ S.subtype) ---> Hⁿ⁺¹(G, M)
 
 -/
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma commSqₙ (n : ℕ) (M : Rep R G) :
     (rest S.subtype n ≫ coresNatTrans R S n).app (up.obj M) ≫ δ (shortExact_upSES M) n (n + 1) rfl =
-    δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫ coresNatTrans R S (n + 1)).app M := by
+      δ (shortExact_upSES M) n (n + 1) rfl ≫ (rest S.subtype (n + 1) ≫
+        coresNatTrans R S (n + 1)).app M := by
   rw [NatTrans.comp_app, NatTrans.comp_app]
   match n with
   | 0 =>
@@ -261,6 +270,7 @@ lemma commSqₙ (n : ℕ) (M : Rep R G) :
       (rest_δ_naturality (shortExact_upSES M) S.subtype (n + 1) (n + 2) rfl).symm ?_
     simp [-up_obj, coresNatTrans, cores_obj, δUpNatIso, δUpIso]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cores_res (n : ℕ) :
     (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =
       S.index • (.id _) := by
@@ -268,13 +278,14 @@ lemma cores_res (n : ℕ) :
   | zero => exact cores_res₀
   | succ n ih =>
     ext M : 2
-    haveI : Epi (δ (shortExact_upSES M) n (n + 1) rfl) :=
-    match n with
-    | 0 => δ_up_zero_epi ..
-    | m + 1 => δ_up_isIso M m|>.epi_of_iso _
-    rw [← cancel_epi (δ (shortExact_upSES M) n (n + 1) rfl),  ← commSqₙ n M, ih]
-    simp
+    have : Epi (δ (shortExact_upSES M) n (n + 1) rfl) :=
+      match n with
+      | 0 => δ_up_zero_epi ..
+      | m + 1 => δ_up_isIso M m|>.epi_of_iso _
+    rw [← cancel_epi (δ (shortExact_upSES M) n (n + 1) rfl), ← commSqₙ n M, ih]
+    simp; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
 lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] (M : Rep R G)
     (x : groupCohomology M n) : Nat.card G • x = 0 := by
@@ -312,6 +323,8 @@ lemma pTorsion_eq_sylowTorsion {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
   mpr h := ⟨(Nat.card G).factorization p, P.card_eq_multiplicity ▸ by
     simpa [Nat.cast_smul_eq_nsmul] using h⟩
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
     (p : ℕ) [Fact p.Prime] (P : Sylow p G) : Function.Injective
     ((map P.toSubgroup.subtype (𝟙 (_ ↓ _)) n).hom ∘ₗ (Module.IsTorsionBy.coprime_decompose
@@ -340,6 +353,8 @@ lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
     ← Nat.gcd_eq_gcd_ab, Nat.coprime_iff_gcd_eq_one.1 (Sylow.card_coprime_index P)] at h
   simpa using h
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) [Fact p.Prime] (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
     (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
@@ -349,3 +364,5 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     @Subtype.ext_iff _ (p := fun x ↦ x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P))
     ⟨x, pTorsion_eq_sylowTorsion M p P x|>.1 hx⟩ 0|>.1 <| groupCohomology.injects_to_sylowCoh M p P
     (by simp [not_not.1 hx2])
+
+end groupCohomology

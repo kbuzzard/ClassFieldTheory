@@ -1,4 +1,8 @@
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.SetTheory.Cardinal.Finite
+
+public section
 
 namespace Nat
 

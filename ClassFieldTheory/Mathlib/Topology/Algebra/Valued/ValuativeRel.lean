@@ -1,5 +1,9 @@
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
-import Mathlib.Topology.Algebra.Valued.ValuativeRel
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
+public import Mathlib.Topology.Algebra.Valued.ValuativeRel
+
+public section
 
 open ValuativeRel
 

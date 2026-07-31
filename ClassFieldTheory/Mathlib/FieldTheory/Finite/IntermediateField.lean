@@ -3,9 +3,13 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import Mathlib.FieldTheory.Finite.GaloisField
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.FieldTheory.Finite.GaloisField
+
+public section
 
 /-! # Results on intermediate fields of finite fields -/
 
@@ -119,4 +123,6 @@ theorem rootsOfUnity_eq_top : rootsOfUnity (Nat.card F - 1) F = ⊤ :=
 instance : HasEnoughRootsOfUnity F (Nat.card F - 1) := by
   have := Finite.one_lt_card (α := F)
   have : NeZero (Nat.card F - 1) := .mk <| by grind
-  exact .of_card_le <| by simp [Fintype.card_eq_nat_card, rootsOfUnity_eq_top, Nat.card_units]
+  exact .of_card_le <| by simp [rootsOfUnity_eq_top, Nat.card_units]
+
+end FiniteField

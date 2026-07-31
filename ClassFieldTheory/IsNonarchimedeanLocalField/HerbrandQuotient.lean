@@ -1,13 +1,17 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Trivial
-import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
-/-
+module
 
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.SES
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Trivial
+public import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
+
+/-!
 # Herbrand quotient of Lˣ
 
 If L/K is a finite cyclic extension of nonarchimedean local fields then `h(Lˣ)=[L:K]`.
 
 -/
+
+@[expose] public section
 
 open IsNonarchimedeanLocalField
 
@@ -30,7 +34,8 @@ theorem Rep.herbrandQuotient_isNonarchimedeanLocalField_integer_units :
 /-- herbrand quotient of `Lˣ is [L:K]` -/
 theorem Rep.herbrandQuotient_isNonarchimedeanLocalField_units :
     herbrandQuotient
-    ((Rep.res (IsGaloisGroup.mulEquivAlgEquiv G K L)).obj (Rep.ofAlgebraAutOnUnits K L) : Rep ℤ G)
+    ((Rep.resFunctor (IsGaloisGroup.mulEquivAlgEquiv G K L).toMonoidHom).obj
+      (Rep.ofAlgebraAutOnUnits K L) : Rep ℤ G)
     = Module.finrank K L := by
   have := Fintype.ofFinite G
   have h1 : (valuationShortComplex G K L).X₁.herbrandQuotient = 1 :=
@@ -42,7 +47,7 @@ theorem Rep.herbrandQuotient_isNonarchimedeanLocalField_units :
   have h3' : (valuationShortComplex G K L).X₃.herbrandQuotient ≠ 0 := by
     simp [h3]
   have := herbrandQuotient_eq_of_shortExact valuationShortComplex.shortExact h1' ?_ h3'
-  · convert this
+  · convert! this
     simp [h1, h3, -Nat.card_eq_fintype_card, IsGaloisGroup.card_eq_finrank G K L]
   · apply Rep.herbrandQuotient_ne_zero_of_shortExact₂
       valuationShortComplex.shortExact h1' h3'

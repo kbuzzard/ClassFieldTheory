@@ -1,5 +1,9 @@
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+
+public section
 
 namespace ValuativeRel
 
@@ -96,6 +100,7 @@ instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R
   mul_vle_mul_left hxy z := mul_vle_mul_left hxy z.1
   vle_mul_cancel := vle_mul_cancel
   not_vle_one_zero := not_vle_one_zero
+  vle_mul_comm := vle_mul_comm
 
 instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
     [ValuativeRel R] : ValuativeExtension s R where

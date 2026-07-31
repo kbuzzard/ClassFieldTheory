@@ -1,6 +1,10 @@
-import ClassFieldTheory.Mathlib.FieldTheory.Separable
-import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Unramified.LocalRing
+module
+
+public import ClassFieldTheory.Mathlib.FieldTheory.Separable
+public import ClassFieldTheory.Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Unramified.LocalRing
+
+public section
 
 /-- Extra flexibility in the choice of:
 1. A localisation `R'` of `R` at `p`.
@@ -16,6 +20,7 @@ lemma Algebra.isUnramifiedAt_iff_map_eq' {R : Type*} {S : Type*} [CommRing R] [C
     Algebra.IsUnramifiedAt R q ↔
     Algebra.IsSeparable (IsLocalRing.ResidueField R') (IsLocalRing.ResidueField S') ∧
     Ideal.map (algebraMap R S') p = IsLocalRing.maximalIdeal S' := by
+  let := Localization.AtPrime.algebraOfLiesOver p q
   rw [Algebra.isUnramifiedAt_iff_map_eq R p]
   refine and_congr ?_ ?_
   · refine Algebra.IsSeparable.iff_of_equiv_equiv
@@ -36,7 +41,7 @@ lemma Algebra.isUnramifiedAt_iff_map_eq' {R : Type*} {S : Type*} [CommRing R] [C
       RingHom.coe_coe, IsScalarTower.algebraMap_apply R S (Localization.AtPrime q),
       AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   · rw [← (Ideal.map_injective (Localization.algEquiv q.primeCompl S')).eq_iff,
-      IsLocalRing.eq_maximalIdeal (Ideal.map_isMaximal_of_equiv _ (p := IsLocalRing.maximalIdeal _)),
+      IsLocalRing.eq_maximalIdeal ((IsLocalRing.maximalIdeal _).map_isMaximal_of_equiv _),
       ← Ideal.map_coe, Ideal.map_map, ← AlgEquiv.toAlgHom_toRingHom,
       IsScalarTower.algebraMap_eq R S, ← RingHom.comp_assoc, AlgHom.comp_algebraMap,
       ← IsScalarTower.algebraMap_eq]

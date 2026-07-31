@@ -1,4 +1,6 @@
--- import ClassFieldTheory.GroupCohomology.«03_LeftRegular»
+-- module
+
+public import ClassFieldTheory.GroupCohomology.«03_LeftRegular»
 
 -- noncomputable section cyclicGroup
 -- /-

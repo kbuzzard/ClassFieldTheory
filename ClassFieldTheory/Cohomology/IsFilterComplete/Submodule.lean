@@ -3,8 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import ClassFieldTheory.Cohomology.IsFilterComplete.Basic
+public import Mathlib.LinearAlgebra.Pi
 
 /-! # Complete filtrations by submodules
 
@@ -14,6 +16,8 @@ This file constructs more complete filtrations by:
 3. kernel of a map that respects the filtration
 4. isomorphism that respects the filtration
 -/
+
+public section
 
 -- TODO: more API (e.g. SModEq)
 
@@ -59,7 +63,7 @@ end Submodule
 
 def FilterCauchySeq.mkSubmodule (x : ι → M) (hx : ∀ ⦃i j : ι⦄, i ≤ j → x i - x j ∈ M_ i ⊔ M_ j) :
     FilterCauchySeq M_ :=
-  ⟨x, by simpa [set, AddSubgroup.mem_sup, mem_sup] using hx⟩
+  ⟨x, by simpa [set, AddSubgroup.mem_sup, mem_sup] using! hx⟩
 
 namespace Filtration
 
@@ -76,7 +80,7 @@ theorem mk_submodule (haus : ⨅ i, M_ i = ⊥)
       ∃ L, ∀ i, x i - L ∈ M_ i) :
     IsFilterComplete M_ where
   haus' x hx := (mem_bot R).mp <| haus ▸ (mem_iInf _).mpr hx
-  prec' := by simpa [AddSubgroup.mem_sup, Submodule.mem_sup] using prec
+  prec' := by simpa [AddSubgroup.mem_sup, Submodule.mem_sup] using! prec
 
 variable (M_) [IsFilterComplete M_]
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.Nilpotent.Lemmas
+module
+
+public import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-! # Lifting coprime elements through a surjective local ring hom
 
@@ -13,6 +15,8 @@ If `f : R →+* S` is surjective and reflects units and `IsCoprime (f x) (f y)` 
 `IsCoprime x y`.
 
 -/
+
+public section
 
 theorem IsLocalHom.of_ker_le_nilradical {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
     (hf1 : (⇑f).Surjective) (hf2 : RingHom.ker f ≤ nilradical R) : IsLocalHom f :=

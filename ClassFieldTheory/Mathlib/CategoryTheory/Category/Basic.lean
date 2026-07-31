@@ -1,4 +1,8 @@
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+
+public section
 
 open CategoryTheory in
 theorem CategoryTheory.comp_commSq (C' : Type*) [Category C'] {A B C D E F : C'}

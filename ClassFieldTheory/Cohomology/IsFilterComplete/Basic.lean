@@ -3,12 +3,16 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-! # Completeness with respect to a filtration -/
+
+@[expose] public section
 
 section
 -- Kenny: I don't know if we should make a separate definition for `a - b ∈ s`.
@@ -127,7 +131,7 @@ end FilterCauchySeq
 variable {F}
 
 theorem Completion.mk_surjective : (⇑(Completion.mk F)).Surjective := fun x ↦ by
-  refine ⟨⟨fun i ↦ (x.val i).out, fun i j h ↦ ?_⟩, by ext; simp⟩
+  refine ⟨⟨fun i ↦ (x.val i).out, fun i j h ↦ ?_⟩, by ext i; exact Quotient.out_eq _⟩
   have := x.2 h
   simp only
   generalize x.val i = xi at *
@@ -181,19 +185,22 @@ end
 open OrderDual
 
 section Antitone
-variable {M ι σ : Type*} [AddCommGroup M] [Preorder ι] [SetLike σ M] [AddSubgroupClass σ M]
-  {F : ιᵒᵈ →o σ}
+variable {M ι σ : Type*} [AddCommGroup M] [Preorder ι] [Preorder σ] [SetLike σ M] [IsConcreteLE σ M]
+  [AddSubgroupClass σ M] {F : ιᵒᵈ →o σ}
 
 theorem FilterCauchySeq.mk_surjective (y : FilterCauchySeq (F ∘ toDual)) :
     ∃ x hx, .mk x hx = y :=
-  ⟨y.val, fun _ _ hij ↦ sup_le (α := AddSubgroup M) le_rfl (F.2 hij) (y.2 hij), rfl⟩
+  ⟨y.val, fun _ _ hij ↦ sup_le (α := AddSubgroup M) le_rfl
+    (by simpa [← SetLike.coe_subset_coe] using F.2 (toDual_le_toDual.2 hij)) (y.2 hij), rfl⟩
 
 end Antitone
 
 
 section
-variable {M N σ τ : Type*} [AddCommGroup M] [SetLike σ M] [AddSubgroupClass σ M]
-  [AddCommGroup N] [SetLike τ N] [AddSubgroupClass τ N] (F : ℕᵒᵈ →o σ) (G : ℕᵒᵈ →o τ)
+variable {M N σ τ : Type*} [AddCommGroup M] [AddCommGroup N]
+  [Preorder σ] [SetLike σ M] [IsConcreteLE σ M] [AddSubgroupClass σ M]
+  [Preorder τ] [SetLike τ N] [IsConcreteLE τ N] [AddSubgroupClass τ N]
+  (F : ℕᵒᵈ →o σ) (G : ℕᵒᵈ →o τ)
 
 -- We thought for a long time about the minimal assumptions on `ι`, and
 -- Kevin posited the axiom that `∀ i, ∀ᶠ j, i ≤ j`, and
@@ -201,9 +208,8 @@ variable {M N σ τ : Type*} [AddCommGroup M] [SetLike σ M] [AddSubgroupClass �
 -- and Kenny thinks that under reasonable assumptions, `ℕ` will just be cofinal in `ι`.
 def partialSum : ((i : ℕ) → F (toDual i)) →+ FilterCauchySeq (F ∘ toDual) where
   toFun a := .mk (fun i ↦ ∑ j ∈ Finset.range i, a j) fun i₁ i₂ h ↦ by
-    dsimp only
     rw [← Finset.sum_range_add_sum_Ico _ h, sub_mem_comm_iff, add_sub_cancel_left]
-    exact sum_mem fun j hj ↦ F.2 (Finset.mem_Ico.mp hj).1 (a j).2
+    exact sum_mem fun j hj ↦ SetLike.coe_subset_coe.2 (F.2 (Finset.mem_Ico.mp hj).1) (a j).2
   map_zero' := by ext; simp; rfl
   map_add' _ _ := by ext; simp [Finset.sum_add_distrib]; rfl
 
@@ -214,7 +220,7 @@ noncomputable def sum [IsFilterComplete (F ∘ toDual)] : ((i : ℕ) → F (toDu
 
 theorem sum_sub_mem [IsFilterComplete (F ∘ toDual)] {x : ∀ i, F (toDual i)} {i : ℕ} :
     sum F x - ∑ j ∈ Finset.range i, x j ∈ F (toDual i) :=
-  limit_sub_mem (F ∘ toDual) _
+  limit_sub_mem (F ∘ toDual) (partialSum F x)
 
 variable {F G} {Φ : Type*} [FunLike Φ M N] [AddMonoidHomClass Φ M N] {φ : Φ}
   (h : ∀ ⦃i x⦄, x ∈ F i → φ x ∈ G i)
@@ -226,7 +232,7 @@ theorem map_sum [IsFilterComplete (F ∘ toDual)] [IsFilterComplete (G ∘ toDua
   have h₁ := h <| sum_sub_mem (x := x) (i := i)
   have h₂ := sum_sub_mem (x := fun i ↦ ⟨φ (x i), h (x i).2⟩) (i := i)
   rw [map_sub, _root_.map_sum] at h₁
-  convert sub_mem h₁ h₂ using 1
+  convert! sub_mem h₁ h₂ using 1
   exact (sub_sub_sub_cancel_right ..).symm
 
 end IsFilterComplete

@@ -1,6 +1,10 @@
-import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import ClassFieldTheory.Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import ClassFieldTheory.Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+
+public section
 
 namespace IsDiscreteValuationRing
 
@@ -17,6 +21,7 @@ theorem factors_maximalIdeal_pow (n : ℕ) :
     (Multiset.mem_replicate.not.mpr <| mt And.right not_a_field'.symm)
     (by simp) (by simp [Multiset.mem_replicate])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factors_maximalIdeal :
     UniqueFactorizationMonoid.factors (IsLocalRing.maximalIdeal R) = {IsLocalRing.maximalIdeal R} :=
   by simpa using factors_maximalIdeal_pow (n := 1)

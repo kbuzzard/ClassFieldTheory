@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+
+public section
 
 namespace Valuation
 
@@ -50,22 +54,6 @@ variable {Γ' : Type*} [LinearOrderedCommMonoidWithZero Γ']
   {v : Valuation R Γ} {v' : Valuation R Γ'} (h : IsEquiv v v') {x y : R}
 include h
 
-theorem le_iff_le : v x ≤ v y ↔ v' x ≤ v' y :=
-  h x y
-
--- #check lt_iff_lt
--- #check val_eq -- change to eq_iff_eq
-
--- #check le_one_iff_le_one
--- #check lt_one_iff_lt_one
--- #check eq_one_iff_eq_one
-
-theorem one_le_iff_one_le : 1 ≤ v y ↔ 1 ≤ v' y := by
-  simpa only [map_one] using h 1 y
-
-theorem one_lt_iff_one_lt : 1 < v y ↔ 1 < v' y := by
-  simpa only [map_one] using h.lt_iff_lt (x := 1)
-
 variable (x)
 
 theorem ball_eq_ball : v.ball (v x) = v'.ball (v' x) := by
@@ -75,7 +63,7 @@ theorem closedBall_eq_closedBall : v.closedBall (v x) = v'.closedBall (v' x) := 
   ext y; simp_rw [mem_closedBall_iff, h.le_iff_le]
 
 theorem sphere_eq_sphere : v.sphere (v x) = v'.sphere (v' x) := by
-  ext y; simp_rw [mem_sphere_iff, h.val_eq]
+  ext y; simp_rw [mem_sphere_iff, Valuation.IsEquiv.eq_iff h]
 
 end IsEquiv
 

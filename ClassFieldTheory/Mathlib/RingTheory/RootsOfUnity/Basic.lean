@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.Basic
+
+public section
 
 open Polynomial
 

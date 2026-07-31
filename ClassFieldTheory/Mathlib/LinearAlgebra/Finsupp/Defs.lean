@@ -1,10 +1,14 @@
-import Mathlib.LinearAlgebra.Finsupp.Defs
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.Defs
 
 /-!
 # TODO
 
 Rename `mapDomain.linearEquiv`!
 -/
+
+public section
 
 namespace Finsupp
 variable {α β M R : Type*} [Semiring R] [AddCommMonoid M] [Module R M]

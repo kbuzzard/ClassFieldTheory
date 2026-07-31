@@ -3,8 +3,10 @@ Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
 
 /-!
 # 1 → 𝒪[K]ˣ → Kˣ → ℤ → 0
@@ -14,9 +16,11 @@ the following sense: we define the maps `kerV K` and `v K`, prove the first is
 injective, the second is surjective, and the pair is `Function.Exact`.
 -/
 
+@[expose] public section
+
 namespace ValuativeRel
 
-def kerV (K : Type*) [CommRing K] [ValuativeRel K] : Additive 𝒪[K]ˣ →+ Additive Kˣ :=
+noncomputable def kerV (K : Type*) [CommRing K] [ValuativeRel K] : Additive 𝒪[K]ˣ →+ Additive Kˣ :=
   (Units.map 𝒪[K].subtype).toAdditive
 
 variable {K : Type*} [CommRing K] [ValuativeRel K]
@@ -43,7 +47,8 @@ a uniformiser to `.exp (-1)`.
 -/
 noncomputable def valuationInt (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K]
     [IsNonarchimedeanLocalField K] : Valuation K ℤᵐ⁰ :=
-  (valuation K).map (valueGroupWithZeroIsoInt K) <| OrderHomClass.mono <| valueGroupWithZeroIsoInt K
+  (valuation K).map (.ofClass <| valueGroupWithZeroIsoInt K) <|
+    OrderHomClass.mono <| valueGroupWithZeroIsoInt K
 
 variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K]
   [IsNonarchimedeanLocalField K]
@@ -72,6 +77,7 @@ noncomputable def v (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K]
   let f₄ : (ℤᵐ⁰)ˣ →* Multiplicative ℤ := (WithZero.unitsWithZeroEquiv.toMonoidHom)⁻¹
   (f₄.comp f₃).toAdditiveLeft
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma v_apply (x : Additive Kˣ) : v K x = -(valuationInt K x.toMul).log := by
   obtain ⟨x, rfl⟩ := Additive.ofMul.surjective x
   rw [toMul_ofMul]

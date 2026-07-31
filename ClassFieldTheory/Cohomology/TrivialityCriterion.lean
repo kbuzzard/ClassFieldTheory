@@ -1,11 +1,13 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
-import ClassFieldTheory.Cohomology.Functors.Corestriction
-import ClassFieldTheory.Cohomology.Functors.InflationRestriction
-import ClassFieldTheory.Cohomology.Functors.UpDown
-import ClassFieldTheory.Cohomology.TateCohomology
-import ClassFieldTheory.Cohomology.TrivialCohomology
-import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
-import Mathlib.GroupTheory.Nilpotent
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.UpDown
+public import ClassFieldTheory.Cohomology.Functors.Corestriction
+public import ClassFieldTheory.Cohomology.Functors.InflationRestriction
+public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import ClassFieldTheory.Cohomology.TateCohomology
+public import ClassFieldTheory.Cohomology.TrivialCohomology
+public import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
+public import Mathlib.GroupTheory.Nilpotent
 
 /-!
 Suppose `G` is a finite group, and there are positive integers `r` and `s`
@@ -23,6 +25,8 @@ both have trivial cohomology. Using this, we show that if `M` has trivial cohomo
 trivial Tate cohomology.
 -/
 
+public section
+
 open
   CategoryTheory
   CategoryTheory.Limits
@@ -33,10 +37,11 @@ open
 variable {R : Type} [CommRing R]
 variable {G : Type} [Group G]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `H²ⁿ⁺²(H,M)` and `H²ᵐ⁺¹(H,M)` are both zero for every subgroup `H` of `G` then `M` is acyclic.
 -/
-theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G] [IsSolvable G]
+theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Finite G] [Group.IsSolvable G]
     (M : Rep R G) (n m : ℕ)
     -- todo: don't quantify over all types
     (h_even : ∀ (H : Type) [Group H] {φ : H →* G} (_ : Function.Injective φ),
@@ -55,16 +60,15 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd_of_solvable [Fintype G]
         (QuotientGroup.mk' (K.subgroupOf H)).ker.subtype) (i + 1)) := by
       refine fun i ↦ .of_iso (h3 (n := i)) <| groupCohomology.mapIso ((MulEquiv.subgroupCongr <|
         QuotientGroup.ker_mk' _).trans <| Subgroup.subgroupOfEquivOfLe h12)
-        (by exact Iso.refl _) (by simp [res]) _
+        (LinearEquiv.refl _ _) (by simp) _
     have : ∀ n, IsIso ((infl (QuotientGroup.mk'_surjective
         (K.subgroupOf H)) (n + 1)).app (M ↓ H.subtype)) := by
       intro n
       apply (config := { allowSynthFailures := true }) isIso_of_mono_of_epi
       · exact inflation_restriction_mono (R := R)
           (QuotientGroup.mk'_surjective (K.subgroupOf H)) n (M := M ↓ H.subtype) (fun i _ ↦ IH i)
-      · exact (inflation_restriction_exact (R := R)
-          (QuotientGroup.mk'_surjective (K.subgroupOf H)) n (M := M ↓ H.subtype) (fun i _ ↦ IH i)).epi_f
-          (IsZero.eq_zero_of_tgt (IH _) _)
+      · exact (inflation_restriction_exact (QuotientGroup.mk'_surjective _) n fun i _ ↦ IH i).epi_f
+          ((IH _).eq_zero_of_tgt _)
     have : ∀ n : ℕ, groupCohomology ((M ↓ H.subtype) ↑
       (QuotientGroup.mk'_surjective (K.subgroupOf H))) (n + 1) ≅
       groupCohomology (M ↓ H.subtype) (n + 1) := fun n ↦ asIso ((infl (QuotientGroup.mk'_surjective
@@ -140,17 +144,15 @@ theorem groupCohomology.trivialCohomology_of_even_of_odd [Finite G]
       refine .of_iso (h_even H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
       apply (functor R H (2 * n + 2)).mapIso
-      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
-      apply (res φ).mapIso
-      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
+      exact (Rep.resComp (R := R) (S.subtype.comp v.toSubgroup.subtype) φ).trans
+        (NatIso.hcomp (Rep.resComp _ _) (Iso.refl _)) |>.symm.app M
     · -- the odd trivial cohomology for `G` lifts to `v`
       intro H  _ φ hφ
       refine .of_iso (h_odd H (φ := (S.subtype.comp v.toSubgroup.subtype).comp φ)
         ((S.subtype_injective.comp v.toSubgroup.subtype_injective).comp hφ)) ?_
       apply (functor R H (2 * m + 1)).mapIso
-      refine Iso.trans ?_ ((Action.resComp (ModuleCat R) φ _).app M)
-      apply (res φ).mapIso
-      exact (Action.resComp (ModuleCat R) _ S.subtype).app M
+      exact (Rep.resComp (R := R) (S.subtype.comp v.toSubgroup.subtype) φ).trans
+        (NatIso.hcomp (Rep.resComp _ _) (Iso.refl _)) |>.symm.app M
 
 instance Rep.dimensionShift.up_trivialCohomology [Finite G] (M : Rep R G) [M.TrivialCohomology] :
     (up.obj M).TrivialCohomology := open scoped Classical in
@@ -165,6 +167,7 @@ instance Rep.dimensionShift.down_trivialCohomology [Finite G] (M : Rep R G) [M.T
     (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 19 (by decide) hφ) (δDownResIso M hφ 19).symm)
     (fun H _ _ hφ ↦ .of_iso (isZero_of_injective M _ 74 (by decide) hφ) (δDownResIso M hφ 74).symm)
 
+set_option linter.unusedFintypeInType false in
 instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.TrivialCohomology] :
     M.TrivialTateCohomology := by
   constructor
@@ -177,7 +180,7 @@ instance Rep.tateCohomology_of_trivialCohomology [Fintype G] (M : Rep R G) [M.Tr
     rw [Nat.cast_add, Nat.cast_one]
     exact .of_iso (TrivialCohomology.isZero H) ((TateCohomology.isoGroupCohomology (n + 1)).app _)
   · classical
-    induction n, hn using Int.le_induction_down generalizing M with
+    induction n, hn using Int.leInductionDown generalizing M with
     | base =>
       refine .of_iso ?_ (δDownResIsoTate M H.subtype_injective _)
       refine .of_iso ?_ ((TateCohomology.isoGroupCohomology 1).app _)

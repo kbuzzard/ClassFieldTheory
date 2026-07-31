@@ -1,5 +1,9 @@
-import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
-import Mathlib.Algebra.Homology.ConcreteCategory
+module
+
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
+public import Mathlib.Algebra.Homology.ConcreteCategory
+
+public section
 
 open CategoryTheory in
 lemma HomologicalComplex.cyclesMk_surjective {C : Type*} [Category C] {FC : C → C → Type*}

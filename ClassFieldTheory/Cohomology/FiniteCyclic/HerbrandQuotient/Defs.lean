@@ -1,4 +1,6 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.ExplicitTate
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.ExplicitTate
 
 /-!
 # Herbrand quotients
@@ -24,7 +26,7 @@ In the `Representation` case, we use the 0th Tate cohomology group andy the (-1)
 the `Rep` case, we use the 2nd group cohomology group and the 1st.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 variable {R G A : Type} [CommRing R] [Group G] [Fintype G] [IsCyclic G]
 variable [AddCommGroup A] [Module R A] (ρ : Representation R G A)

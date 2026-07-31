@@ -1,10 +1,14 @@
-import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.ValuationExactSequence
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 
 /-! # Galois cohomology of unramified extensions of local fields
 
 If `L/K` unramified then `H^q(Gal(L/K), 𝒪[L]ˣ) = 0` for `q > 0`.
 -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 variable (K L : Type)

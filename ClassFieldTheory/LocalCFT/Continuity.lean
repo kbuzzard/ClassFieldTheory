@@ -1,8 +1,12 @@
-import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.Valued.ValuativeRel
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.Valued.ValuativeRel
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+
+public section
 
 /-!
 # Main theorems
@@ -22,7 +26,7 @@ theorem Valuation.sum_eq_iSup {ι R Γ₀ : Type*} (f : ι → R) (s : Finset ι
     v (∑ i ∈ s, f i) = s.sup (v ∘ f) := by
   classical
   induction s using Finset.induction with
-  | empty => simp [bot_eq_zero'']
+  | empty => simp [bot_eq_zero]
   | insert a s has IH =>
     obtain rfl | hs := s.eq_empty_or_nonempty
     · simp
@@ -34,10 +38,10 @@ theorem Valuation.sum_eq_iSup {ι R Γ₀ : Type*} (f : ι → R) (s : Finset ι
       rw [← le_zero_iff]
       exact Valuation.map_add_le _ (by simp [H₁]) (by simp [H₂])
     · rw [Valuation.map_add_eq_of_lt_right, max_eq_right]
-      · rw [H₁]; exact zero_le'
+      · rw [H₁]; exact zero_le
       · rwa [H₁, zero_lt_iff]
     · rw [Valuation.map_add_eq_of_lt_left, max_eq_left]
-      · rw [H₂]; exact zero_le'
+      · rw [H₂]; exact zero_le
       · rwa [H₂, zero_lt_iff]
     rw [v.map_add_of_distinct_val]
     obtain ⟨i, his : i ∈ s, hi : v (f i) = _⟩ := Finset.sup_mem_of_nonempty (f := v ∘ f) hs
@@ -65,8 +69,8 @@ theorem exists_valuation_algebraMap_eq_valuation_pow
     apply H ((minpoly K y).coeff i / (minpoly K y).coeff (i + k)) k (by simpa using hij)
     apply mul_left_injective₀ (b := (valuation L) y ^ i) (by simp [hy])
     simp [*, -mul_eq_mul_right_iff, div_mul_eq_mul_div, pow_add, mul_comm]
-  · simp only [map_zero, ← bot_eq_zero'', Finset.sup_eq_bot_iff] at this
-    simp only [Finset.mem_range, Function.comp_apply, bot_eq_zero'', map_eq_zero, smul_eq_zero,
+  · simp only [map_zero, ← bot_eq_zero, Finset.sup_eq_bot_iff] at this
+    simp only [Finset.mem_range, Function.comp_apply, bot_eq_zero, map_eq_zero, smul_eq_zero,
       pow_eq_zero_iff', hy, ne_eq, false_and, or_false, Nat.lt_succ_iff] at this
     exact minpoly.coeff_zero_ne_zero (Algebra.IsIntegral.isIntegral _) hy (this 0 (by simp))
 
@@ -84,18 +88,17 @@ lemma exists_valuation_algebraMap_le_valuation
 variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
   [IsTopologicalAddGroup K]
   [Field L] [ValuativeRel L] [TopologicalSpace L] [IsValuativeTopology L]
-  [IsTopologicalAddGroup L]
   [Algebra K L] [Algebra.IsAlgebraic K L] [ValuativeExtension K L]
 
 /-- Maddy's Lemma : Density implies continuity. -/
-@[fun_prop] instance continuous_algebraMap_of_density :
+@[fun_prop] lemma continuous_algebraMap_of_density :
     Continuous (algebraMap K L) := by
   apply continuous_of_continuousAt_zero _ _
   simp only [ContinuousAt, map_zero]
   have B₁ := IsValuativeTopology.hasBasis_nhds_zero K
   have B₂ := IsValuativeTopology.hasBasis_nhds_zero L
   apply (Filter.HasBasis.tendsto_iff B₁ B₂).mpr
-  simp only [Set.mem_setOf_eq, true_and, true_imp_iff]
+  simp only [Set.mem_ofPred_eq, true_and, true_imp_iff]
   intro b
   obtain ⟨a, rfl⟩ := unitsMap_valuation_surjective b
   obtain ⟨a', ha'⟩ := exists_valuation_algebraMap_le_valuation K a

@@ -1,4 +1,8 @@
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+
+public section
 
 theorem FiniteField.pow_natCard {K : Type*} [GroupWithZero K] [Finite K] (a : K) :
     a ^ Nat.card K = a := by

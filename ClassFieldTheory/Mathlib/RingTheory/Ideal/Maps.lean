@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.RingTheory.Ideal.Maps
+
+public section
 
 lemma Ideal.map_injective {R S : Type*} [CommSemiring R] [CommSemiring S]
     {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E) :

@@ -1,6 +1,8 @@
-import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
-import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
-import Mathlib.Data.ZMod.QuotientRing
+module
+
+public import ClassFieldTheory.Cohomology.FiniteCyclic.HerbrandQuotient.Defs
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
+public import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Herbrand quotient of the trivial representation
@@ -9,25 +11,28 @@ In this file, we show that if `G` is cyclic of order `n` then the Herbrand quoti
 `ℤ` with the trivial `G`-action is `n`.
 -/
 
-variable {G : Type} [Group G] [Fintype G] [IsCyclic G]
+@[expose] public section
+
+variable {G : Type} [Group G]
 
 open groupCohomology
 
 namespace Representation
 
-omit [Fintype G] in
-@[simp] lemma oneSubGen_trivial_int_eq_zero : (trivial ℤ G ℤ).oneSubGen = 0 := by
+@[simp] lemma oneSubGen_trivial_int_eq_zero [IsCyclic G] : (trivial ℤ G ℤ).oneSubGen = 0 := by
   ext; simp
 
-omit [Fintype G] in
-@[simp] lemma tateZ0_trivial_int_eq_top : (trivial ℤ G ℤ).tateZ0 = ⊤ := by simp
+@[simp] lemma tateZ0_trivial_int_eq_top [IsCyclic G] : (trivial ℤ G ℤ).tateZ0 = ⊤ := by simp
 
-omit [IsCyclic G] in
+variable [Fintype G]
+
 @[simp] lemma tateB0_trivial_int_eq_span_card :
     (trivial ℤ G ℤ).tateB0 = Ideal.span {(Nat.card G : ℤ)} := by
   ext; simp [tateB0, Ideal.mem_span_singleton', mul_comm]
 
-def tateH0TrivIntAddEquivQuotCard :
+variable [IsCyclic G]
+
+noncomputable def tateH0TrivIntAddEquivQuotCard :
     (trivial ℤ G ℤ).TateH0 ≃ₗ[ℤ] ℤ ⧸ Ideal.span {(Nat.card G : ℤ)} :=
   Submodule.Quotient.equiv _ _
     (LinearEquiv.ofEq _ _ tateZ0_trivial_int_eq_top ≪≫ₗ Submodule.topEquiv) <| by
@@ -62,5 +67,8 @@ theorem herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G �
 end Representation
 
 variable (G) in
-lemma Rep.herbrandQuotient_trivial_int_eq_card : herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
-  classical rw [trivial, herbrandQuotient_of, Representation.herbrandQuotient_trivial_int_eq_card]
+lemma Rep.herbrandQuotient_trivial_int_eq_card [Finite G] [IsCyclic G] :
+    herbrandQuotient (trivial ℤ G ℤ) = Nat.card G := by
+  classical
+  cases nonempty_fintype G
+  rw [trivial, herbrandQuotient_of, Representation.herbrandQuotient_trivial_int_eq_card]

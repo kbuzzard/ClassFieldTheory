@@ -3,10 +3,14 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
-import Mathlib.RingTheory.AdicCompletion.Topology
+module
+
+public import ClassFieldTheory.IsNonarchimedeanLocalField.Basic
+public import Mathlib.RingTheory.AdicCompletion.Topology
 
 /-! # Facts about the adic topology and local fields -/
+
+public section
 
 namespace IsNonarchimedeanLocalField
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
@@ -18,14 +22,19 @@ theorem maximalIdeal_pow_eq (n : ℕ) : ((𝓂[K] ^ n :) : Set 𝒪[K]) =
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
   rw [(IsDiscreteValuationRing.irreducible_iff_uniformizer _).mp hϖ, Ideal.span_singleton_pow]
   ext x
-  simp_rw [SetLike.mem_coe, Set.mem_preimage, Set.mem_setOf, Ideal.mem_span_singleton,
+  simp_rw [SetLike.mem_coe, Set.mem_preimage, Set.mem_ofPred, Ideal.mem_span_singleton,
     (Valuation.integer.integers _).dvd_iff_le, map_pow, Algebra.algebraMap_ofSubsemiring_apply,
     valuation_irreducible hϖ, ← map_pow, ← exp_nsmul, smul_neg, Int.nsmul_eq_mul, mul_one]
 
 theorem isAdic : IsAdic 𝓂[K] := by
   refine isAdic_iff.mpr ⟨fun n ↦ isOpen_induced_iff.mpr ?_, fun s hs ↦ ?_⟩
   · rw [maximalIdeal_pow_eq K]
-    exact ⟨_, IsValuativeTopology.isOpen_closedBall (by simp), rfl⟩
+    refine ⟨_, ?_, rfl⟩
+    convert Valuation.isOpen_closedBall (v := valuation K)
+      (r := ValuativeRel.ValueGroupWithZero.orderMonoidIso (valuation K)
+        ((valueGroupWithZeroIsoInt K).symm (exp (-↑n)))) ?_ using 1
+    · ext x; simp [Valuation.restrict_le_iff_le_embedding]
+    · simp
   · simp_rw [maximalIdeal_pow_eq K]
     obtain ⟨t, ht, hts⟩ := (mem_nhds_induced _ _ _).mp hs;
     obtain ⟨n, hn, hnt⟩ := (IsValuativeTopology.hasBasis_nhds_zero' _).mem_iff.mp ht
@@ -34,7 +43,7 @@ theorem isAdic : IsAdic 𝓂[K] := by
     lift n to ℤ using hn
     obtain ⟨m, hmn⟩ : ∃ m : ℕ, -m < n := ⟨n.natAbs + 1, by grind⟩
     refine ⟨m, fun x hx ↦ hts <| hnt ?_⟩
-    simp only [Set.preimage_setOf_eq, Set.mem_setOf_eq] at hx ⊢
+    simp only [Set.preimage_ofPred_eq, Set.mem_ofPred_eq] at hx ⊢
     exact hx.trans_lt <| (map_lt_map_iff ..).mpr <| exp_lt_exp.mpr hmn
 
 instance : IsAdicComplete 𝓂[K] 𝒪[K] :=

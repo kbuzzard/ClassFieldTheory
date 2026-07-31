@@ -1,4 +1,8 @@
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+
+public section
 
 namespace IsCyclic
 variable {G : Type*} [Group G] [instCyclic : IsCyclic G]

@@ -1,6 +1,9 @@
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import ClassFieldTheory.Mathlib.Data.Finset.Range
-import ClassFieldTheory.Mathlib.FieldTheory.Separable
+module
+
+public import ClassFieldTheory.Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+
+public section
 
 open Polynomial
 

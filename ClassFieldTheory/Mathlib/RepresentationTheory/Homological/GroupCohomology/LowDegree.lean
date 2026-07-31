@@ -1,6 +1,10 @@
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import ClassFieldTheory.Mathlib.GroupTheory.Torsion
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import ClassFieldTheory.Mathlib.GroupTheory.Torsion
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+
+public section
 
 open CategoryTheory Limits
 
@@ -33,6 +37,7 @@ namespace cocycles₂
 
 end cocycles₂
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2π_comp_H2Iso_hom :
     H2π A ≫ (H2Iso A).hom = (shortComplexH2 A).moduleCatLeftHomologyData.π := by simp [H2π]

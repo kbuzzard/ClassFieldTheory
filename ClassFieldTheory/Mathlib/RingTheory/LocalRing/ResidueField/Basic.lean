@@ -1,4 +1,8 @@
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+
+public section
 
 namespace IsLocalRing.ResidueField
 
