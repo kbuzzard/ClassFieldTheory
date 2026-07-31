@@ -2,6 +2,7 @@ module
 
 public import ClassFieldTheory.Cohomology.Functors.Inflation
 public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 @[expose] public noncomputable section
 
@@ -36,38 +37,32 @@ lemma quotientToInvariantsFunctor'_shortExact_ofShortExact {S : ShortComplex (Re
   -- .mk' ((S.map (quotientToInvariantsFunctor' surj)).moduleCat_exact_iff_range_eq_ker _) _ _
   sorry
 
-@[simps]
+-- set_option backward.defeqAttrib.useBackward true in
+-- set_option backward.isDefEq.respectTransparency false in
+-- @[simps]
 def resEquiv_inv (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
-    groupCohomology ((Rep.resEquiv R e).inverse.obj M) n ≅ groupCohomology M n where
-  hom := map e {
-    hom := by exact 𝟙 M.V
-    comm := by simp [Rep.res]
-  } n
-  inv := map e.symm {
-    hom := by exact 𝟙 M.V
-    comm := by simp [Rep.res]
-  } n
-  hom_inv_id := by
-    rw [← map_comp, ← map_id]
-    exact map_congr (by simp) (by simp [Rep.res_obj_V]) n
-  inv_hom_id := by
-    rw [← map_comp, ← map_id]
-    exact map_congr (by simp) (by simp [Rep.res_obj_V]) n
+    groupCohomology ((Rep.resEquiv R e).inverse.obj M) n ≅ groupCohomology M n :=
+  mapIso e.symm (LinearEquiv.refl R M.V) (fun _ ↦ rfl) n
 
+lemma resEquiv_inv_hom (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
+    (resEquiv_inv n G' M e).hom
+      = map e.toMonoidHom (Rep.ofHom ⟨LinearMap.id (M := M.V), fun g ↦ by
+          ext x
+          change M.ρ (e.symm (e g)) x = M.ρ g x
+          rw [e.symm_apply_apply]⟩) n := by
+  exact map_congr (by ext; simp) rfl n
+
+-- #exit
 lemma map_one {k G H : Type u} [CommRing k] [Group G] [Group H]
-    {A : Rep k H} {B : Rep k G} (φ : (Action.res _ (1 : G →* H)).obj A ⟶ B) (n : ℕ) [NeZero n] :
+    {A : Rep k H} {B : Rep k G} (φ : Rep.res (1 : G →* H) A ⟶ B) (n : ℕ) [NeZero n] :
     map (1 : G →* H) φ n = 0 := by
   let ψ1 : A ↓ (1 : PUnit →* H) ⟶ A ↓ 1 := 𝟙 _
-  let ψ2 : ((A ↓ (1 : PUnit →* H)) ↓ (1 : G →* PUnit)) ⟶ B :=
-    { hom := φ.hom
-      comm := fun g ↦ by
-        ext (x : A)
-        simpa [res_obj_ρ'] using Rep.hom_comm_apply φ g x}
-  have h : (Action.res _ 1).map ψ1 ≫ ψ2 = φ := by
-    ext (a : A)
-    simp [ψ1, ψ2]
+  let ψ2 : ((A ↓ (1 : PUnit →* H)) ↓ (1 : G →* PUnit)) ⟶ B := Rep.ofHom
+    { toLinearMap := φ.hom
+      isIntertwining' := fun g ↦ by ext; simp [← Rep.hom_comm_apply φ g]}
+  have h : (Rep.resFunctor 1).map ψ1 ≫ ψ2 = φ := by ext; simp [ψ1, ψ2]
   have := @map_comp k _ G PUnit H _ _ _ A (A ↓ 1) B 1 1 ψ1 ψ2 n
-  simp [h] at this
+  simp only [MonoidHom.one_comp, res_obj_ρ, h] at this
   rw [this]
   convert comp_zero
   refine CategoryTheory.Limits.IsZero.eq_zero_of_src ?_ _
@@ -75,7 +70,7 @@ lemma map_one {k G H : Type u} [CommRing k] [Group G] [Group H]
   exact isZero_groupCohomology_succ_of_subsingleton _ _
 
 lemma map_one' {k G H : Type u} [CommRing k] [Group G] [Group H] (f : G →* H) (hf : f = 1)
-    {A : Rep k H} {B : Rep k G} (φ : (Action.res _ f).obj A ⟶ B) (n : ℕ) [NeZero n] :
+    {A : Rep k H} {B : Rep k G} (φ : res f A ⟶ B) (n : ℕ) [NeZero n] :
     map f φ n = 0 := by
   subst hf
   exact map_one φ n
@@ -83,8 +78,10 @@ lemma map_one' {k G H : Type u} [CommRing k] [Group G] [Group H] (f : G →* H) 
 @[reassoc]
 lemma map_zero {k G H : Type u} [CommRing k] [Group G] [Group H]
     {A : Rep k H} {B : Rep k G} (f : G →* H) (n : ℕ) :
-    map f (0 : (Action.res _ f).obj A ⟶ B) n = 0 := by
+    map f (0 : res f A ⟶ B) n = 0 := by
   dsimp [map]
+  unfold groupCohomology
+  -- unfolding map would unfold the type as well, and groupCohomology is a `def`
   simp
 
 def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) where
@@ -99,18 +96,20 @@ def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) wh
       have : map _ _ _ ≫ map _ (𝟙 (M ↓ φ.ker.subtype)) _ = 0 :=
         (groupCohomology.H1InfRes M φ.ker).zero
       simp only [Nat.reduceAdd, infl, cochain_infl, Functor.hcomp_id, Functor.whiskerRight_app,
-        Functor.comp_obj, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_map, rest_app]
+        Functor.comp_obj, rest_app]
       change map _ _ 1 ≫ _ = 0
       apply_fun ((resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
         (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom ≫ ·) at this
       rwa [comp_zero, resEquiv_inv_hom, ← Category.assoc, ← map_comp] at this
     | succ n ih =>
     dsimp [infl, rest, ← map.eq_def, cochain_infl]
-    simp only [Category.id_comp]
+    simp only [Functor.hcomp_id, Functor.whiskerRight_app, Functor.comp_obj]
+    change map _ _ _ ≫ map _ _ (n + 1 + 1) = 0
     rw [← map_comp, map_one']
     ext ⟨x, hx⟩
     simp [MonoidHom.mem_ker.1 hx]
 
+#exit
 instance isIso_δ_ofhM (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
     IsIso (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
     (n + 1) (n + 1 + 1) rfl) := by
