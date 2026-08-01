@@ -15,7 +15,8 @@ open
 
 universe u
 
-variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q} (surj : Function.Surjective φ)
+variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
+  (surj : Function.Surjective φ)
 
 namespace groupCohomology
 
@@ -37,10 +38,7 @@ lemma quotientToInvariantsFunctor'_shortExact_ofShortExact {S : ShortComplex (Re
   -- .mk' ((S.map (quotientToInvariantsFunctor' surj)).moduleCat_exact_iff_range_eq_ker _) _ _
   sorry
 
--- set_option backward.defeqAttrib.useBackward true in
--- set_option backward.isDefEq.respectTransparency false in
--- @[simps]
-def resEquiv_inv (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
+abbrev resEquiv_inv (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
     groupCohomology ((Rep.resEquiv R e).inverse.obj M) n ≅ groupCohomology M n :=
   mapIso e.symm (LinearEquiv.refl R M.V) (fun _ ↦ rfl) n
 
@@ -52,14 +50,13 @@ lemma resEquiv_inv_hom (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G �
           rw [e.symm_apply_apply]⟩) n := by
   exact map_congr (by ext; simp) rfl n
 
--- #exit
 lemma map_one {k G H : Type u} [CommRing k] [Group G] [Group H]
     {A : Rep k H} {B : Rep k G} (φ : Rep.res (1 : G →* H) A ⟶ B) (n : ℕ) [NeZero n] :
     map (1 : G →* H) φ n = 0 := by
   let ψ1 : A ↓ (1 : PUnit →* H) ⟶ A ↓ 1 := 𝟙 _
   let ψ2 : ((A ↓ (1 : PUnit →* H)) ↓ (1 : G →* PUnit)) ⟶ B := Rep.ofHom
     { toLinearMap := φ.hom
-      isIntertwining' := fun g ↦ by ext; simp [← Rep.hom_comm_apply φ g]}
+      isIntertwining' := fun _ ↦ by ext; simp [← Rep.hom_comm_apply φ]}
   have h : (Rep.resFunctor 1).map ψ1 ≫ ψ2 = φ := by ext; simp [ψ1, ψ2]
   have := @map_comp k _ G PUnit H _ _ _ A (A ↓ 1) B 1 1 ψ1 ψ2 n
   simp only [MonoidHom.one_comp, res_obj_ρ, h] at this
@@ -102,14 +99,13 @@ def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) wh
         (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom ≫ ·) at this
       rwa [comp_zero, resEquiv_inv_hom, ← Category.assoc, ← map_comp] at this
     | succ n ih =>
-    dsimp [infl, rest, ← map.eq_def, cochain_infl]
-    simp only [Functor.hcomp_id, Functor.whiskerRight_app, Functor.comp_obj]
-    change map _ _ _ ≫ map _ _ (n + 1 + 1) = 0
-    rw [← map_comp, map_one']
-    ext ⟨x, hx⟩
-    simp [MonoidHom.mem_ker.1 hx]
+      dsimp [infl, rest, ← map.eq_def, cochain_infl]
+      simp only [Functor.hcomp_id, Functor.whiskerRight_app, Functor.comp_obj]
+      change map _ _ _ ≫ map _ _ (n + 1 + 1) = 0
+      rw [← map_comp, map_one']
+      ext ⟨x, hx⟩
+      simp [MonoidHom.mem_ker.1 hx]
 
-#exit
 instance isIso_δ_ofhM (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
     IsIso (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
     (n + 1) (n + 1 + 1) rfl) := by
@@ -129,20 +125,24 @@ abbrev mapToNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
       (n + 1) (n + 1 + 1) rfl
   comm₂₃ := rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 abbrev mapBack (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
     inflationRestriction surj (n + 1) M ⟶ inflationRestriction surj n (up.obj M) where
-  τ₁ := have := isIso_δ_ofhM surj n M hM
+  τ₁ :=
+    have := isIso_δ_ofhM surj n M hM
     inv <| δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
-    (n + 1) (n + 1 + 1) rfl
+      (n + 1) (n + 1 + 1) rfl
   τ₂ := inv <| δ (shortExact_upSES M) (n + 1) (n + 1 + 1) rfl
   τ₃ := (δUpResIso M φ.ker.subtype_injective (n + 1)).inv
   comm₁₂ := by
-    simpa using infl_δ_naturality surj (shortExact_upSES M)
+    simpa using! infl_δ_naturality surj (shortExact_upSES M)
       (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
       (n + 1) (n + 1 + 1) rfl |>.symm
-  comm₂₃ := by simpa [δUpResIso] using
+  comm₂₃ := by simpa [δUpResIso] using!
     rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl |>.symm
 
+set_option backward.isDefEq.respectTransparency false in
 abbrev IsoNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
     inflationRestriction surj n (up.obj M) ≅ inflationRestriction surj (n + 1) M where
   hom := mapToNext surj n M hM
@@ -150,6 +150,7 @@ abbrev IsoNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
   hom_inv_id := by ext1 <;> simp [δUpResIso]
   inv_hom_id := by ext1 <;> simp [δUpResIso]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
     Mono (inflationRestriction surj n M).f := by
@@ -170,11 +171,10 @@ theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
   change Mono (map _ _ _) at h1
   have : Mono (resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
         (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom := IsIso.mono_of_iso _
-  convert @mono_comp _ _ _ _ _ _ this _ h1 using 1
-  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, NatTrans.hcomp_app,
-    Functor.comp_obj, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj, NatTrans.id_app,
-    HomologicalComplex.homologyFunctor_map, Category.id_comp, resEquiv_inverse, resEquiv_inv_hom]
-  rw [← map_comp]
+  convert! @mono_comp _ _ _ _ _ _ this _ h1
+  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, Functor.hcomp_id,
+    Functor.whiskerRight_app, Functor.comp_obj, resEquiv_inverse]
+  erw [← map_comp]
   congr
   | succ n ih =>
   have commSq1 := infl_δ_naturality surj (shortExact_upSES M)
@@ -183,14 +183,15 @@ theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
   simp only [inflationRestriction]
   simp only [upSES] at commSq1
   have := isIso_δ_ofhM surj n M (hM _ (by omega))
-  rw [← this.eq_inv_comp] at commSq1
-  simp [inflationRestriction] at ih
+  erw [← this.eq_inv_comp] at commSq1
+  simp only [inflationRestriction] at ih
   rw [commSq1]
   specialize @ih (up.obj M) <| fun i hi ↦ by
     refine IsZero.of_iso _ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
     exact hM (i + 1) (by omega)
   exact mono_comp _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
     (inflationRestriction surj n M).Exact := by
@@ -213,20 +214,18 @@ theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
     (QuotientGroup.quotientKerEquivOfSurjective φ surj)).toLinearEquiv,
     Iso.toLinearMap_toLinearEquiv, ← ModuleCat.hom_comp] at this
   rw [ShortComplex.moduleCat_exact_iff_range_eq_ker]
-  convert this using 3
+  convert! this using 3
   clear * -
-  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, NatTrans.hcomp_app,
-    Functor.comp_obj, cochainsFunctor_obj, HomologicalComplex.homologyFunctor_obj, NatTrans.id_app,
-    HomologicalComplex.homologyFunctor_map, Category.id_comp, resEquiv_inverse, resEquiv_inv_hom,
-    ← map_comp]
-  rw [map_congr]
+  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, Functor.hcomp_id,
+    Functor.whiskerRight_app, Functor.comp_obj, HomologicalComplex.homologyFunctor_map,
+    resEquiv_inverse, resEquiv_inv_hom, MulEquiv.toMonoidHom_eq_coe]
+  rw [← map_comp, map_congr]
   · ext g
     simp [QuotientGroup.quotientKerEquivOfSurjective]
-  · simp only [Action.res_obj_V, Action.comp_hom, Action.res_map_hom, subtype_hom,
-    res_quotientToInvariantsFunctor'_ι]
-    rfl
+  · simp [res_quotientToInvariantsFunctor'_ι]
   | succ n ih =>
-  exact ShortComplex.exact_of_iso (IsoNext surj _ _ (hM 0 (by omega))) <| @ih (up.obj M) fun i hi ↦ by
+  exact ShortComplex.exact_of_iso (IsoNext surj _ _ (hM 0 (by omega))) <|
+    @ih (up.obj M) fun i hi ↦ by
     refine IsZero.of_iso ?_ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
     exact hM (i + 1) (by omega)
 
