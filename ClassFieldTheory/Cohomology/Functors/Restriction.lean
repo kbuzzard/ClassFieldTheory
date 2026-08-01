@@ -139,6 +139,18 @@ lemma rest_comp (n : ℕ) : rest (φ.comp ψ) n = rest φ (R := R) n ≫ (𝟙 _
   rw [← map_comp]
   exact map_congr rfl rfl n
 
+/-- Group cohomology is invariant under restriction along a group isomorphism. -/
+abbrev resEquiv_inv (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
+    groupCohomology ((Rep.resEquiv R e).inverse.obj M) n ≅ groupCohomology M n :=
+  mapIso e.symm (LinearEquiv.refl R M.V) (fun _ ↦ rfl) n
+
+lemma resEquiv_inv_hom (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
+    (resEquiv_inv n G' M e).hom = map e.toMonoidHom (Rep.ofHom ⟨LinearMap.id (M := M.V), fun g ↦ by
+      ext x
+      change M.ρ (e.symm (e g)) x = M.ρ g x
+      rw [e.symm_apply_apply]⟩) n :=
+  map_congr (by ext; simp) rfl n
+
 
 /--
 Given any short exact sewuence `0 → A → B → C → 0` in `Rep R G` and any

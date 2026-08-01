@@ -2,6 +2,7 @@ module
 
 public import ClassFieldTheory.Cohomology.Functors.Inflation
 public import ClassFieldTheory.Cohomology.Functors.UpDown
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 @[expose] public noncomputable section
@@ -28,58 +29,29 @@ If `H¹(K,A) = 0` then the `K`-invariants form a short exact sequence in `Rep R 
 -/
 lemma quotientToInvariantsFunctor'_shortExact_ofShortExact {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) (hS' : IsZero (H1 (S.X₁ ↓ φ.ker.subtype))) :
-    (S.map (quotientToInvariantsFunctor' surj)).ShortExact :=
+    (S.map (quotientToInvariantsFunctor' surj)).ShortExact := by
   /-
   This is the opening section of the long exact sequence. The next term is `H¹(K,S.X₁)`, which
-  is assumeed to be zero.
+  is assumed to be zero.
   -/
-  -- (S.map (quotientToInvariantsFunctor' surj)).exact_iff_exact_map_forget₂.2 _
-  -- forget this to module cat and then do
-  -- .mk' ((S.map (quotientToInvariantsFunctor' surj)).moduleCat_exact_iff_range_eq_ker _) _ _
-  sorry
-
-abbrev resEquiv_inv (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
-    groupCohomology ((Rep.resEquiv R e).inverse.obj M) n ≅ groupCohomology M n :=
-  mapIso e.symm (LinearEquiv.refl R M.V) (fun _ ↦ rfl) n
-
-lemma resEquiv_inv_hom (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
-    (resEquiv_inv n G' M e).hom
-      = map e.toMonoidHom (Rep.ofHom ⟨LinearMap.id (M := M.V), fun g ↦ by
-          ext x
-          change M.ρ (e.symm (e g)) x = M.ρ g x
-          rw [e.symm_apply_apply]⟩) n := by
-  exact map_congr (by ext; simp) rfl n
-
-lemma map_one {k G H : Type u} [CommRing k] [Group G] [Group H]
-    {A : Rep k H} {B : Rep k G} (φ : Rep.res (1 : G →* H) A ⟶ B) (n : ℕ) [NeZero n] :
-    map (1 : G →* H) φ n = 0 := by
-  let ψ1 : A ↓ (1 : PUnit →* H) ⟶ A ↓ 1 := 𝟙 _
-  let ψ2 : ((A ↓ (1 : PUnit →* H)) ↓ (1 : G →* PUnit)) ⟶ B := Rep.ofHom
-    { toLinearMap := φ.hom
-      isIntertwining' := fun _ ↦ by ext; simp [← Rep.hom_comm_apply φ]}
-  have h : (Rep.resFunctor 1).map ψ1 ≫ ψ2 = φ := by ext; simp [ψ1, ψ2]
-  have := @map_comp k _ G PUnit H _ _ _ A (A ↓ 1) B 1 1 ψ1 ψ2 n
-  simp only [MonoidHom.one_comp, res_obj_ρ, h] at this
-  rw [this]
-  convert comp_zero
-  refine CategoryTheory.Limits.IsZero.eq_zero_of_src ?_ _
-  cases n; · simp_all
-  exact isZero_groupCohomology_succ_of_subsingleton _ _
-
-lemma map_one' {k G H : Type u} [CommRing k] [Group G] [Group H] (f : G →* H) (hf : f = 1)
-    {A : Rep k H} {B : Rep k G} (φ : res f A ⟶ B) (n : ℕ) [NeZero n] :
-    map f φ n = 0 := by
-  subst hf
-  exact map_one φ n
-
-@[reassoc]
-lemma map_zero {k G H : Type u} [CommRing k] [Group G] [Group H]
-    {A : Rep k H} {B : Rep k G} (f : G →* H) (n : ℕ) :
-    map f (0 : res f A ⟶ B) n = 0 := by
-  dsimp [map]
-  unfold groupCohomology
-  -- unfolding map would unfold the type as well, and groupCohomology is a `def`
-  simp
+  have hT : (S.map (resFunctor φ.ker.subtype)).ShortExact := (shortExact_res _).2 hS
+  -- the invariants complex is isomorphic to the `H⁰` complex of the restriction to `K`
+  have isoInv : mapShortComplex₂ (S.map (resFunctor φ.ker.subtype)) 0 ≅
+      (S.map (resFunctor φ.ker.subtype)).map (invariantsFunctor R φ.ker) :=
+    ShortComplex.isoMk (H0Iso _) (H0Iso _) (H0Iso _)
+      (map_id_comp_H0Iso_hom _).symm (map_id_comp_H0Iso_hom _).symm
+  -- `H⁰(K,X₂) ⟶ H⁰(K,X₃)` is epi since the next term `H¹(K,X₁)` vanishes
+  have hEpiH0 : Epi (mapShortComplex₂ (S.map (resFunctor φ.ker.subtype)) 0).g :=
+    (mapShortComplex₃_exact hT (i := 0) rfl).epi_f (hS'.eq_zero_of_tgt _)
+  have hf : Function.Injective S.f.hom := (Rep.mono_iff_injective S.f).1 hS.mono_f
+  refine { exact := ?_, mono_f := ?_, epi_g := ?_ }
+  · rw [← ShortComplex.exact_map_iff_of_faithful _ (forget₂ (Rep R Q) (ModuleCat R))]
+    exact ShortComplex.exact_of_iso isoInv (mapShortComplex₂_exact hT 0)
+  · rw [Rep.mono_iff_injective]
+    intro a b hab
+    exact Subtype.ext (hf (congrArg Subtype.val hab))
+  · rw [Rep.epi_iff_surjective]
+    exact (ModuleCat.epi_iff_surjective _).1 (ShortComplex.epi_g_of_iso isoInv hEpiH0)
 
 abbrev inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) where
   X₁ := groupCohomology (M ↑ surj) (n + 1)
@@ -102,7 +74,7 @@ abbrev inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R)
       dsimp [infl, rest, ← map.eq_def, cochain_infl]
       simp only [Functor.hcomp_id, Functor.whiskerRight_app, Functor.comp_obj]
       change map _ _ _ ≫ map _ _ (n + 1 + 1) = 0
-      rw [← map_comp, map_one']
+      rw [← map_comp, groupCohomology.map_one']
       ext ⟨x, hx⟩
       simp [MonoidHom.mem_ker.1 hx]
 
@@ -127,17 +99,6 @@ def IsoNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
       (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
       (n + 1) (n + 1 + 1) rfl)
     (rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl)
-
-/-- An isomorphism of short complexes transports `Mono` of the first map. -/
-lemma _root_.CategoryTheory.ShortComplex.mono_f_of_iso {C : Type*} [Category C]
-    [Limits.HasZeroMorphisms C] {S₁ S₂ : ShortComplex C} (e : S₁ ≅ S₂) (h : Mono S₁.f) :
-    Mono S₂.f := by
-  obtain ⟨h₁, h₂, -⟩ := (ShortComplex.isIso_iff e.hom).1 inferInstance
-  have := h
-  have : Mono (inv e.hom.τ₁) := IsIso.mono_of_iso _
-  have : Mono e.hom.τ₂ := IsIso.mono_of_iso _
-  rw [← IsIso.inv_hom_id_assoc e.hom.τ₁ S₂.f, e.hom.comm₁₂]
-  exact mono_comp _ _
 
 theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
