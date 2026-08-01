@@ -62,7 +62,7 @@ def representation : Representation R G (carrier σ) where
   }
   map_one' := by
     ext : 1
-    · simp only [map_one, Module.End.one_apply, equalizer_as_kernel]
+    · simp only [_root_.map_one, Module.End.one_apply, equalizer_as_kernel]
       ext v : 1
       rw [LinearMap.comp_apply]
       dsimp only [Prod.fst_add, Prod.snd_add, Submodule.coe_add, Finsupp.coe_add, Pi.add_apply,
@@ -71,8 +71,8 @@ def representation : Representation R G (carrier σ) where
         smul_eq_mul, Prod.smul_mk, LinearMap.coe_inl, LinearMap.coe_mk, LinearMap.coe_comp,
         Function.comp_apply]
       ext : 1
-      · rfl
-      · dsimp only
+      · simp
+      · dsimp
         rw [zero_add]
         simp only [cocycles₂_map_one_fst]
         rw [← Finset.sum_smul, aug.sum_coeff_ι, zero_smul]
@@ -81,10 +81,9 @@ def representation : Representation R G (carrier σ) where
   map_mul' g₁ g₂ := by
     simp only [map_mul, Module.End.mul_apply]
     ext v
+    · simp
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inl,
-        Function.comp_apply, map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
-    · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inl,
-        Function.comp_apply, map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
+        Function.comp_apply, _root_.map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
       have (a b c : _) :=
         eq_sub_iff_add_eq.mpr ((groupCohomology.mem_cocycles₂_iff _).mp (cocycle σ).2 a b c)
       simp only [cocycles₂.val_eq_coe] at this
@@ -94,12 +93,8 @@ def representation : Representation R G (carrier σ) where
       refine Finset.sum_congr rfl fun x _ ↦ ?_
       rw [Rep.hom_comm_apply]
       simp [-equalizer_as_kernel]
-    · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
-        Function.comp_apply, map_zero, MonoidAlgebra.coeff_zero, Finsupp.coe_zero, Pi.zero_apply,
-        zero_smul, Finset.sum_const_zero, add_zero, Module.End.mul_apply]
-    · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inr,
-        Function.comp_apply, map_zero, MonoidAlgebra.coeff_zero, Finsupp.coe_zero, Pi.zero_apply,
-        zero_smul, Finset.sum_const_zero, add_zero, Module.End.mul_apply]
+    · simp
+    · simp
 
 def _root_.Rep.split : Rep R G := Rep.of (split.representation σ)
 
@@ -203,7 +198,7 @@ lemma τ_property (g h : G) :
   ext
   · simp only [equalizer_as_kernel, map_mul, Module.End.mul_apply, add_fst, sub_fst]
     apply (Rep.mono_iff_injective _).mp (inferInstance : (Mono (aug.ι R G)))
-    simp only [equalizer_as_kernel, map_add, map_sub, aug.ofSubOfOne_spec R G, map_zero]
+    simp only [equalizer_as_kernel, map_add, map_sub, aug.ofSubOfOne_spec R G, _root_.map_zero]
     rw [Rep.hom_comm_apply, Rep.aug.ofSubOfOne_spec]
     simp
   · classical simp only [equalizer_as_kernel, Rep.aug.ofSubOfOne_spec R G,
@@ -278,7 +273,7 @@ lemma TateTheorem_lemma_1 [FiniteClassFormation σ] : H2Map₂ ((resFunctor φ).
     trans (map φ (𝟙 (split σ ↓ φ)) 2).hom ((H2π (split σ)).hom
       ((mapCocycles₂ (.id G) (ι σ)).hom (cocycle σ)))
     · simp; rfl
-    · simp only [this, map_zero]
+    · simp only [this, _root_.map_zero]
   rw [H2π_eq_zero_iff]
   exact Rep.split.splits _
 
