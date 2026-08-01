@@ -81,7 +81,7 @@ lemma map_zero {k G H : Type u} [CommRing k] [Group G] [Group H]
   -- unfolding map would unfold the type as well, and groupCohomology is a `def`
   simp
 
-def inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) where
+abbrev inflationRestriction (n : ℕ) (M : Rep R G) : ShortComplex (ModuleCat R) where
   X₁ := groupCohomology (M ↑ surj) (n + 1)
   X₂ := groupCohomology M (n + 1)
   X₃ := groupCohomology (M ↓ φ.ker.subtype) (n + 1)
@@ -114,47 +114,34 @@ instance isIso_δ_ofhM (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype)
   <;> simp only [ShortComplex.map_X₂, upSES_X₂]
   <;> exact isZero_of_trivialCohomology
 
-abbrev mapToNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
-    inflationRestriction surj n (up.obj M) ⟶ inflationRestriction surj (n + 1) M where
-  τ₁ := δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
-    (n + 1) (n + 1 + 1) rfl
-  τ₂ := δ (shortExact_upSES M) (n + 1) (n + 1 + 1) rfl
-  τ₃ := δ (shortExact_upSES_res M φ.ker.subtype) (n + 1) (n + 1 + 1) rfl
-  comm₁₂ := infl_δ_naturality surj (shortExact_upSES M)
+def IsoNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
+    inflationRestriction surj n (up.obj M) ≅ inflationRestriction surj (n + 1) M :=
+  ShortComplex.isoMk
+    (@asIso _ _ _ _
+      (δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
+        (n + 1) (n + 1 + 1) rfl)
+      (isIso_δ_ofhM surj n M hM))
+    (asIso (δ (shortExact_upSES M) (n + 1) (n + 1 + 1) rfl))
+    (δUpResIso M φ.ker.subtype_injective (n + 1))
+    (infl_δ_naturality surj (shortExact_upSES M)
       (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
-      (n + 1) (n + 1 + 1) rfl
-  comm₂₃ := rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl
+      (n + 1) (n + 1 + 1) rfl)
+    (rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
-abbrev mapBack (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
-    inflationRestriction surj (n + 1) M ⟶ inflationRestriction surj n (up.obj M) where
-  τ₁ :=
-    have := isIso_δ_ofhM surj n M hM
-    inv <| δ (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
-      (n + 1) (n + 1 + 1) rfl
-  τ₂ := inv <| δ (shortExact_upSES M) (n + 1) (n + 1 + 1) rfl
-  τ₃ := (δUpResIso M φ.ker.subtype_injective (n + 1)).inv
-  comm₁₂ := by
-    simpa using! infl_δ_naturality surj (shortExact_upSES M)
-      (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M) hM)
-      (n + 1) (n + 1 + 1) rfl |>.symm
-  comm₂₃ := by simpa [δUpResIso] using!
-    rest_δ_naturality (shortExact_upSES M) φ.ker.subtype (n + 1) (n + 1 + 1) rfl |>.symm
+/-- An isomorphism of short complexes transports `Mono` of the first map. -/
+lemma _root_.CategoryTheory.ShortComplex.mono_f_of_iso {C : Type*} [Category C]
+    [Limits.HasZeroMorphisms C] {S₁ S₂ : ShortComplex C} (e : S₁ ≅ S₂) (h : Mono S₁.f) :
+    Mono S₂.f := by
+  obtain ⟨h₁, h₂, -⟩ := (ShortComplex.isIso_iff e.hom).1 inferInstance
+  have := h
+  have : Mono (inv e.hom.τ₁) := IsIso.mono_of_iso _
+  have : Mono e.hom.τ₂ := IsIso.mono_of_iso _
+  rw [← IsIso.inv_hom_id_assoc e.hom.τ₁ S₂.f, e.hom.comm₁₂]
+  exact mono_comp _ _
 
-set_option backward.isDefEq.respectTransparency false in
-abbrev IsoNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
-    inflationRestriction surj n (up.obj M) ≅ inflationRestriction surj (n + 1) M where
-  hom := mapToNext surj n M hM
-  inv := mapBack surj n M hM
-  hom_inv_id := by ext1 <;> simp [δUpResIso]
-  inv_hom_id := by ext1 <;> simp [δUpResIso]
-
-set_option backward.isDefEq.respectTransparency false in
 theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
     Mono (inflationRestriction surj n M).f := by
-  classical
   /-
   The proof is by induction on `n`. The `H¹` case (i.e. `n = 0`) is in Mathlib.
   For the inductive step, use the fact that the following square commutes by `infl_δ_naturality`.
@@ -167,36 +154,43 @@ theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
   -/
   induction n generalizing M with
   | zero =>
-  have h1 := groupCohomology.instMonoModuleCatFH1InfRes M φ.ker
-  change Mono (map _ _ _) at h1
-  have : Mono (resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
-        (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom := IsIso.mono_of_iso _
-  convert! @mono_comp _ _ _ _ _ _ this _ h1
-  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, Functor.hcomp_id,
-    Functor.whiskerRight_app, Functor.comp_obj, resEquiv_inverse]
-  erw [← map_comp]
-  congr
+    have h1 : Mono (H1InfRes M φ.ker).f := inferInstance
+    change Mono (map _ _ _) at h1
+    have h2 := @mono_comp _ _ _ _ _
+      (resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
+        (QuotientGroup.quotientKerEquivOfSurjective φ surj)).hom
+      (IsIso.mono_of_iso _) _ h1
+    rw [resEquiv_inv_hom, ← map_comp] at h2
+    exact h2
   | succ n ih =>
-  have commSq1 := infl_δ_naturality surj (shortExact_upSES M)
-    (quotientToInvariantsFunctor'_shortExact_ofShortExact surj (shortExact_upSES M)
-    (hM 0 (by omega))) (n + 1) (n + 1 + 1) rfl
-  simp only [inflationRestriction]
-  simp only [upSES] at commSq1
-  have := isIso_δ_ofhM surj n M (hM _ (by omega))
-  erw [← this.eq_inv_comp] at commSq1
-  simp only [inflationRestriction] at ih
-  rw [commSq1]
-  specialize @ih (up.obj M) <| fun i hi ↦ by
-    refine IsZero.of_iso _ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
-    exact hM (i + 1) (by omega)
-  exact mono_comp _ _
+    specialize @ih (up.obj M) <| fun i hi ↦ by
+      refine IsZero.of_iso ?_ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
+      exact hM (i + 1) (by omega)
+    exact ShortComplex.mono_f_of_iso (IsoNext surj n M (hM 0 (by omega))) ih
 
-set_option backward.isDefEq.respectTransparency false in
+/-- In degree zero, the inflation–restriction complex is isomorphic to Mathlib's `H1InfRes`. -/
+def isoH1InfRes (M : Rep R G) :
+    inflationRestriction surj 0 M ≅ H1InfRes M φ.ker :=
+  ShortComplex.isoMk
+    (resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
+      (QuotientGroup.quotientKerEquivOfSurjective φ surj))
+    (Iso.refl _)
+    (Iso.refl _)
+    (by
+      simp only [Iso.refl_hom]
+      change map _ _ 1 ≫ map _ _ 1 = map _ _ 1
+      rw [← map_comp]
+      exact map_congr (by ext g; simp [QuotientGroup.quotientKerEquivOfSurjective])
+        rfl 1)
+    (by
+      simp only [Iso.refl_hom]
+      rfl)
+
 theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :
     (inflationRestriction surj n M).Exact := by
   /-
-  The proof is by induction on `n`. The `H¹` case (i.e. `n = 0`) is a current PR.
+  The proof is by induction on `n`. The `H¹` case (i.e. `n = 0`) is in Mathlib.
   For the inductive step, use the fact that the following diagram commutes by
   `infl_δ_naturality` and `rest_δ_naturality`.
 
@@ -207,27 +201,12 @@ theorem inflation_restriction_exact (n : ℕ) {M : Rep R G}
   The vertical maps are the dimension-shifting isomorphisms.
   -/
   induction n generalizing M with
-  | zero =>
-  have : (map _ _ _).hom.range = _ := ShortComplex.Exact.moduleCat_range_eq_ker <|
-    H1InfRes_exact M φ.ker
-  rw [← LinearEquiv.range_comp (resEquiv_inv 1 Q (M.quotientToInvariants φ.ker)
-    (QuotientGroup.quotientKerEquivOfSurjective φ surj)).toLinearEquiv,
-    Iso.toLinearMap_toLinearEquiv, ← ModuleCat.hom_comp] at this
-  rw [ShortComplex.moduleCat_exact_iff_range_eq_ker]
-  convert! this using 3
-  clear * -
-  simp only [inflationRestriction, Nat.reduceAdd, infl, cochain_infl, Functor.hcomp_id,
-    Functor.whiskerRight_app, Functor.comp_obj, HomologicalComplex.homologyFunctor_map,
-    resEquiv_inverse, resEquiv_inv_hom, MulEquiv.toMonoidHom_eq_coe]
-  rw [← map_comp, map_congr]
-  · ext g
-    simp [QuotientGroup.quotientKerEquivOfSurjective]
-  · simp [res_quotientToInvariantsFunctor'_ι]
+  | zero => exact ShortComplex.exact_of_iso (isoH1InfRes surj M).symm (H1InfRes_exact M φ.ker)
   | succ n ih =>
-  exact ShortComplex.exact_of_iso (IsoNext surj _ _ (hM 0 (by omega))) <|
-    @ih (up.obj M) fun i hi ↦ by
-    refine IsZero.of_iso ?_ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
-    exact hM (i + 1) (by omega)
+    specialize @ih (up.obj M) <| fun i hi ↦ by
+      refine IsZero.of_iso ?_ (Rep.dimensionShift.δUpResIso _ φ.ker.subtype_injective _)
+      exact hM (i + 1) (by omega)
+    exact ShortComplex.exact_of_iso (IsoNext surj n M (hM 0 (by omega))) ih
 
 end groupCohomology
 
