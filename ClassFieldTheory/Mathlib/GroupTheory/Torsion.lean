@@ -31,5 +31,6 @@ lemma subsingleton_monoidHom_of_isTorsion_isMulTorsionFree (hM : IsMulTorsion M)
   allEq f g := by
     ext m
     obtain ⟨n, hn, hrm⟩ := isOfFinOrder_iff_pow_eq_one.1 <| hM m
-    refine pow_left_injective hn.ne' ?_
-    simp_all [← map_pow]
+    have (φ : M →* N) : φ m = 1 := (pow_eq_one_iff_left hn.ne').1 <| by
+      rw [← map_pow, hrm, map_one]
+    rw [this f, this g]

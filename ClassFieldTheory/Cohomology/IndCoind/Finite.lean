@@ -200,7 +200,7 @@ lemma ind₁'_apply₂ (f : G →₀ V) (g x : G) : ρ.ind₁' g f x = ρ g (f (
   dsimp only [ind₁'_apply, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
     lmapDomain_apply]
   have : x = x * g * g⁻¹ := eq_mul_inv_of_mul_eq rfl
-  rw [this, mapDomain_apply (mul_left_injective g⁻¹)]
+  rw [this, mapDomain_apply_of_injective (mul_left_injective g⁻¹)]
   simp
 
 abbrev ind₁'_map (f : V →ₗ[R] W) : (G →₀ V) →ₗ[R] (G →₀ W) := mapRange.linearMap f
@@ -287,7 +287,7 @@ between `ind₁' ρ` and `ind₁ R G V`.
     · rename_i f g h1 h2
       rw [map_add, map_add, h1, h2]
     · rename_i g v
-      simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot, LinearEquiv.ofLinear_toLinearMap,
+      simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot, LinearEquiv.toLinearMap_ofLinearMap,
         ind₁'_lmap_apply, LinearMap.coe_comp, Coinvariants.mk, Function.comp_apply,
         TensorProduct.mk_apply, map_zero, TensorProduct.tmul_zero, sum_single_index]
       change (TensorProduct.lift (ρ.ind₁'_invlmap_aux ∘ₗ
@@ -297,14 +297,13 @@ between `ind₁' ρ` and `ind₁ R G V`.
   right_inv f := by
     rw [LinearMap.toFun_eq_coe]
     induction f using Submodule.Quotient.induction_on with | H f
-    induction f using TensorProduct.induction_on with
-    | zero => simp
+    induction f using TensorProduct.inductionOn with
     | add f g h1 h2 =>
       rw [← Submodule.mkQ_apply, map_add, map_add, map_add,
         Submodule.mkQ_apply, Submodule.mkQ_apply, h1, h2]
     | tmul x y =>
     simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
-      LinearEquiv.ofLinear_toLinearMap, LinearMap.coe_comp, Function.comp_apply]
+      LinearEquiv.toLinearMap_ofLinearMap, LinearMap.coe_comp, Function.comp_apply]
     change ρ.ind₁'_lmap (TensorProduct.lift (ρ.ind₁'_invlmap_aux ∘ₗ
         (MonoidAlgebra.coeffLinearEquiv R).toLinearMap)
       (LinearMap.id (R := R) (x ⊗ₜ[R] y))) = Submodule.Quotient.mk (x ⊗ₜ[R] y)
@@ -356,7 +355,7 @@ lemma ind₁'_lequiv_coind₁'_comm [Finite G] (g : G) :
   by_cases h : x * g⁻¹ = y
   · rw [h, single_eq_same, ← h, mul_assoc, inv_mul_cancel, mul_one, single_eq_same]
   · rw [single_eq_of_ne, single_eq_of_ne, map_zero]
-    · contrapose! h
+    · contrapose h
       rw [← h, mul_inv_cancel_right]
     · exact Ne.symm h
 
@@ -441,7 +440,7 @@ def coind₁_quotientToInvariants_iso {φ : G →* Q}
   ext1 x
   simp only [trivialFunctor_obj_V, quotientToInvariantsFunctor,
     invariantsFunctor_map_hom, Functor.comp_obj, coindFunctor_obj,
-    MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply,
+    MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_ofClass, Function.comp_apply,
     LinearMap.coe_comp, LinearEquiv.coe_coe, LinearEquiv.trans_apply, coind_apply]
   ext q'
   obtain ⟨g, rfl⟩ := surj q
@@ -534,7 +533,8 @@ abbrev coind₁AsPi : Rep R G := .of <| Representation.coind₁AsPi R G A
 
 /-- `ind₁AsFinsupp` is isomorphic to `ind₁` pointwise. -/
 def ind₁AsFinsuppIso (A : ModuleCat.{u} R) : ind₁AsFinsupp G A ≅ (ind₁ G).obj A :=
-  mkIso (.mk (.refl R (G →₀ A)) <| fun g ↦ by simp [Representation.ind₁AsFinsupp]) ≪≫
+  mkIso (.mk (.refl R (G →₀ A)) <| fun g ↦ by
+    simp [Representation.ind₁AsFinsupp, Representation.isTrivial_def]) ≪≫
   ind₁'_obj_iso_ind₁ (.trivial _ _ _)
 
 /-- `coind₁AsPi` is isomorphic to `coind₁` pointwise. -/

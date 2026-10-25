@@ -163,7 +163,7 @@ lemma TrivialTateCohomology.of_cases [Finite G] {M : Rep R G}
         letI : Fintype H := Fintype.ofFinite _
         (TateCohomology.isoGroupCohomology (n + 1)).app (M ↓ H.subtype)
     | .negSucc (n + 1) =>
-      letI := TrivialHomology.res M (H := H) H.subtype_injective
+      have := TrivialHomology.res M (H := H) H.subtype_injective
       exact isZero_of_trivialHomology.of_iso <|
         letI : Fintype H := Fintype.ofFinite _
         (TateCohomology.isoGroupHomology _ (n + 1) rfl).app (M ↓ H.subtype)
@@ -183,7 +183,7 @@ instance [Subsingleton G] {M : Rep R G} : M.TrivialHomology where
 instance [Finite G] [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := by
   refine .of_cases ?_
   intro H
-  letI : Fintype H := Fintype.ofFinite _
+  let : Fintype H := Fintype.ofFinite _
   have : (M ↓ H.subtype).ρ.IsTrivial := by
     constructor; intro g; rw [Subsingleton.eq_one g, map_one]; rfl
   constructor
@@ -197,11 +197,11 @@ instance [Finite G] [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := 
 noncomputable def _root_.TrivialTateCohomology.zeroIso_ofTrivial
     [Fintype G] (M : Rep R G) [M.IsTrivial] :
     (tateCohomology M 0) ≅ ModuleCat.of R (M ⧸ LinearMap.range (Nat.card G : M →ₗ[R] M)) :=
-  TateCohomology.zeroIso M|>.trans <| LinearEquiv.toModuleIso <|
-  Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ (by ext; simp) ≪≫ₗ Submodule.topEquiv) <| by
-    rw [Representation.norm_ofIsTrivial]
-    ext m
-    simp [Submodule.submoduleOf]
+  TateCohomology.zeroIso M|>.trans <| LinearEquiv.toModuleIso <| Submodule.Quotient.equiv _ _
+    (LinearEquiv.ofEq _ _ (Representation.invariants_eq_top M.ρ) ≪≫ₗ Submodule.topEquiv) <| by
+      rw [Representation.norm_ofIsTrivial]
+      ext m
+      simp [Submodule.submoduleOf]
 
 theorem _root_.TateCohomology.isIso_δ [Fintype G] {S : ShortComplex (Rep R G)}
     (hS : S.ShortExact) (hS2 : TrivialTateCohomology S.X₂) (n : ℤ) :

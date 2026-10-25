@@ -101,11 +101,6 @@ abbrev toRepTopIso (A : Rep.{w} k G) :
     (⊤ : Subrepresentation A.ρ).toRep ≅ A :=
   Rep.mkIso <| Subrepresentation.topEquiv A.ρ
 
-/-- `A ⟶ A ⧸ w`. -/
-abbrev quotient (w : Subrepresentation ρ) :
-    Representation k G (W ⧸ w.toSubmodule) :=
-  .quotient ρ w.1 w.2
-
 @[simps!, implicit_reducible]
 def mkQ (w : Subrepresentation ρ) : ρ.IntertwiningMap w.quotient where
   __ := Submodule.mkQ _

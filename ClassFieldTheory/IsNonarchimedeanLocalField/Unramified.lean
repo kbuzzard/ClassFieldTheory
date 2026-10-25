@@ -132,7 +132,7 @@ instance [NeZero n] :
   .of_splits (splits K n) <| card_residue_pow_sub_one_in_field_ne_zero K _ NeZero.out
 
 example [NeZero n] : ∃ ζ : UnramifiedExtension K n, IsPrimitiveRoot ζ (Nat.card 𝓀[K] ^ n - 1) :=
-  HasEnoughRootsOfUnity.exists_primitiveRoot _ _
+  HasEnoughRootsOfUnity.exists_isPrimitiveRoot _ _
 
 theorem UnramifiedExtension.top_eq_adjoin_roots :
     (⊤ : Subalgebra K (UnramifiedExtension K n)) = Algebra.adjoin K
@@ -165,7 +165,7 @@ private theorem finrank_unramifiedExtension_and_residue (hn : n ≠ 0) :
     Module.finrank K (UnramifiedExtension K n) = n ∧
     n ≤ Module.finrank 𝓀[K] 𝓀[UnramifiedExtension K n] := by
   have := NeZero.mk hn
-  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot
     (UnramifiedExtension K n) (Nat.card 𝓀[K] ^ n - 1)
   have : 1 < Nat.card 𝓀[K] ^ n := Nat.one_lt_pow hn Finite.one_lt_card
   have h₁ : IsIntegral 𝒪[K] ζ := .of_pow (n := Nat.card 𝓀[K] ^ n - 1) (by grind)
@@ -220,7 +220,7 @@ variable {n} in
 variable {n} in
 @[simp] theorem f_unramifiedExtension (hn : n ≠ 0) :
     f K (UnramifiedExtension K n) = n := by
-  refine le_antisymm ?_ (by simpa [hn, f] using! (finrank_unramifiedExtension_and_residue K hn).2)
+  refine le_antisymm ?_ ((finrank_unramifiedExtension_and_residue K hn).2.trans_eq (f_spec K _))
   conv_rhs => rw [← finrank_unramifiedExtension K hn]
   exact f_le_n _ _
 
@@ -232,7 +232,7 @@ instance : IsUnramified K (UnramifiedExtension K n) := .mk <| by
   simp [hn]
 
 instance : HasEnoughRootsOfUnity K (Nat.card 𝓀[K] - 1) := by
-  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot 𝓀[K] (Nat.card 𝓀[K] - 1)
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot 𝓀[K] (Nat.card 𝓀[K] - 1)
   have := Finite.one_lt_card (α := 𝓀[K])
   have : NeZero (Nat.card 𝓀[K] - 1) := .mk <| by grind
   exact ⟨⟨_, hζ.map_of_injective teichmuller_injective⟩, inferInstance⟩
@@ -247,7 +247,7 @@ theorem nonempty_unramifiedExtension_alghom_of_dvd_f (n : ℕ) (hn : n ∣ f K L
   have hf0 := NeZero.mk (f_pos K L).ne'
   have hn0 := NeZero.mk <| ne_zero_of_dvd_ne_zero hf0.out hn
   have h₁ := Nat.pow_sub_one_dvd_pow_sub_one (Nat.card 𝓀[K]) hn
-  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot
+  obtain ⟨ζ, hζ⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot
     (UnramifiedExtension K n) (Nat.card 𝓀[K] ^ n - 1)
   have h₂ := pos_of_ne_zero <| card_pow_sub_one_in_nat_ne_zero 𝓀[K] hn0.out
   have h₃ := pos_of_ne_zero <| card_pow_sub_one_in_nat_ne_zero 𝓀[K] hf0.out
@@ -259,7 +259,7 @@ theorem nonempty_unramifiedExtension_alghom_of_dvd_f (n : ℕ) (hn : n ∣ f K L
   · rw [f_spec'] at h₁ h₃
     have := NeZero.mk h₃.ne'
     have := HasEnoughRootsOfUnity.of_dvd L h₁
-    obtain ⟨ζ', hζ'⟩ := HasEnoughRootsOfUnity.exists_primitiveRoot L (Nat.card 𝓀[K] ^ n - 1)
+    obtain ⟨ζ', hζ'⟩ := HasEnoughRootsOfUnity.exists_isPrimitiveRoot L (Nat.card 𝓀[K] ^ n - 1)
     simpa [Splits] using X_pow_sub_one_splits hζ'
   · conv_rhs => exact show _ = map (algebraMap K L) (X ^ (Nat.card 𝓀[K] ^ n - 1) - C 1) by simp
     rw [map_dvd_map', minpoly.dvd_iff]

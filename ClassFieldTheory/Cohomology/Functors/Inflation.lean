@@ -144,6 +144,7 @@ lemma infl_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
   }
   have ses₁ : C.ShortExact := map_cochainsFunctor_shortExact hS
   have ses₂ : C'.ShortExact := map_cochainsFunctor_shortExact hS'
+  simp only [infl, NatTrans.hcomp_id_app, homologyFunctor_map]
   exact HomologySequence.δ_naturality φ ses₂ ses₁ i j hij
 
 end groupCohomology

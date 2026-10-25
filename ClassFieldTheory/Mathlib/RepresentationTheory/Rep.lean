@@ -37,7 +37,7 @@ end Rep
 
 lemma _root_.Representation.norm_ofIsTrivial (R M G : Type*) [Group G] [Semiring R] [AddCommGroup M]
     [Module R M] [Fintype G] (ρ : Representation R G M) [ρ.IsTrivial] : ρ.norm = Nat.card G := by
-  ext; simp [Representation.norm]
+  ext; simp [Representation.norm, Representation.isTrivial_apply]
 
 theorem _root_.range_eq_span {R : Type*} [CommSemiring R] (n : ℕ) :
     LinearMap.range (n : R →ₗ[R] R) = Ideal.span {(n : R)} := by

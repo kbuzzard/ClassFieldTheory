@@ -65,10 +65,12 @@ theorem exists_valuation_algebraMap_eq_valuation_pow
     wlog hij' : i ≤ j generalizing i j
     · exact this j hj i hi (Ne.symm hij) hj' hi' e.symm (by omega)
     obtain ⟨k, rfl⟩ := exists_add_of_le hij'
-    simp [Algebra.smul_def] at e
+    simp only [Algebra.smul_def, map_mul, map_pow] at e
     apply H ((minpoly K y).coeff i / (minpoly K y).coeff (i + k)) k (by simpa using hij)
-    apply mul_left_injective₀ (b := (valuation L) y ^ i) (by simp [hy])
-    simp [*, -mul_eq_mul_right_iff, div_mul_eq_mul_div, pow_add, mul_comm]
+    rw [map_div₀, map_div₀, div_eq_iff (by simpa using hj')]
+    refine mul_right_cancel₀ (show valuation L y ^ i ≠ 0 by simp [hy]) ?_
+    rw [e, pow_add]
+    ac_rfl
   · simp only [map_zero, ← bot_eq_zero, Finset.sup_eq_bot_iff] at this
     simp only [Finset.mem_range, Function.comp_apply, bot_eq_zero, map_eq_zero, smul_eq_zero,
       pow_eq_zero_iff', hy, ne_eq, false_and, or_false, Nat.lt_succ_iff] at this
@@ -103,7 +105,7 @@ variable (K L : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuat
   obtain ⟨a, rfl⟩ := unitsMap_valuation_surjective b
   obtain ⟨a', ha'⟩ := exists_valuation_algebraMap_le_valuation K a
   refine ⟨a'.map (valuation K), fun x hx ↦ ?_⟩
-  simp only [Units.coe_map, MonoidHom.coe_coe] at hx ⊢
+  simp only [Units.coe_map, MonoidHom.coe_ofClass] at hx ⊢
   exact lt_of_lt_of_le (ValuativeExtension.algebraMap_lt.mpr hx) ha'
 
 instance : ContinuousSMul K L :=
