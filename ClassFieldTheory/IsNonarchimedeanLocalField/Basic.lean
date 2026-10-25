@@ -18,7 +18,9 @@ public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.NumberTheory.LocalField.Basic
 public import Mathlib.NumberTheory.Padics.ProperSpace
 public import Mathlib.NumberTheory.Padics.ValuativeRel
-public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.NumberTheory.RamificationInertia.Inertia
+public import Mathlib.NumberTheory.RamificationInertia.Ramification
+public import Mathlib.RingTheory.RamificationInertia.Basic
 
 /-!
 # Non-Archimedean Local Fields
@@ -475,7 +477,7 @@ theorem e_spec' :
 /-- The `f[L/K]` of an extension of local fields, which is `[𝓀[L] : 𝓀[K]]`. It is also called the
 inertia degree. -/
 noncomputable def f : ℕ :=
-  Ideal.inertiaDeg' 𝓂[K] 𝓂[L]
+  Ideal.inertiaDeg 𝓂[L] 𝒪[K]
 
 instance : 𝓂[L].LiesOver 𝓂[K] := by
   obtain ⟨ϖK, hϖK⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
@@ -499,11 +501,8 @@ instance : FiniteDimensional 𝓀[K] 𝓀[L] := inferInstance
 instance : Algebra.IsSeparable 𝓀[K] 𝓀[L] := Algebra.IsAlgebraic.isSeparable_of_perfectField
 
 -- by Hanliu Jiang
-theorem f_spec : Module.finrank 𝓀[K] 𝓀[L] = f K L := by
-  simp only [f, Ideal.inertiaDeg', IsLocalRing.eq_maximalIdeal
-    (Ideal.isMaximal_under_of_isIntegral_of_isMaximal (R := 𝒪[K]) 𝓂[L]), ↓reduceDIte,
-    IsLocalRing.ResidueField]
-  rfl
+theorem f_spec : Module.finrank 𝓀[K] 𝓀[L] = f K L :=
+  (Ideal.inertiaDeg_eq_of_isMaximal 𝓂[K] 𝓂[L]).symm
 
 -- by Hanliu Jiang
 theorem f_spec' : Nat.card 𝓀[K] ^ f K L = Nat.card 𝓀[L] := by
@@ -518,7 +517,7 @@ theorem e_pos : 0 < e K L := by
   rw [← Ideal.map_le_iff_le_comap, e_spec', h, pow_zero, Ideal.one_eq_top, top_le_iff] at this
   exact absurd this Ideal.IsPrime.ne_top'
 
-theorem f_pos : 0 < f K L := Ideal.inertiaDeg'_pos 𝓂[K] 𝓂[L]
+theorem f_pos : 0 < f K L := Ideal.inertiaDeg_pos 𝓂[L] 𝒪[K]
 
 lemma factors_map_maximalIdeal :
     UniqueFactorizationMonoid.factors (Ideal.map (algebraMap 𝒪[K] 𝒪[L]) 𝓂[K]) =
@@ -532,10 +531,14 @@ lemma toFinset_factors_map_maximalIdeal [DecidableEq (Ideal 𝒪[L])] :
 
 -- by Chenyi Yang
 theorem e_mul_f_eq_n : e K L * f K L = Module.finrank K L := by
-  classical
-  rw [← Ideal.sum_ramification_inertia (K := K) (L := L) (p := 𝓂[K]) 𝒪[L]
-          IsDiscreteValuationRing.not_a_field',
-      IsDedekindDomain.primesOverFinset, toFinset_factors_map_maximalIdeal, Finset.sum_singleton]
+  have : Subsingleton (𝓂[K].primesOver 𝒪[L]) := Set.Subsingleton.coe_sort <|
+    IsLocalRing.primesOver_eq (A := 𝒪[L]) (p := 𝓂[K]) IsDiscreteValuationRing.not_a_field' ▸
+      Set.subsingleton_singleton
+  let : Fintype (𝓂[K].primesOver 𝒪[L]) := Fintype.ofFinite _
+  rw [IsFractionRing.finrank_eq 𝒪[K] K 𝒪[L] L,
+    ← Ideal.sum_ramification_inertia_eq_finrank 𝓂[K] 𝒪[L],
+    Fintype.sum_subsingleton _ (Ideal.primesOver.mk 𝓂[K] 𝓂[L]), e,
+    Ideal.ramificationIdx'_eq_ramificationIdx 𝓂[K] 𝓂[L] IsDiscreteValuationRing.not_a_field']
   rfl
 
 theorem e_le_n : e K L ≤ Module.finrank K L :=

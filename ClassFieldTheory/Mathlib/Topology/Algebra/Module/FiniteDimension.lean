@@ -14,5 +14,5 @@ theorem locallyCompactSpace_of_complete_of_finiteDimensional (K L : Type*)
     [Module K L] [ContinuousSMul K L] [FiniteDimensional K L] :
     LocallyCompactSpace L := by
   obtain ⟨s, ⟨b⟩⟩ := Module.Basis.exists_basis K L
-  haveI := FiniteDimensional.fintypeBasisIndex b
+  have := FiniteDimensional.fintypeBasisIndex b
   exact b.equivFun.toContinuousLinearEquiv.toHomeomorph.isOpenEmbedding.locallyCompactSpace

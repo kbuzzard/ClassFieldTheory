@@ -301,7 +301,7 @@ theorem map_injective_of_sqZero : (map (Ideal.Quotient.mk I) (f := f)).Injective
         by simp [hab, h₁, mul_assoc, eq]
     _ = q * (b * (q - s) - a * (p - r)) := by ring
   -- which means `q ∣ q - s`, but `q` is monic and `s` is monic and `q` and `s` have same degree
-  have h₃ : (q - s).degree < q.degree := degree_sub_lt h₂ mq.ne_zero (by simp [*])
+  have h₃ : (q - s).degree < q.degree := degree_sub_lt_left h₂ mq.ne_zero (by simp [*])
   -- therefore `q - s = 0`
   have h₄ : q = s := sub_eq_zero.mp <| by_contra (mq.not_dvd_of_degree_lt · h₃ ⟨_, this⟩)
   subst h₄
@@ -362,7 +362,7 @@ theorem map_surjective_of_sqZero (mf : f.Monic) :
   have hdpq : p.degree + q.degree = n := by
     rw [← mq.degree_mul]; exact (degree_eq_iff_natDegree_eq (mp.mul mq |>.ne_zero)).mpr hpqn'
   have h₂ : (f - p * q).degree < f.degree :=
-    degree_sub_lt (hdf ▸ .symm ((degree_eq_iff_natDegree_eq (mp.mul mq |>.ne_zero)).mpr hpqn'))
+    degree_sub_lt_left (hdf ▸ .symm ((degree_eq_iff_natDegree_eq (mp.mul mq |>.ne_zero)).mpr hpqn'))
       (mf.ne_zero) (by rw [mf, mp.mul mq])
   have h₃ : (p * s + q * u).degree < p.degree + q.degree := by
     refine degree_add_lt ?_ ?_
@@ -501,8 +501,8 @@ theorem _root_.Polynomial.coeff_sum_C_mul_X_pow {R : Type*} [Semiring R] {n : �
     {i : ℕ} : (∑ i ∈ Finset.range n, C (f i) * X ^ i).coeff i = if i < n then f i else 0 := by
   simp_rw [← lcoeff_apply, map_sum, lcoeff_apply, coeff_C_mul_X_pow]
   split_ifs with h
-  · rw [Finset.sum_eq_single_of_mem i (by simpa) (by grind), if_pos rfl]
-  · exact Finset.sum_eq_zero (fun x hx ↦ if_neg (by grind))
+  · rw [Finset.sum_eq_single_of_mem i (by simpa) (by grind), ite_eq_left rfl]
+  · exact Finset.sum_eq_zero (fun x hx ↦ ite_eq_right (by grind))
 
 theorem _root_.Polynomial.map_limit {f : ∀ n, (R ⧸ I ^ n)[X]} {hf} {n : ℕ}
     (mf : ∀ n, (f n).Monic) : (limit f hf).map (Ideal.Quotient.mk (I ^ n)) = f n := by
@@ -538,7 +538,7 @@ theorem _root_.Polynomial.natDegree_sum_lt {R : Type*} [Semiring R] {n : ℕ} {f
 theorem _root_.Polynomial.coeff_limit_natDegree {f : ∀ n, (R ⧸ I ^ n)[X]} {hf}
     (mf : ∀ n, (f n).Monic) : (limit f hf).coeff (f 1).natDegree = 1 := by
   refine (IsHausdorff.eq_iff_eq (I := I)).mpr fun n ↦ ?_
-  rw [limit, coeff_sum_C_mul_X_pow, if_pos (by grind), mk_ofLinearEquiv_symm_mkRing]
+  rw [limit, coeff_sum_C_mul_X_pow, ite_eq_left (by grind), mk_ofLinearEquiv_symm_mkRing]
   obtain hi | hi := eq_or_ne I ⊤
   · subst hi
     have := IsAdicComplete.subsingleton R ‹_›
@@ -620,14 +620,14 @@ open MonicFactors
 theorem two_le_card_monicFactors [Semiring R] {f : R[X]} (mf : f.Monic) (hf1 : f ≠ 1)
     [Finite f.MonicFactors] : 2 ≤ Nat.card f.MonicFactors :=
   Nat.card_fin 2 ▸ Nat.card_le_card_of_injective ![fstOne mf, sndOne mf] <| by
-    rwa [injective_pair_iff_ne, ne_eq, fstOne_eq_sndOne_iff]
+    rwa [Matrix.injective_pair_iff_ne, ne_eq, fstOne_eq_sndOne_iff]
 
 /-- If `f ≠ 1` then we have at least `f = f * 1` and `f = 1 * f`. -/
 theorem two_le_card_monicCoprimeFactors [CommSemiring R] {f : R[X]} (mf : f.Monic) (hf1 : f ≠ 1)
     [Finite f.MonicCoprimeFactors] : 2 ≤ Nat.card f.MonicCoprimeFactors :=
   Nat.card_fin 2 ▸ Nat.card_le_card_of_injective
     ![MonicCoprimeFactors.fstOne mf, .sndOne mf] <| by
-    rwa [injective_pair_iff_ne, ne_eq, MonicCoprimeFactors.fstOne_eq_sndOne_iff]
+    rwa [Matrix.injective_pair_iff_ne, ne_eq, MonicCoprimeFactors.fstOne_eq_sndOne_iff]
 
 /-- If a monic polynomial `f` is irreducible, then only monic factorisations are `1 * f` and
 `f * 1`. -/
@@ -702,7 +702,7 @@ theorem irreducible_iff_card_monicFactors [CommSemiring R] [NoZeroDivisors R]
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
   · rw [← Nat.card_fin 2, eq_comm]
     refine Nat.card_eq_of_bijective ![fstOne mf, sndOne mf] ⟨?_, fun fac ↦ ?_⟩
-    · rw [injective_pair_iff_ne, ne_eq, fstOne_eq_sndOne_iff]
+    · rw [Matrix.injective_pair_iff_ne, ne_eq, fstOne_eq_sndOne_iff]
       exact hf.ne_one
     · obtain rfl | rfl := forall_monicFactors_of_irreducible mf hf fac
       · exact ⟨0, rfl⟩
@@ -713,7 +713,7 @@ theorem irreducible_iff_card_monicFactors [CommSemiring R] [NoZeroDivisors R]
     refine irreducible_of_forall_monicFactors mf hf1 fun fac ↦ ?_
     have := (Nat.card_pos_iff.mp (hf ▸ show 0 < 2 by decide)).2
     obtain ⟨a, rfl⟩ := (Function.Injective.bijective_of_nat_card_le (f := ![fstOne mf, sndOne mf])
-      (by rwa [injective_pair_iff_ne, ne_eq, fstOne_eq_sndOne_iff])
+      (by rwa [Matrix.injective_pair_iff_ne, ne_eq, fstOne_eq_sndOne_iff])
       (by rw [Nat.card_fin]; exact hf.le)).2 fac
     obtain rfl | rfl := or_iff_not_imp_left.mpr a.eq_one_of_ne_zero
     · exact .inl rfl
@@ -727,7 +727,7 @@ theorem irreducible_iff_card_monicCoprimeFactors [CommSemiring R] [NoZeroDivisor
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
   · rw [← Nat.card_fin 2, eq_comm]
     refine Nat.card_eq_of_bijective ![.fstOne mf, .sndOne mf] ⟨?_, fun fac ↦ ?_⟩
-    · rw [injective_pair_iff_ne, ne_eq, MonicCoprimeFactors.fstOne_eq_sndOne_iff]
+    · rw [Matrix.injective_pair_iff_ne, ne_eq, MonicCoprimeFactors.fstOne_eq_sndOne_iff]
       exact hf.ne_one
     · obtain hfac | hfac := forall_monicFactors_of_irreducible mf hf fac.toMonicFactors
       · exact ⟨0, MonicCoprimeFactors.toMonicFactors_injective hfac.symm⟩
@@ -739,7 +739,7 @@ theorem irreducible_iff_card_monicCoprimeFactors [CommSemiring R] [NoZeroDivisor
     have := (Nat.card_pos_iff.mp (hf ▸ show 0 < 2 by decide)).2
     obtain ⟨a, ha⟩ := (Function.Injective.bijective_of_nat_card_le
       (f := ![MonicCoprimeFactors.fstOne mf, .sndOne mf])
-      (by rwa [injective_pair_iff_ne, ne_eq, MonicCoprimeFactors.fstOne_eq_sndOne_iff])
+      (by rwa [Matrix.injective_pair_iff_ne, ne_eq, MonicCoprimeFactors.fstOne_eq_sndOne_iff])
       (by rw [Nat.card_fin]; exact hf.le)).2
       { fac with coprime_fst_snd := Polynomial.Separable.isCoprime <| by rwa [fac.5] }
     obtain rfl | rfl := or_iff_not_imp_left.mpr a.eq_one_of_ne_zero
