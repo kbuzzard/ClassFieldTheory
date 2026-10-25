@@ -22,10 +22,10 @@ variable {K L : Type*}
 attribute [local instance] inhabitedIoo
 
 instance (E : IntermediateField K L) : IsNonarchimedeanLocalField E := by
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  letI := rankOneOfIoo K default
-  letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  have := isUniformAddGroup_of_addCommGroup (G := K)
+  let := rankOneOfIoo K default
+  let : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
   let t₁ : TopologicalSpace E := inferInstance
   -- the topology structure on `E` given by the subspace topology (`t₁`) is a module topology
   have ht₁ : IsModuleTopology K E (τA := t₁) := isModuleTopologyOfFiniteDimensional

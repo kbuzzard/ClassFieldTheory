@@ -52,8 +52,8 @@ variable (R) in
 def resEquiv (f : H ≃* G) : Rep.{w} R G ≌ Rep.{w} R H where
   functor := resFunctor f.toMonoidHom
   inverse := resFunctor f.symm.toMonoidHom
-  unitIso := resCongr f.coe_monoidHom_comp_coe_monoidHom_symm.symm ≪≫ resComp _ _
-  counitIso := (resComp _ _).symm ≪≫ resCongr f.coe_monoidHom_symm_comp_coe_monoidHom
+  unitIso := resCongr f.toMonoidHom_comp_toMonoidHom_symm.symm ≪≫ resComp _ _
+  counitIso := (resComp _ _).symm ≪≫ resCongr f.toMonoidHom_symm_comp_toMonoidHom
 
 @[simp] lemma resEquiv_functor (f : H ≃* G) :
     (resEquiv R f).functor = resFunctor f := rfl
@@ -100,7 +100,8 @@ end monoid
 section
 
 @[simp] lemma norm_hom_res [Group G] [Group H] [Fintype G] [Fintype H] (M : Rep.{w} R G)
-    (e : H ≃* G) : (res e.toMonoidHom M).norm.hom.toLinearMap = M.norm.hom.toLinearMap := by
+    (e : H ≃* G) :
+    (res e.toMonoidHom M).norm.asHom.hom.toLinearMap = M.norm.asHom.hom.toLinearMap := by
   ext
   simp [res_obj_V, norm, Representation.norm, res_obj_ρ, ← e.toEquiv.sum_comp]
 

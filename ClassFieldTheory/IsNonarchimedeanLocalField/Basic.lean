@@ -86,7 +86,7 @@ lemma associated_iff_of_irreducible (x y : 𝒪[K]) (hx : Irreducible x) :
   ⟨fun hyx ↦ hyx.symm.irreducible hx,
   fun hy ↦ IsDiscreteValuationRing.associated_of_irreducible _ hy hx⟩
 
-def compactOpenOK : TopologicalSpace.CompactOpens K where
+noncomputable def compactOpenOK : TopologicalSpace.CompactOpens K where
   carrier := 𝒪[K]
   isCompact' := isCompact_iff_compactSpace.mpr <| inferInstanceAs (CompactSpace 𝒪[K])
   isOpen' := Valuation.isOpen_integer
@@ -105,12 +105,14 @@ open NNReal WithZero
 
 /-- A chosen valuation to `ℝ≥0` that sends any uniformiser to the given `ε`. -/
 noncomputable def valuationOfIoo (ε : Set.Ioo (0 : ℝ) 1) : Valuation K ℝ≥0 := by
-  refine (valuation K).restrict.map ((WithZeroMulInt.toNNReal (e := .mk (1/ε) ?_) ?_).comp
-      (valueGroupWithZeroIsoInt K|>.toMonoidWithZeroHom.comp
-        MonoidWithZeroHom.ValueGroup₀.embedding)) ?_
+  refine (valuation K).restrict.map
+    { toMonoidWithZeroHom := (WithZeroMulInt.toNNReal (e := .mk (1/ε) ?_) ?_).comp
+        (valueGroupWithZeroIsoInt K|>.toMonoidWithZeroHom.comp
+          MonoidWithZeroHom.ValueGroup₀.embedding)
+      monotone' := ?_ }
   · exact one_div_nonneg.mpr ε.2.1.le
   · exact coe_ne_zero.mp <| one_div_ne_zero ε.2.1.ne'
-  · simp only [MonoidWithZeroHom.coe_comp]
+  · simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe, MonoidWithZeroHom.coe_comp]
     refine (WithZeroMulInt.toNNReal_strictMono ?_).monotone.comp ?_
     · exact NNReal.coe_lt_coe.mp <| one_lt_one_div ε.2.1 ε.2.2
     · intro x y h
@@ -226,9 +228,9 @@ instance _root_.Valued.toNormedField.compatible (K : Type*) [Field K] [Valuative
 instance (ε) : (valuationOfIoo K ε).Compatible where
   vle_iff_le x t := by
     simp only [Valuation.Compatible.vle_iff_le (v := valuation K), valuationOfIoo, one_div,
-      OrderMonoidIso.toMulEquiv_eq_coe, Valuation.map_apply, MonoidWithZeroHom.coe_comp,
-      Function.comp_apply, Valuation.embedding_restrict, MulEquiv.toMonoidWithZeroHom_apply,
-      OrderMonoidIso.coe_mulEquiv]
+      OrderMonoidIso.toMulEquiv_eq_coe, Valuation.map_apply, OrderMonoidWithZeroHom.coe_mk,
+      MonoidWithZeroHom.coe_comp, Function.comp_apply, Valuation.embedding_restrict,
+      MulEquiv.toMonoidWithZeroHom_apply, OrderMonoidIso.coe_mulEquiv]
     refine symm <| StrictMono.le_iff_le
         (f := (WithZeroMulInt.toNNReal _) ∘ ((valueGroupWithZeroIsoInt K))) ?_
     convert (WithZeroMulInt.toNNReal_strictMono (e := NNReal.mk (1/ε) <|
@@ -245,28 +247,28 @@ open NNReal
 -- by Anand Rao and Mohit Hulse
 instance : FiniteDimensional K L := by
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  letI := IsTopologicalAddGroup.rightUniformSpace L
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  haveI := isUniformAddGroup_of_addCommGroup (G := L)
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  let := IsTopologicalAddGroup.rightUniformSpace L
+  have := isUniformAddGroup_of_addCommGroup (G := K)
+  have := isUniformAddGroup_of_addCommGroup (G := L)
   -- choose an arbitrary rank one structure for `L` (i.e. an arbitrary `ℝ`-valued norm)
-  letI : (Valued.v (R := L)).RankOne := rankOneOfIoo L default
-  letI := Valued.toNontriviallyNormedField (L := L) _
+  let : (Valued.v (R := L)).RankOne := rankOneOfIoo L default
+  let := Valued.toNontriviallyNormedField (L := L) _
   have hϖ1 : ‖iKL ϖ‖ < 1 := Valued.toNormedField.norm_lt_one_iff.mpr
     (valuation_map_irreducible_lt_one hϖ)
   -- pull back the norm on `L` to a norm on `K`
-  letI : NormedField K :=
+  let : NormedField K :=
   { toUniformSpace := ‹UniformSpace K›
     __ := NormedField.induced K L (algebraMap K L) (algebraMap K L).injective,
     uniformity_dist := ?_ }
-  · letI : NontriviallyNormedField K := .ofNormNeOne ⟨ϖ, hϖ.ne_zero', hϖ1.ne⟩
-    letI : NormedSpace K L :=
+  · let : NontriviallyNormedField K := .ofNormNeOne ⟨ϖ, hϖ.ne_zero', hϖ1.ne⟩
+    let : NormedSpace K L :=
     { norm_smul_le a b := by rw [Algebra.smul_def a b, norm_mul]; rfl }
     exact FiniteDimensional.of_locallyCompactSpace (𝕜 := K) (E := L)
   -- Showing `uniformity_dist` for `K`
   let ε : Set.Ioo (0 : ℝ) 1 := ⟨‖ϖ‖, norm_pos_iff.mpr hϖ.ne_zero, hϖ1⟩
   -- install the rank one structure for `K` where `ϖK` goes to `‖iKL ϖK‖`.
-  letI vKrk1 : (valuation K).RankOne := rankOneOfIoo K ε
+  let vKrk1 : (valuation K).RankOne := rankOneOfIoo K ε
   -- Showing that the two valuations on `K` are the same by comparing them on `ϖ`
   let v₁ : Valuation K ℝ≥0 := NormedField.valuation.comap iKL
   let v₂ : Valuation K ℝ≥0 := valuationOfIoo K ε
@@ -490,9 +492,6 @@ instance : IsLocalHom (algebraMap 𝒪[K] 𝒪[L]) := by
   rw [Valuation.Integers.isUnit_iff_valuation_eq_one (Valuation.integer.integers vL)] at hx
   exact (ValuativeRel.isEquiv ((vL).comap iKL) vK).eq_one_iff_eq_one.mp hx
 
--- bad instance, it has the wrong smul
-attribute [-instance] IsLocalRing.ResidueField.instAlgebra
-
 noncomputable instance : Algebra 𝓀[K] 𝓀[L] := inferInstance
 
 instance : FiniteDimensional 𝓀[K] 𝓀[L] := inferInstance
@@ -502,14 +501,14 @@ instance : Algebra.IsSeparable 𝓀[K] 𝓀[L] := Algebra.IsAlgebraic.isSeparabl
 -- by Hanliu Jiang
 theorem f_spec : Module.finrank 𝓀[K] 𝓀[L] = f K L := by
   simp only [f, Ideal.inertiaDeg', IsLocalRing.eq_maximalIdeal
-    (Ideal.isMaximal_comap_of_isIntegral_of_isMaximal 𝓂[L]), ↓reduceDIte,
+    (Ideal.isMaximal_under_of_isIntegral_of_isMaximal (R := 𝒪[K]) 𝓂[L]), ↓reduceDIte,
     IsLocalRing.ResidueField]
   rfl
 
 -- by Hanliu Jiang
 theorem f_spec' : Nat.card 𝓀[K] ^ f K L = Nat.card 𝓀[L] := by
-  letI : Fintype 𝓀[K] := Fintype.ofFinite _
-  letI : Fintype 𝓀[L] := Fintype.ofFinite _
+  let : Fintype 𝓀[K] := Fintype.ofFinite _
+  let : Fintype 𝓀[L] := Fintype.ofFinite _
   rw [← f_spec, Nat.card_eq_fintype_card, ← Module.card_eq_pow_finrank, Nat.card_eq_fintype_card]
 
 -- by Hanliu Jiang
@@ -529,7 +528,7 @@ lemma factors_map_maximalIdeal :
 lemma toFinset_factors_map_maximalIdeal [DecidableEq (Ideal 𝒪[L])] :
     (UniqueFactorizationMonoid.factors (Ideal.map (algebraMap 𝒪[K] 𝒪[L]) 𝓂[K])).toFinset =
     {𝓂[L]} := by
-  rw [factors_map_maximalIdeal, Multiset.toFinset_replicate, if_neg (e_pos K L).ne']
+  rw [factors_map_maximalIdeal, Multiset.toFinset_replicate, ite_eq_right (e_pos K L).ne']
 
 -- by Chenyi Yang
 theorem e_mul_f_eq_n : e K L * f K L = Module.finrank K L := by
@@ -577,7 +576,7 @@ instance : Algebra.IsSeparable 𝓀[K] 𝓀[L] :=
 
 -- by Chenyi Yang
 theorem isUnramified_iff_isUnramifiedAt : IsUnramified K L ↔ Algebra.IsUnramifiedAt 𝒪[K] 𝓂[L] := by
-  haveI : Algebra.IsSeparable 𝓀[K] 𝓀[L] := inferInstance
+  have : Algebra.IsSeparable 𝓀[K] 𝓀[L] := inferInstance
   rw [isUnramified_iff_map_maximalIdeal, Algebra.isUnramifiedAt_iff_map_eq' 𝓂[K] 𝓂[L] 𝒪[K] 𝒪[L]]
   tauto
 
@@ -644,10 +643,10 @@ attribute [local instance] inhabitedIoo
 theorem isNonarchimedeanLocalField_of_valuativeExtension_of_isValuativeTopology
      [FiniteDimensional K L] [ValuativeRel L] [ValuativeExtension K L]
      [TopologicalSpace L] [IsValuativeTopology L] : IsNonarchimedeanLocalField L := by
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  letI := rankOneOfIoo K default
-  letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  have := isUniformAddGroup_of_addCommGroup (G := K)
+  let := rankOneOfIoo K default
+  let : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
   have : LocallyCompactSpace L := .of_finiteDimensional_of_complete K L
   obtain ⟨ϖK, hϖK⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
   have : IsNontrivial L := ⟨(valuation L).comap (algebraMap K L) ϖK,
@@ -665,15 +664,15 @@ open scoped NormedField in
 theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] :
     ∃ (_ : ValuativeRel L) (_ : ValuativeExtension K L)
     (_ : TopologicalSpace L), IsNonarchimedeanLocalField L := by
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  letI := rankOneOfIoo K default
-  letI : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
-  letI : NontriviallyNormedField L := spectralNorm.nontriviallyNormedField K L
-  haveI : IsUltrametricDist L := IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_nnnorm
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  have := isUniformAddGroup_of_addCommGroup (G := K)
+  let := rankOneOfIoo K default
+  let : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
+  let : NontriviallyNormedField L := spectralNorm.nontriviallyNormedField K L
+  have : IsUltrametricDist L := IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_nnnorm
     isNonarchimedean_spectralNorm
   let v := NormedField.valuation (K := L)
-  haveI : ValuativeExtension K L := by
+  have : ValuativeExtension K L := by
     refine ⟨fun x y ↦ ?_⟩
     rw [Valuation.Compatible.vle_iff_le (v := v),
     Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation K)]

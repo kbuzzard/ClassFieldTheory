@@ -2,19 +2,10 @@ module
 
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
-public section
-
-namespace IsLocalRing.ResidueField
-
-variable {R S : Type*} [CommRing R] [IsLocalRing R] [CommRing S] [IsLocalRing S] [Algebra R S]
-  [IsLocalHom (algebraMap R S)]
-
--- bad instance, it has the wrong smul
-attribute [-instance] instAlgebra
-
-attribute [-instance] field in
-instance instAlgebra' : Algebra (IsLocalRing.ResidueField R) (IsLocalRing.ResidueField S) :=
-  Ideal.Quotient.algebraQuotientOfLEComap <|
-    ((IsLocalRing.local_hom_TFAE (algebraMap R S)).out 0 3).mp <| by infer_instance
-
-end IsLocalRing.ResidueField
+/-!
+The contents of this file (the instance `Algebra (IsLocalRing.ResidueField R)
+(IsLocalRing.ResidueField S)` for a local algebra map `R → S`, built with
+`Ideal.Quotient.algebraQuotientOfLEComap` so that it has the quotient `smul`) have been upstreamed
+to `Mathlib.RingTheory.LocalRing.ResidueField.Basic`: `IsLocalRing.ResidueField.instAlgebra` is now
+defined via `Ideal.Quotient.algebraOfLiesOver`, so it no longer needs to be removed downstream.
+-/

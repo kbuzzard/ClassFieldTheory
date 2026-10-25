@@ -181,8 +181,8 @@ theorem limUnder_teichmullerSeq_mem (x : 𝒪[K]) (n : ℕ) :
     (isClosed_closedBall' _ _) ?_ ?_
   · rw [Filter.frequently_atTop]
     refine fun i ↦ ⟨n+i, i.le_add_left n, teichmullerSeq_add_sub_mem x n i⟩
-  · letI := IsTopologicalAddGroup.rightUniformSpace K
-    haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  · let := IsTopologicalAddGroup.rightUniformSpace K
+    have := isUniformAddGroup_of_addCommGroup (G := K)
     exact (cauchySeq_teichmuller x).tendsto_limUnder
 
 theorem ext_maximalIdeal {x y : 𝒪[K]} (h : ∀ n, x - y ∈ 𝓂[K] ^ n) : x = y :=
@@ -206,8 +206,8 @@ noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
   map_zero' := Filter.Tendsto.limUnder_eq <| by simp [Pi.zero_def]
   map_one' := Filter.Tendsto.limUnder_eq <| by simp [Pi.one_def]
   map_mul' x y := Quotient.inductionOn₂ x y fun x y ↦ by
-    letI := IsTopologicalAddGroup.rightUniformSpace K
-    haveI := isUniformAddGroup_of_addCommGroup (G := K)
+    let := IsTopologicalAddGroup.rightUniformSpace K
+    have := isUniformAddGroup_of_addCommGroup (G := K)
     change Filter.limUnder _ _ = Filter.limUnder _ _ * Filter.limUnder _ _
     rw [map_mul]
     exact Filter.Tendsto.limUnder_eq <| .mul
@@ -215,8 +215,8 @@ noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
 
 theorem teichmuller'_def (x : 𝒪[K]) :
     Filter.Tendsto (teichmullerSeq x) .atTop (nhds <| teichmuller' K <| Ideal.Quotient.mk _ x) := by
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
+  let := IsTopologicalAddGroup.rightUniformSpace K
+  have := isUniformAddGroup_of_addCommGroup (G := K)
   exact (cauchySeq_teichmuller x).tendsto_limUnder
 
 theorem residue_teichmuller' (x : 𝓀[K]) :
