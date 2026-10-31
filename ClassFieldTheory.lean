@@ -46,6 +46,7 @@ public import ClassFieldTheory.Mathlib.Algebra.Group.Solvable
 public import ClassFieldTheory.Mathlib.Algebra.Group.Units.Defs
 public import ClassFieldTheory.Mathlib.Algebra.Group.Units.Hom
 public import ClassFieldTheory.Mathlib.Algebra.Homology.ConcreteCategory
+public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Basic
 public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.Exact
 public import ClassFieldTheory.Mathlib.Algebra.Homology.ShortComplex.ModuleCat

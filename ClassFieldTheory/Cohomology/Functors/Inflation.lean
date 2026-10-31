@@ -55,7 +55,8 @@ variable {R : Type u} {G : Type v} {Q : Type v'} [CommRing R] [Group G] [Group Q
     (Rep.resEquiv R (QuotientGroup.quotientKerEquivOfSurjective _ surj)).inverse
 
 /--
-`M ↑ H` means the `H` invariants of `M`, as a representation of `G ⧸ H`.
+If `surj : Function.Surjective φ` for a group homomorphism `φ : G →* Q`, then `M ↑ surj` means
+the `φ.ker`-invariants of `M`, as a representation of `Q ≃* G ⧸ φ.ker`.
 -/
 notation3 M " ↑ " surj => (Rep.quotientToInvariantsFunctor' surj).obj M
 
