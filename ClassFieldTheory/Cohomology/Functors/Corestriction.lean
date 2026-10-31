@@ -82,7 +82,7 @@ def _root_.Rep.cores₀_obj (V : Rep R G) :
     (V ↓ S.subtype).ρ.invariants →ₗ[R] V.ρ.invariants where
   toFun x := ⟨∑ i : G ⧸ S, V.ρ i.out x.1, fun g ↦ by
     simp only [map_sum, ← LinearMap.comp_apply, ← Module.End.mul_eq_comp, ← map_mul]
-    letI : Fintype (G ⧸ S) := Subgroup.fintypeQuotientOfFiniteIndex
+    let : Fintype (G ⧸ S) := Subgroup.fintypeQuotientOfFiniteIndex
     refine (cores_aux₂ V.ρ x.1 (by simpa [-SetLike.coe_mem] using x.2) (by simp) ?_).symm
     simp_rw [QuotientGroup.mk_mul', QuotientGroup.out_eq', MulAction.bijective]⟩
   map_add' := by simp [Finset.sum_add_distrib]
@@ -152,7 +152,7 @@ lemma commSq_cores₁ (M : Rep R G) :
 theorem cores₁_naturality (X Y : Rep R G) (f : X ⟶ Y) :
     (resFunctor S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
     cores₁_obj X ≫ (functor R G 1).map f := by
-  haveI : Epi (δ (shortExact_upSES_res X S.subtype) 0 1 rfl) :=
+  have : Epi (δ (shortExact_upSES_res X S.subtype) 0 1 rfl) :=
     epi_δ_up_zero_res (R := R) (φ := S.subtype) X S.subtype_injective
   symm
   refine CategoryTheory.cubeLemma
@@ -359,7 +359,7 @@ lemma groupCohomology_Sylow {n : ℕ} (hn : 0 < n) [Finite G] (M : Rep R G)
     (x : groupCohomology M n) (p : ℕ) [Fact p.Prime] (P : Sylow p G) (hx : ∃ d, (p ^ d) • x = 0)
     (hx' : x ≠ 0) : ((rest (P.toSubgroup.subtype) n).app M).hom x ≠ 0 := by
   classical
-  haveI : NeZero n := ⟨ne_of_gt hn⟩
+  have : NeZero n := ⟨ne_of_gt hn⟩
   simpa [Functor.comp_obj, functor_obj, rest_app, ne_eq] using by_contra fun hx2 ↦ hx' <|
     @Subtype.ext_iff _ (p := fun x ↦ x ∈ Submodule.torsionBy R (groupCohomology M n) (Nat.card P))
     ⟨x, pTorsion_eq_sylowTorsion M p P x|>.1 hx⟩ 0|>.1 <| groupCohomology.injects_to_sylowCoh M p P

@@ -119,7 +119,7 @@ lemma map₂_apply (f : G →₀ A) (x : G) :
     Representation.map₂ (R := R) f x = f x - f ((gen G)⁻¹ * x) := by
   simp only [map₂, LinearMap.sub_apply, LinearMap.id_coe, id_eq, lmapDomain_apply, coe_sub,
     Pi.sub_apply, sub_right_inj]
-  convert Finsupp.mapDomain_apply ?_ _ ((gen G)⁻¹ * x)
+  convert Finsupp.mapDomain_apply_of_injective ?_ _ ((gen G)⁻¹ * x)
   · simp
   · intro x y h
     simpa using h
@@ -309,7 +309,7 @@ set_option backward.isDefEq.respectTransparency false in
   X₃ := ind₁'.obj M
   f := coind₁'_ι.app M
   g := map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv
-  zero := by ext; simp [map₁, ind₁'_iso_coind₁', Representation.map₁, funext_iff]
+  zero := by rw [← Category.assoc, coind_ι_gg_map₁_app, zero_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The second short complex in the periodicity sequence. -/
@@ -340,27 +340,29 @@ set_option backward.isDefEq.respectTransparency false in
 lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   -- `S` is `ShortComplex (Rep R G)` here, but `Rep R G` is equivalent to `ModuleCat R[G]`.
   -- This step transfers our task to exactness in `ModuleCat R[G]`.
-  simp only [M.periodSeq₁.rep_exact_iff, periodSeq₁_X₂, coind₁'_obj, periodSeq₁_X₃, ind₁'_obj,
+  rw [M.periodSeq₁.rep_exact_iff]
+  intro w hw
+  simp only [periodSeq₁_X₂, coind₁'_obj, periodSeq₁_X₃, ind₁'_obj,
     periodSeq₁_g, map₁, ind₁'_iso_coind₁', NatIso.ofComponents.app, hom_comp, hom_ofHom,
-    periodSeq₁_X₁, periodSeq₁_f, coind₁'_ι_app, SetLike.le_def,
+    periodSeq₁_X₁, periodSeq₁_f, coind₁'_ι_app,
     Representation.IntertwiningMap.mem_ker, Representation.IntertwiningMap.comp_apply,
     Representation.IntertwiningMap.coe_mk, mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
     Representation.Equiv.mk_apply, EmbeddingLike.map_eq_zero_iff,
-    Representation.IntertwiningMap.mem_range]
-  intro w hw
+    Representation.IntertwiningMap.mem_range] at hw ⊢
   change w ∈ LinearMap.range Representation.coind₁'_ι
   simp [← Representation.map₁_ker, hw]
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
-  simp only [M.periodSeq₂.rep_exact_iff, periodSeq₂_X₂, ind₁'_obj, periodSeq₂_X₃, periodSeq₂_g,
+  rw [M.periodSeq₂.rep_exact_iff]
+  intro w hw_ker
+  simp only [periodSeq₂_X₂, ind₁'_obj, periodSeq₂_X₃, periodSeq₂_g,
     periodSeq₂_X₁, coind₁'_obj, periodSeq₂_f, map₁, ind₁'_iso_coind₁', NatIso.ofComponents.app,
-    hom_comp, hom_ofHom, SetLike.le_def, Representation.IntertwiningMap.mem_ker,
+    hom_comp, hom_ofHom, Representation.IntertwiningMap.mem_ker,
     Representation.IntertwiningMap.mem_range, Representation.IntertwiningMap.comp_apply,
     Representation.IntertwiningMap.coe_mk, mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
-    Representation.Equiv.mk_apply]
-  intro w hw_ker
+    Representation.Equiv.mk_apply] at hw_ker ⊢
   change w ∈ LinearMap.ker (Representation.ind₁'_π (R := R)) at hw_ker
   rw [← Representation.map₂_range] at hw_ker
   obtain ⟨y, rfl⟩ := hw_ker

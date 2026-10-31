@@ -25,15 +25,14 @@ lemma H1_isZero_of_trivial (M : Rep R G) [IsAddTorsionFree M] [M.IsTrivial] [Fin
   This uses `groupCohomology.H1IsoOfIsTrivial`.
   -/
   refine .of_iso ?_ (groupCohomology.H1IsoOfIsTrivial M)
-  simp [subsingleton_addMonoidHom_of_isTorsion_isAddTorsionFree, isTorsion_of_finite]
+  simp [subsingleton_addMonoidHom_of_isTorsion_isAddTorsionFree, isMulTorsion_of_finite]
 
 namespace cocycles₂
 
 @[simp, norm_cast] lemma coe_zero : ⇑(0 : cocycles₂ A) = 0 := rfl
 @[simp, norm_cast] lemma coe_add (a b : cocycles₂ A) : ⇑(a + b) = a + b := rfl
 
--- TODO: Replace `coe_mk` in mathlib
-@[simp, norm_cast] lemma coe_mk' (f : G × G → A) (hf) : ⇑(⟨f, hf⟩ : cocycles₂ A) = f := rfl
+attribute [norm_cast] coe_mk
 
 end cocycles₂
 

@@ -139,9 +139,9 @@ instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind�
   classical
   refine .of_cases fun H ↦ ?_
   -- Let's collect some trivialities.
-  letI : Fintype G := .ofFinite _
-  letI : Fintype H := .ofFinite _
-  letI : Fintype (G ⧸ H) := @Fintype.ofFinite _ Subgroup.finite_quotient_of_finiteIndex
+  let : Fintype G := .ofFinite _
+  let : Fintype H := .ofFinite _
+  let : Fintype (G ⧸ H) := @Fintype.ofFinite _ Subgroup.finite_quotient_of_finiteIndex
   have aux (f : G → A) (x : G) :
       ∑ y : G ⧸ H, ∑ h : H, (if x * h = y.out then f (y.out * (↑h)⁻¹) else 0) = f x := by
     rw [Finset.sum_comm, ← Fintype.sum_prod_type', ← Fintype.sum_ite_eq x f]
@@ -152,7 +152,7 @@ instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind�
   · -- First, let's prove the 0-th cohomology group is trivial.
     simp only [res_obj_V, res_obj_ρ, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
       Function.comp_apply, ModuleCat.isZero_of_iff_subsingleton,
-      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, SetLike.le_def,
+      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, IsConcreteLE.le_iff,
       Representation.mem_invariants, funext_iff, Representation.coind₁AsPi_apply, Subtype.forall,
       LinearMap.mem_range, LinearMap.coe_sum, Finset.sum_apply]
     intro f hf
@@ -171,7 +171,7 @@ instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind�
   · -- Second, let's prove the -1-st cohomology group is trivial.
     simp only [res_obj_V, res_obj_ρ, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
       Function.comp_apply, ModuleCat.isZero_of_iff_subsingleton,
-      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, SetLike.le_def,
+      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, IsConcreteLE.le_iff,
       LinearMap.mem_ker, LinearMap.coe_sum, Finset.sum_apply, funext_iff,
       Representation.coind₁AsPi_apply, Pi.ofNat_apply]
     -- Assume we have such `f`.

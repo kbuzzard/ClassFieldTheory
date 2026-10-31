@@ -13,5 +13,5 @@ theorem Ideal.IsMaximal.irreducible_of_ne_bot {R : Type*} [CommRing R] [IsDedeki
   by_cases hy : y = ⊤
   · tauto
   refine absurd hxy <| ne_of_gt ?_
-  rw [← hI.eq_of_le hx (hxy ▸ Ideal.mul_le_right), ← hI.eq_of_le hy (hxy ▸ Ideal.mul_le_left)]
+  rw [← hI.eq_of_le hx (hxy ▸ Ideal.mul_le_left), ← hI.eq_of_le hy (hxy ▸ Ideal.mul_le_right)]
   simpa [sq] using Ideal.pow_right_strictAnti _ ne_bot hI.ne_top (by decide : 1 < 2)

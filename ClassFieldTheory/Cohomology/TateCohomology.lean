@@ -39,7 +39,7 @@ lemma cochainsMap_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep
       cochainsMap e1 φ ≫ cochainsMap e2 ψ := by
   rw [CochainComplex.ConnectData.map_comp_map]
   unfold cochainsMap
-  simp only [MulEquiv.coe_monoidHom_trans, MulEquiv.toMonoidHom_eq_coe, Rep.hom_comp,
+  simp only [MulEquiv.toMonoidHom_trans, MulEquiv.toMonoidHom_eq_coe, Rep.hom_comp,
     Representation.IntertwiningMap.comp_toLinearMap]
   congr
   simp [← chainsMap_comp]
@@ -96,7 +96,7 @@ namespace zeroIso
 
 /-- The concrete short complex computing `0`-th Tate cohomology. -/
 @[simps] def sc : ShortComplex (ModuleCat R) :=
-  .mk M.norm.toModuleCatHom (d₀₁ M) (norm_comp_d_eq_zero M)
+  .mk M.norm.asHom.toModuleCatHom (d₀₁ M) (norm_comp_d_eq_zero M)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between the concrete short complex computing `0`-th Tate cohomology
@@ -122,7 +122,7 @@ def zeroIso (M : Rep R G) : tateCohomology M 0 ≅
       (LinearEquiv.ofEq _ _ (d₀₁_ker_eq_invariants M)) ?_).toModuleIso
     refine Submodule.ext fun ⟨x, hx⟩ ↦ ⟨?_, ?_⟩
     · rintro ⟨_, ⟨y, rfl⟩, hy⟩; exact ⟨y, congr(Subtype.val $hy)⟩
-    · rintro ⟨y, rfl⟩; exact ⟨⟨M.norm.hom y, norm_comp_d_eq_zero_apply _ y⟩, ⟨_, rfl⟩, rfl⟩
+    · rintro ⟨y, rfl⟩; exact ⟨⟨M.norm.asHom.hom y, norm_comp_d_eq_zero_apply _ y⟩, ⟨_, rfl⟩, rfl⟩
 
 namespace negOneIso
 
@@ -130,7 +130,7 @@ variable (M : Rep R G)
 
 /-- The concrete short complex computing `-1`-st Tate cohomology. -/
 @[simps] def sc : ShortComplex (ModuleCat R) :=
-  .mk (d₁₀ M) M.norm.toModuleCatHom (comp_eq_zero M)
+  .mk (d₁₀ M) M.norm.asHom.toModuleCatHom (comp_eq_zero M)
 
 /-- The isomorphism between the concrete short complex computing `-1`-st Tate cohomology
 and the corresponding parts of the Tate complex. -/
@@ -178,16 +178,17 @@ def zeroIsoOfIsTrivial :
       Submodule.topEquiv_apply, LinearEquiv.coe_ofEq_apply] at hm2 hm3
     rw [hm3.symm]
     obtain ⟨k, hk⟩ := hm2
-    exact ⟨k, by simpa [Representation.norm] using hk⟩
-  · simp [← hk, Submodule.submoduleOf, Representation.norm])
+    exact ⟨k, by simpa [Representation.norm, Representation.isTrivial_apply] using hk⟩
+  · simp [← hk, Submodule.submoduleOf, Representation.norm, Representation.isTrivial_apply])
 
 /-- A concrete description of the `-1`-st Tate cohomology of a trivial representation. -/
 def negOneIsoOfIsTrivial :
     tateCohomology M (-1) ≅ ModuleCat.of R (ker (Nat.card G : M.V →ₗ[R] M.V)) :=
   TateCohomology.negOneIso M ≪≫
   (LinearEquiv.toModuleIso (Submodule.quotEquivOfEqBot _ (by
-  ext m; simp [Submodule.submoduleOf, ← Module.End.one_eq_id, Representation.Coinvariants.ker]) ≪≫ₗ
-  LinearEquiv.ofEq _ _ (by ext m; simp [Representation.norm])))
+  ext m; simp [Submodule.submoduleOf, Representation.Coinvariants.ker,
+    Representation.isTrivial_apply]) ≪≫ₗ
+  LinearEquiv.ofEq _ _ (by ext m; simp [Representation.norm, Representation.isTrivial_apply])))
 
 variable {G : Type} [Group G] [Fintype G]
 

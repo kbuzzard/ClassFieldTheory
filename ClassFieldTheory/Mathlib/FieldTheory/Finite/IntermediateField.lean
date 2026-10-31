@@ -47,7 +47,7 @@ theorem intermediateField_eq_rootSet (hn : n ≠ 0) :
     (intermediateField K L n : Set L) = (X ^ Nat.card K ^ n - X : L[X]).rootSet L := by
   have := Finite.of_injective _ <| FaithfulSMul.algebraMap_injective K L
   ext x
-  rw [mem_rootSet_of_ne (FiniteField.X_pow_card_pow_sub_X_ne_zero _ hn Finite.one_lt_card)]
+  rw [mem_rootSet_of_ne (X_pow_sub_X_ne_zero (one_lt_pow' Finite.one_lt_card hn))]
   simp [mem_intermediateField_iff, sub_eq_zero]
 
 theorem mem_intermediateField_iff' {x : L} :
@@ -110,7 +110,7 @@ theorem degree_minpoly_of_isPrimitiveRoot
     Algebra.algebraMap_self, Polynomial.map_id, SetLike.coe_sort_coe, Nat.card_eq_finsetCard,
     Multiset.toFinset_card_of_nodup (nodup_roots <| galois_poly_separable _ _ this),
     ← (X_pow_sub_X_splits hζ).natDegree_eq_card_roots,
-    FiniteField.X_pow_card_sub_X_natDegree_eq _ (by grind), Fintype.card_eq_nat_card]
+    natDegree_X_pow_sub_X (by grind), Fintype.card_eq_nat_card]
 
 variable (F : Type*) [Field F] [Finite F]
 
