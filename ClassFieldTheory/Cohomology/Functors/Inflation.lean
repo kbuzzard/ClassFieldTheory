@@ -49,8 +49,8 @@ namespace Rep
 variable {R : Type u} {G : Type v} {Q : Type v'} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
   (surj : Function.Surjective φ)
 
-@[simps! (isSimp := false) obj_V] noncomputable def quotientToInvariantsFunctor' :
-    Rep R G ⥤ Rep R Q :=
+@[implicit_reducible, simps! (isSimp := false) obj_V]
+noncomputable def quotientToInvariantsFunctor' : Rep R G ⥤ Rep R Q :=
   quotientToInvariantsFunctor.{w} R φ.ker ⋙
     (Rep.resEquiv R (QuotientGroup.quotientKerEquivOfSurjective _ surj)).inverse
 
@@ -70,18 +70,17 @@ lemma quotientToInvariantsFunctor'_obj_ρ (M : Rep R G) :
     (QuotientGroup.quotientKerEquivOfSurjective φ hφ).symm (φ x) = x :=
   MulEquiv.symm_apply_eq _ |>.mpr rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] quotientToInvariantsFunctor in
 lemma quotientToInvariantsFunctor'_obj_ρ_apply (M : Rep R G) (g : G) :
     (M ↑ surj).ρ (φ g) = (M.quotientToInvariants φ.ker).ρ g := by
-  simp [quotientToInvariantsFunctor'_obj_V, quotientToInvariantsFunctor'_obj_ρ,
-    quotientToInvariantsFunctor]
+  simp [quotientToInvariantsFunctor'_obj_ρ]
 
+attribute [local implicit_reducible] quotientToInvariantsFunctor in
 @[simp] lemma quotientToInvariantsFunctor'_obj_ρ_apply₂ (M : Rep R G) (g : G)
     (v : (quotientToInvariantsFunctor' surj).obj M) :
     ((M ↑ surj).ρ (φ g) v).val = M.ρ g v.val := by
-  rw [quotientToInvariantsFunctor'_obj_ρ_apply]
-  rfl
+  simp [quotientToInvariantsFunctor'_obj_ρ_apply,
+    Representation.subrepresentation_apply _, LinearMap.restrict_apply _]
 
 instance : (quotientToInvariantsFunctor' (R := R) surj).PreservesZeroMorphisms where
   map_zero _ _ := rfl
@@ -98,10 +97,10 @@ namespace groupCohomology
 variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
   (surj : Function.Surjective φ)
 
+@[simps]
 noncomputable def cochain_infl :
     quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G where
   app M := cochainsMap φ <| res_quotientToInvariantsFunctor'_ι surj M
-  naturality _ _ _ := rfl
 
 /--
 The inflation map `Hⁿ(G⧸H, M ↑ H) ⟶ Hⁿ(G,M)` as a natural transformation.
@@ -111,7 +110,10 @@ noncomputable def infl (n : ℕ) :
     Rep.quotientToInvariantsFunctor' surj ⋙ functor R Q n ⟶ functor R G n :=
   (groupCohomology.cochain_infl surj) ◫ 𝟙 (homologyFunctor _ _ n)
 
-
+attribute [local implicit_reducible] cochainsFunctor in
+lemma infl_app (n : ℕ) (M : Rep R G) :
+    (infl surj n).app M = map φ (res_quotientToInvariantsFunctor'_ι surj M) n := by
+  rw [infl, NatTrans.hcomp_id_app, homologyFunctor_map, cochain_infl_app, map]
 
 /--
 Assume that we have a short exact sequence `0 → A → B → C → 0` in `Rep R G`

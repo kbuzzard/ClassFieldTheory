@@ -152,6 +152,37 @@ def δUpResIso {S : Type u} [Group S] {φ : S →* G} (inj : Function.Injective 
   have := isIso_δ_up_res M inj n
   apply asIso (δ ((shortExact_res φ).2 <| shortExact_upSES M) n (n + 1) rfl)
 
+/-- The connecting homomorphism `δ : H⁰(G, up M) ⟶ H¹(G, M)`, as a natural transformation. -/
+@[simps]
+def δUp : up ⋙ functor R G 0 ⟶ functor R G 1 where
+  app M := δ (shortExact_upSES M) 0 1 rfl
+  naturality M N f :=
+    (δ_naturality (shortExact_upSES M) (shortExact_upSES N) (upShortComplex.map f) 0 1 rfl).symm
+
+/-- The connecting homomorphism `δ : H⁰(H, (up M) ↓ φ) ⟶ H¹(H, M ↓ φ)`, as a natural
+transformation in `M`. -/
+@[simps]
+def δUpRes {H : Type u} [Group H] (φ : H →* G) :
+    up ⋙ resFunctor φ ⋙ functor R H 0 ⟶ resFunctor φ ⋙ functor R H 1 where
+  app M := δ (shortExact_upSES_res M φ) 0 1 rfl
+  naturality M N f :=
+    (δ_naturality (shortExact_upSES_res M φ) (shortExact_upSES_res N φ)
+      ((resFunctor φ).mapShortComplex.map (upShortComplex.map f)) 0 1 rfl).symm
+
+/-- If `S ⊆ G` then `δ : H⁰(S, (up M) ↓ S) ⟶ H¹(S, M ↓ S)` is an epimorphism. -/
+instance epi_δUpRes_app (S : Subgroup G) : Epi ((δUpRes S.subtype).app M) :=
+  epi_δ_up_zero_res (φ := S.subtype) M S.subtype_injective
+
+@[reassoc (attr := simp)]
+lemma map_up_π_comp_δUp : (functor R G 0).map (up.π M) ≫ δUp.app M = 0 :=
+  map_comp_δ (shortExact_upSES M) 0 1 rfl
+
+/-- `H⁰(H, (coind₁' M) ↓ φ) ⟶ H⁰(H, (up M) ↓ φ) ⟶ H¹(H, M ↓ φ)` is exact. -/
+lemma exact_δUpRes {H : Type u} [Group H] (φ : H →* G) :
+    (ShortComplex.mk ((functor R H 0).map ((resFunctor φ).map (up.π M))) ((δUpRes φ).app M)
+      (map_comp_δ (shortExact_upSES_res M φ) 0 1 rfl)).Exact :=
+  mapShortComplex₃_exact (shortExact_upSES_res M φ) rfl
+
 /-! ### The down functor -/
 
 /--

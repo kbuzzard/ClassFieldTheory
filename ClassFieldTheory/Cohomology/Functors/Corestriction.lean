@@ -88,66 +88,51 @@ def _root_.Rep.cores₀_obj (V : Rep R G) :
   map_add' := by simp [Finset.sum_add_distrib]
   map_smul' := by simp [Finset.smul_sum]
 
-set_option backward.isDefEq.respectTransparency false in
+/-- `Rep.cores₀_obj` is natural in `V`. -/
+@[reassoc]
+lemma _root_.Rep.cores₀_obj_naturality {X Y : Rep R G} (f : X ⟶ Y) :
+    (invariantsFunctor R S).map ((Rep.resFunctor S.subtype).map f) ≫
+      ModuleCat.ofHom (Rep.cores₀_obj Y) =
+    ModuleCat.ofHom (Rep.cores₀_obj X) ≫ (invariantsFunctor R G).map f := by
+  ext; simp [LinearMap.codRestrict, Rep.cores₀_obj_apply_coe _, hom_comm_apply]
+
 /-- The corestriction functor on H^0 for S ⊆ G a finite index subgroup, as a
 functor `H^0(S,-) → H^0(G,-)`. -/
 @[simps]
 def cores₀ : Rep.resFunctor S.subtype ⋙ functor R S 0 ⟶ functor R G 0 where
-  app M :=
-    (H0Iso (M ↓ S.subtype)).hom ≫ (ModuleCat.ofHom (Rep.cores₀_obj M)) ≫ (H0Iso M).inv
-  naturality := by
-    intro X Y f
-    simp_rw [← Category.assoc]
-    rw [(H0Iso Y).comp_inv_eq]
-    simp_rw [Category.assoc]
-    rw [functor_map, map_id_comp_H0Iso_hom, (H0Iso X).inv_hom_id_assoc, Functor.comp_map,
-      functor_map, map_id_comp_H0Iso_hom_assoc, (H0Iso (X ↓ S.subtype)).cancel_iso_hom_left]
-    ext x
-    simp [Rep.cores₀_obj, hom_comm_apply]
+  app M := (H0Iso (M ↓ S.subtype)).hom ≫ ModuleCat.ofHom (Rep.cores₀_obj M) ≫ (H0Iso M).inv
+  naturality X Y f := by
+    simp [-functor_map, ← H0NatIso_hom_app, ← H0NatIso_inv_app, cores₀_obj_naturality_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
+/-- Naturality of `cores₀`, stated in simp-normal form. -/
+@[reassoc (attr := simp)]
+lemma cores₀_naturality {X Y : Rep R G} (f : X ⟶ Y) :
+    (functor R S 0).map (resMap S.subtype f) ≫ cores₀.app Y =
+      cores₀.app X ≫ (functor R G 0).map f :=
+  cores₀.naturality f
+
 /-- The morphism `H¹(S, M↓S) ⟶ H¹(G, M)`. -/
 def cores₁_obj (M : Rep R G) :
     -- defining H¹(S, M↓S) ⟶ H¹(G, M) by a diagram chase
     (functor R S 1).obj (M ↓ S.subtype) ⟶ (functor R G 1).obj M := by
   -- Recall we have 0 ⟶ M ⟶ coind₁'^G M ⟶ up_G M ⟶ 0 a short exact sequence
   -- of `G`-modules which restricts to a short exact sequence of `S`-modules.
-  -- First I claim δ : H⁰(S,(up_G M)↓S) ⟶ H¹(S,M↓S) is surjective
-  have : Epi (mapShortComplex₃ (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
-    -- because `coind₁'^G M` has trivial cohomology
-    epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
-  -- so it suffices to give a map H⁰(S,(up_G M)↓S) ⟶ H¹(G,M) such that the
-  -- image of H⁰(S,(coind₁'^G M)↓S) is in the kernel of that map
-  refine (mapShortComplex₃_exact (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).desc ?_ ?_
-  · -- The map H⁰(S,up_G M)↓S) ⟶ H¹(G,M) is just the composite of
-    -- cores₀ : H⁰(S,up_G M↓S) ⟶ H⁰(G,up_G M) and δ : H⁰(G,up_G M) ⟶ H¹(G,M)
-    exact (cores₀.app _) ≫ (δ (shortExact_upSES M) 0 1 rfl)
-  · -- We now need to prove that the induced map
-    -- H⁰(S,(coind₁'^G M)↓S) ⟶ H¹(G,M) is 0
-    -- This is a diagram chase. The map is H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(S,(up_G M)↓S)
-    -- (functoriality of H⁰) followed by cores₀ : H⁰(S,(up_G M)↓S) ⟶ H⁰(G, up_G M)
-    -- followed by δ : H⁰(G, up_G M) ⟶ H¹(G, M). First put the brackets around
-    -- the first two terms.
-    rw [← Category.assoc]
-    -- now apply naturality of cores₀, because I want to change
-    -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(S,(up_G M)↓S) ⟶ H⁰(G, up_G M) to
-    -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(G,(coind₁'^G M)) ⟶ H⁰(G, up_G M)
-    let bar := cokernel.π (coind₁'_ι.app M)
-    -- cores₀ : res S.subtype ⋙ functor R (↥S) 0 ⟶ functor R G 0
-    have baz := cores₀.naturality (F := (resFunctor S.subtype ⋙ functor R (↥S) 0)) bar
-    change ((resFunctor S.subtype ⋙ functor R (↥S) 0).map bar ≫ (cores₀.app (up.obj M))) ≫ _ = 0
-    change _ ≫ (cores₀.app (up.obj M)) = _ ≫ _ at baz
-    rw [baz, Category.assoc]
-    convert comp_zero -- cancel first functor
-    exact (mapShortComplex₃ (shortExact_upSES M) (rfl : 0 + 1 = 1)).zero
+  -- Since `coind₁'^G M` has trivial cohomology, δ : H⁰(S,(up_G M)↓S) ⟶ H¹(S,M↓S) is
+  -- surjective (the instance `epi_δUpRes_app`) with kernel the image of H⁰(S,(coind₁'^G M)↓S).
+  -- So it suffices to give a map H⁰(S,(up_G M)↓S) ⟶ H¹(G,M) killing H⁰(S,(coind₁'^G M)↓S),
+  -- namely cores₀ : H⁰(S,up_G M↓S) ⟶ H⁰(G,up_G M) followed by δ : H⁰(G,up_G M) ⟶ H¹(G,M).
+  refine (exact_δUpRes M S.subtype).desc (cores₀.app _ ≫ δUp.app M) ?_
+  -- By naturality of `cores₀`, the composite
+  -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(S,(up_G M)↓S) ⟶ H⁰(G, up_G M) ⟶ H¹(G, M) equals
+  -- H⁰(S,(coind₁'^G M)↓S) ⟶ H⁰(G,(coind₁'^G M)) ⟶ H⁰(G, up_G M) ⟶ H¹(G, M),
+  -- and the last two maps compose to zero.
+  simp [-functor_map, -δUp_app, -cores₀_app, cores₀_naturality_assoc, map_up_π_comp_δUp, comp_zero]
 
 @[reassoc]
 lemma commSq_cores₁ (M : Rep R G) :
-  δ (shortExact_upSES_res M S.subtype) 0 1 rfl ≫ cores₁_obj (S := S) M =
-    (cores₀ (S := S)).app _ ≫ δ (shortExact_upSES M) 0 1 rfl :=
-  have : Epi (mapShortComplex₃ (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).g :=
-    epi_δ_up_zero_res (R := R) (φ := S.subtype) M S.subtype_injective
-  (mapShortComplex₃_exact (shortExact_upSES_res M S.subtype) (rfl : 0 + 1 = 1)).g_desc _ _
+    δ (shortExact_upSES_res M S.subtype) 0 1 rfl ≫ cores₁_obj (S := S) M =
+      (cores₀ (S := S)).app _ ≫ δ (shortExact_upSES M) 0 1 rfl :=
+  (exact_δUpRes M S.subtype).g_desc _ _
 
 theorem cores₁_naturality (X Y : Rep R G) (f : X ⟶ Y) :
     (resFunctor S.subtype ⋙ functor R (↥S) 1).map f ≫ cores₁_obj Y =
@@ -195,7 +180,6 @@ def cores_obj : (M : Rep R G) → (n : ℕ) →
   let ih := cores_obj (up.obj M) (d + 1)
   (asIso (δ htopexact (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
     (resFunctor S.subtype ⋙ functor R (↥S) (n + 1)).map f ≫ cores_obj Y (n + 1) =
@@ -207,14 +191,13 @@ theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
     intro X Y f
     have := δ_naturality (shortExact_upSES_res X S.subtype) (shortExact_upSES_res Y S.subtype)
       ((upShortComplex ⋙ (resFunctor S.subtype).mapShortComplex).map f) (n + 1) (n + 2) rfl
-    simp only [Functor.comp_obj, functor_obj, Functor.comp_map, functor_map, cores_obj,
-      ShortComplex.map_X₃, ShortComplex.map_X₁, asIso_inv, up_obj, Functor.id_obj, coind₁'_obj,
+    simp only [Functor.comp_obj, Functor.comp_map, functor_map, cores_obj,
+      ShortComplex.map_X₃, ShortComplex.map_X₁, asIso_inv, up_obj, Functor.id_obj,
       δUpNatIso, δUpIso, NatIso.ofComponents_hom_app, asIso_hom, Category.assoc, IsIso.eq_inv_comp]
     rw [← Category.assoc]
-    simp only [ShortComplex.map_X₃, upSES_X₃, up_obj, Functor.id_obj, coind₁'_obj,
-      ShortComplex.map_X₁, upSES_X₁, Functor.comp_map, upShortComplex_obj,
-      Functor.mapShortComplex_map_τ₁, upShortComplex_map_τ₁, Functor.mapShortComplex_map_τ₃,
-      upShortComplex_map_τ₃, up_map] at this
+    simp only [ShortComplex.map_X₃, upSES_X₃, up_obj, Functor.id_obj,
+      ShortComplex.map_X₁, upSES_X₁, Functor.comp_map, Functor.mapShortComplex_map_τ₁,
+      upShortComplex_map_τ₁, Functor.mapShortComplex_map_τ₃, upShortComplex_map_τ₃, up_map] at this
     rw [this, Category.assoc, ← Category.assoc (δ _ _ _ _), IsIso.hom_inv_id, Category.id_comp,
       δ_naturality (shortExact_upSES X) (shortExact_upSES Y) ⟨f, coind₁'.map f, up.map f, rfl,
       by aesop_cat⟩ (n + 1) (n + 2) rfl, ← Category.assoc, ← Category.assoc]

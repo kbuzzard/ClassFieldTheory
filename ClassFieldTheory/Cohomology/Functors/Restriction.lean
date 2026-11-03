@@ -4,7 +4,7 @@ public import
   ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 -/
@@ -47,8 +47,8 @@ abbrev resCongr {f1 f2 : H →* G} (h : f1 = f2) :
     resFunctor.{w} (k := R) f1 ≅ resFunctor f2 :=
   NatIso.ofComponents (fun A ↦ mkIso (.mk (LinearEquiv.refl _ _) <| fun _ ↦ by simp [h]))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
+@[implicit_reducible]
 def resEquiv (f : H ≃* G) : Rep.{w} R G ≌ Rep.{w} R H where
   functor := resFunctor f.toMonoidHom
   inverse := resFunctor f.symm.toMonoidHom
