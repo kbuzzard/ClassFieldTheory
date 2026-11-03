@@ -98,6 +98,7 @@ namespace groupCohomology
 variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
   (surj : Function.Surjective φ)
 
+@[simps]
 noncomputable def cochain_infl :
     quotientToInvariantsFunctor' surj ⋙ cochainsFunctor R Q ⟶ cochainsFunctor R G where
   app M := cochainsMap φ <| res_quotientToInvariantsFunctor'_ι surj M
@@ -111,7 +112,10 @@ noncomputable def infl (n : ℕ) :
     Rep.quotientToInvariantsFunctor' surj ⋙ functor R Q n ⟶ functor R G n :=
   (groupCohomology.cochain_infl surj) ◫ 𝟙 (homologyFunctor _ _ n)
 
-
+lemma infl_app (n : ℕ) (M : Rep R G) :
+    (infl surj n).app M = map φ (res_quotientToInvariantsFunctor'_ι surj M) n := by
+  rw [infl, NatTrans.hcomp_id_app, homologyFunctor_map, cochain_infl_app]
+  rfl
 
 /--
 Assume that we have a short exact sequence `0 → A → B → C → 0` in `Rep R G`
