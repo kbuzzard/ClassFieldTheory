@@ -62,13 +62,12 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
         (mapShortComplex₃ hS (Eq.refl 3)).zero
     · simp only [Fin.isValue, Category.assoc, ← NatTrans.naturality, functor_obj]
       rw [← S.map_f]
-      simpa using! (mapShortComplex₁ hS (Eq.refl 3)).zero_assoc <|
-        (periodicCohomology 3 1 _).hom.app S.X₂
+      simp
     · simp [-functor_map, ← Functor.map_comp]
     · rw [← ShortComplex.map_g]
-      simpa using! (mapShortComplex₃ hS (Eq.refl 2)).zero
+      simp
     · rw [← ShortComplex.map_f]
-      simpa using! (mapShortComplex₁ hS (Eq.refl 2)).zero
+      simp
 
 set_option backward.isDefEq.respectTransparency false in
 lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS).ExactAt i := by

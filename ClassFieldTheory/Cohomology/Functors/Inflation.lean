@@ -70,12 +70,12 @@ lemma quotientToInvariantsFunctor'_obj_ρ (M : Rep R G) :
     (QuotientGroup.quotientKerEquivOfSurjective φ hφ).symm (φ x) = x :=
   MulEquiv.symm_apply_eq _ |>.mpr rfl
 
-attribute [local implicit_reducible] quotientToInvariantsFunctor Rep.resEquiv in
+attribute [local implicit_reducible] quotientToInvariantsFunctor in
 lemma quotientToInvariantsFunctor'_obj_ρ_apply (M : Rep R G) (g : G) :
     (M ↑ surj).ρ (φ g) = (M.quotientToInvariants φ.ker).ρ g := by
   simp [quotientToInvariantsFunctor'_obj_ρ]
 
-attribute [local implicit_reducible] quotientToInvariantsFunctor Rep.resEquiv in
+attribute [local implicit_reducible] quotientToInvariantsFunctor in
 @[simp] lemma quotientToInvariantsFunctor'_obj_ρ_apply₂ (M : Rep R G) (g : G)
     (v : (quotientToInvariantsFunctor' surj).obj M) :
     ((M ↑ surj).ρ (φ g) v).val = M.ρ g v.val := by
