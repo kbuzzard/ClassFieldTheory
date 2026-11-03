@@ -13,6 +13,15 @@ permissions:
   pages: write
   id-token: write
 
+# Run at most one instance of this workflow per ref at a time. On `main` this stops two pushes
+# in quick succession from racing each other's GitHub Pages deployment: the second
+# `actions/deploy-pages` call (inside docgen-action) fails with "Deployment request failed ...
+# due to in progress deployment". Queued runs on `main` wait for the running one; on a pull
+# request a newer push cancels the stale run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   style_lint:
     name: Lint style
