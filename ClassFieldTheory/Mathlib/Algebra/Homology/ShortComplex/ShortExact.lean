@@ -16,4 +16,13 @@ lemma shortExact_map_iff_of_natIso
 
 alias ⟨ShortExact.map_of_natIso, _⟩ := shortExact_map_iff_of_natIso
 
+/-- A faithful functor which preserves the homology of `S` as well as monomorphisms and
+epimorphisms detects short exactness of `S`. Compare `ShortComplex.exact_map_iff_of_faithful`. -/
+lemma shortExact_map_iff_of_faithful (S : ShortComplex C) [S.HasHomology] (F : C ⥤ D)
+    [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S] [F.PreservesRightHomologyOf S]
+    [F.Faithful] [F.PreservesMonomorphisms] [F.PreservesEpimorphisms] :
+    (S.map F).ShortExact ↔ S.ShortExact :=
+  ⟨fun h ↦ .mk' (S.exact_map_iff_of_faithful F|>.1 h.1) (F.mono_of_mono_map h.2)
+    (F.epi_of_epi_map h.3), fun h ↦ have := h.mono_f; have := h.epi_g; h.map F⟩
+
 end CategoryTheory.ShortComplex
