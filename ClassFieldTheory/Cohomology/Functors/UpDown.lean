@@ -298,11 +298,47 @@ def δDownIsoTate (M : Rep R G) (n : ℤ) :
     tateCohomology M n ≅ tateCohomology (down.obj M) (n + 1) :=
   asIso (TateCohomology.δ (shortExact_downSES M) n)
 
-def δUpResIsoTate {S : Type u} [Group S] [Fintype S] {φ : S →* G} (inj : Injective φ) (n : ℤ) :
-    tateCohomology (up.obj M ↓ φ) n ≅ tateCohomology (M ↓ φ) (n + 1) := sorry
+omit [Fintype G] in
+theorem instIsIso_shortExact_upSES_res {S : Type u} [Group S] [Fintype S]
+    {φ : S →* G} (inj : Injective φ) [Finite G] (M : Rep R G) (n : ℤ) :
+    IsIso (TateCohomology.δ (shortExact_upSES_res M φ) n) := by
+  have _ : TrivialTateCohomology (coind₁'.obj M ↓ φ) :=
+    ⟨fun H {n} =>
+      let := Fintype.ofFinite H
+      TrivialTateCohomology.of_injective
+        (φ.comp H.subtype) n (inj.comp H.subtype_injective)⟩
+  exact ShortComplex.ShortExact.isIso_δ
+    (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_upSES_res M φ))
+    n (n + 1) rfl (by simpa using! isZero_of_trivialTateCohomology' (coind₁'.obj M ↓ φ) n)
+    (by simpa using! isZero_of_trivialTateCohomology' (coind₁'.obj M ↓ φ) (n + 1))
 
+omit [Fintype G] in
+theorem instIsIso_shortExact_downSES_res {S : Type u} [Group S] [Fintype S]
+    {φ : S →* G} (inj : Injective φ) [Finite G] (M : Rep R G) (n : ℤ) :
+    IsIso (TateCohomology.δ (shortExact_downSES_res M φ) n) := by
+  have _ : TrivialTateCohomology (ind₁'.obj M ↓ φ) :=
+    ⟨fun H {n} =>
+      let := Fintype.ofFinite H
+      TrivialTateCohomology.of_injective
+        (φ.comp H.subtype) n (inj.comp H.subtype_injective)⟩
+  exact ShortComplex.ShortExact.isIso_δ
+    (TateCohomology.map_tateComplexFunctor_shortExact (shortExact_downSES_res M φ))
+    n (n + 1) rfl (by simpa using! isZero_of_trivialTateCohomology' (ind₁'.obj M ↓ φ) n)
+    (by simpa using! isZero_of_trivialTateCohomology' (ind₁'.obj M ↓ φ) (n + 1))
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps! hom]
+def δUpResIsoTate {S : Type u} [Group S] [Fintype S] {φ : S →* G} (inj : Injective φ) (n : ℤ) :
+    tateCohomology (up.obj M ↓ φ) n ≅ tateCohomology (M ↓ φ) (n + 1) :=
+  have := instIsIso_shortExact_upSES_res inj M n
+  asIso (TateCohomology.δ (shortExact_upSES_res M φ) n)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simps! hom]
 def δDownResIsoTate {H : Type u} [Group H] [Fintype H] {φ : H →* G} (inj : Injective φ) (n : ℤ) :
-    tateCohomology (M ↓ φ) n ≅ tateCohomology (down.obj M ↓ φ) (n + 1) := sorry
+    tateCohomology (M ↓ φ) n ≅ tateCohomology (down.obj M ↓ φ) (n + 1) :=
+  have := instIsIso_shortExact_downSES_res inj M n
+  asIso (TateCohomology.δ (shortExact_downSES_res M φ) n)
 
 def δUpNatIsoTate (n : ℤ) : up ⋙ tateCohomologyFunctor (R := R) (G := G) n ≅
     tateCohomologyFunctor (n + 1) :=

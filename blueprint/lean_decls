@@ -87,6 +87,10 @@ groupCohomology.instIsIso_shortExact_upSES
 groupCohomology.instIsIso_shortExact_downSES
 groupCohomology.δUpIsoTate
 groupCohomology.δDownIsoTate
+groupCohomology.instIsIso_shortExact_upSES_res
+groupCohomology.instIsIso_shortExact_downSES_res
+groupCohomology.δUpResIsoTate
+groupCohomology.δDownResIsoTate
 Rep.aug
 groupCohomology.inflationRestriction
 groupCohomology.inflation_restriction_mono

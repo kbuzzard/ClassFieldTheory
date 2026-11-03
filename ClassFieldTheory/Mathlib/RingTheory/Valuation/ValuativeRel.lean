@@ -66,11 +66,11 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
   [ValuativeExtension A B] {a b : A}
 
 instance : ValuativeExtension A A where
-  vle_iff_vle _ _ := .rfl
+  vle_iff_vle := .rfl
 
 variable (A B C) in
 theorem trans [ValuativeExtension B C] : ValuativeExtension A C where
-  vle_iff_vle _ _ := by simp_rw [Algebra.algebraMap_eq_smul_one, ← map_one (algebraMap B C),
+  vle_iff_vle {_ _} := by simp_rw [Algebra.algebraMap_eq_smul_one, ← map_one (algebraMap B C),
     Algebra.algebraMap_eq_smul_one, ← IsScalarTower.smul_assoc, ← Algebra.algebraMap_eq_smul_one,
     vle_iff_vle]
 
@@ -104,7 +104,7 @@ instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R
 
 instance (R : Type*) [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] (s : σ)
     [ValuativeRel R] : ValuativeExtension s R where
-  vle_iff_vle _ _ := Iff.rfl
+  vle_iff_vle := Iff.rfl
 
 variable {R : Type*} [CommRing R] {σ : Type*} [SetLike σ R] [SubringClass σ R] {s : σ}
 variable [ValuativeRel R]

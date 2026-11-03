@@ -676,7 +676,7 @@ theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] 
     isNonarchimedean_spectralNorm
   let v := NormedField.valuation (K := L)
   have : ValuativeExtension K L := by
-    refine ⟨fun x y ↦ ?_⟩
+    refine ⟨fun {x y} ↦ ?_⟩
     rw [Valuation.Compatible.vle_iff_le (v := v),
     Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation K)]
     change spectralNorm K L _ ≤ spectralNorm K L _ ↔ _
