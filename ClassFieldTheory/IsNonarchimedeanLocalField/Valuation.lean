@@ -76,14 +76,8 @@ noncomputable def v (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K]
   let f₄ : (ℤᵐ⁰)ˣ →* Multiplicative ℤ := (WithZero.unitsWithZeroEquiv.toMonoidHom)⁻¹
   (f₄.comp f₃).toAdditiveLeft
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma v_apply (x : Additive Kˣ) : v K x = -(valuationInt K x.toMul).log := by
-  obtain ⟨x, rfl⟩ := Additive.ofMul.surjective x
-  rw [toMul_ofMul]
-  generalize hy : valuationInt K x = y
-  cases y using WithZero.expRecOn with
-  | zero => simp at hy
-  | exp y => simp [v, hy]
+  simp [v, WithZero.toAdd_unzero_eq_log]
 
 lemma v_uniformiser {ϖ : 𝒪[K]} (hϖ : Irreducible ϖ) :
     v K (.ofMul <| Units.mk0 (ϖ : K) hϖ.ne_zero') = 1 := by

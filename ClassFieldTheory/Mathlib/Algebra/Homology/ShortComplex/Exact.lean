@@ -10,24 +10,32 @@ open Limits hiding im
 
 variable {C D : Type*} [Category C] [Category D]
 
+section HasZeroMorphisms
+variable [HasZeroMorphisms C]
+
+@[simp] lemma fFunctor_obj_hom (S : ShortComplex C) : (fFunctor.obj S).hom = S.f := rfl
+
+@[simp] lemma gFunctor_obj_hom (S : ShortComplex C) : (gFunctor.obj S).hom = S.g := rfl
+
+end HasZeroMorphisms
+
 section Abelian
 variable [Abelian C]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
+attribute [local implicit_reducible] gFunctor fFunctor im in
 /-- The cokernel of the first map of an exact complex in an abelian category is naturally isomorphic
 to the coimage of the second map.
 
 Note that we use the extra functor `F` to avoid talking about the category of exact complex. -/
 @[simps!] def kerIsoIm (F : D ⥤ ShortComplex C) (hF : ∀ d, (F.obj d).Exact) :
     F ⋙ gFunctor ⋙ ker C ≅ F ⋙ fFunctor ⋙ im :=
-  NatIso.ofComponents fun X ↦
+  NatIso.ofComponents (fun X ↦
     have := (hF X).mono_cokernelDesc
     kernelIsoOfEq (by simp) ≪≫
-      kernelCompMono _ (cokernel.desc (F.obj X).f (F.obj X).g (F.obj X).zero)
+      kernelCompMono _ (cokernel.desc (F.obj X).f (F.obj X).g (F.obj X).zero))
+    fun _ ↦ equalizer.hom_ext <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
+attribute [local implicit_reducible] fFunctor gFunctor coim in
 /-- The cokernel of the first map of an exact complex in an abelian category is naturally isomorphic
 to the coimage of the second map.
 

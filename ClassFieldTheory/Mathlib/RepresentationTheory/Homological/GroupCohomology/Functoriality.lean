@@ -11,17 +11,14 @@ variable {R G : Type u} [CommRing R] [Group G] {M : Rep R G}
 
 namespace groupCohomology
 
-@[simp]
-lemma res_id : res (MonoidHom.id G) M = M := rfl
+-- TODO: upstream (mathlib's `Rep.res_id` is not tagged `@[simp]`)
+attribute [simp] Rep.res_id
 
 @[reassoc]
 protected lemma map_zero {k G H : Type u} [CommRing k] [Group G] [Group H]
     {A : Rep k H} {B : Rep k G} (f : G →* H) (n : ℕ) :
     map f (0 : res f A ⟶ B) n = 0 := by
-  dsimp [map]
-  unfold groupCohomology
-  -- unfolding map would unfold the type as well, and groupCohomology is a `def`
-  simp
+  rw [map, cochainsMap_zero, HomologicalComplex.homologyMap_zero]
 
 variable (R G) in
 /-- `H⁰(G, -)` is naturally isomorphic to the invariants functor, with components `H0Iso`. -/

@@ -114,13 +114,13 @@ lemma res_span_norm' [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
       constructor
       · intro final
         simp only [← hhh] at final
-        change _ * (_ * _) = _ at final
+        rw [Subgroup.smul_def, smul_eq_mul] at final
         simp only [← mul_assoc, mul_eq_right] at final
         rw [← φ.map_mul, ← φ.map_one] at final
         apply inj at final
         exact eq_inv_of_mul_eq_one_left final
       rintro rfl
-      exact hhh.symm ▸ show _ * (_ * _) = _ by simp
+      simp [← hhh, Subgroup.smul_def]
     · intro b _ hab
       suffices Finset.card {x | φ x * σ b = a} = 0 by simp_all
       simp only [Finset.card_eq_zero, Finset.filter_eq_empty_iff, Finset.mem_univ, forall_const]
@@ -137,8 +137,8 @@ lemma span_norm [Fintype G] : Submodule.span R {leftRegular.norm R G} = ⊤ := b
 
 lemma res_span_norm [Finite G] {H : Type} [Group H] [Fintype H] (φ : H →* G)
     (inj : φ.toFun.Injective) : Submodule.span R (Set.range (res_norm R φ)) = ⊤ := by
-  change Submodule.span R (Set.range (_ ∘ _)) = _
-  rw [Set.range_comp, ← LinearEquiv.coe_toLinearMap, ← Submodule.map_span]
+  unfold res_norm
+  rw [Set.range_comp', ← LinearEquiv.coe_toLinearMap, ← Submodule.map_span]
   exact Submodule.map_eq_top_iff.2 <| leftRegular.res_span_norm' R φ inj
 
 /-- The 0th group cohomology of the trivial `R[G]`-module `R` is the trivial module. -/
@@ -146,29 +146,28 @@ def _root_.groupCohomology.H0trivial : groupCohomology.H0 (trivial R G R) ≅ Mo
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| Submodule.topEquiv.symm ≪≫ₗ LinearEquiv.ofEq _ _
   (by ext; simp) ≪≫ₗ (CategoryTheory.Iso.toLinearEquiv (groupCohomology.H0Iso (trivial R G R))).symm
 
-set_option backward.isDefEq.respectTransparency false in
+/-- The forward map of `H0trivial` is the canonical map `zeroι : H⁰(G, R) ⟶ R`. -/
+lemma _root_.groupCohomology.H0trivial_hom :
+    (groupCohomology.H0trivial R G).hom = zeroι (trivial R G R) := rfl
+
 @[elementwise]
 lemma _root_.groupCohomology.map_comp_H0trivial {ρ : Rep R G} (f : ρ ⟶ trivial R G R) :
     groupCohomology.map (.id _) f 0 ≫ (groupCohomology.H0trivial R G).hom = zeroι _ ≫
       f.toModuleCatHom := by
-  ext x
-  simp only [groupCohomology.H0trivial, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
-    LinearEquiv.ofEq_symm, LinearEquiv.toModuleIso_hom, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
-    LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
-    Submodule.topEquiv_apply, LinearEquiv.coe_ofEq_apply,
-    Representation.IntertwiningMap.coe_toLinearMap]
-  rw [Iso.toLinearEquiv_apply, ← LinearMap.comp_apply, ← ModuleCat.hom_comp,
-    groupCohomology.map_id_comp_H0Iso_hom]
-  simp [zeroι]
+  rw [groupCohomology.H0trivial_hom, zeroι_naturality]
 
-set_option backward.isDefEq.respectTransparency false in
+/-- A version of `groupCohomology.H0trivial_hom` for elements of `H⁰` of the restriction of the
+trivial representation along `φ : H →* G`, which is definitionally the trivial representation. -/
+lemma _root_.groupCohomology.H0trivial_toLinearEquiv_apply_res {H : Type} [Group H]
+    (φ : H →* G) (x : groupCohomology.H0 (trivial R G R ↓ φ)) :
+    (groupCohomology.H0trivial R H).toLinearEquiv x = zeroι (trivial R G R ↓ φ) x := rfl
+
 lemma groupCoh_map_res_norm {H : Type} [Group H] [Fintype H] (φ : H →* G) (g : G) :
     groupCohomology.map (.id _) ((resFunctor φ).map (ε R G)) 0 (res_norm R φ g) =
       (groupCohomology.H0trivial R H).toLinearEquiv.symm (Fintype.card H : R) := by
   apply (groupCohomology.H0trivial R H).toLinearEquiv.eq_symm_apply.mpr
-  change (groupCohomology.H0trivial R H).hom.hom ((groupCohomology.map _ _ 0).hom _) = _
-  rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, groupCohomology.map_comp_H0trivial,
-    ModuleCat.hom_comp, LinearMap.comp_apply, leftRegular.zeroι_res_norm]
+  rw [groupCohomology.H0trivial_toLinearEquiv_apply_res, ← ConcreteCategory.comp_apply,
+    zeroι_naturality, ConcreteCategory.comp_apply, leftRegular.zeroι_res_norm]
   simp
 
 end Rep.leftRegular

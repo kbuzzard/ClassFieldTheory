@@ -69,6 +69,18 @@ universe t w w' u u' v v'
 
 namespace Representation
 
+/-- `Representation.coind` applied pointwise. This belongs in Mathlib next to `coind_apply`
+(whose right-hand side is a `restrict` that is ill-typed at reducible transparency). -/
+@[simp] lemma coind_val_apply {k G H A : Type*} [Semiring k] [Monoid G] [Monoid H] (φ : G →* H)
+    [AddCommMonoid A] [Module k A] (ρ : Representation k G A) (h x : H) (f : coindV φ ρ) :
+    (coind φ ρ h f).1 x = f.1 (x * h) := rfl
+
+/-- `Representation.quotientToInvariants` applied pointwise. This belongs in Mathlib. -/
+lemma quotientToInvariants_mk_apply_val {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V]
+    [Module k V] (ρ : Representation k G V) (S : Subgroup G) [S.Normal] (g : G)
+    (x : invariants (ρ.comp S.subtype)) :
+    (ρ.quotientToInvariants S (g : G ⧸ S) x).1 = ρ g x.1 := rfl
+
 variable (R G V W : Type*)
 
 section meaninglessgeneral
@@ -81,6 +93,9 @@ abbrev coind₁V := coindV (⊥ : Subgroup G).subtype (trivial R _ V)
 instance : FunLike (coind₁V R G V) G V where
   coe f := f.val
   coe_injective := Subtype.val_injective
+
+variable {R G V} in
+@[simp] lemma coind₁V_coe_apply (f : coind₁V R G V) (x : G) : f x = f.1 x := rfl
 
 instance : Coe (G → V) (coind₁V R G V) where
   coe f := ⟨f, fun ⟨g, hg⟩ x ↦ by simp [Submonoid.mem_bot.1 hg]⟩
@@ -166,13 +181,12 @@ representations `coind₁' ρ` and `coind₁ R G V`.
   map_smul' _ _ := by ext; simp
   invFun f x    := ρ x⁻¹ (f x)
   left_inv f    := by ext; apply inv_self_apply
-  right_inv _   := by ext; simp; rfl
+  right_inv _   := by ext; simp
 
 lemma coind₁'_lequiv_coind₁_comm (g : G) :
     coind₁'_lequiv_coind₁ ρ ∘ₗ coind₁' ρ g = coind₁ R G V g ∘ₗ coind₁'_lequiv_coind₁ ρ := by
   ext f x
-  change ρ x (ρ g (f (x * g))) = ρ (x * g) (f (x * g))
-  rw [map_mul, mul_apply_eq_comp]
+  simp [-coind_apply, mul_apply_eq_comp]
 
 /--
 The linear map from `V` to `G → V` taking a vector `v : V` to the comstant function
@@ -195,9 +209,8 @@ variable {W X : Type*} [AddCommGroup W] [Module R W] [AddCommGroup X] [Module R 
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [mul_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma ind₁'_apply₂ (f : G →₀ V) (g x : G) : ρ.ind₁' g f x = ρ g (f (x * g)) := by
-  dsimp only [ind₁'_apply, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
+  simp only [ind₁'_apply, LinearMap.coe_comp, Function.comp_apply, mapRange.linearMap_apply,
     lmapDomain_apply]
   have : x = x * g * g⁻¹ := eq_mul_inv_of_mul_eq rfl
   rw [this, mapDomain_apply_of_injective (mul_left_injective g⁻¹)]
@@ -235,6 +248,14 @@ omit [Group G] in
 lemma ind₁'_π_comm (g : G) : ind₁'_π ∘ₗ ind₁' ρ g = ρ g ∘ₗ ind₁'_π := by
   ext; simp
 
+lemma ind₁'_π_surjective : Function.Surjective (ind₁'_π : (G →₀ V) →ₗ[R] V) :=
+  fun v ↦ ⟨single 1 v, by simp⟩
+
+omit [Group G] in
+lemma ind₁'_π_comp_ind₁'_map (f : V →ₗ[R] W) :
+    (ind₁'_π : (G →₀ W) →ₗ[R] W) ∘ₗ ind₁'_map f = f ∘ₗ (ind₁'_π : (G →₀ V) →ₗ[R] V) := by
+  ext; simp
+
 @[simps] def ind₁'_lmap : (G →₀ V) →ₗ[R] Ind₁V R G V where
   toFun f:= f.sum (fun g v ↦ Ind₁V.mk R G V g (ρ g v))
   map_add' _ _ := by
@@ -255,9 +276,7 @@ def ind₁'_invlmap_aux : (G →₀ R) →ₗ[R] V →ₗ[R] G →₀ V where
     map_smul' r v := by simp [Finsupp.smul_sum, smul_smul, mul_comm]}
   map_add' f1 f2 := by
     ext v : 1
-    change ((f1 + f2).sum fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
-      = (f1.sum fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
-        + (f2.sum fun g r ↦ Finsupp.single g (r • (ρ g⁻¹ v)))
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply]
     exact Finsupp.sum_add_index' (by simp) (by simp [add_smul])
   map_smul' r f := by
     ext : 1
@@ -272,7 +291,21 @@ def ind₁'_invlmap : Ind₁V R G V →ₗ[R] (G →₀ V) :=
       simpa [Coinvariants.ker, sub_eq_zero]
         using fun a ↦ by exact LinearMap.congr_fun TensorProduct.map_id a)).toLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
+lemma ind₁'_invlmap_coinvariantsMk (x : TensorProduct R (MonoidAlgebra R G) V) :
+    ind₁'_invlmap ρ (Coinvariants.mk _ x) = TensorProduct.lift
+      (ind₁'_invlmap_aux ρ ∘ₗ (MonoidAlgebra.coeffLinearEquiv R).toLinearMap) x := rfl
+
+@[simp] lemma ind₁'_invlmap_mk (g : G) (v : V) :
+    ind₁'_invlmap ρ (Coinvariants.mk _ (MonoidAlgebra.single g 1 ⊗ₜ[R] v)) =
+      single g (ρ g⁻¹ v) := by
+  simp [ind₁'_invlmap_coinvariantsMk, ind₁'_invlmap_aux]
+
+lemma ind₁'_invlmap_comp_lmap : ind₁'_invlmap ρ ∘ₗ ind₁'_lmap ρ = LinearMap.id := by
+  ext; simp
+
+lemma ind₁'_lmap_comp_invlmap : ind₁'_lmap ρ ∘ₗ ind₁'_invlmap ρ = LinearMap.id := by
+  ext; simp
+
 /--
 The linear automorphism of `G →₀ V`, which gives an isomorphism
 between `ind₁' ρ` and `ind₁ R G V`.
@@ -281,48 +314,9 @@ between `ind₁' ρ` and `ind₁ R G V`.
   toLinearMap := ind₁'_lmap ρ
   invFun := ind₁'_invlmap ρ
   left_inv f := by
-    rw [LinearMap.toFun_eq_coe]
-    induction f using Finsupp.induction_linear
-    · simp
-    · rename_i f g h1 h2
-      rw [map_add, map_add, h1, h2]
-    · rename_i g v
-      simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot, LinearEquiv.toLinearMap_ofLinearMap,
-        ind₁'_lmap_apply, LinearMap.coe_comp, Coinvariants.mk, Function.comp_apply,
-        TensorProduct.mk_apply, map_zero, TensorProduct.tmul_zero, sum_single_index]
-      change (TensorProduct.lift (ρ.ind₁'_invlmap_aux ∘ₗ
-          (MonoidAlgebra.coeffLinearEquiv R).toLinearMap))
-        (LinearMap.id (R := R) ((MonoidAlgebra.single g 1) ⊗ₜ[R] (ρ g) v)) = .single g v
-      simp [ind₁'_invlmap_aux]
+    rw [LinearMap.toFun_eq_coe, ← LinearMap.comp_apply, ind₁'_invlmap_comp_lmap, LinearMap.id_apply]
   right_inv f := by
-    rw [LinearMap.toFun_eq_coe]
-    induction f using Submodule.Quotient.induction_on with | H f
-    induction f using TensorProduct.inductionOn with
-    | add f g h1 h2 =>
-      rw [← Submodule.mkQ_apply, map_add, map_add, map_add,
-        Submodule.mkQ_apply, Submodule.mkQ_apply, h1, h2]
-    | tmul x y =>
-    simp only [ind₁'_invlmap, Submodule.quotEquivOfEqBot,
-      LinearEquiv.toLinearMap_ofLinearMap, LinearMap.coe_comp, Function.comp_apply]
-    change ρ.ind₁'_lmap (TensorProduct.lift (ρ.ind₁'_invlmap_aux ∘ₗ
-        (MonoidAlgebra.coeffLinearEquiv R).toLinearMap)
-      (LinearMap.id (R := R) (x ⊗ₜ[R] y))) = Submodule.Quotient.mk (x ⊗ₜ[R] y)
-    simp only [LinearMap.id_coe, id_eq, TensorProduct.lift.tmul, LinearMap.coe_comp,
-      LinearEquiv.coe_coe, Function.comp_apply, MonoidAlgebra.coeffLinearEquiv_apply]
-    induction x using MonoidAlgebra.induction_linear with
-    | zero => simp
-    | add f g h1 h2 =>
-      rw [MonoidAlgebra.coeff_add, map_add, LinearMap.add_apply, map_add, h1, h2,
-        TensorProduct.add_tmul]
-      rfl
-    | single g r =>
-      simp only [MonoidAlgebra.coeff_single, ind₁'_invlmap_aux, LinearMap.coe_mk, AddHom.coe_mk,
-        zero_smul, single_zero, sum_single_index, ind₁'_lmap_apply, LinearMap.coe_comp,
-        Coinvariants.mk, Function.comp_apply, TensorProduct.mk_apply, map_zero,
-        TensorProduct.tmul_zero, map_smul, self_inv_apply, TensorProduct.tmul_smul]
-      rw [← map_smul, ← Submodule.mkQ_apply]
-      congr
-      rw [TensorProduct.smul_tmul', MonoidAlgebra.smul_single, smul_eq_mul, mul_one]
+    rw [LinearMap.toFun_eq_coe, ← LinearMap.comp_apply, ind₁'_lmap_comp_invlmap, LinearMap.id_apply]
 
 @[simp] lemma ind₁'_lequiv_comp_lsingle (x : G) :
     ρ.ind₁'_lequiv ∘ₗ lsingle x = Ind₁V.mk R G V x ∘ₗ ρ x := by ext; simp
@@ -330,12 +324,10 @@ between `ind₁' ρ` and `ind₁ R G V`.
 lemma ind₁'_lequiv_comm (g : G) :
     ind₁'_lequiv ρ ∘ₗ ind₁' ρ g = ind₁ R G V g ∘ₗ ind₁'_lequiv ρ := by
   ext x : 1
-  rw [LinearMap.comp_assoc, ind₁'_comp_lsingle,
-    ← LinearMap.comp_assoc, ind₁'_lequiv_comp_lsingle, LinearMap.comp_assoc, map_mul]
-  change _ ∘ₗ (_ * ρ g) = _
-  rw [mul_assoc, ← map_mul, inv_mul_cancel, map_one, mul_one]
-  nth_rw 2 [LinearMap.comp_assoc]
-  rw [ind₁'_lequiv_comp_lsingle, ← LinearMap.comp_assoc, ind₁_apply]
+  simp only [LinearMap.comp_assoc]
+  rw [ind₁'_comp_lsingle, ind₁'_lequiv_comp_lsingle, ← LinearMap.comp_assoc,
+    ind₁'_lequiv_comp_lsingle, LinearMap.comp_assoc, ← Module.End.mul_eq_comp, ← map_mul,
+    inv_mul_cancel_right, ← LinearMap.comp_assoc, ind₁_apply]
 
 def ind₁'_lequiv_coind₁' [Finite G] : (G →₀ V) ≃ₗ[R] (G → V) :=
   linearEquivFunOnFinite R V G
@@ -362,18 +354,12 @@ lemma ind₁'_lequiv_coind₁'_comm [Finite G] (g : G) :
 lemma ind₁'_lequiv_coind₁'_comm' [Finite G] (g : G) :
     ind₁'_lequiv_coind₁'.symm.toLinearMap ∘ₗ ρ.coind₁' g
     = ρ.ind₁' g ∘ₗ ind₁'_lequiv_coind₁'.symm.toLinearMap := by
-  ext f : 1
-  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
-  rw [LinearEquiv.symm_apply_eq]
-  symm
-  change (ind₁'_lequiv_coind₁'.toLinearMap ∘ₗ (ρ.ind₁' g)) _ = (ρ.coind₁' g) f
-  rw [ind₁'_lequiv_coind₁'_comm, LinearMap.comp_apply, LinearEquiv.coe_coe,
-    LinearEquiv.apply_symm_apply]
+  rw [LinearEquiv.toLinearMap_symm_comp_eq, ← LinearMap.comp_assoc, ind₁'_lequiv_coind₁'_comm,
+    LinearMap.comp_assoc, LinearEquiv.comp_symm, LinearMap.comp_id]
 
 lemma coind₁'_ι_app_injective : Function.Injective (@coind₁'_ι R G V _ _ _) := by
   intro _ _ h
-  change Function.const _ _ = Function.const _ _ at h
-  simpa using h
+  simpa using congrFun h 1
 
 end Representation
 
@@ -386,13 +372,15 @@ variable (G) in
 abbrev coind₁ : ModuleCat.{w} R ⥤ Rep R G :=
   trivialFunctor R (⊥ : Subgroup G) ⋙ coindFunctor R (⊥ : Subgroup G).subtype
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+lemma coind₁_obj_ρ_apply_val (g : G) (f : (coind₁ G).obj A) (x : G) :
+    (((coind₁ G).obj A).ρ g f).1 x = f.1 (x * g) := rfl
+
 def coind₁_quotientToInvariants_iso_aux1 (φ : G →* Q) :
     invariants (((coind₁ G).obj A).ρ.comp φ.ker.subtype) ≃ₗ[R]
       coindV (⊥ : Subgroup (G ⧸ φ.ker)).subtype (trivial R (⊥ : Subgroup (G ⧸ φ.ker)) A).ρ where
   toFun x := ⟨Quotient.lift x.1.1 (fun a b hab ↦ by
     nth_rw 1 [← x.2 ⟨a⁻¹ * b, QuotientGroup.leftRel_apply.mp hab⟩]
+    rw [MonoidHom.comp_apply, Subgroup.subtype_apply, coind₁_obj_ρ_apply_val]
     simp), by simp [coindV]⟩
   map_add' x y := by
     ext x
@@ -402,9 +390,13 @@ def coind₁_quotientToInvariants_iso_aux1 (φ : G →* Q) :
     ext x
     induction x using QuotientGroup.induction_on
     simp
-  invFun x := ⟨⟨x.1.comp QuotientGroup.mk, by simp [coindV, trivialFunctor]⟩, fun a ↦ by
-    simpa [← Subtype.val_inj] using funext (by simp)⟩
-  left_inv := fun ⟨⟨f, hf1⟩, hf2⟩ ↦ by simpa using Quotient.lift_comp_mk f _
+  invFun x := ⟨⟨x.1.comp QuotientGroup.mk, by simp [coindV, trivialFunctor]⟩, fun a ↦
+    Subtype.ext <| funext fun g ↦ by
+      rw [MonoidHom.comp_apply, Subgroup.subtype_apply, coind₁_obj_ρ_apply_val]
+      simp⟩
+  left_inv x := by
+    refine Subtype.ext (Subtype.ext (funext fun g ↦ ?_))
+    simp
   right_inv := by
     simp only [Function.RightInverse, Function.LeftInverse, trivialFunctor_obj_V,
       Functor.comp_obj, coindFunctor_obj, Subtype.forall, Subtype.mk.injEq]
@@ -413,8 +405,6 @@ def coind₁_quotientToInvariants_iso_aux1 (φ : G →* Q) :
     induction x using QuotientGroup.induction_on
     simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 def coind₁_quotientToInvariants_iso_aux2 {H : Type v'} [Group H] (φ : G ≃* H) :
     (coindV (⊥ : Subgroup G).subtype
     ((trivialFunctor R (⊥ : Subgroup G)).obj A).ρ) ≃ₗ[R]
@@ -429,24 +419,44 @@ def coind₁_quotientToInvariants_iso_aux2 {H : Type v'} [Group H] (φ : G ≃* 
     simpa [Function.RightInverse, Function.LeftInverse] using
       fun a ha ↦ by simp [Function.comp_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+lemma coind₁_quotientToInvariants_iso_aux1_apply_val (φ : G →* Q)
+    (x : invariants (((coind₁ G).obj A).ρ.comp φ.ker.subtype)) (g : G) :
+    (coind₁_quotientToInvariants_iso_aux1 A φ x).1 (g : G ⧸ φ.ker) = x.1.1 g := rfl
+
+lemma coind₁_quotientToInvariants_iso_equiv_apply_val {φ : G →* Q} (surj : Function.Surjective φ)
+    (x : invariants (((coind₁ G).obj A).ρ.comp φ.ker.subtype)) (q : Q) :
+    (((coind₁_quotientToInvariants_iso_aux1 A φ).trans (coind₁_quotientToInvariants_iso_aux2 A
+      (QuotientGroup.quotientKerEquivOfSurjective φ surj))) x).1 q =
+      (coind₁_quotientToInvariants_iso_aux1 A φ x).1
+        ((QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q) := rfl
+
+lemma coind₁_quotientToInvariants_iso_comm {φ : G →* Q} (surj : Function.Surjective φ) (q : Q) :
+    ((coind₁_quotientToInvariants_iso_aux1 A φ).trans (coind₁_quotientToInvariants_iso_aux2 A
+      (QuotientGroup.quotientKerEquivOfSurjective φ surj))).toLinearMap ∘ₗ
+        (((coind₁.{max w v v'} G).obj A).quotientToInvariants φ.ker).ρ
+          ((QuotientGroup.quotientKerEquivOfSurjective φ surj).symm q) =
+      ((coind₁.{max w v v'} Q).obj A).ρ q ∘ₗ ((coind₁_quotientToInvariants_iso_aux1 A φ).trans
+        (coind₁_quotientToInvariants_iso_aux2 A
+          (QuotientGroup.quotientKerEquivOfSurjective φ surj))).toLinearMap := by
+  obtain ⟨g, rfl⟩ := surj q
+  ext x : 1
+  refine Subtype.ext (funext fun q' ↦ ?_)
+  obtain ⟨g', rfl⟩ := surj q'
+  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, coind₁_obj_ρ_apply_val, ← map_mul]
+  rw [coind₁_quotientToInvariants_iso_equiv_apply_val,
+    coind₁_quotientToInvariants_iso_equiv_apply_val,
+    QuotientGroup.quotientKerEquivOfSurjective_symm_apply,
+    QuotientGroup.quotientKerEquivOfSurjective_symm_apply,
+    QuotientGroup.quotientKerEquivOfSurjective_symm_apply,
+    coind₁_quotientToInvariants_iso_aux1_apply_val, coind₁_quotientToInvariants_iso_aux1_apply_val,
+    quotientToInvariants_mk_apply_val, coind₁_obj_ρ_apply_val]
+
 def coind₁_quotientToInvariants_iso {φ : G →* Q}
     (surj : Function.Surjective φ) :
-    (((coind₁.{max w v v'} G).obj A) ↑ surj) ≅ (coind₁.{max w v v'} Q).obj A := by
-  refine mkIso <| .mk ((coind₁_quotientToInvariants_iso_aux1 A φ).trans <|
+    (((coind₁.{max w v v'} G).obj A) ↑ surj) ≅ (coind₁.{max w v v'} Q).obj A :=
+  mkIso <| .mk ((coind₁_quotientToInvariants_iso_aux1 A φ).trans <|
     coind₁_quotientToInvariants_iso_aux2 A <| QuotientGroup.quotientKerEquivOfSurjective φ surj)
-    fun q ↦ ?_
-  ext1 x
-  simp only [trivialFunctor_obj_V, quotientToInvariantsFunctor,
-    invariantsFunctor_map_hom, Functor.comp_obj, coindFunctor_obj,
-    MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_ofClass, Function.comp_apply,
-    LinearMap.coe_comp, LinearEquiv.coe_coe, LinearEquiv.trans_apply, coind_apply]
-  ext q'
-  obtain ⟨g, rfl⟩ := surj q
-  obtain ⟨g', rfl⟩ := surj q'
-  simp [coind₁_quotientToInvariants_iso_aux2,
-    coind₁_quotientToInvariants_iso_aux1, ← QuotientGroup.mk_mul]
+    (coind₁_quotientToInvariants_iso_comm A surj)
 
 /--
 The functor which takes a representation `ρ` of `G` on `V` to the
@@ -465,11 +475,10 @@ This map takes an element `m : M` to the constant function with value `M`.
 @[simps] def coind₁'_ι : 𝟭 (Rep.{max w v} R G) ⟶ coind₁' where
   app M := Rep.ofHom ⟨Representation.coind₁'_ι, fun g ↦ by ext; simp⟩
 
+attribute [local implicit_reducible] coind₁' in
 instance (M : Rep.{max w v} R G) : Mono (coind₁'_ι.app M) := by
-  refine (mono_iff_injective (coind₁'_ι.app M)).mpr ?_
-  intro x y eq
-  change Function.const G x 1 = Function.const G y 1
-  exact congrFun eq 1
+  refine (mono_iff_injective (coind₁'_ι.app M)).mpr fun x y eq ↦ ?_
+  simpa using congrFun eq 1
 
 @[simps!] def coind₁'_obj_iso_coind₁ (M : Rep.{max w v} R G) :
     coind₁'.obj M ≅ (coind₁ G).obj (ModuleCat.of R M.V) :=
@@ -499,7 +508,7 @@ def ind₁' : Rep.{w} R G ⥤ Rep R G where -- # why???????
   obj M := of M.ρ.ind₁'
   map f := ofHom ⟨Representation.ind₁'_map f.hom.toLinearMap, fun g ↦ by ext; simp [hom_comm_apply]⟩
 
-set_option backward.defeqAttrib.useBackward true in
+attribute [local implicit_reducible] ind₁' in
 /--
 The natural projection `ind₁'.obj M ⟶ M`, which takes `f : G →₀ M.V` to the sum of the
 values of `f`.
@@ -509,16 +518,17 @@ values of `f`.
 def ind₁'_π : ind₁' ⟶ 𝟭 (Rep.{max w v} R G) where
   app M := ofHom ⟨Representation.ind₁'_π, fun g ↦ ind₁'_π_comm _ _⟩
   naturality _ _ x := by
-    simp only [ind₁'_obj, Functor.id_obj, Functor.id_map]
-    ext
-    simp [ind₁']
+    ext : 2
+    simp [ind₁', ind₁'_π_comp_ind₁'_map]
 
+/-- The underlying function of `ind₁'_π.app M` is `Representation.ind₁'_π`. -/
+lemma coe_hom_ind₁'_π_app (M : Rep R G) :
+    ⇑(ind₁'_π.app M).hom = Representation.ind₁'_π (R := R) (G := G) (V := M.V) := rfl
+
+attribute [local implicit_reducible] ind₁' in
 instance instEpiAppInd₁'_π (M : Rep R G) : Epi (ind₁'_π.app M) := by
-  refine (epi_iff_surjective (ind₁'_π.app M)).2 fun (m : M.V) ↦ ⟨single 1 m, ?_⟩
-  classical
-  simp only [Functor.id_obj, ind₁'_π]
-  change Representation.ind₁'_π _ = m
-  simp
+  rw [epi_iff_surjective, coe_hom_ind₁'_π_app]
+  exact Representation.ind₁'_π_surjective
 
 def ind₁'_obj_iso_ind₁ (M : Rep.{u} R G) : ind₁'.obj M ≅ (ind₁ G).obj (ModuleCat.of R M.V) :=
   mkIso <| .mk (M.ρ.ind₁'_lequiv) fun g ↦ ind₁'_lequiv_comm M.ρ g

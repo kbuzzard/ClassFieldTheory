@@ -16,7 +16,6 @@ variable {k : Type u} {G : Type v} [CommRing k] [Monoid G] {A : Rep.{w} k G}
 
 open CategoryTheory ShortComplex ShortExact Limits
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `CategoryTheory.Limits.compNatIso` weirdly uses `Functor.IsEquivalence` -/
 def CategoryTheory.Limits.compNatIso' {C D : Type*} [Category* C] [Category* D] [HasZeroMorphisms C]
     {X Y : C} {f : X ⟶ Y} [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms] :
@@ -46,10 +45,11 @@ lemma CategoryTheory.ShortComplex.rep_exact_iff {S : ShortComplex (Rep.{w} k G)}
     S.Exact ↔ S.g.hom.ker ≤ S.f.hom.range := by
   rw [← exact_map_iff_of_faithful (F := forget₂ (Rep k G) (ModuleCat k)),
     CategoryTheory.ShortComplex.moduleCat_exact_iff_ker_sub_range]
-  rfl
+  simp [IsConcreteLE.le_iff]
 
 lemma CategoryTheory.ShortComplex.ShortExact.rep_exact_iff_function_exact
     {S : ShortComplex (Rep.{w} k G)} : S.Exact ↔ Function.Exact S.f S.g := by
   rw [← exact_map_iff_of_faithful (F := forget₂ _ (ModuleCat k)),
     moduleCat_exact_iff_function_exact]
-  rfl
+  simp only [map_f, map_g, Rep.forget₂_moduleCat_map, ModuleCat.hom_ofHom,
+    Representation.IntertwiningMap.coe_toLinearMap]

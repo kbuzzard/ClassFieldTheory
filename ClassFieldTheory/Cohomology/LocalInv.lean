@@ -23,6 +23,22 @@ open groupCohomology TateCohomology CategoryTheory Limits
 
 local notation3:1024 M:1024 "ᵐ" => Multiplicative M
 
+namespace groupCohomology
+universe u
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+
+@[simp] lemma shortComplexH2_moduleCatToCycles_apply (x : G → A) (g : G × G) :
+    DFunLike.coe (F := cocycles₂ A) ((shortComplexH2 A).moduleCatToCycles x) g =
+      (d₁₂ A).hom x g :=
+  rfl
+
+variable {A} in
+lemma H2Iso_inv_hom_mk (f : cocycles₂ A) :
+    (H2Iso A).inv.hom (Submodule.Quotient.mk f) = (H2π A).hom f := by
+  rw [← Submodule.mkQ_apply, ← H2π_comp_H2Iso_hom_apply, Iso.hom_inv_id_apply]
+
+end groupCohomology
+
 variable {n : ℕ}
 
 /-- The carry cocycle. -/
@@ -99,32 +115,42 @@ private lemma localInvAuxAux_carryCocycle : localInvAuxAux (carryCocycle n) = 1 
     carry_neg_one_one (by omega)]
   simp
 
+variable (n) in
+lemma range_le_ker_localInvAuxAux :
+    (shortComplexH2 (.trivial ℤ (ZMod n)ᵐ ℤ)).moduleCatToCycles.range.toAddSubgroup ≤
+      (localInvAuxAux (n := n)).ker := by
+  rintro _ ⟨x, rfl⟩
+  simpa [localInvAuxAux, Finset.sum_add_distrib, Finset.sum_sub_distrib, neg_add_eq_sub,
+    sub_eq_zero]
+    using (Equiv.sum_comp (Equiv.addRight (1 : ZMod n)) fun i ↦ (x (.ofAdd i) : ZMod n)).symm
+
 open CategoryTheory in
 variable (n) in
 /-- The local invariant. -/
 def localInvAux : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) →+ ZMod n := by
   refine .comp ?_ (H2Iso _).hom.hom.toAddMonoidHom
   refine QuotientAddGroup.lift _ localInvAuxAux ?_
-  rintro _ ⟨x, rfl⟩
-  -- TODO: We're missing projection lemmas for `shortComplexH2`
-  change ZMod n → ℤ at x
-  change ∑ i, Int.cast (x 1 - x (i + 1) + x i) = (0 : ZMod n)
-  simpa [Finset.sum_add_distrib, Finset.sum_sub_distrib, neg_add_eq_sub, sub_eq_zero]
-    using (Equiv.sum_comp (Equiv.addRight (1 : ZMod n)) _).symm
+  exact range_le_ker_localInvAuxAux n
+
+private lemma localInvAux_apply (x : H2 (.trivial ℤ (ZMod n)ᵐ ℤ)) :
+    localInvAux n x = QuotientAddGroup.lift _ localInvAuxAux (range_le_ker_localInvAuxAux n)
+      ((H2Iso _).hom.hom x) := rfl
+
+private lemma localInvAux_H2π_hom (f : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ)) :
+    localInvAux n ((H2π _).hom f) = localInvAuxAux f := by
+  rw [localInvAux_apply, H2π_comp_H2Iso_hom_apply, Submodule.mkQ_apply,
+    ← Submodule.Quotient.quotientAddGroupMk_eq_mk, QuotientAddGroup.lift_mk]
 
 /-- Multiplying the fundamental class by `i`. Auxiliary definition for `carryH2`. -/
 def carryH2Aux (i : ZMod n) : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) :=
   i.val • (H2Iso _).inv.hom (QuotientAddGroup.mk (carryCocycle n))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- By a computation, `localInvAux n ∘ carryH2Aux = id`. -/
 lemma rightInverse_carryH2Aux_localInvAux : carryH2Aux.RightInverse (localInvAux n) := by
   intro i
-  simp only [localInvAux, carryH2Aux,
-    AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe, Function.comp_apply,
-    Iso.inv_hom_id_apply, map_nsmul, nsmul_eq_mul, ZMod.natCast_val, ZMod.cast_id', id_eq]
-  convert mul_one _
-  exact localInvAuxAux_carryCocycle n
+  rw [carryH2Aux, map_nsmul, Submodule.Quotient.quotientAddGroupMk_eq_mk, H2Iso_inv_hom_mk,
+    localInvAux_H2π_hom, localInvAuxAux_carryCocycle]
+  simp
 
 /-- Since `|H²(ℤ/nℤ, ℤ)| = |ℤ/nℤ|` and `localInvAux n ∘ carryH2Aux = id`, we also have
 `carryH2Aux ∘ localInvAux n = id`. -/
@@ -150,10 +176,10 @@ def localInv : H2 (.trivial ℤ (ZMod n)ᵐ ℤ) ≃+ ZMod n where
   right_inv := rightInverse_carryH2Aux_localInvAux
   map_add' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma localInv_H2π_hom (f : cocycles₂ (.trivial ℤ (ZMod n)ᵐ ℤ)) :
     localInv n ((H2π _).hom f) = ∑ i : ZMod n, Int.cast (f (.ofAdd i, .ofAdd 1)) := by
-  simp [localInv, localInvAux]; rfl
+  rw [localInv, AddEquiv.coe_mk, Equiv.coe_fn_mk, localInvAux_H2π_hom]
+  simp [localInvAuxAux]
 
 @[simp] lemma localInv_symm_apply (i : ZMod n) :
     (localInv n).symm i = i.val • (H2Iso _).inv.hom (QuotientAddGroup.mk (carryCocycle n)) := rfl

@@ -40,6 +40,26 @@ open
   groupCohomology
   BigOperators
 
+namespace groupCohomology
+
+universe u
+
+/-- Exactness of `Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)` at `Hⁱ(G, X₃)`, stated with
+`groupCohomology.map` and `groupCohomology.δ` instead of `mapShortComplex₃`. -/
+lemma range_map_eq_ker_δ {k G : Type u} [CommRing k] [Group G] {X : ShortComplex (Rep k G)}
+    (hX : X.ShortExact) {i j : ℕ} (hij : i + 1 = j) :
+    LinearMap.range (map (MonoidHom.id G) X.g i).hom = LinearMap.ker (δ hX i j hij).hom :=
+  (mapShortComplex₃_exact hX hij).moduleCat_range_eq_ker
+
+open RepresentationTheory.groupCohomology in
+/-- For a trivial representation `A`, the isomorphism `H0IsoOfIsTrivial A` is `zeroι A`. -/
+lemma H0IsoOfIsTrivial_hom_eq_zeroι {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
+    [A.IsTrivial] : (H0IsoOfIsTrivial A).hom = zeroι A := by
+  ext x
+  simp [zeroι, shortComplexH0_f]
+
+end groupCohomology
+
 variable (R G : Type) [CommRing R] [Group G]
 
 /--
@@ -232,7 +252,6 @@ lemma cohomology_aug_succ_iso' [Finite G] {H : Type} [Group H] {φ : H →* G}
   groupCohomology.isIso_δ_of_isZero _ _ (isZero_of_injective _ _ _ (by omega) inj) <|
     isZero_of_injective _ _ _ (by omega) inj
 
-set_option backward.defeqAttrib.useBackward true in
   /-
   If Tate cohomology is defined, then this is proved in the same way as a previous
   lemma. If not, then using usual cohomology we have a long exact sequence containing the
@@ -245,7 +264,6 @@ set_option backward.defeqAttrib.useBackward true in
   i.e. the sum of all elements of `G`. The image of the norm element in `H⁰(G,R)` is `|G|`,
   since every element of the group is mapped by `ε` to `1`.
   -/
-set_option backward.isDefEq.respectTransparency false in
 def H1_iso [Fintype G] :
     H1 (aug R G) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card G : R)}) :=
   LinearEquiv.toModuleIso <| LinearEquiv.symm <| by
@@ -253,44 +271,27 @@ def H1_iso [Fintype G] :
     (ModuleCat.epi_iff_surjective _|>.1 <| epi_δ_of_isZero _ 0 <| by
     simpa using by exact isZero_of_trivialCohomology)
   refine Submodule.Quotient.equiv _ _ (H0trivial R G).symm.toLinearEquiv ?_
-  have : LinearMap.range _ = LinearMap.ker (δ (aug_isShortExact R G) 0 1 rfl).hom :=
-    (groupCohomology.mapShortComplex₃_exact (aug_isShortExact R G) rfl).moduleCat_range_eq_ker
-  rw [← this]
+  rw [← range_map_eq_ker_δ]
   apply le_antisymm
-  · simp only [Nat.card_eq_fintype_card, Nat.reduceAdd]
+  · simp only [Nat.card_eq_fintype_card]
     intro (x : H0 _)
     simp only [Submodule.mem_map, Ideal.mem_span_singleton', exists_exists_eq_and,
       LinearMap.mem_range, forall_exists_index]
     rintro a rfl
     refine ⟨a • leftRegular.norm R G, ?_⟩
     apply (H0trivial R G).toLinearEquiv.injective
-    rw [← Iso.toLinearEquiv_symm, LinearEquiv.coe_toLinearMap, LinearEquiv.apply_symm_apply]
-    change (H0trivial R G).hom.hom _ = _
-    rw [show (mapShortComplex₃ ..).f = map (.id G) (ε R G) 0 by simp, ← LinearMap.comp_apply,
-      ← ModuleCat.hom_comp, map_comp_H0trivial]
-    simp only [ShortComplex.SnakeInput.L₁'_X₁, HomologicalComplex.HomologySequence.snakeInput_L₀,
-      Functor.mapShortComplex_obj, ShortComplex.map_X₂,
-      HomologicalComplex.homologyFunctor_obj, ModuleCat.hom_comp, map_smul, LinearMap.coe_comp,
-      Function.comp_apply, smul_eq_mul]
-    conv_lhs => enter [2, 2]; tactic => convert leftRegular.zeroι_norm R G
-    rw [map_sum]
+    rw [← Iso.toLinearEquiv_symm, LinearEquiv.coe_toLinearMap, LinearEquiv.apply_symm_apply,
+      Iso.toLinearEquiv_apply, map_smul, map_smul, map_comp_H0trivial_apply,
+      leftRegular.zeroι_norm]
     simp
-  · change _ ≤ Submodule.map (H0trivial R G).symm.toLinearEquiv.toLinearMap _
-    rw [Submodule.map_equiv_eq_comap_symm]
-    rw [LinearMap.range_eq_map, ← leftRegular.span_norm, Submodule.map_le_iff_le_comap,
-      Submodule.span_le, Set.singleton_subset_iff]
-    simp only [Nat.reduceAdd, ShortComplex.SnakeInput.L₁'_X₁,
-      HomologicalComplex.HomologySequence.snakeInput_L₀, Functor.mapShortComplex_obj,
-      ShortComplex.map_X₂, HomologicalComplex.homologyFunctor_obj,
-      ShortComplex.SnakeInput.L₁'_X₂, ShortComplex.map_X₃, ShortComplex.SnakeInput.L₁'_f,
-      ShortComplex.map_g, cochainsFunctor_map, HomologicalComplex.homologyFunctor_map,
-      Nat.card_eq_fintype_card, Submodule.comap_coe, LinearEquiv.coe_coe, Set.mem_preimage,
-      SetLike.mem_coe]
-    rw [Iso.toLinearEquiv_symm, Iso.symm_symm_eq, Iso.toLinearEquiv_apply, map_comp_H0trivial_apply,
-      leftRegular.zeroι_norm, map_sum]
+  · rw [Submodule.map_equiv_eq_comap_symm, LinearMap.range_eq_map, ← leftRegular.span_norm,
+      Submodule.map_le_iff_le_comap, Submodule.span_le, Set.singleton_subset_iff]
+    simp only [Nat.card_eq_fintype_card, Submodule.comap_coe, LinearEquiv.coe_coe,
+      Set.mem_preimage, SetLike.mem_coe]
+    rw [Iso.toLinearEquiv_symm, Iso.symm_symm_eq, Iso.toLinearEquiv_apply,
+      map_comp_H0trivial_apply, leftRegular.zeroι_norm, map_sum]
     simp
 
-set_option backward.defeqAttrib.useBackward true in
   /-
   If Tate cohomology is defined, then this is proved in the same way as a previous
   lemma. If not, then using usual cohomology we have a long exact sequence containing the
@@ -303,33 +304,29 @@ set_option backward.defeqAttrib.useBackward true in
   The image of such a function in `H⁰(H,R)` is `|H|`, since every element of the
   group is mapped by `ε` to `1`.
   -/
-set_option backward.isDefEq.respectTransparency false in
 def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
     (inj : Function.Injective φ) :
     H1 (aug R G ↓ φ) ≅ ModuleCat.of R (R ⧸ Ideal.span {(Nat.card H : R)}) := by
   have := Rep.trivialCohomology_iff_res.1 (trivialCohomology R G) φ inj
+  have : (trivial R G R ↓ φ).IsTrivial := ⟨fun _ ↦ by ext; simp⟩
   refine LinearEquiv.toModuleIso <|.symm ?_
   refine ?_ ≪≫ₗ LinearMap.quotKerEquivOfSurjective (δ (aug_isShortExact' R G φ) 0 1 rfl).hom
     (ModuleCat.epi_iff_surjective _|>.1 <| epi_δ_of_isZero _ 0 <|
       isZero_of_trivialCohomology (M := leftRegular R G ↓ φ))
-  refine Submodule.Quotient.equiv _ _ (H0trivial R H).symm.toLinearEquiv ?_
-  rw [show LinearMap.ker (δ (aug_isShortExact' R G φ) 0 1 rfl).hom = _ from
-    (mapShortComplex₃_exact (aug_isShortExact' R G φ) rfl).moduleCat_range_eq_ker.symm]
-  simp only [ShortComplex.map_X₃]
-  rw [LinearMap.range_eq_map, ← leftRegular.res_span_norm R G φ inj, Submodule.map_span,
-    Submodule.map_span, ← Set.range_comp]
+  refine Submodule.Quotient.equiv _ _ (H0IsoOfIsTrivial (trivial R G R ↓ φ)).symm.toLinearEquiv ?_
+  rw [← range_map_eq_ker_δ, LinearMap.range_eq_map, ← leftRegular.res_span_norm R G φ inj,
+    Submodule.map_span, Submodule.map_span, ← Set.range_comp]
   congr 1
   ext x
-  simp only [Iso.toLinearMap_toLinearEquiv, Iso.symm_hom, Set.image_singleton,
-    Nat.card_eq_fintype_card, Set.mem_singleton_iff, Nat.reduceAdd, ShortComplex.SnakeInput.L₁'_X₂,
-    HomologicalComplex.HomologySequence.snakeInput_L₀, Functor.mapShortComplex_obj,
-    ShortComplex.map_X₃, HomologicalComplex.homologyFunctor_obj,
-    ShortComplex.SnakeInput.L₁'_X₁, ShortComplex.map_X₂, ShortComplex.SnakeInput.L₁'_f,
-    ShortComplex.map_g, cochainsFunctor_map,
-    HomologicalComplex.homologyFunctor_map, Set.mem_range, Function.comp_apply]
-  change _ ↔ ∃ g,
-    groupCohomology.map (MonoidHom.id H) ((resFunctor φ).map (ε R G)) 0 (res_norm R φ g) = x
-  simp only [leftRegular.groupCoh_map_res_norm R G φ, eq_comm, exists_const]
-  rfl
+  simp only [Set.image_singleton, Set.mem_singleton_iff, Set.mem_range, Function.comp_apply,
+    ShortComplex.map_g, ShortComplex.map_X₂, ShortComplex.map_X₃]
+  have key (g : G) : (map (MonoidHom.id H) (resMap φ (ε R G)) 0).hom (res_norm R φ g) =
+      (H0IsoOfIsTrivial (trivial R G R ↓ φ)).symm.toLinearEquiv (Nat.card H : R) := by
+    rw [← Iso.toLinearEquiv_symm, LinearEquiv.eq_symm_apply, Iso.toLinearEquiv_apply,
+      H0IsoOfIsTrivial_hom_eq_zeroι, ← LinearMap.comp_apply, ← ModuleCat.hom_comp,
+      RepresentationTheory.groupCohomology.zeroι_naturality, ModuleCat.hom_comp,
+      LinearMap.comp_apply, leftRegular.zeroι_res_norm]
+    simp
+  simp only [key, LinearEquiv.coe_coe, eq_comm, exists_const]
 
 end Rep.aug

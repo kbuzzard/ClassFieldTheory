@@ -37,7 +37,6 @@ open
 variable {R : Type} [CommRing R]
 variable {G : Type} [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `H²ⁿ⁺²(H,M)` and `H²ᵐ⁺¹(H,M)` are both zero for every subgroup `H` of `G` then `M` is acyclic.
 -/

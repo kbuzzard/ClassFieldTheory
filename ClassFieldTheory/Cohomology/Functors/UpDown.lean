@@ -100,7 +100,9 @@ lemma shortExact_upSES_res {H : Type u} [Group H] (φ : H →* G) :
     τ₂ := coind₁'.map f
     τ₃ := up.map f
   }
-  map_comp f g := by simp only [Functor.map_comp]; rfl
+  map_comp f g := by
+    ext : 1 <;> simp only [Functor.map_comp, ShortComplex.comp_τ₁, ShortComplex.comp_τ₂,
+      ShortComplex.comp_τ₃]
 
 /--
 The connecting homomorphism from `H⁰(G,up M)` to `H¹(G,M)` is
@@ -238,7 +240,9 @@ def downShortComplex : Rep R G ⥤ ShortComplex (Rep R G) where
       simp only [downSES_X₂, ind₁', downSES_X₃, downSES_g, ind₁'_π, hom_comp, hom_ofHom,
         IntertwiningMap.comp_toLinearMap]
       ext; simp}
-  map_comp f g := by simp only [Functor.map_comp]; rfl
+  map_comp f g := by
+    ext : 1 <;> simp only [Functor.map_comp, ShortComplex.comp_τ₁, ShortComplex.comp_τ₂,
+      ShortComplex.comp_τ₃]
 
 variable [Finite G]
 
@@ -357,14 +361,12 @@ theorem instIsIso_shortExact_downSES_res {S : Type u} [Group S] [Fintype S]
     n (n + 1) rfl (by simpa using! isZero_of_trivialTateCohomology' (ind₁'.obj M ↓ φ) n)
     (by simpa using! isZero_of_trivialTateCohomology' (ind₁'.obj M ↓ φ) (n + 1))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps! hom]
 def δUpResIsoTate {S : Type u} [Group S] [Fintype S] {φ : S →* G} (inj : Injective φ) (n : ℤ) :
     tateCohomology (up.obj M ↓ φ) n ≅ tateCohomology (M ↓ φ) (n + 1) :=
   have := instIsIso_shortExact_upSES_res inj M n
   asIso (TateCohomology.δ (shortExact_upSES_res M φ) n)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simps! hom]
 def δDownResIsoTate {H : Type u} [Group H] [Fintype H] {φ : H →* G} (inj : Injective φ) (n : ℤ) :
     tateCohomology (M ↓ φ) n ≅ tateCohomology (down.obj M ↓ φ) (n + 1) :=

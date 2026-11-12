@@ -57,6 +57,31 @@ Basic properties of nonarch local fields.
 
 open ValuativeRel
 
+-- TODO: move to a `ClassFieldTheory/Mathlib/RingTheory/Unramified/Locus.lean` stub
+lemma Algebra.mem_unramifiedLocus {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    {p : PrimeSpectrum A} :
+    p ∈ Algebra.unramifiedLocus R A ↔ Algebra.IsUnramifiedAt R p.asIdeal :=
+  Iff.rfl
+
+-- TODO: move to a `ClassFieldTheory/Mathlib/RingTheory/Spectrum/Prime/Topology.lean` stub
+lemma IsLocalRing.closedPoint_asIdeal (R : Type*) [CommSemiring R] [IsLocalRing R] :
+    (IsLocalRing.closedPoint R).asIdeal = IsLocalRing.maximalIdeal R :=
+  rfl
+
+/-- An open subset of the spectrum of a local ring containing the closed point is everything. -/
+lemma IsLocalRing.closedPoint_mem_iff_eq_univ {R : Type*} [CommSemiring R] [IsLocalRing R]
+    {s : Set (PrimeSpectrum R)} (hs : IsOpen s) :
+    IsLocalRing.closedPoint R ∈ s ↔ s = Set.univ := by
+  rw [← TopologicalSpace.Opens.coe_mk (hU := hs), TopologicalSpace.Opens.coe_eq_univ,
+    SetLike.mem_coe, IsLocalRing.closedPoint_mem_iff]
+
+-- TODO: move to a `ClassFieldTheory/Mathlib/Analysis/Normed/Unbundled/SpectralNorm.lean` stub
+lemma spectralNorm.normedField_norm_eq (K L : Type*) [NontriviallyNormedField K] [Field L]
+    [Algebra K L] [Algebra.IsAlgebraic K L] [IsUltrametricDist K] [CompleteSpace K] (x : L) :
+    letI := spectralNorm.normedField K L
+    ‖x‖ = spectralNorm K L x :=
+  rfl
+
 namespace IsNonarchimedeanLocalField
 
 section TopologicalSpace
@@ -144,7 +169,6 @@ theorem valuationOfIoo_irreducible {ε : Set.Ioo (0 : ℝ) 1} {ϖ : 𝒪[K]} (h�
 
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 @[implicit_reducible]
 noncomputable def rankOneOfIoo (ε : Set.Ioo (0 : ℝ) 1) : (valuation K).RankOne := by
   refine
@@ -217,7 +241,6 @@ local notation "vL" => valuation L
 
 
 -- keep
-set_option backward.isDefEq.respectTransparency false in
 instance _root_.Valued.toNormedField.compatible (K : Type*) [Field K] [ValuativeRel K]
     [UniformSpace K] [IsUniformAddGroup K] [IsValuativeTopology K]
     [hv : (Valued.v : Valuation K (ValueGroupWithZero K)).RankOne] :
@@ -258,65 +281,50 @@ instance : FiniteDimensional K L := by
   let := Valued.toNontriviallyNormedField (L := L) _
   have hϖ1 : ‖iKL ϖ‖ < 1 := Valued.toNormedField.norm_lt_one_iff.mpr
     (valuation_map_irreducible_lt_one hϖ)
-  -- pull back the norm on `L` to a norm on `K`
-  let : NormedField K :=
-  { toUniformSpace := ‹UniformSpace K›
-    __ := NormedField.induced K L (algebraMap K L) (algebraMap K L).injective,
-    uniformity_dist := ?_ }
-  · let : NontriviallyNormedField K := .ofNormNeOne ⟨ϖ, hϖ.ne_zero', hϖ1.ne⟩
-    let : NormedSpace K L :=
-    { norm_smul_le a b := by rw [Algebra.smul_def a b, norm_mul]; rfl }
-    exact FiniteDimensional.of_locallyCompactSpace (𝕜 := K) (E := L)
-  -- Showing `uniformity_dist` for `K`
-  let ε : Set.Ioo (0 : ℝ) 1 := ⟨‖ϖ‖, norm_pos_iff.mpr hϖ.ne_zero, hϖ1⟩
-  -- install the rank one structure for `K` where `ϖK` goes to `‖iKL ϖK‖`.
-  let vKrk1 : (valuation K).RankOne := rankOneOfIoo K ε
-  -- Showing that the two valuations on `K` are the same by comparing them on `ϖ`
+  -- the norm of `L` pulled back to `K` is the valuation `v₂` on `K` sending `ϖ` to `‖iKL ϖ‖`,
+  -- by comparing the two valuations on `ϖ`
+  let ε : Set.Ioo (0 : ℝ) 1 := ⟨‖iKL ϖ‖, norm_pos_iff.mpr ((map_ne_zero _).mpr hϖ.ne_zero'), hϖ1⟩
   let v₁ : Valuation K ℝ≥0 := NormedField.valuation.comap iKL
   let v₂ : Valuation K ℝ≥0 := valuationOfIoo K ε
   have cv₁ : v₁.Compatible := ValuativeExtension.compatible_comap K _
   have cv₂ : v₂.Compatible := inferInstance
-  have eq : v₁ = v₂ := valuation_ext K hϖ
-    (by ext; simp [v₂, valuationOfIoo_irreducible hϖ]; rfl)
-  -- Use a basis for the two filters required by `uniformity_dist` and show they are the same
-  have b₁ := (IsValuativeTopology.hasBasis_nhds_zero' K).uniformity_of_nhds_zero
-  have b₂ := Filter.hasBasis_biInf_principal' (ι := ℝ) (p := (· > 0))
-    (s := ({p : K × K | dist p.1 p.2 < ·})) (fun ε₁ hε₁ ε₂ hε₂ ↦ ⟨min ε₁ ε₂, by aesop⟩) ⟨1, by simp⟩
-  refine b₁.ext b₂ (fun i hi ↦ ?_) fun i hi ↦ ?_
-  · obtain ⟨a, ha⟩ := ValuativeRel.valuation_surjective i
-    let i0 := Valuation.restrict vK a
-    have hi0 : i0 ≠ 0 := by
-      intro h
-      subst i0
-      simp_all
-    have : 0 < Valuation.RankOne.hom (valuation K) i0 := by
-      rw [pos_iff_ne_zero, ne_eq, Valuation.RankOne.hom_eq_zero_iff]
-      exact hi0
-    obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one this hϖ1
-    refine ⟨ε ^ n, pow_pos ε.2.1 n, fun p hp ↦ ?_⟩
-    dsimp
-    rw [← ha, ← Valuation.restrict_lt_iff]
-    refine (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mp ?_
-    change dist _ _ < _ at hp; rw [dist_comm] at hp
-    rw [← coe_lt_coe] at hn ⊢
-    convert! hp.trans hn
-    change (v₂ (p.2 - p.1) : ℝ) = ‖iKL p.2 - iKL p.1‖
-    rw [← map_sub]
-    exact congr($eq.symm _)
-  · obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one hi hϖ1
-    refine ⟨(valuation K ϖ) ^ n, pow_ne_zero _ <| (map_ne_zero _).mpr hϖ.ne_zero', fun p hp ↦ ?_⟩
-    dsimp at ⊢ hp
-    rw [← Valuation.map_pow] at hp
-    replace hp := (Valuation.RankOne.strictMono (valuation K)).lt_iff_lt.mpr
-        ((valuation K).restrict_lt_iff.mpr hp)
-    erw [← coe_lt_coe, map_pow, map_pow] at hp
-    change dist _ _ < i; rw [dist_comm]
-    change _ < (v₂ _ ^ n : ℝ) at hp
-    rw [← eq] at hp
-    convert! hp.trans hn
-    change ‖iKL p.2 - iKL p.1‖ = _
-    rw [← map_sub]
-    exact congr($eq _)
+  have eq : v₁ = v₂ := valuation_ext K hϖ (by ext; simp [v₁, v₂, ε, valuationOfIoo_irreducible hϖ])
+  have hv (x : K) : ‖iKL x‖ = v₂ x := by rw [← eq]; simp [v₁]
+  have hε : (v₂ ϖ : ℝ) = ε := valuationOfIoo_irreducible hϖ
+  -- the uniformity of `K` is the one of the pulled back norm
+  have key : uniformity K =
+      ⨅ r > 0, Filter.principal {p : K × K | dist (iKL p.1) (iKL p.2) < r} := by
+    simp_rw [dist_eq_norm, ← map_sub iKL, hv]
+    have b₁ := (IsValuativeTopology.hasBasis_nhds_zero' K).uniformity_of_nhds_zero
+    have b₂ := Filter.hasBasis_biInf_principal' (ι := ℝ) (p := (· > 0))
+      (s := ({p : K × K | (v₂ (p.1 - p.2) : ℝ) < ·}))
+      (fun ε₁ hε₁ ε₂ hε₂ ↦ ⟨min ε₁ ε₂, lt_min hε₁ hε₂,
+        Set.ofPred_subset_ofPred.mpr fun _ hp ↦ hp.trans_le (min_le_left _ _),
+        Set.ofPred_subset_ofPred.mpr fun _ hp ↦ hp.trans_le (min_le_right _ _)⟩) ⟨1, one_pos⟩
+    refine b₁.ext b₂ (fun i hi ↦ ?_) fun i hi ↦ ?_
+    · obtain ⟨a, rfl⟩ := ValuativeRel.valuation_surjective i
+      refine ⟨v₂ a, NNReal.coe_pos.mpr (pos_iff_ne_zero.mpr (v₂.ne_zero_iff.mpr
+        ((valuation K).ne_zero_iff.mp hi))), fun p hp ↦ ?_⟩
+      simp only [Set.mem_ofPred_eq] at hp ⊢
+      rw [← Valuation.vlt_iff_lt vK, Valuation.vlt_iff_lt v₂, Valuation.map_sub_swap v₂]
+      exact NNReal.coe_lt_coe.mp hp
+    · obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one hi ε.2.2
+      refine ⟨vK ϖ ^ n, pow_ne_zero _ ((map_ne_zero _).mpr hϖ.ne_zero'), fun p hp ↦ ?_⟩
+      simp only [Set.mem_ofPred_eq] at hp ⊢
+      rw [← map_pow vK, ← Valuation.vlt_iff_lt vK, Valuation.vlt_iff_lt v₂, map_pow,
+        Valuation.map_sub_swap v₂] at hp
+      rw [← hε, ← NNReal.coe_pow] at hn
+      exact (NNReal.coe_lt_coe.mpr hp).trans hn
+  -- pull back the norm on `L` to a norm on `K`
+  let : NormedField K :=
+  { toUniformSpace := ‹UniformSpace K›
+    __ := NormedField.induced K L (algebraMap K L) (algebraMap K L).injective,
+    uniformity_dist := key }
+  let : NontriviallyNormedField K := .ofNormNeOne ⟨ϖ, hϖ.ne_zero', hϖ1.ne⟩
+  have hnorm (x : K) : ‖x‖ = ‖iKL x‖ := rfl
+  let : NormedSpace K L :=
+  { norm_smul_le a b := by rw [Algebra.smul_def a b, norm_mul, hnorm] }
+  exact FiniteDimensional.of_locallyCompactSpace (𝕜 := K) (E := L)
 
 instance isModuleTopology : IsModuleTopology K L :=
   let := IsTopologicalAddGroup.rightUniformSpace K
@@ -328,9 +336,10 @@ instance isModuleTopology : IsModuleTopology K L :=
 omit [TopologicalSpace K] [IsNonarchimedeanLocalField K]
   [TopologicalSpace L] [IsNonarchimedeanLocalField L] in
 lemma algebraMap_mem_integer (x : 𝒪[K]) : (algebraMap 𝒪[K] L) x ∈ 𝒪[L] := by
-  rcases x with ⟨x, hx⟩
-  change valuation L (algebraMap K L x) ≤ 1
-  simpa only [map_one] using (ValuativeExtension.algebraMap_le (B := L)).mpr hx
+  rw [Valuation.mem_integer_iff, IsScalarTower.algebraMap_apply 𝒪[K] K L,
+    Algebra.algebraMap_ofSubsemiring_apply, ← map_one (valuation L), ← map_one (algebraMap K L),
+    ValuativeExtension.algebraMap_le, map_one, ← Valuation.mem_integer_iff]
+  exact x.2
 
 -- by David Ang
 noncomputable instance : Algebra 𝒪[K] 𝒪[L] where
@@ -430,8 +439,7 @@ instance (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchi
       map_smul' := fun c z ↦ smul_comm _ c _ }
   have hg : ∀ z : 𝒪[L], g z ∈ M := fun z ↦ by
     have h := hm _ z.2
-    rwa [show (ϖ : K) ^ m • (z : L) = ϖ ^ m • (z : L) by
-      rw [← SubmonoidClass.coe_pow]; rfl] at h
+    rwa [← SubmonoidClass.coe_pow, ← Subring.smul_def] at h
   refine Module.Finite.of_injective (g.codRestrict M hg) fun z w hzw ↦ ?_
   have h' : (ϖ : K) ^ m • (z : L) = (ϖ : K) ^ m • (w : L) := by
     simpa [g, ← algebraMap_smul K, map_pow] using congrArg Subtype.val hzw
@@ -537,9 +545,8 @@ theorem e_mul_f_eq_n : e K L * f K L = Module.finrank K L := by
   let : Fintype (𝓂[K].primesOver 𝒪[L]) := Fintype.ofFinite _
   rw [IsFractionRing.finrank_eq 𝒪[K] K 𝒪[L] L,
     ← Ideal.sum_ramification_inertia_eq_finrank 𝓂[K] 𝒪[L],
-    Fintype.sum_subsingleton _ (Ideal.primesOver.mk 𝓂[K] 𝓂[L]), e,
+    Fintype.sum_subsingleton _ (Ideal.primesOver.mk 𝓂[K] 𝓂[L]), e, f,
     Ideal.ramificationIdx'_eq_ramificationIdx 𝓂[K] 𝓂[L] IsDiscreteValuationRing.not_a_field']
-  rfl
 
 theorem e_le_n : e K L ≤ Module.finrank K L :=
   e_mul_f_eq_n K L ▸ le_mul_of_one_le_right' <| f_pos K L
@@ -586,12 +593,10 @@ theorem isUnramified_iff_isUnramifiedAt : IsUnramified K L ↔ Algebra.IsUnramif
 -- by Chenyi Yang
 theorem isUnramified_iff_unramified : IsUnramified K L ↔ Algebra.Unramified 𝒪[K] 𝒪[L] := by
   rw [Algebra.unramified_iff, isUnramified_iff_isUnramifiedAt,
-    ← Algebra.unramifiedLocus_eq_univ_iff]
-  let U : TopologicalSpace.Opens (PrimeSpectrum 𝒪[L]) :=
-    ⟨Algebra.unramifiedLocus 𝒪[K] 𝒪[L], Algebra.isOpen_unramifiedLocus⟩
-  change _ ↔ (U : Set (PrimeSpectrum 𝒪[L])) = _ ∧ _
-  rw [TopologicalSpace.Opens.coe_eq_univ, ← IsLocalRing.closedPoint_mem_iff]
-  refine iff_self_and.mpr fun _ ↦ inferInstance
+    ← Algebra.unramifiedLocus_eq_univ_iff, ← IsLocalRing.closedPoint_mem_iff_eq_univ
+      (Algebra.isOpen_unramifiedLocus (R := 𝒪[K]) (A := 𝒪[L]))]
+  simp only [Algebra.mem_unramifiedLocus, IsLocalRing.closedPoint_asIdeal]
+  exact iff_self_and.mpr fun _ ↦ inferInstance
 
 variable {K L} in
 omit [TopologicalSpace K] [IsNonarchimedeanLocalField K]
@@ -620,8 +625,9 @@ instance isIntegralClosure : IsIntegralClosure 𝒪[L] 𝒪[K] L where
 
 variable {K L} in
 theorem isIntegral_iff {y : L} : IsIntegral 𝒪[K] y ↔ valuation L y ≤ 1 := by
-  rw [IsIntegralClosure.isIntegral_iff (A := 𝒪[L]), ← Set.mem_range]
-  erw [Subtype.range_val, Valuation.mem_integer_iff]
+  rw [IsIntegralClosure.isIntegral_iff (A := 𝒪[L])]
+  simp only [Algebra.algebraMap_ofSubsemiring_apply, Subtype.exists, exists_prop, exists_eq_right,
+    Valuation.mem_integer_iff]
 
 end extension_of_local_fields
 
@@ -669,11 +675,10 @@ theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] 
   have : ValuativeExtension K L := by
     refine ⟨fun {x y} ↦ ?_⟩
     rw [Valuation.Compatible.vle_iff_le (v := v),
-    Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation K)]
-    change spectralNorm K L _ ≤ spectralNorm K L _ ↔ _
-    rw [spectralNorm_extends, spectralNorm_extends]
-    simp_rw [Valued.toNormedField.norm_le_iff]
-    rfl
+      Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation K)]
+    simp only [v, NormedField.valuation_apply, ← NNReal.coe_le_coe, coe_nnNorm,
+      spectralNorm.normedField_norm_eq, spectralNorm_extends, Valued.toNormedField.norm_le_iff,
+      IsValuativeTopology.v_eq_valuation]
   exact ⟨ofValuation v, this, isNonarchimedeanLocalField_of_valuativeExtension K L⟩
 
 include K in

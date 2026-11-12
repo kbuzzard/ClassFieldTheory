@@ -136,6 +136,11 @@ variable [Semiring R] [Semiring S]
   monic_snd := monic_one
   fst_mul_snd_eq := mul_one f
 
+-- `simps!` does not generate the projection lemmas whose right-hand side is `1`.
+@[simp] lemma fstOne_fst {f : R[X]} (mf : f.Monic) : (fstOne mf).fst = 1 := rfl
+
+@[simp] lemma sndOne_snd {f : R[X]} (mf : f.Monic) : (sndOne mf).snd = 1 := rfl
+
 theorem fstOne_eq_sndOne_iff {f : R[X]} {mf : f.Monic} : fstOne mf = sndOne mf ↔ f = 1 :=
   ⟨fun h ↦ congr(($h).2), fun h ↦ by subst h; rfl⟩
 
@@ -305,10 +310,9 @@ theorem map_injective_of_sqZero : (map (Ideal.Quotient.mk I) (f := f)).Injective
   have h₃ : (q - s).degree < q.degree := degree_sub_lt_left h₂ mq.ne_zero (by simp [*])
   -- therefore `q - s = 0`
   have h₄ : q = s := sub_eq_zero.mp <| by_contra (mq.not_dvd_of_degree_lt · h₃ ⟨_, this⟩)
-  subst h₄
   -- therefore `p = r`
-  obtain rfl := mq.isRegular.right h₁
-  rfl
+  have h₅ : p = r := mq.isRegular.right (h₁.trans (by rw [h₄]))
+  exact MonicCoprimeFactors.ext h₅ h₄
 
 include hi in
 /-- Monic coprime factorisations in `R` surjects onto those in `R ⧸ I` if `I ^ 2 = ⊥`. -/
@@ -382,8 +386,8 @@ theorem map_surjective_of_sqZero (mf : f.Monic) :
     mq.add_of_left (degree_modByMonic_lt _ mq), ?_, h₅.symm⟩, ?_⟩
   · exact .of_map (mapRingHom φ) (map_surjective _ h₁) (by simpa [hs, hu])
   · ext : 1
-    · change (p + u).map φ = p.map φ; simp [hu]
-    · change (q + s).map φ = q.map φ; simp [hs]
+    · simp [hu, φ]
+    · simp [hs, φ]
 
 include hi in
 /-- Monic coprime factorisations in `R` bijects onto those in `R ⧸ I` if `I ^ 2 = ⊥`. -/
@@ -398,8 +402,8 @@ include hφ in
 theorem map_bijective_of_sqZero_ker (hφ2 : RingHom.ker φ ^ 2 = ⊥) (mf : f.Monic) :
     (map φ (f := f)).Bijective :=
   (Equiv.comp_bijective _ <| mapEquiv (RingHom.quotientKerEquivOfSurjective hφ).symm).mp <| by
-    erw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
-    RingHom.quotientKerEquivOfSurjective_symm_comp hφ]
+    rw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective, ← RingEquiv.toRingHom_eq_coe,
+      RingHom.quotientKerEquivOfSurjective_symm_comp hφ]
     exact map_bijective_of_sqZero f (RingHom.ker φ) hφ2 mf
 
 /-- Monic coprime factorisations in `R` bijects onto those in `R ⧸ I` if `I ^ n = ⊥`. -/
@@ -413,9 +417,7 @@ theorem map_bijective_of_isNilpotent (hi : IsNilpotent I) (mf : f.Monic) :
     · replace hn := (pow_le_pow_right hn1).trans hn
       rw [pow_one, le_bot_iff] at hn; subst hn
       exact (mapEquiv <| (RingEquiv.quotientBot R).symm).bijective
-    change (map ((factor (Ideal.pow_le_self two_ne_zero)).comp
-      (Ideal.Quotient.mk (I ^ 2))) (f := f)).Bijective
-    rw [map_comp, Equiv.comp_bijective]
+    rw [← factor_comp_mk (I.pow_le_self two_ne_zero), map_comp, Equiv.comp_bijective]
     exact .comp (map_bijective_of_sqZero_ker _ _ (factor_surjective _)
       (by rw [factor_ker, ← Ideal.map_pow, map_quotient_self]) (mf.map _))
       (ih (n - 1) (by omega) _ <| by rw [← pow_mul]; exact (pow_le_pow_right (by omega)).trans hn)
@@ -425,8 +427,8 @@ include hφ in
 theorem map_bijective_of_isNilpotent_ker (hφ0 : IsNilpotent (RingHom.ker φ)) (mf : f.Monic) :
     (map φ (f := f)).Bijective :=
   (Equiv.comp_bijective _ <| mapEquiv (RingHom.quotientKerEquivOfSurjective hφ).symm).mp <| by
-    erw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective,
-    RingHom.quotientKerEquivOfSurjective_symm_comp hφ]
+    rw [coe_mapEquiv, map_comp_map, Equiv.comp_bijective, ← RingEquiv.toRingHom_eq_coe,
+      RingHom.quotientKerEquivOfSurjective_symm_comp hφ]
     exact map_bijective_of_isNilpotent f (RingHom.ker φ) hφ0 mf
 
 variable {f : R[X]} {mf : f.Monic} {n : ℕ}
@@ -458,12 +460,14 @@ theorem map_factorPowSucc_liftFactorPow :
 theorem fst_map_factorPowSucc_liftFactorPow {fac} :
     (map (factorPowSucc I (n + 1)) ((liftFactorPow I mf).symm fac)).fst =
       ((liftFactorPow I mf).symm fac).fst := by
-  rw [← Function.comp_apply (f := map _), map_factorPowSucc_liftFactorPow]; rfl
+  rw [← Function.comp_apply (f := map _), map_factorPowSucc_liftFactorPow, Function.comp_apply,
+    congr_apply_fst]
 
 theorem snd_map_factorPowSucc_liftFactorPow {mf : f.Monic} {n : ℕ} {fac} :
     (map (factorPowSucc I (n + 1)) ((liftFactorPow I mf).symm fac)).snd =
       ((liftFactorPow I mf).symm fac).snd := by
-  rw [← Function.comp_apply (f := map _), map_factorPowSucc_liftFactorPow]; rfl
+  rw [← Function.comp_apply (f := map _), map_factorPowSucc_liftFactorPow, Function.comp_apply,
+    congr_apply_snd]
 
 variable {I : Ideal R} [IsAdicComplete I R]
 
@@ -639,10 +643,10 @@ theorem forall_monicFactors_of_irreducible [Semiring R] {f : R[X]}
   refine (of_irreducible_mul <| eq ▸ hf).imp (fun h ↦ ?_) (fun h ↦ ?_)
   · rw [mp.isUnit_iff] at h; subst p
     rw [one_mul] at eq; subst q
-    rfl
+    ext : 1 <;> simp
   · rw [mq.isUnit_iff] at h; subst q
     rw [mul_one] at eq; subst p
-    rfl
+    ext : 1 <;> simp
 
 /-- If the only monic factorisations are `1 * f` and `f * 1`, then `f` is irreducible.
 
@@ -685,8 +689,10 @@ theorem forall_monicFactors_of_natDegree_le_one [Semiring R] {f : R[X]}
 noncomputable instance [Semiring R] : Unique (MonicFactors (1 : R[X])) where
   default := fstOne monic_one
   uniq fac := by
-    obtain rfl | rfl := forall_monicFactors_of_natDegree_le_one (f := (1 : R[X])) (by simp)
-      (by simp) fac <;> rfl
+    obtain h | h := forall_monicFactors_of_natDegree_le_one (f := (1 : R[X])) (by simp)
+      (by simp) fac
+    · exact h
+    · exact h.trans (fstOne_eq_sndOne_iff.mpr rfl).symm
 
 noncomputable instance [CommSemiring R] : Unique (MonicCoprimeFactors (1 : R[X])) where
   default := .fstOne monic_one

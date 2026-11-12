@@ -21,7 +21,12 @@ variable {R G H : Type u} [CommRing R] [Group G] [Fintype G] [Group H] [Fintype 
 
 namespace TateCohomology
 
-set_option backward.isDefEq.respectTransparency false in
+/-- The Tate norm composed with `cochainsIso₀` is `chainsIso₀` composed with the norm map. -/
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma _root_.Rep.tateNorm_comp_cochainsIso₀_hom (M : Rep R G) :
+    M.tateNorm ≫ (cochainsIso₀ M).hom = (chainsIso₀ M).hom ≫ M.norm.asHom.toModuleCatHom := by
+  simp [Rep.tateNorm]
+
 noncomputable abbrev cochainsMap {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ : M ⟶ N ↓ e) :
     (tateComplexConnectData M).cochainComplex ⟶ (tateComplexConnectData N).cochainComplex := by
   refine CochainComplex.ConnectData.map (tateComplexConnectData M) (tateComplexConnectData N)
@@ -54,18 +59,19 @@ noncomputable abbrev map {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ : M ⟶ 
     tateCohomology M n ⟶ tateCohomology N n :=
   HomologicalComplex.homologyMap (cochainsMap e φ) _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep R H} {P : Rep R Q}
     (e1 : G ≃* H) (e2 : H ≃* Q) (φ : M ⟶ N ↓ e1) (ψ : N ⟶ P ↓ e2) (n : ℤ) :
     map (e1.trans e2) (φ ≫ (resFunctor e1.toMonoidHom|>.map ψ)) n =
       map e1 φ n ≫ map e2 ψ n := by
-  simp [map, ← HomologicalComplex.homologyMap_comp, ← cochainsMap_comp]
+  unfold map
+  rw [cochainsMap_comp]
+  exact HomologicalComplex.homologyMap_comp _ _ _
 
 lemma map_id {M : Rep R G} (n : ℤ) :
     map (MulEquiv.refl G) (𝟙 M) n = 𝟙 (tateCohomology M n) := by
   unfold map
-  simp [cochinasMap_id, tateCohomology]
-  rfl
+  rw [cochinasMap_id]
+  exact HomologicalComplex.homologyMap_id _ _
 
 lemma map_congr {M : Rep R G} {N : Rep R H} {e1 e2 : G ≃* H} (he : e1 = e2) {φ : M ⟶ N ↓ e1}
     {ψ : M ⟶ N ↓ e2} (h : φ.hom.toLinearMap = ψ.hom.toLinearMap) (n : ℤ) :
@@ -74,7 +80,6 @@ lemma map_congr {M : Rep R G} {N : Rep R H} {e1 e2 : G ≃* H} (he : e1 = e2) {�
   congr
   simp [Rep.hom_ext_iff, Representation.IntertwiningMap.ext_iff, h]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def res_iso {M : Rep R G} (e : G ≃* H) {N : Rep R H} (e' : M.V ≃ₗ[R] N.V)
     (he' : ∀ (g : G), e' ∘ₗ M.ρ g = N.ρ (e g) ∘ₗ e') (n : ℤ) :
     tateCohomology M n ≅ tateCohomology N n where
@@ -98,14 +103,15 @@ namespace zeroIso
 @[simps] def sc : ShortComplex (ModuleCat R) :=
   .mk M.norm.asHom.toModuleCatHom (d₀₁ M) (norm_comp_d_eq_zero M)
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] CochainComplex.ConnectData.cochainComplex
+  CochainComplex.ConnectData.X CochainComplex.ConnectData.d tateComplexConnectData sc in
 /-- The isomorphism between the concrete short complex computing `0`-th Tate cohomology
   and the corresponding parts of the Tate complex. -/
 @[simps!] def isoShortComplexH0 :
     (tateComplex M).sc 0 ≅ sc M :=
   (tateComplex M).isoSc' (-1) 0 1 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (by exact chainsIso₀ M) (cochainsIso₀ M) (cochainsIso₁ M)
-      (by simp [tateNorm]) (comp_d₀₁_eq M)
+      (Rep.tateNorm_comp_cochainsIso₀_hom M).symm (comp_d₀₁_eq M)
 
 end zeroIso
 
@@ -139,11 +145,10 @@ and the corresponding parts of the Tate complex. -/
   (tateComplex M).isoSc' (-2) (-1) 0 (by simp) (by simp) ≪≫
     ShortComplex.isoMk (chainsIso₁ M) (chainsIso₀ M) (cochainsIso₀ M)
       (groupHomology.comp_d₁₀_eq M)
-      (by simp [sc, tateComplex, tateNorm]; rfl)
+      (Rep.tateNorm_comp_cochainsIso₀_hom M).symm
 
 end negOneIso
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A concrete description of the `-1`-st Tate cohomology group
 as the quotient of the kernel of the norm by the kernel of the coinvariants. -/
 def negOneIso (M : Rep R G) :
@@ -155,13 +160,10 @@ def negOneIso (M : Rep R G) :
   _ ≅ ModuleCat.of R (LinearMap.ker M.ρ.norm ⧸ _) := ShortComplex.moduleCatHomologyIso _
   _ ≅ _ := by
     refine (Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ rfl) ?_).toModuleIso
-    apply Submodule.map_injective_of_injective (f := (LinearMap.ker _).subtype)
-      Subtype.val_injective
-    rw [← range_d₁₀_eq_coinvariantsKer, Submodule.submoduleOf, Submodule.map_comap_eq_of_le,
-      ← Submodule.map_comp, ← LinearMap.range_comp]
-    · rfl
-    · simpa [LinearMap.range_le_iff_comap, ← ker_comp, -comp_eq_zero] using!
-        congr(($(comp_eq_zero M)).hom)
+    rw [← range_d₁₀_eq_coinvariantsKer]
+    refine Submodule.ext fun ⟨x, hx⟩ ↦ ⟨?_, ?_⟩
+    · rintro ⟨_, ⟨y, rfl⟩, hy⟩; exact ⟨y, congr(Subtype.val $hy)⟩
+    · rintro ⟨y, rfl⟩; exact ⟨⟨d₁₀ M y, hx⟩, ⟨y, rfl⟩, rfl⟩
 
 variable [M.ρ.IsTrivial] {n : ℤ} {N : ℕ}
 
