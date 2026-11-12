@@ -306,8 +306,8 @@ instance : FiniteDimensional K L := by
       refine ⟨v₂ a, NNReal.coe_pos.mpr (pos_iff_ne_zero.mpr (v₂.ne_zero_iff.mpr
         ((valuation K).ne_zero_iff.mp hi))), fun p hp ↦ ?_⟩
       simp only [Set.mem_ofPred_eq] at hp ⊢
-      rw [← Valuation.vlt_iff_lt vK, Valuation.vlt_iff_lt v₂, Valuation.map_sub_swap v₂]
-      exact NNReal.coe_lt_coe.mp hp
+      simp only [← Valuation.vlt_iff_lt vK, Valuation.vlt_iff_lt v₂, Valuation.map_sub_swap v₂,
+        NNReal.coe_lt_coe.mp hp]
     · obtain ⟨n, hn⟩ := _root_.exists_pow_lt_of_lt_one hi ε.2.2
       refine ⟨vK ϖ ^ n, pow_ne_zero _ ((map_ne_zero _).mpr hϖ.ne_zero'), fun p hp ↦ ?_⟩
       simp only [Set.mem_ofPred_eq] at hp ⊢

@@ -71,8 +71,7 @@ lemma map_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep R H} {P
     map (e1.trans e2) (φ ≫ (resFunctor e1.toMonoidHom|>.map ψ)) n =
       map e1 φ n ≫ map e2 ψ n := by
   unfold map
-  rw [cochainsMap_comp]
-  exact HomologicalComplex.homologyMap_comp _ _ _
+  rw [cochainsMap_comp, HomologicalComplex.homologyMap_comp]
 
 attribute [local implicit_reducible] tateCohomologyFunctor tateComplexFunctor
   HomologicalComplex.homologyFunctor in

@@ -135,18 +135,12 @@ lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS)
     refine (HomologicalComplex.exactAt_iff' _ _ _ _ (CochainComplex.prev _ _)
       (CochainComplex.next _ _)).mpr ?_ <;>
     dsimp only [Fin.reduceFinMk, Fin.reduceSub, Fin.reduceAdd]
-  · rw [herbrandSixTermSequence_sc'_5_0_1]
-    exact exact_δ_map hS 1 2 rfl
-  · rw [herbrandSixTermSequence_sc'_0_1_2]
-    exact mapShortComplex₂_exact hS 2
-  · rw [herbrandSixTermSequence_sc'_1_2_3]
-    exact exact_map_δ_periodicCohomology hS
-  · rw [herbrandSixTermSequence_sc'_2_3_4]
-    exact exact_δ_periodicCohomology_map hS
-  · rw [herbrandSixTermSequence_sc'_3_4_5]
-    exact mapShortComplex₂_exact hS 1
-  · rw [herbrandSixTermSequence_sc'_4_5_0]
-    exact exact_map_δ hS 1 2 rfl
+  · simp only [herbrandSixTermSequence_sc'_5_0_1, exact_δ_map hS 1 2 rfl]
+  · simp only [herbrandSixTermSequence_sc'_0_1_2, mapShortComplex₂_exact hS 2]
+  · simp only [herbrandSixTermSequence_sc'_1_2_3, exact_map_δ_periodicCohomology hS]
+  · simp only [herbrandSixTermSequence_sc'_2_3_4, exact_δ_periodicCohomology_map hS]
+  · simp only [herbrandSixTermSequence_sc'_3_4_5, mapShortComplex₂_exact hS 1]
+  · simp only [herbrandSixTermSequence_sc'_4_5_0, exact_map_δ hS 1 2 rfl]
 
 lemma herbrandQuotient_ne_zero_of_shortExact₃
     (h₁ : S.X₁.herbrandQuotient ≠ 0) (h₂ : S.X₂.herbrandQuotient ≠ 0) :
