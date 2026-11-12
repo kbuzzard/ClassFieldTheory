@@ -172,7 +172,7 @@ lemma coind₁'_lequiv_coind₁_comm (g : G) :
     coind₁'_lequiv_coind₁ ρ ∘ₗ coind₁' ρ g = coind₁ R G V g ∘ₗ coind₁'_lequiv_coind₁ ρ := by
   ext f x
   change ρ x (ρ g (f (x * g))) = ρ (x * g) (f (x * g))
-  rw [map_mul, Module.End.mul_apply]
+  rw [map_mul, mul_apply_eq_comp]
 
 /--
 The linear map from `V` to `G → V` taking a vector `v : V` to the comstant function
@@ -224,7 +224,7 @@ lemma ind₁'_map_comm {ρ' : Representation R G W} {f : V →ₗ[R] W}
 @[simps] def ind₁'_π : (G →₀ V) →ₗ[R] V where
   toFun f := f.sum (fun _ ↦ (1 : V →ₗ[R] V))
   map_add' _ _ :=  sum_add_index' (congrFun rfl) fun _ _ ↦ congrFun rfl
-  map_smul' _ _ := by simp
+  map_smul' _ _ := by simp [Finsupp.sum_smul_index', Finsupp.smul_sum]
 
 omit [Group G] in
 @[simp] lemma ind₁'_π_comp_lsingle (x : G) :

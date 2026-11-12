@@ -583,21 +583,12 @@ theorem isUnramified_iff_isUnramifiedAt : IsUnramified K L ↔ Algebra.IsUnramif
   rw [isUnramified_iff_map_maximalIdeal, Algebra.isUnramifiedAt_iff_map_eq' 𝓂[K] 𝓂[L] 𝒪[K] 𝒪[L]]
   tauto
 
--- they forgot to make it polymorphic
-lemma _root_.Algebra.unramifiedLocus_eq_univ_iff'
-    {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
-    Algebra.unramifiedLocus R A = Set.univ ↔ Algebra.FormallyUnramified R A := sorry
-
--- ditto
-lemma _root_.Algebra.isOpen_unramifiedLocus' {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
-    [Algebra.EssFiniteType R A] : IsOpen (Algebra.unramifiedLocus R A) := sorry
-
 -- by Chenyi Yang
 theorem isUnramified_iff_unramified : IsUnramified K L ↔ Algebra.Unramified 𝒪[K] 𝒪[L] := by
   rw [Algebra.unramified_iff, isUnramified_iff_isUnramifiedAt,
-    ← Algebra.unramifiedLocus_eq_univ_iff']
+    ← Algebra.unramifiedLocus_eq_univ_iff]
   let U : TopologicalSpace.Opens (PrimeSpectrum 𝒪[L]) :=
-    ⟨Algebra.unramifiedLocus 𝒪[K] 𝒪[L], Algebra.isOpen_unramifiedLocus'⟩
+    ⟨Algebra.unramifiedLocus 𝒪[K] 𝒪[L], Algebra.isOpen_unramifiedLocus⟩
   change _ ↔ (U : Set (PrimeSpectrum 𝒪[L])) = _ ∧ _
   rw [TopologicalSpace.Opens.coe_eq_univ, ← IsLocalRing.closedPoint_mem_iff]
   refine iff_self_and.mpr fun _ ↦ inferInstance
@@ -672,7 +663,7 @@ theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] 
   let := rankOneOfIoo K default
   let : NontriviallyNormedField K := Valued.toNontriviallyNormedField (L := K) _
   let : NontriviallyNormedField L := spectralNorm.nontriviallyNormedField K L
-  have : IsUltrametricDist L := IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_nnnorm
+  have : IsUltrametricDist L := IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_nnNorm
     isNonarchimedean_spectralNorm
   let v := NormedField.valuation (K := L)
   have : ValuativeExtension K L := by

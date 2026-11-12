@@ -33,7 +33,7 @@ abbrev tateBNeg1 := range ρ.oneSubGen
 
 lemma tateZ0_eq_invariants : ρ.tateZ0 = ρ.invariants := by
   ext x
-  simp only [mem_invariants, mem_ker, LinearMap.sub_apply, Module.End.one_apply, sub_eq_zero]
+  simp only [mem_invariants, mem_ker, LinearMap.sub_apply, one_apply_eq_self, sub_eq_zero]
   refine ⟨fun h g => ?_, fun h => (h (gen G)).symm⟩
   have hg : (ρ.asGroupHom (gen G)) ∈ MulAction.stabilizer (A →ₗ[R] A)ˣ x := h.symm
   rw [← Subgroup.zpowers_le, ← MonoidHom.map_zpowers, Subgroup.map_le_iff_le_comap] at hg
@@ -54,10 +54,10 @@ lemma tateBNeg1_eq_coinvariantsKer : ρ.tateBNeg1 = Coinvariants.ker ρ := by
     intro g x
     obtain ⟨n, -, rfl⟩ := (unique_gen_pow g).exists
     use -∑ i ∈ Finset.range n, (ρ (gen G))^[i] x
-    simp only [LinearMap.sub_apply, Module.End.one_apply, map_neg, map_sum, map_pow,
+    simp only [LinearMap.sub_apply, one_apply_eq_self, map_neg, map_sum, map_pow,
       ← Function.iterate_succ_apply']
     rw [Finset.sum_range_sub' fun i => (ρ (gen G))^[i] x]
-    simp [Module.End.pow_apply]
+    simp [pow_apply_eq_iterate]
 
 omit [Finite G]
 variable [Fintype G]

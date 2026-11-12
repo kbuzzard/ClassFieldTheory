@@ -56,7 +56,7 @@ lemma cores_aux₁ {V : Type} [AddCommMonoid V] [Module R V] (ρ : Representatio
     (v : V) (hv : ∀ s ∈ S, (ρ s) v = v) (g₁ g₂ : G)
     -- then for g₁ and g₂ in G such that g₁S=g₂S, then g₁•v=g₂•v
     (h : (QuotientGroup.mk g₁ : G ⧸ S) = QuotientGroup.mk g₂) : ρ g₁ v = ρ g₂ v := by
-  rw [show g₂ = g₁ * (g₁⁻¹ * g₂) by simp, map_mul, Module.End.mul_apply,
+  rw [show g₂ = g₁ * (g₁⁻¹ * g₂) by simp, map_mul, mul_apply_eq_comp,
   hv _ (QuotientGroup.eq.1 h)]
 
 -- Cor: if X is any finite set and s₁, s₂ : X → G are such that X -> G -> G/S is a bijection
@@ -219,14 +219,12 @@ lemma map_H0Iso_hom_f_apply'.{u} {k G H : Type u} [CommRing k] [Group G] [Group 
 
 -- `simp` does a lot of work here, and it was quite some effort getting
 -- it to do so, so I hope this proof never breaks...
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma cores_res₀ : rest (R := R) (S.subtype) 0 ≫ cores₀ = S.index • (.id _) := by
   ext M v
   apply (ConcreteCategory.injective_of_mono_of_preservesPullback (H0Iso M).hom)
   ext
   simp [rest, Subgroup.index, cores₀_obj, groupCohomology.map_H0Iso_hom_f_apply' _,
-    (M.ρ.mem_invariants ((H0Iso M).hom.hom v)).1 (Subtype.prop _)]
+    (M.ρ.mem_invariants ((H0Iso M).hom.hom v)).1 (Subtype.prop _), -nsmul_eq_mul]
 
 /-!
             rest                       cores
@@ -266,7 +264,7 @@ lemma cores_res (n : ℕ) :
       | 0 => δ_up_zero_epi ..
       | m + 1 => δ_up_isIso M m|>.epi_of_iso _
     rw [← cancel_epi (δ (shortExact_upSES M) n (n + 1) rfl), ← commSqₙ n M, ih]
-    simp; rfl
+    simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Any element of H^n-hat (n ∈ ℤ) is `|G|`-torsion. -/
@@ -274,7 +272,7 @@ lemma torsion_of_finite_of_neZero {n : ℕ} [NeZero n] (M : Rep R G)
     (x : groupCohomology M n) : Nat.card G • x = 0 := by
   if hG : Infinite G then simp else
   simp only [not_infinite_iff_finite] at hG
-  have := by simpa using (LinearMap.ext_iff.1 <| ModuleCat.hom_ext_iff.1
+  have := by simpa [-nsmul_eq_mul] using (LinearMap.ext_iff.1 <| ModuleCat.hom_ext_iff.1
     congr(NatTrans.app $(cores_res (R := R) n (G := G) (S := ⊥)) M)) x
   simp [← this, rest, IsZero.eq_zero_of_tgt isZero_of_trivialCohomology <|
     map _ (𝟙 (M ↓ (⊥ : Subgroup G).subtype)) n]
@@ -322,7 +320,7 @@ lemma injects_to_sylowCoh {n : ℕ} [NeZero n] [Finite G] (M : Rep R G)
     LinearEquiv.coe_coe]
   intro ⟨x1, hx1⟩ ⟨x2, hx2⟩
   simp only [Function.comp_apply, Module.IsTorsionBy.coprime_decompose_symm_apply,
-    ZeroMemClass.coe_zero, smul_zero, add_zero, map_smul, Module.End.natCast_apply,
+    ZeroMemClass.coe_zero, smul_zero, add_zero, map_smul, natCast_apply_eq_smul,
     Subtype.mk.injEq]
   intro h
   replace h := by simpa using congr((· + ((Nat.card P).gcdA P.toSubgroup.index : R) • 0) $h)

@@ -72,6 +72,7 @@ public import ClassFieldTheory.Mathlib.Order.Filter.Bases.Monotone
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Basic
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree

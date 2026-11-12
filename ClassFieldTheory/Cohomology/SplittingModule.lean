@@ -62,11 +62,12 @@ def representation : Representation R G (carrier σ) where
   }
   map_one' := by
     ext : 1
-    · simp only [_root_.map_one, Module.End.one_apply, equalizer_as_kernel]
+    · simp only [_root_.map_one, one_apply_eq_self, equalizer_as_kernel]
       ext v : 1
       rw [LinearMap.comp_apply]
       dsimp only [Prod.fst_add, Prod.snd_add, Submodule.coe_add, Finsupp.coe_add, Pi.add_apply,
-        Prod.mk_add_mk, Module.End.one_apply, AddHom.toFun_eq_coe, RingHom.id_apply, AddHom.coe_mk,
+        Prod.mk_add_mk, Module.End.one_eq_id, LinearMap.id_apply, AddHom.toFun_eq_coe,
+        RingHom.id_apply, AddHom.coe_mk,
         Prod.smul_fst, Prod.smul_snd, SetLike.val_smul, Finsupp.coe_smul, Pi.smul_apply,
         smul_eq_mul, Prod.smul_mk, LinearMap.coe_inl, LinearMap.coe_mk, LinearMap.coe_comp,
         Function.comp_apply]
@@ -79,11 +80,11 @@ def representation : Representation R G (carrier σ) where
     · ext v : 1
       simp
   map_mul' g₁ g₂ := by
-    simp only [map_mul, Module.End.mul_apply]
+    simp only [map_mul, mul_apply_eq_comp]
     ext v
     · simp
     · simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_inl,
-        Function.comp_apply, _root_.map_zero, zero_add, Module.End.mul_apply, map_sum, map_smul]
+        Function.comp_apply, _root_.map_zero, zero_add, mul_apply_eq_comp, map_sum, map_smul]
       have (a b c : _) :=
         eq_sub_iff_add_eq.mpr ((groupCohomology.mem_cocycles₂_iff _).mp (cocycle σ).2 a b c)
       simp only [cocycles₂.val_eq_coe] at this
@@ -196,7 +197,7 @@ lemma τ_property (g h : G) :
   classical
   rw [τ, apply, τ, τ, ι_apply]
   ext
-  · simp only [equalizer_as_kernel, map_mul, Module.End.mul_apply, add_fst, sub_fst]
+  · simp only [equalizer_as_kernel, map_mul, mul_apply_eq_comp, add_fst, sub_fst]
     apply (Rep.mono_iff_injective _).mp (inferInstance : (Mono (aug.ι R G)))
     simp only [equalizer_as_kernel, map_add, map_sub, aug.ofSubOfOne_spec R G, _root_.map_zero]
     rw [Rep.hom_comm_apply, Rep.aug.ofSubOfOne_spec]
@@ -204,7 +205,7 @@ lemma τ_property (g h : G) :
   · classical simp only [equalizer_as_kernel, Rep.aug.ofSubOfOne_spec R G,
       MonoidAlgebra.coeff_sub, MonoidAlgebra.coeff_single, Finsupp.coe_sub, Pi.sub_apply,
       Finsupp.single_apply, sub_smul, ite_smul, one_smul, zero_smul, Finset.sum_sub_distrib,
-      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, map_mul, Module.End.mul_apply, add_snd,
+      Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, map_mul, mul_apply_eq_comp, add_snd,
       sub_snd, add_sub_cancel_left]
     have : (cocycle σ) (g, 1) = (M.ρ g) ((cocycle σ) (1, 1)) := by
       simpa [add_comm] using (mem_cocycles₂_iff (cocycle σ)).mp (cocycle σ).2 g 1 1
@@ -383,12 +384,12 @@ def tateCohomologyIso [FiniteClassFormation σ] [IsAddTorsionFree R] (n : ℤ) :
     (congrArg (tateCohomology M) (by ring)))
 
 def reciprocityIso (N : Rep ℤ G) (τ : H2 N) [FiniteClassFormation τ] :
-    tateCohomology N 0 ≅ .of ℤ (Additive (Abelianization G)) := calc
+    tateCohomology N 0 ≅ .of ℤ (Additive (Group.Abelianization G)) := calc
   tateCohomology N 0
     ≅ tateCohomology N (-2 + 2) := .refl _
   _ ≅ tateCohomology (trivial ℤ G ℤ) (-2) := (tateCohomologyIso τ (-2)).symm
   _ ≅ groupHomology (trivial ℤ G ℤ) 1 := (TateCohomology.isoGroupHomology _ 1 rfl).app _
-  _ ≅ .of ℤ (Additive (Abelianization G)) :=
+  _ ≅ .of ℤ (Additive (Group.Abelianization G)) :=
     groupHomology.H1TrivialAddEquiv.toIntLinearEquiv.toModuleIso
 
 end Rep.split

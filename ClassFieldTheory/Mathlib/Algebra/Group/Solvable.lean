@@ -52,7 +52,7 @@ theorem solvable_ind {G : Type*} [Group G] [Group.IsSolvable G] [Finite G]
       revert normal
       rw [sub_eq]
       intro normal
-      exact inferInstanceAs (IsMulCommutative (Abelianization t))
+      exact inferInstanceAs (IsMulCommutative (Group.Abelianization t))
     have htt : (⁅t, t⁆).subgroupOf t ≠ ⊤ := by simpa using hhh.not_ge
     obtain ⟨t', ⟨-, ht'⟩, _, cyclic⟩ := exists_isCyclic_quotient_of_finite htt comm
     have h : (Subgroup.map t.subtype t').subgroupOf t = t' := by
