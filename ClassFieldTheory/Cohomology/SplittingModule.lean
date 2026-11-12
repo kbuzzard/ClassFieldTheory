@@ -21,6 +21,14 @@ variable {G : Type} [Group G]
 variable [Fintype G]
 variable {M : Rep R G}
 
+-- TODO: upstream
+omit [Fintype G] in
+lemma groupCohomology.coe_mapCocycles₂_id {A B : Rep R G} (φ : A ⟶ B) (x : cocycles₂ A) :
+    ⇑(mapCocycles₂ (.id G) φ x) = φ.hom ∘ x := by
+  ext
+  rw [coe_mapCocycles₂]
+  simp
+
 namespace Rep.split
 
 set_option linter.unusedVariables false in
@@ -110,6 +118,7 @@ lemma apply_snd (g : G) (vm : carrier σ) :
     ((split σ).ρ g vm).snd = M.ρ g vm.2 + ∑ x : G, (aug.ι R G vm.1).coeff x • cocycle σ ⟨g, x⟩ :=
   rfl
 
+attribute [local implicit_reducible] Rep.split in
 @[ext] lemma ext (vm vm' : split σ) (hv : vm.1 = vm'.1) (hm : vm.2 = vm'.2) : vm = vm' := by
   exact Prod.ext hv hm
 
@@ -147,6 +156,9 @@ def shortExactSequence : ShortComplex (Rep R G) where
   g := π σ
   zero := by ext; simp
 
+lemma shortExactSequence_eq_mk :
+    shortExactSequence σ = ShortComplex.mk (ι σ) (π σ) (shortExactSequence σ).zero := rfl
+
 lemma shortExactSequence_X₁ : (shortExactSequence σ).X₁ = M := rfl
 
 lemma shortExactSequence_X₂ : (shortExactSequence σ).X₂ = split σ := rfl
@@ -164,9 +176,9 @@ lemma isShortExact : ShortComplex.ShortExact (shortExactSequence σ) := by
   have : Mono (shortExactSequence σ).f := (Rep.mono_iff_injective _).mpr LinearMap.inr_injective
   have : Epi (shortExactSequence σ).g := (Rep.epi_iff_surjective _).mpr LinearMap.fst_surjective
   constructor
-  apply Functor.reflects_exact_of_faithful (forget₂ _ (ModuleCat R))
-  rw [ShortComplex.ShortExact.moduleCat_exact_iff_function_exact]
-  exact Function.Exact.inr_fst (R := R) (M := aug R G) (N := M)
+  rw [ShortComplex.ShortExact.rep_exact_iff_function_exact, shortExactSequence_eq_mk]
+  refine Function.Exact.of_comp_of_mem_range (funext fun m ↦ by simp) fun v hv ↦ ?_
+  simpa [split.ext_iff] using hv.symm
 
 /--
 The sequence
@@ -275,7 +287,7 @@ lemma TateTheorem_lemma_1 [FiniteClassFormation σ] : H2Map₂ ((resFunctor φ).
   simp only [H2res, SetLike.mem_coe, LinearMap.mem_ker]
   -- `σ` is killed by `H²(G, M) ⟶ H²(G, split σ)`, as `ι σ ∘ cocycle σ` is the coboundary of `τ σ`
   have hσ : (map (MonoidHom.id G) (ι σ) 2).hom (H2π M (cocycle σ)) = 0 := by
-    rw [H2π_comp_map_apply, H2π_eq_zero_iff]
+    rw [H2π_comp_map_apply, H2π_eq_zero_iff, coe_mapCocycles₂_id]
     exact splits σ
   rw [cocycle_spec] at hσ
   -- and this map commutes with restriction to `H`
@@ -345,11 +357,11 @@ lemma TateTheorem_lemma_4 [FiniteClassFormation σ] [IsAddTorsionFree R] :
     refine .of_iso ?_ (asIso ((δ (aug.aug_isShortExact' R G φ) 1 2 rfl))).symm
     have : Finite H := .of_injective _ inj
     exact groupCohomology.H1_isZero_of_trivial (trivial R H R)
-  let S := HomologicalComplex.HomologySequence.snakeInput
-    (map_cochainsFunctor_shortExact <| res_isShortExact (R := R) σ φ) 1 2 rfl
-  have : Epi S.L₃.f := S.L₃_exact.epi_f_iff.mpr (IsZero.eq_zero_of_tgt H _)
-  apply Limits.IsZero.of_epi_eq_zero S.L₃.f
-  exact TateTheorem_lemma_1 σ inj
+  have hX := res_isShortExact σ φ
+  rw [shortExactSequence_eq_mk] at hX
+  have h₁ := TateTheorem_lemma_1 σ inj
+  rw [H2Map₂] at h₁
+  exact (mapShortComplex₂_exact hX 2).isZero_X₂ h₁ (H.eq_of_tgt _ _)
 
 /--
 The splitting module has trivial cohomology.

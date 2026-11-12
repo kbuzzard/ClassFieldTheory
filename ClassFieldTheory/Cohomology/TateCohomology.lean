@@ -17,6 +17,11 @@ open
 
 universe u v w
 
+-- TODO: upstream
+lemma Submodule.mem_submoduleOf {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    {p q : Submodule R M} {x : q} : x ∈ p.submoduleOf q ↔ (x : M) ∈ p :=
+  Iff.rfl
+
 variable {R G H : Type u} [CommRing R] [Group G] [Fintype G] [Group H] [Fintype H]
 
 namespace TateCohomology
@@ -59,6 +64,8 @@ noncomputable abbrev map {M : Rep R G} {N : Rep R H} (e : G ≃* H) (φ : M ⟶ 
     tateCohomology M n ⟶ tateCohomology N n :=
   HomologicalComplex.homologyMap (cochainsMap e φ) _
 
+attribute [local implicit_reducible] tateCohomologyFunctor tateComplexFunctor
+  HomologicalComplex.homologyFunctor in
 lemma map_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep R H} {P : Rep R Q}
     (e1 : G ≃* H) (e2 : H ≃* Q) (φ : M ⟶ N ↓ e1) (ψ : N ⟶ P ↓ e2) (n : ℤ) :
     map (e1.trans e2) (φ ≫ (resFunctor e1.toMonoidHom|>.map ψ)) n =
@@ -67,6 +74,8 @@ lemma map_comp {Q : Type u} [Group Q] [Fintype Q] {M : Rep R G} {N : Rep R H} {P
   rw [cochainsMap_comp]
   exact HomologicalComplex.homologyMap_comp _ _ _
 
+attribute [local implicit_reducible] tateCohomologyFunctor tateComplexFunctor
+  HomologicalComplex.homologyFunctor in
 lemma map_id {M : Rep R G} (n : ℤ) :
     map (MulEquiv.refl G) (𝟙 M) n = 𝟙 (tateCohomology M n) := by
   unfold map
@@ -149,6 +158,7 @@ and the corresponding parts of the Tate complex. -/
 
 end negOneIso
 
+attribute [local implicit_reducible] negOneIso.sc Rep.norm in
 /-- A concrete description of the `-1`-st Tate cohomology group
 as the quotient of the kernel of the norm by the kernel of the coinvariants. -/
 def negOneIso (M : Rep R G) :
@@ -161,9 +171,13 @@ def negOneIso (M : Rep R G) :
   _ ≅ _ := by
     refine (Submodule.Quotient.equiv _ _ (LinearEquiv.ofEq _ _ rfl) ?_).toModuleIso
     rw [← range_d₁₀_eq_coinvariantsKer]
-    refine Submodule.ext fun ⟨x, hx⟩ ↦ ⟨?_, ?_⟩
-    · rintro ⟨_, ⟨y, rfl⟩, hy⟩; exact ⟨y, congr(Subtype.val $hy)⟩
-    · rintro ⟨y, rfl⟩; exact ⟨⟨d₁₀ M y, hx⟩, ⟨y, rfl⟩, rfl⟩
+    refine Submodule.ext fun ⟨x, hx⟩ ↦ ?_
+    simp only [Submodule.mem_map, LinearMap.mem_range, Submodule.mem_submoduleOf]
+    refine ⟨?_, ?_⟩
+    · rintro ⟨_, ⟨y, rfl⟩, hy⟩
+      exact ⟨y, by simpa [Subtype.ext_iff] using hy⟩
+    · rintro ⟨y, rfl⟩
+      exact ⟨_, ⟨y, rfl⟩, by simp [Subtype.ext_iff]⟩
 
 variable [M.ρ.IsTrivial] {n : ℤ} {N : ℕ}
 

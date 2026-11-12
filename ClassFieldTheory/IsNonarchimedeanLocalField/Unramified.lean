@@ -279,9 +279,10 @@ theorem nonempty_unramifiedExtension_algEquiv_of_isUnramified [IsUnramified K L]
     Nonempty (UnramifiedExtension K (Module.finrank K L) ≃ₐ[K] L) := by
   obtain ⟨φ⟩ := nonempty_unramifiedExtension_alghom_of_dvd_f K L (Module.finrank K L)
     (IsUnramified.n_dvd_f K L)
-  exact ⟨.ofBijective φ ⟨φ.toRingHom.injective,
-    (LinearMap.injective_iff_surjective_of_finrank_eq_finrank (f := φ.toLinearMap)
-      (finrank_unramifiedExtension K Module.finrank_pos.ne')).mp φ.toRingHom.injective⟩⟩
+  have h := LinearMap.injective_iff_surjective_of_finrank_eq_finrank (f := φ.toLinearMap)
+    (finrank_unramifiedExtension K Module.finrank_pos.ne')
+  rw [AlgHom.coe_toLinearMap] at h
+  exact ⟨.ofBijective φ ⟨φ.toRingHom.injective, h.mp φ.toRingHom.injective⟩⟩
 
 /-- Any unramified extension is Galois. -/
 instance [IsUnramified K L] : IsGalois K L :=

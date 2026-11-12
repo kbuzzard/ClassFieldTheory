@@ -32,19 +32,23 @@ lemma _root_.Rep.res_id_map (X Y : Rep R G) (f : X ⟶ Y) :
     (resFunctor (MonoidHom.id G)).map f = f := rfl
 
 -- TODO : upstream the next two lemmas into mathlib
+-- They need `cochainsFunctor` to unfold, to identify `(S.map (cochainsFunctor R G)).Xᵢ.homology n`
+-- (the objects in `ShortExact.homology_exact₁`/`₃`) with `groupCohomology S.Xᵢ n`.
 omit [IsCyclic G] [Finite G] in
+attribute [local implicit_reducible] cochainsFunctor in
 /-- `mapShortComplex₁_exact`, restated for the short complex `Hⁱ(G, X₃) ⟶ Hʲ(G, X₁) ⟶ Hʲ(G, X₂)`
 built from `δ` and `(functor R G j).map S.f`. -/
 lemma _root_.groupCohomology.exact_δ_map (i j : ℕ) (hij : i + 1 = j) :
     (ShortComplex.mk (δ hS i j hij) ((functor R G j).map S.f) (δ_comp_map hS i j hij)).Exact :=
-  mapShortComplex₁_exact hS hij
+  (map_cochainsFunctor_shortExact hS).homology_exact₁ i j (ComplexShape.up_mk i j hij)
 
 omit [IsCyclic G] [Finite G] in
+attribute [local implicit_reducible] cochainsFunctor in
 /-- `mapShortComplex₃_exact`, restated for the short complex `Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)`
 built from `(functor R G i).map S.g` and `δ`. -/
 lemma _root_.groupCohomology.exact_map_δ (i j : ℕ) (hij : i + 1 = j) :
     (ShortComplex.mk ((functor R G i).map S.g) (δ hS i j hij) (map_comp_δ hS i j hij)).Exact :=
-  mapShortComplex₃_exact hS hij
+  (map_cochainsFunctor_shortExact hS).homology_exact₃ i j (ComplexShape.up_mk i j hij)
 
 /-- Given a short exact sequence of representations of a finite cyclic group, the long exact
 sequence in cohomology is periodic with period six. -/
@@ -82,6 +86,32 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
     · rw [← ShortComplex.map_f]
       simp
 
+/-! The short complexes `(herbrandSixTermSequence hS).sc' (j - 1) j (j + 1)`, unfolded. -/
+
+lemma herbrandSixTermSequence_sc'_5_0_1 :
+    (herbrandSixTermSequence hS).sc' 5 0 1 =
+      ShortComplex.mk (δ hS 1 2 rfl) ((functor R G 2).map S.f) (δ_comp_map hS 1 2 rfl) := rfl
+
+lemma herbrandSixTermSequence_sc'_0_1_2 :
+    (herbrandSixTermSequence hS).sc' 0 1 2 = S.map (functor R G 2) := rfl
+
+lemma herbrandSixTermSequence_sc'_1_2_3 :
+    (herbrandSixTermSequence hS).sc' 1 2 3 =
+      ShortComplex.mk ((functor R G 2).map S.g)
+        (δ hS 2 3 rfl ≫ (periodicCohomology 3 1 (by decide)).hom.app S.X₁) (by simp) := rfl
+
+lemma herbrandSixTermSequence_sc'_2_3_4 :
+    (herbrandSixTermSequence hS).sc' 2 3 4 =
+      ShortComplex.mk (δ hS 2 3 rfl ≫ (periodicCohomology 3 1 (by decide)).hom.app S.X₁)
+        ((functor R G 1).map S.f) (by rw [Category.assoc, ← NatTrans.naturality]; simp) := rfl
+
+lemma herbrandSixTermSequence_sc'_3_4_5 :
+    (herbrandSixTermSequence hS).sc' 3 4 5 = S.map (functor R G 1) := rfl
+
+lemma herbrandSixTermSequence_sc'_4_5_0 :
+    (herbrandSixTermSequence hS).sc' 4 5 0 =
+      ShortComplex.mk ((functor R G 1).map S.g) (δ hS 1 2 rfl) (map_comp_δ hS 1 2 rfl) := rfl
+
 /-- The short complex `H²(G, X₂) ⟶ H²(G, X₃) ⟶ H¹(G, X₁)` obtained from `mapShortComplex₃` by
 composing the connecting homomorphism with the periodicity isomorphism is exact. -/
 lemma exact_map_δ_periodicCohomology :
@@ -105,12 +135,18 @@ lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS)
     refine (HomologicalComplex.exactAt_iff' _ _ _ _ (CochainComplex.prev _ _)
       (CochainComplex.next _ _)).mpr ?_ <;>
     dsimp only [Fin.reduceFinMk, Fin.reduceSub, Fin.reduceAdd]
-  · exact exact_δ_map hS 1 2 rfl
-  · exact mapShortComplex₂_exact hS 2
-  · exact exact_map_δ_periodicCohomology hS
-  · exact exact_δ_periodicCohomology_map hS
-  · exact mapShortComplex₂_exact hS 1
-  · exact exact_map_δ hS 1 2 rfl
+  · rw [herbrandSixTermSequence_sc'_5_0_1]
+    exact exact_δ_map hS 1 2 rfl
+  · rw [herbrandSixTermSequence_sc'_0_1_2]
+    exact mapShortComplex₂_exact hS 2
+  · rw [herbrandSixTermSequence_sc'_1_2_3]
+    exact exact_map_δ_periodicCohomology hS
+  · rw [herbrandSixTermSequence_sc'_2_3_4]
+    exact exact_δ_periodicCohomology_map hS
+  · rw [herbrandSixTermSequence_sc'_3_4_5]
+    exact mapShortComplex₂_exact hS 1
+  · rw [herbrandSixTermSequence_sc'_4_5_0]
+    exact exact_map_δ hS 1 2 rfl
 
 lemma herbrandQuotient_ne_zero_of_shortExact₃
     (h₁ : S.X₁.herbrandQuotient ≠ 0) (h₂ : S.X₂.herbrandQuotient ≠ 0) :

@@ -176,14 +176,19 @@ instance epi_δUpRes_app (S : Subgroup G) : Epi ((δUpRes S.subtype).app M) :=
   epi_δ_up_zero_res (φ := S.subtype) M S.subtype_injective
 
 @[reassoc (attr := simp)]
-lemma map_up_π_comp_δUp : (functor R G 0).map (up.π M) ≫ δUp.app M = 0 :=
-  map_comp_δ (shortExact_upSES M) 0 1 rfl
+lemma map_up_π_comp_δUp : (functor R G 0).map (up.π M) ≫ δUp.app M = 0 := by
+  rw [δUp_app]
+  exact map_comp_δ (shortExact_upSES M) 0 1 rfl
 
+-- `δ` is built on `X.map (cochainsFunctor R H)`, so `homology_exact₃` needs it to unfold.
+attribute [local implicit_reducible] cochainsFunctor in
 /-- `H⁰(H, (coind₁' M) ↓ φ) ⟶ H⁰(H, (up M) ↓ φ) ⟶ H¹(H, M ↓ φ)` is exact. -/
 lemma exact_δUpRes {H : Type u} [Group H] (φ : H →* G) :
     (ShortComplex.mk ((functor R H 0).map ((resFunctor φ).map (up.π M))) ((δUpRes φ).app M)
-      (map_comp_δ (shortExact_upSES_res M φ) 0 1 rfl)).Exact :=
-  mapShortComplex₃_exact (shortExact_upSES_res M φ) rfl
+      (map_comp_δ (shortExact_upSES_res M φ) 0 1 rfl)).Exact := by
+  simp only [δUpRes_app]
+  exact (map_cochainsFunctor_shortExact (shortExact_upSES_res M φ)).homology_exact₃ 0 1
+    (ComplexShape.up_mk 0 1 rfl)
 
 /-! ### The down functor -/
 

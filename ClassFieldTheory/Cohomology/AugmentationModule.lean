@@ -44,12 +44,17 @@ namespace groupCohomology
 
 universe u
 
+-- `homology_exact₃` is stated for `X.map (cochainsFunctor k G)`, so matching it with `map` and
+-- `δ` needs `cochainsFunctor` to unfold, to identify `(X.map (cochainsFunctor k G)).Xᵢ.homology n`
+-- with `groupCohomology X.Xᵢ n` (as for `map_comp_δ`).
+attribute [local implicit_reducible] cochainsFunctor in
 /-- Exactness of `Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)` at `Hⁱ(G, X₃)`, stated with
 `groupCohomology.map` and `groupCohomology.δ` instead of `mapShortComplex₃`. -/
 lemma range_map_eq_ker_δ {k G : Type u} [CommRing k] [Group G] {X : ShortComplex (Rep k G)}
     (hX : X.ShortExact) {i j : ℕ} (hij : i + 1 = j) :
     LinearMap.range (map (MonoidHom.id G) X.g i).hom = LinearMap.ker (δ hX i j hij).hom :=
-  (mapShortComplex₃_exact hX hij).moduleCat_range_eq_ker
+  ((map_cochainsFunctor_shortExact hX).homology_exact₃ i j
+    (ComplexShape.up_mk i j hij)).moduleCat_range_eq_ker
 
 open RepresentationTheory.groupCohomology in
 /-- For a trivial representation `A`, the isomorphism `H0IsoOfIsTrivial A` is `zeroι A`. -/
