@@ -132,7 +132,6 @@ instance trivialHomology_coind₁' : TrivialCohomology (coind₁'.obj M) :=
 instance trivialHomology_coind₁AsPi : TrivialHomology (coind₁AsPi G A) :=
   .of_iso (coind₁AsPiIso _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `coind₁` considered as the concrete left-regular action on `G →₀ A` has trivial Tate cohomology.
 -/
 instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind₁AsPi G A) := by
@@ -150,11 +149,12 @@ instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind�
     simp [eq_mul_inv_iff_mul_eq]
   refine ⟨.of_iso ?_ <| TateCohomology.zeroIso _, .of_iso ?_ <| TateCohomology.negOneIso _⟩
   · -- First, let's prove the 0-th cohomology group is trivial.
-    simp only [res_obj_V, res_obj_ρ, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
-      Function.comp_apply, ModuleCat.isZero_of_iff_subsingleton,
-      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, IsConcreteLE.le_iff,
-      Representation.mem_invariants, funext_iff, Representation.coind₁AsPi_apply, Subtype.forall,
-      LinearMap.mem_range, LinearMap.coe_sum, Finset.sum_apply]
+    rw [ModuleCat.isZero_of_iff_subsingleton, Submodule.Quotient.subsingleton_iff,
+      Submodule.submoduleOf_eq_top]
+    simp only [res_obj_V, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
+      Function.comp_apply, IsConcreteLE.le_iff, Representation.mem_invariants, funext_iff,
+      Representation.coind₁AsPi_apply, Subtype.forall, LinearMap.mem_range, LinearMap.coe_sum,
+      Finset.sum_apply]
     intro f hf
     -- Assume we have such `f`.
     -- We claim we can take `g := ∑ y : G ⧸ H, Pi.single y.out (f y.out)`, where `out` is an
@@ -169,11 +169,11 @@ instance trivialTateCohomology_coind₁AsPi : TrivialTateCohomology (Rep.coind�
     simp +contextual [Finset.sum_comm (α := H) (s := Finset.univ), eq_comm (b := Quotient.out _),
       mul_assoc, ← Subgroup.coe_mul H, -Subgroup.coe_inv, -InvMemClass.coe_inv]
   · -- Second, let's prove the -1-st cohomology group is trivial.
-    simp only [res_obj_V, res_obj_ρ, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
-      Function.comp_apply, ModuleCat.isZero_of_iff_subsingleton,
-      Submodule.Quotient.subsingleton_iff, Submodule.submoduleOf_eq_top, IsConcreteLE.le_iff,
-      LinearMap.mem_ker, LinearMap.coe_sum, Finset.sum_apply, funext_iff,
-      Representation.coind₁AsPi_apply, Pi.ofNat_apply]
+    rw [ModuleCat.isZero_of_iff_subsingleton, Submodule.Quotient.subsingleton_iff,
+      Submodule.submoduleOf_eq_top]
+    simp only [res_obj_V, Representation.norm, MonoidHom.coe_comp, Subgroup.coe_subtype,
+      Function.comp_apply, IsConcreteLE.le_iff, LinearMap.mem_ker, LinearMap.coe_sum,
+      Finset.sum_apply, funext_iff, Representation.coind₁AsPi_apply, Pi.ofNat_apply]
     -- Assume we have such `f`.
     intro f hf
     replace hf x : ∑ h : H, f (x * (↑h)⁻¹) = 0 := by

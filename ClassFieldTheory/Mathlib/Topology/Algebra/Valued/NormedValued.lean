@@ -36,12 +36,12 @@ variable {K}
 @[simp] theorem ball_norm_eq (x : K) :
     Metric.ball 0 ‖x‖ = { y : K | valuation y < valuation x } := by
   ext y
-  simp_rw [mem_ball_zero_iff, Set.mem_ofPred_eq, valuation_apply, ← NNReal.coe_lt_coe, coe_nnnorm]
+  simp_rw [mem_ball_zero_iff, Set.mem_ofPred_eq, valuation_apply, ← NNReal.coe_lt_coe, coe_nnNorm]
 
 theorem valuation_ball_eq (x : K) :
     (valuation (K := K)).ball (valuation x) = Metric.ball 0 ‖x‖ := by
   ext; simp_rw [Valuation.mem_ball_iff, valuation_apply, ← NNReal.coe_lt_coe,
-    coe_nnnorm, mem_ball_zero_iff]
+    coe_nnNorm, mem_ball_zero_iff]
 
 variable (K) in
 omit [IsUltrametricDist K] in
@@ -119,7 +119,7 @@ theorem isNontrivial (K : Type*) [NontriviallyNormedField K] [IsUltrametricDist 
   refine ⟨⟨ValuativeRel.valuation K x, ?_, ?_⟩⟩
   · rw [Valuation.ne_zero_iff]; exact norm_pos_iff.1 (one_pos.trans hx)
   · exact ne_of_gt <| by rwa [(isEquiv K).one_lt_iff_one_lt, valuation_apply,
-      ← NNReal.coe_lt_coe, NNReal.coe_one, coe_nnnorm]
+      ← NNReal.coe_lt_coe, NNReal.coe_one, coe_nnNorm]
 
 scoped [NormedField] attribute [instance] isValuativeTopology isNontrivial
 

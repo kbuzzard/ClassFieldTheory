@@ -17,6 +17,16 @@ open
 
 universe u
 
+namespace Representation
+
+lemma quotientToInvariants_lift_apply {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V]
+    [Module k V] (ρ : Representation k G V) (S : Subgroup G) [S.Normal]
+    (x : invariants (ρ.comp S.subtype)) :
+    ρ.quotientToInvariants_lift S x = (x : V) :=
+  rfl
+
+end Representation
+
 variable {R G Q : Type u} [CommRing R] [Group G] [Group Q] {φ : G →* Q}
   (surj : Function.Surjective φ)
 
@@ -94,21 +104,19 @@ def IsoNext (n) (M : Rep R G) (hM : IsZero (H1 (M ↓ φ.ker.subtype))) :
 in that the first term is a cohomology group of `Q` rather than of `G ⧸ φ.ker`. -/
 def isoHInfRes (n : ℕ) (M : Rep R G) :
     inflationRestriction surj n M ≅ HInfRes M φ.ker (n + 1) :=
-  ShortComplex.isoMk
-    (resEquiv_inv (n + 1) Q (M.quotientToInvariants φ.ker)
-      (QuotientGroup.quotientKerEquivOfSurjective φ surj))
-    (Iso.refl _)
-    (Iso.refl _)
+  ShortComplex.isoMk (resEquiv_inv (n + 1) Q (M.quotientToInvariants φ.ker)
+    (QuotientGroup.quotientKerEquivOfSurjective φ surj)) (Iso.refl _) (Iso.refl _)
     (by
-      change (resEquiv_inv (n + 1) Q _ _).hom ≫
-          map (QuotientGroup.mk' φ.ker) (ofHom (M.ρ.quotientToInvariants_lift φ.ker)) (n + 1) =
-        (infl surj (n + 1)).app M
-      rw [resEquiv_inv_hom, ← map_comp, infl, NatTrans.hcomp_id_app,
-        HomologicalComplex.homologyFunctor_map]
-      exact map_congr (by ext g; simp [QuotientGroup.quotientKerEquivOfSurjective]) rfl (n + 1))
+      rw [Iso.refl_hom, Category.comp_id, HInfRes_f, inflationRestriction_f, resEquiv_inv_hom,
+        ← map_comp, infl_app]
+      refine map_congr ?_ ?_ _
+      · ext x
+        simp [← MulEquiv.eq_symm_apply]
+      · ext x
+        simp [res_quotientToInvariantsFunctor'_ι, quotientToInvariantsFunctor'_obj_ρ])
     (by
-      change (HInfRes M φ.ker (n + 1)).g = (rest φ.ker.subtype (n + 1)).app M
-      rw [HInfRes_g, rest_app])
+      rw [Iso.refl_hom, Iso.refl_hom, Category.id_comp, Category.comp_id, HInfRes_g,
+        inflationRestriction_g, rest_app])
 
 theorem inflation_restriction_mono (n : ℕ) {M : Rep R G}
     (hM : ∀ i : ℕ, i < n → IsZero (groupCohomology (M ↓ φ.ker.subtype) (i + 1))) :

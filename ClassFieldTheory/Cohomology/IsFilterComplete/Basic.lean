@@ -60,8 +60,10 @@ theorem Filtration.ext [IsFilterHausdorff F] {x y : M} (h : ∀ i, x - y ∈ F i
 
 def Completion.set : Set ((i : ι) → M ⧸ AddSubgroup.ofClass (F i)) :=
   {f | ∀ ⦃i j⦄, i ≤ j →
-    QuotientAddGroup.map _ (AddSubgroup.ofClass (F i) ⊔ .ofClass (F j)) (.id M) le_sup_left (f i) =
-    QuotientAddGroup.map _ (AddSubgroup.ofClass (F i) ⊔ .ofClass (F j)) (.id M) le_sup_right (f j)}
+    QuotientAddGroup.map _ (AddSubgroup.ofClass (F i) ⊔ .ofClass (F j)) (.id M)
+      (le_sup_left.trans (AddSubgroup.comap_id _).ge) (f i) =
+    QuotientAddGroup.map _ (AddSubgroup.ofClass (F i) ⊔ .ofClass (F j)) (.id M)
+      (le_sup_right.trans (AddSubgroup.comap_id _).ge) (f j)}
 
 /-- Completion that works for different classes such as `Module` or `AddCommGroup`. -/
 def Completion : Type _ := Completion.set F
@@ -116,6 +118,10 @@ def addSubgroup : AddSubgroup (ι → M) where
 
 instance : AddCommGroup (FilterCauchySeq F) := addSubgroup F |>.toAddCommGroup
 
+@[simp] lemma coe_zero : (0 : FilterCauchySeq F).val = 0 := rfl
+
+@[simp] lemma coe_add {f g : FilterCauchySeq F} : (f + g).val = f.val + g.val := rfl
+
 variable {F} in
 /-- A constructor that is intended for when `F` is antitone. -/
 @[simps!] def mk (x : ι → M) (hx : ∀ ⦃i j⦄, i ≤ j → x i - x j ∈ F i) : FilterCauchySeq F :=
@@ -139,7 +145,7 @@ theorem Completion.mk_surjective : (⇑(Completion.mk F)).Surjective := fun x �
   cases xi using QuotientAddGroup.induction_on with | H xi =>
   cases xj using QuotientAddGroup.induction_on with | H xj =>
   rw [← QuotientAddGroup.eq_iff_sub_mem]
-  change (xi : M ⧸ (_ : AddSubgroup M)) = xj at this
+  simp only [QuotientAddGroup.map_mk, AddMonoidHom.id_apply] at this
   convert this using 1 <;> rw [QuotientAddGroup.eq_iff_sub_mem]
   · refine le_sup_left (α := AddSubgroup M) ?_
     rw [← QuotientAddGroup.eq_iff_sub_mem, QuotientAddGroup.out_eq']
@@ -210,8 +216,8 @@ def partialSum : ((i : ℕ) → F (toDual i)) →+ FilterCauchySeq (F ∘ toDual
   toFun a := .mk (fun i ↦ ∑ j ∈ Finset.range i, a j) fun i₁ i₂ h ↦ by
     rw [← Finset.sum_range_add_sum_Ico _ h, sub_mem_comm_iff, add_sub_cancel_left]
     exact sum_mem fun j hj ↦ SetLike.coe_subset_coe.2 (F.2 (Finset.mem_Ico.mp hj).1) (a j).2
-  map_zero' := by ext; simp; rfl
-  map_add' _ _ := by ext; simp [Finset.sum_add_distrib]; rfl
+  map_zero' := by ext; simp
+  map_add' _ _ := by ext; simp [Finset.sum_add_distrib]
 
 namespace IsFilterComplete
 

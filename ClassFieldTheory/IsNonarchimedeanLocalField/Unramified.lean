@@ -34,19 +34,22 @@ deriving Field, Algebra K, FiniteDimensional K
 variable (K : Type*) [Field K] [ValuativeRel K] [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 variable (n : ℕ)
 
-set_option backward.isDefEq.respectTransparency false in
+/-- The derived instance `instFiniteDimensionalUnramifiedExtension` is stated with the module
+structure of the `SplittingField`, which instance search cannot unify with the derived `Algebra K`
+instance, so we restate it with the module structure of `UnramifiedExtension K n`. -/
+instance UnramifiedExtension.finiteDimensional : FiniteDimensional K (UnramifiedExtension K n) :=
+  inferInstanceAs <| FiniteDimensional K <|
+    SplittingField (X ^ (Nat.card 𝓀[K] ^ n - 1) - 1 : K[X])
+
 instance : ValuativeRel (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ValuativeExtension K (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose
 
-set_option backward.isDefEq.respectTransparency false in
 instance : TopologicalSpace (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose_spec.choose
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsNonarchimedeanLocalField (UnramifiedExtension K n) :=
   (isNonarchimedeanLocalField_of_finiteDimensional K _).choose_spec.choose_spec.choose_spec
 
@@ -276,13 +279,10 @@ theorem nonempty_unramifiedExtension_algEquiv_of_isUnramified [IsUnramified K L]
     Nonempty (UnramifiedExtension K (Module.finrank K L) ≃ₐ[K] L) := by
   obtain ⟨φ⟩ := nonempty_unramifiedExtension_alghom_of_dvd_f K L (Module.finrank K L)
     (IsUnramified.n_dvd_f K L)
-  have : φ.fieldRange = ⊤ := IntermediateField.toSubalgebra_injective <|
-    Subalgebra.toSubmodule_injective <| Submodule.eq_top_of_finrank_eq <| by
-    change Module.finrank K (LinearMap.range φ.toLinearMap) = _
-    rw [LinearMap.finrank_range_of_inj φ.toRingHom.injective,
-      finrank_unramifiedExtension _ Module.finrank_pos.ne']
-  exact ⟨(AlgEquiv.ofInjective φ φ.toRingHom.injective).trans <|
-    (IntermediateField.equivOfEq this).trans <| IntermediateField.topEquiv⟩
+  have h := LinearMap.injective_iff_surjective_of_finrank_eq_finrank (f := φ.toLinearMap)
+    (finrank_unramifiedExtension K Module.finrank_pos.ne')
+  rw [AlgHom.coe_toLinearMap] at h
+  exact ⟨.ofBijective φ ⟨φ.toRingHom.injective, h.mp φ.toRingHom.injective⟩⟩
 
 /-- Any unramified extension is Galois. -/
 instance [IsUnramified K L] : IsGalois K L :=
@@ -293,20 +293,17 @@ instance [IsUnramified K L] : IsGalois K L :=
 def maximalUnramified : IntermediateField K L :=
   (nonempty_unramifiedExtension_alghom_of_dvd_f K L (f K L) dvd_rfl).some.fieldRange
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsUnramified K (maximalUnramified K L) := by
   unfold maximalUnramified
   infer_instance
 
 variable {K L} (E : IntermediateField K L)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The maximal unramified subextension is maximal. -/
 theorem le_maximalUnramified_iff : E ≤ maximalUnramified K L ↔ IsUnramified K E := by
-  refine ⟨fun h ↦ .comap <| show E →ₐ[K] maximalUnramified K L from Subalgebra.inclusion h,
-    fun _ ↦ ?_⟩
+  refine ⟨fun h ↦ .comap <| IntermediateField.inclusion h, fun _ ↦ ?_⟩
   obtain ⟨φ₁⟩ := nonempty_unramifiedExtension_algEquiv_of_isUnramified K E
-  have h₁ : Module.finrank K E ∣ f K L := .trans (IsUnramified.n_dvd_f K E) <| f_dvd_f_top ..
+  have h₁ : Module.finrank K E ∣ f K L := (IsUnramified.n_dvd_f K E).trans (f_dvd_f E.val)
   obtain ⟨φ₂⟩ := nonempty_unramifiedExtension_alghom_of_dvd_f K (UnramifiedExtension K (f K L))
     (Module.finrank K E) (by simpa [f_unramifiedExtension _ (f_pos _ _).ne'])
   unfold maximalUnramified

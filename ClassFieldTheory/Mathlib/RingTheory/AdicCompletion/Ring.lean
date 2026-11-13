@@ -24,7 +24,7 @@ theorem Submodule.factorPow_eq_factorPow {m n : ℕ} (h : m ≤ n) :
       Ideal.Quotient.factorPow I h ∘ Ideal.quotEquivOfEq (by simp) := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  rfl
+  simp
 
 theorem Ideal.quotEquivOfEq_trans {I₁ I₂ I₃ : Ideal R} (h12 : I₁ = I₂) (h23 : I₂ = I₃) :
     (quotEquivOfEq h12).trans (quotEquivOfEq h23) = quotEquivOfEq (h12.trans h23) :=
@@ -33,10 +33,6 @@ theorem Ideal.quotEquivOfEq_trans {I₁ I₂ I₃ : Ideal R} (h12 : I₁ = I₂)
 theorem Ideal.quotEquivOfEq_rfl :
     quotEquivOfEq (rfl : I = I) = .refl _ :=
   RingEquiv.toRingHom_injective <| ringHom_ext rfl
-
-theorem Ideal.Quotient.factorPow_comp_factorPow {m n p : ℕ} (h1 : m ≤ n) (h2 : n ≤ p) :
-    (factorPow I h1).comp (factorPow I h2) = factorPow I (h1.trans h2) :=
-  ringHom_ext rfl
 
 def AdicCompletion.mkRing (f : ∀ n, R ⧸ I ^ n) (hf : ∀ n, factorPowSucc I n (f (n + 1)) = f n) :
     AdicCompletion I R := by
@@ -47,7 +43,7 @@ def AdicCompletion.mkRing (f : ∀ n, R ⧸ I ^ n) (hf : ∀ n, factorPowSucc I 
   induction h with
   | refl => simp
   | step h ih =>
-    rw [← ih, eq_comm, ← hf, ← RingHom.comp_apply, factorPow_comp_factorPow]
+    rw [← ih, eq_comm, ← hf, ← RingHom.comp_apply, factor_comp]
 
 theorem AdicCompletion.mk_ofLinearEquiv_symm_mkRing
     [IsAdicComplete I R] {f : ∀ n, R ⧸ I ^ n} {hf} {n : ℕ} :
@@ -56,12 +52,12 @@ theorem AdicCompletion.mk_ofLinearEquiv_symm_mkRing
   rw [LinearEquiv.symm_apply_eq] at hx
   have h : I ^ n • ⊤ = I ^ n := by simp
   convert! congr(quotEquivOfEq h ($(hx.symm).val n))
-  simp_rw [mkRing, ← RingEquiv.trans_apply, quotEquivOfEq_trans, quotEquivOfEq_rfl]
-  rfl
+  simp_rw [mkRing, ← RingEquiv.trans_apply, quotEquivOfEq_trans, quotEquivOfEq_rfl,
+    RingEquiv.refl_apply]
 
 theorem IsHausdorff.eq_iff_eq [IsHausdorff I R] {x y : R} :
     x = y ↔ ∀ n, Ideal.Quotient.mk (I ^ n) x = Ideal.Quotient.mk (I ^ n) y := by
   simp_rw [IsHausdorff.eq_iff_smodEq (I := I), SModEq, mk_eq_mk]
   refine forall_congr' fun n ↦ ?_
   rw [← (quotEquivOfEq <| show I ^ n • ⊤ = I ^ n by simp).injective.eq_iff]
-  rfl
+  simp

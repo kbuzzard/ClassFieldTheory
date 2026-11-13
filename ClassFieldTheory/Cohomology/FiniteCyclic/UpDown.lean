@@ -174,8 +174,7 @@ lemma map₂_range [Finite G] :
           simp
     use equivFunOnFinite.symm f
     ext g
-    rw [map₂_apply]
-    change f g - f ((gen G)⁻¹ * g) = w g
+    rw [map₂_apply, coe_equivFunOnFinite_symm]
     obtain ⟨k, ⟨hk_lt, rfl⟩, hk_unique⟩ := unique_gen_pow g
     by_cases hk : k = 0
     · rw [hk, hf_apply_of_lt, pow_zero, mul_one]
@@ -198,8 +197,8 @@ lemma map₂_range [Finite G] :
             simp only at hk_unique
             have := (unique_gen_pow (gen G ^ x)).choose_spec.right
             rw [this x, this y]
-            · simp only [hy, h, and_self]
-            · simp only [hx, and_self]
+            · simp [hy, h]
+            · simp [hx]
           _ = ∑ x, w x := by
             congr
             rw [Finset.eq_univ_iff_forall]
@@ -219,11 +218,26 @@ lemma map₂_range [Finite G] :
         omega
       all_goals omega
 
+lemma map₁_comp_compLeft {B : Type} [AddCommGroup B] [Module R B] (f : A →ₗ[R] B) :
+    map₁ (G := G) ∘ₗ f.compLeft G = f.compLeft G ∘ₗ map₁ := by
+  ext; simp
+
+lemma map₂_comp_ind₁'_map {B : Type} [AddCommGroup B] [Module R B] (f : A →ₗ[R] B) :
+    map₂ ∘ₗ ind₁'_map (G := G) f = ind₁'_map (G := G) f ∘ₗ map₂ := by
+  ext; simp [map₂, apply_single]
+
+lemma linearEquivFunOnFinite_symm_map₁ [Finite G] (v : G → A) :
+    (linearEquivFunOnFinite R A G).symm (map₁ (R := R) v) =
+      map₂ (R := R) ((linearEquivFunOnFinite R A G).symm v) := by
+  ext x
+  rw [map₂_apply]
+  simp
+
 end Representation
 
 namespace Rep
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] coind₁' in
 /--
 The map `coind₁'.obj M ⟶ coind₁' M` which takes a function `f : G → M.V` to
 `x ↦ f x - f ((gen G)⁻¹ * x)`.
@@ -231,10 +245,8 @@ The map `coind₁'.obj M ⟶ coind₁' M` which takes a function `f : G → M.V`
 def map₁ : coind₁' (R := R) (G := G) ⟶ coind₁' where
   app M := Rep.ofHom ⟨Representation.map₁, fun g ↦ Representation.map₁_comm _ _⟩
   naturality _ _ _ := by
-    ext v
-    dsimp only [Representation.map₁, coind₁']
-    ext x
-    simp
+    ext : 2
+    simp [coind₁'_map_hom_toLinearMap, Representation.map₁_comp_compLeft _]
 
 lemma coind_ι_gg_map₁_app (M : Rep R G) : coind₁'_ι.app M ≫ map₁.app M = 0 := by
   ext : 2
@@ -244,8 +256,7 @@ lemma coind_ι_gg_map₁ : coind₁'_ι ≫ map₁ (R := R) (G := G) = 0 := by
   ext : 2
   exact coind_ι_gg_map₁_app _
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] ind₁' in
 def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
   app M := ofHom ⟨Representation.map₂, fun _ ↦ Representation.map₂_comm _ _⟩
   -- {
@@ -254,12 +265,9 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
   --     ext : 1
   --     exact Representation.map₂_comm _ _
   -- }
-  naturality X Y f:= by
-    ext (w : G →₀ X.V)
-    simp only [ind₁'_obj, hom_comp, hom_ofHom, Representation.IntertwiningMap.comp_toLinearMap,
-      LinearMap.coe_comp, Representation.IntertwiningMap.coe_toLinearMap, Function.comp_apply]
-    ext g
-    simp [ind₁', Representation.map₂, Finsupp.mapDomain_mapRange, -Representation.map₂_apply_apply]
+  naturality X Y f := by
+    ext : 2
+    simp [ind₁'_map_hom_toLinearMap, Representation.map₂_comp_ind₁'_map _]
 
 lemma map₂_app_gg_ind₁'_π_app (M : Rep R G) :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
@@ -269,9 +277,30 @@ lemma map₂_gg_ind₁'_π : map₂ (R := R) (G := G) ≫ ind₁'_π = 0 := by
   ext : 2
   exact map₂_app_gg_ind₁'_π_app _
 
+-- The two sides of the following `rfl` lemmas only have the same type after unfolding
+-- `coind₁'`/`ind₁'`, so they are not `@[simp]`: like `coind₁'_map_hom_toLinearMap`, they are
+-- meant to be used under `attribute [local implicit_reducible] coind₁' ind₁' in`.
+lemma coe_map₁_app_hom (M : Rep R G) :
+    ⇑(map₁.app M).hom = Representation.map₁ (R := R) (A := M.V) := rfl
+
+lemma coe_map₂_app_hom (M : Rep R G) :
+    ⇑(map₂.app M).hom = Representation.map₂ (R := R) (A := M.V) := rfl
+
+omit [IsCyclic G] in
+lemma coe_coind₁'_ι_app_hom (M : Rep R G) :
+    ⇑(coind₁'_ι.app M).hom = Representation.coind₁'_ι (R := R) (V := M.V) := rfl
+
+omit [IsCyclic G] in
+lemma coe_ind₁'_π_app_hom (M : Rep R G) :
+    ⇑(ind₁'_π.app M).hom = Representation.ind₁'_π (R := R) (V := M.V) := rfl
+
 variable [Finite G] (M : Rep R G)
 
-set_option backward.isDefEq.respectTransparency false in
+omit [IsCyclic G] in
+lemma coe_ind₁'_iso_coind₁'_inv_app_hom :
+    ⇑(ind₁'_iso_coind₁'.inv.app M).hom = (linearEquivFunOnFinite R M.V G).symm := rfl
+
+attribute [local implicit_reducible] coind₁' ind₁' in
 /--
 Let `M` be a representation of a finite cyclic group `G`.
 Then the following square commutes
@@ -287,21 +316,10 @@ and the horizontal maps are `map₁` and `map₂`.
 -/
 lemma map₁_comp_ind₁'_iso_coind₁' :
     map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv = (ind₁'_iso_coind₁'.app M).inv ≫ map₂.app M := by
-  ext x
-  simp only [coind₁', ind₁', Iso.app_inv, hom_comp, Representation.IntertwiningMap.comp_toLinearMap,
-    LinearMap.coe_comp, Representation.IntertwiningMap.coe_toLinearMap, Function.comp_apply] at x ⊢
-  ext d
-  simp only [ind₁'_iso_coind₁', Representation.ind₁'_lequiv_coind₁', linearEquivFunOnFinite,
-    Equiv.invFun_as_coe, NatIso.ofComponents_inv_app, map₁, hom_ofHom,
-    Representation.IntertwiningMap.coe_mk, Rep.mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
-    Representation.Equiv.mk_apply, LinearEquiv.coe_symm_mk', equivFunOnFinite_symm_apply_apply,
-    Representation.map₁_apply, map₂, Representation.map₂_apply_apply]
-  congr
-  classical simp [equivFunOnFinite, mapDomain, Finsupp.sum, Finsupp.single_apply,
-    eq_comm (b := d), ← inv_mul_eq_iff_eq_mul]
+  ext v
+  simp [coe_map₁_app_hom, coe_ind₁'_iso_coind₁'_inv_app_hom, coe_map₂_app_hom,
+    Representation.linearEquivFunOnFinite_symm_map₁]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The first short complex in the periodicity sequence. -/
 @[simps] def periodSeq₁ (M : Rep R G) : ShortComplex (Rep R G) where
   X₁ := M
@@ -311,7 +329,6 @@ set_option backward.isDefEq.respectTransparency false in
   g := map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv
   zero := by rw [← Category.assoc, coind_ι_gg_map₁_app, zero_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The second short complex in the periodicity sequence. -/
 @[simps] def periodSeq₂ : ShortComplex (Rep R G) where
   X₁ := coind₁'.obj M
@@ -323,54 +340,45 @@ set_option backward.isDefEq.respectTransparency false in
     rw [ Category.assoc, reassoc_of% map₁_comp_ind₁'_iso_coind₁'];
     simp [map₂_app_gg_ind₁'_π_app]
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] periodSeq₁ in
 /-- The first short complex in the periodicity sequence as a functor. -/
 @[simps] def periodSeq₁Functor : Rep R G ⥤ ShortComplex (Rep R G) where
   obj := periodSeq₁
   map {M N} f := ShortComplex.homMk f (coind₁'.map f) (ind₁'.map f) (by cat_disch) (by cat_disch)
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] periodSeq₂ in
 /-- The second short complex in the periodicity sequence as a functor. -/
 @[simps] def periodSeq₂Functor : Rep R G ⥤ ShortComplex (Rep R G) where
   obj := periodSeq₂
   map {M N} f := ShortComplex.homMk (coind₁'.map f) (ind₁'.map f) f (by cat_disch) (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] periodSeq₁ coind₁' ind₁' in
 lemma exact_periodSeq₁ : (periodSeq₁ M).Exact := by
   -- `S` is `ShortComplex (Rep R G)` here, but `Rep R G` is equivalent to `ModuleCat R[G]`.
   -- This step transfers our task to exactness in `ModuleCat R[G]`.
   rw [M.periodSeq₁.rep_exact_iff]
   intro w hw
-  simp only [periodSeq₁_X₂, coind₁'_obj, periodSeq₁_X₃, ind₁'_obj,
-    periodSeq₁_g, map₁, ind₁'_iso_coind₁', NatIso.ofComponents.app, hom_comp, hom_ofHom,
-    periodSeq₁_X₁, periodSeq₁_f, coind₁'_ι_app,
-    Representation.IntertwiningMap.mem_ker, Representation.IntertwiningMap.comp_apply,
-    Representation.IntertwiningMap.coe_mk, mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
-    Representation.Equiv.mk_apply, EmbeddingLike.map_eq_zero_iff,
+  have hinj : Function.Injective (ind₁'_iso_coind₁'.inv.app M).hom :=
+    (mono_iff_injective _).1 inferInstance
+  simp only [periodSeq₁_g, periodSeq₁_f, Representation.IntertwiningMap.mem_ker, hom_comp,
+    Representation.IntertwiningMap.comp_apply, Iso.app_inv, map_eq_zero_iff _ hinj,
     Representation.IntertwiningMap.mem_range] at hw ⊢
-  change w ∈ LinearMap.range Representation.coind₁'_ι
-  simp [← Representation.map₁_ker, hw]
+  rw [coe_map₁_app_hom] at hw
+  rw [coe_coind₁'_ι_app_hom]
+  exact LinearMap.mem_range.1 (Representation.map₁_ker.le (LinearMap.mem_ker.2 hw))
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
+attribute [local implicit_reducible] periodSeq₂ coind₁' ind₁' in
 lemma exact_periodSeq₂ : (periodSeq₂ M).Exact := by
   rw [M.periodSeq₂.rep_exact_iff]
-  intro w hw_ker
-  simp only [periodSeq₂_X₂, ind₁'_obj, periodSeq₂_X₃, periodSeq₂_g,
-    periodSeq₂_X₁, coind₁'_obj, periodSeq₂_f, map₁, ind₁'_iso_coind₁', NatIso.ofComponents.app,
-    hom_comp, hom_ofHom, Representation.IntertwiningMap.mem_ker,
-    Representation.IntertwiningMap.mem_range, Representation.IntertwiningMap.comp_apply,
-    Representation.IntertwiningMap.coe_mk, mkIso_inv_hom_apply _, Representation.Equiv.mk_symm,
-    Representation.Equiv.mk_apply] at hw_ker ⊢
-  change w ∈ LinearMap.ker (Representation.ind₁'_π (R := R)) at hw_ker
-  rw [← Representation.map₂_range] at hw_ker
-  obtain ⟨y, rfl⟩ := hw_ker
-  use (y : G → M.V)
-  change (linearEquivFunOnFinite ..).symm (Representation.map₁ y) = Representation.map₂ (R := R) y
-  ext w
-  rw [Representation.map₂_apply]
-  simp [linearEquivFunOnFinite]
+  intro w hw
+  simp only [periodSeq₂_g, periodSeq₂_f, Representation.IntertwiningMap.mem_ker, hom_comp,
+    Representation.IntertwiningMap.comp_apply, Iso.app_inv,
+    Representation.IntertwiningMap.mem_range] at hw ⊢
+  rw [coe_ind₁'_π_app_hom] at hw
+  rw [coe_map₁_app_hom, coe_ind₁'_iso_coind₁'_inv_app_hom]
+  obtain ⟨y, rfl⟩ :=
+    LinearMap.mem_range.1 (Representation.map₂_range.ge (LinearMap.mem_ker.2 hw))
+  exact ⟨(y : G → M.V), by simp [Representation.linearEquivFunOnFinite_symm_map₁]⟩
 
 /-- The up and down functors for a finite cyclic group are naturally isomorphic. -/
 def upIsoDown : up (R := R) (G := G) ≅ down := calc

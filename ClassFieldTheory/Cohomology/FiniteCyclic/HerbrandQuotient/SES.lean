@@ -31,8 +31,6 @@ omit [IsCyclic G] [Finite G] hS in
 lemma _root_.Rep.res_id_map (X Y : Rep R G) (f : X ⟶ Y) :
     (resFunctor (MonoidHom.id G)).map f = f := rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of representations of a finite cyclic group, the long exact
 sequence in cohomology is periodic with period six. -/
 def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
@@ -62,34 +60,74 @@ def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
         (mapShortComplex₃ hS (Eq.refl 3)).zero
     · simp only [Fin.isValue, Category.assoc, ← NatTrans.naturality, functor_obj]
       rw [← S.map_f]
-      simpa using! (mapShortComplex₁ hS (Eq.refl 3)).zero_assoc <|
-        (periodicCohomology 3 1 _).hom.app S.X₂
+      simp
     · simp [-functor_map, ← Functor.map_comp]
     · rw [← ShortComplex.map_g]
-      simpa using! (mapShortComplex₃ hS (Eq.refl 2)).zero
+      simp
     · rw [← ShortComplex.map_f]
-      simpa using! (mapShortComplex₁ hS (Eq.refl 2)).zero
+      simp
 
-set_option backward.isDefEq.respectTransparency false in
+/-! The short complexes `(herbrandSixTermSequence hS).sc' (j - 1) j (j + 1)`, unfolded. -/
+
+lemma herbrandSixTermSequence_sc'_5_0_1 :
+    (herbrandSixTermSequence hS).sc' 5 0 1 =
+      ShortComplex.mk (δ hS 1 2 rfl) ((functor R G 2).map S.f) (δ_comp_map hS 1 2 rfl) := rfl
+
+lemma herbrandSixTermSequence_sc'_0_1_2 :
+    (herbrandSixTermSequence hS).sc' 0 1 2 = S.map (functor R G 2) := rfl
+
+lemma herbrandSixTermSequence_sc'_1_2_3 :
+    (herbrandSixTermSequence hS).sc' 1 2 3 =
+      ShortComplex.mk ((functor R G 2).map S.g)
+        (δ hS 2 3 rfl ≫ (periodicCohomology 3 1 (by decide)).hom.app S.X₁) (by simp) := rfl
+
+lemma herbrandSixTermSequence_sc'_2_3_4 :
+    (herbrandSixTermSequence hS).sc' 2 3 4 =
+      ShortComplex.mk (δ hS 2 3 rfl ≫ (periodicCohomology 3 1 (by decide)).hom.app S.X₁)
+        ((functor R G 1).map S.f) (by rw [Category.assoc, ← NatTrans.naturality]; simp) := rfl
+
+lemma herbrandSixTermSequence_sc'_3_4_5 :
+    (herbrandSixTermSequence hS).sc' 3 4 5 = S.map (functor R G 1) := rfl
+
+lemma herbrandSixTermSequence_sc'_4_5_0 :
+    (herbrandSixTermSequence hS).sc' 4 5 0 =
+      ShortComplex.mk ((functor R G 1).map S.g) (δ hS 1 2 rfl) (map_comp_δ hS 1 2 rfl) := rfl
+
+/-- The short complex `H²(G, X₂) ⟶ H²(G, X₃) ⟶ H¹(G, X₁)` obtained from `mapShortComplex₃` by
+composing the connecting homomorphism with the periodicity isomorphism is exact. -/
+lemma exact_map_δ_periodicCohomology :
+    (ShortComplex.mk ((functor R G 2).map S.g)
+      (δ hS 2 3 rfl ≫ (periodicCohomology 3 1 (by decide)).hom.app S.X₁) (by simp)).Exact := by
+  refine ShortComplex.exact_of_iso ?_ (exact_map_δ hS 2 3 rfl)
+  exact ShortComplex.isoMk (.refl _) (.refl _) ((periodicCohomology 3 1 (by decide)).app S.X₁)
+
+/-- The short complex `H²(G, X₃) ⟶ H¹(G, X₁) ⟶ H¹(G, X₂)` obtained from `mapShortComplex₁` by
+composing the connecting homomorphism with the periodicity isomorphism is exact. -/
+lemma exact_δ_periodicCohomology_map :
+    (ShortComplex.mk (δ hS 2 3 rfl ≫ (periodicCohomology 3 1 (by decide)).hom.app S.X₁)
+      ((functor R G 1).map S.f) (by rw [Category.assoc, ← NatTrans.naturality]; simp)).Exact := by
+  refine ShortComplex.exact_of_iso ?_ (exact_δ_map hS 2 3 rfl)
+  exact ShortComplex.isoMk (.refl _) ((periodicCohomology 3 1 (by decide)).app S.X₁)
+    ((periodicCohomology 3 1 (by decide)).app S.X₂)
+    (comm₂₃ := by rw [Iso.app_hom, Iso.app_hom, NatTrans.naturality])
+
 lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS).ExactAt i := by
   fin_cases i <;>
-      change ShortComplex.Exact (ShortComplex.mk ..) <;>
-      -- FIXME: This `erw` appeared in v4.27.0
-      erw [CochainComplex.prev, CochainComplex.next]
-  · exact mapShortComplex₁_exact hS (Eq.refl 2)
-  · exact mapShortComplex₂_exact hS 2
-  · refine ShortComplex.exact_of_iso ?_ (mapShortComplex₃_exact hS (Eq.refl 3))
-    exact ShortComplex.isoMk (.refl _) (.refl _) ((periodicCohomology 3 1 <| by decide).app S.X₁)
-  · refine ShortComplex.exact_of_iso ?_ (mapShortComplex₁_exact hS (Eq.refl 3))
-    refine ShortComplex.isoMk (.refl _)
-      ((periodicCohomology 3 1 <| by decide).app S.X₁)
-      ((periodicCohomology 3 1 <| by decide).app S.X₂) ?_ ?_
-    · cat_disch
-    · dsimp only [herbrandSixTermSequence, Fin.reduceFinMk, Fin.reduceAdd]
-      erw [Iso.app_hom, ← (periodicCohomology 3 1 _).hom.naturality]
-      cat_disch
-  · exact mapShortComplex₂_exact hS 1
-  · exact mapShortComplex₃_exact hS (Eq.refl 2)
+    refine (HomologicalComplex.exactAt_iff' _ _ _ _ (CochainComplex.prev _ _)
+      (CochainComplex.next _ _)).mpr ?_ <;>
+    dsimp only [Fin.reduceFinMk, Fin.reduceSub, Fin.reduceAdd]
+  · rw [herbrandSixTermSequence_sc'_5_0_1]
+    exact exact_δ_map hS 1 2 rfl
+  · rw [herbrandSixTermSequence_sc'_0_1_2]
+    exact mapShortComplex₂_exact hS 2
+  · rw [herbrandSixTermSequence_sc'_1_2_3]
+    exact exact_map_δ_periodicCohomology hS
+  · rw [herbrandSixTermSequence_sc'_2_3_4]
+    exact exact_δ_periodicCohomology_map hS
+  · rw [herbrandSixTermSequence_sc'_3_4_5]
+    exact mapShortComplex₂_exact hS 1
+  · rw [herbrandSixTermSequence_sc'_4_5_0]
+    exact exact_map_δ hS 1 2 rfl
 
 lemma herbrandQuotient_ne_zero_of_shortExact₃
     (h₁ : S.X₁.herbrandQuotient ≠ 0) (h₂ : S.X₂.herbrandQuotient ≠ 0) :
@@ -155,18 +193,17 @@ lemma herbrandQuotient_eq_of_shortExact
     symm
     norm_cast at h ⊢
     ac_nf at h ⊢
-  have us (i : Fin 6) :=
-    Nat.card_congr (quotKerEquivRange ((herbrandSixTermSequence hS).d i (i + 1)).hom).toEquiv ▸
+  have us (i j : Fin 6) :=
+    Nat.card_congr (quotKerEquivRange ((herbrandSixTermSequence hS).d i j).hom).toEquiv ▸
     Submodule.card_eq_card_quotient_mul_card
-      (LinearMap.ker ((herbrandSixTermSequence hS).d i (i + 1)).hom)
-  have ui (i : Fin 6) :
-      range ((herbrandSixTermSequence hS).d (i - 1) i).hom =
-      ker ((herbrandSixTermSequence hS).d i (i + 1)).hom :=
-    CochainComplex.prev (Fin 6) i ▸ CochainComplex.next (Fin 6) i ▸
-      (herbrandSixTermSequence_exactAt hS i).moduleCat_range_eq_ker
-  rw [us 0, us 1, us 2, us 3, us 4, us 5]
-  erw [ui 0, ui 1, ui 2, ui 3, ui 4, ui 5]
-  dsimp only [Fin.reduceAdd]
+      (LinearMap.ker ((herbrandSixTermSequence hS).d i j).hom)
+  have ui (i j k : Fin 6) (hij : i + 1 = j := by decide) (hjk : j + 1 = k := by decide) :
+      range ((herbrandSixTermSequence hS).d i j).hom =
+      ker ((herbrandSixTermSequence hS).d j k).hom :=
+    ((HomologicalComplex.exactAt_iff' _ i j k (by simp [← hij]) (by simp [hjk])).mp
+      (herbrandSixTermSequence_exactAt hS j)).moduleCat_range_eq_ker
+  rw [us 0 1, us 1 2, us 2 3, us 3 4, us 4 5, us 5 0, ui 5 0 1, ui 0 1 2, ui 1 2 3, ui 2 3 4,
+    ui 3 4 5, ui 4 5 0]
   ac_rfl
 
 end Rep

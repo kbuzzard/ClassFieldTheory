@@ -107,9 +107,7 @@ theorem pow_sub_pow_mem {a b : 𝒪[K]} {i : ℕ} (hi : i ≠ 0) (h : a - b ∈ 
 
 -- another lemma
 theorem pow_card_sub_mem (x : 𝒪[K]) : x ^ Nat.card 𝓀[K] - x ∈ 𝓂[K] := by
-  rw [← Ideal.Quotient.eq_zero_iff_mem, map_sub, map_pow]
-  change algebraMap _ 𝓀[K] x ^ Nat.card 𝓀[K] - algebraMap _ 𝓀[K] x = 0
-  rw [FiniteField.pow_natCard, sub_self]
+  rw [← IsLocalRing.residue_eq_zero_iff, map_sub, map_pow, FiniteField.pow_natCard, sub_self]
 
 theorem teichmullerSeq_succ_sub_mem (x : 𝒪[K]) (i : ℕ) :
     teichmullerSeq x (i + 1) - teichmullerSeq x i ∈ 𝓂[K] ^ (i + 1) := by
@@ -205,10 +203,14 @@ noncomputable def teichmuller' : 𝓀[K] →*₀ 𝒪[K] where
     exact this
   map_zero' := Filter.Tendsto.limUnder_eq <| by simp [Pi.zero_def]
   map_one' := Filter.Tendsto.limUnder_eq <| by simp [Pi.one_def]
-  map_mul' x y := Quotient.inductionOn₂ x y fun x y ↦ by
+  map_mul' x y := by
+    obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
+    obtain ⟨y, rfl⟩ := IsLocalRing.residue_surjective y
     let := IsTopologicalAddGroup.rightUniformSpace K
     have := isUniformAddGroup_of_addCommGroup (G := K)
-    change Filter.limUnder _ _ = Filter.limUnder _ _ * Filter.limUnder _ _
+    rw [← map_mul]
+    simp only [IsLocalRing.residue_def, ← Ideal.Quotient.mk_eq_mk,
+      ← Submodule.Quotient.mk''_eq_mk, Quotient.liftOn_mk]
     rw [map_mul]
     exact Filter.Tendsto.limUnder_eq <| .mul
       (cauchySeq_teichmuller x).tendsto_limUnder (cauchySeq_teichmuller y).tendsto_limUnder

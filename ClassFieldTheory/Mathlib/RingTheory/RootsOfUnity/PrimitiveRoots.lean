@@ -53,8 +53,7 @@ theorem _root_.IsPrimitiveRoot.map_of_ne_zero {R S : Type*}
   rw [isPrimitiveRoot_iff_nthRoots_and_nodup hn1] at hζ' ⊢
   constructor
   · simp_rw [← map_pow]
-    change Multiset.map (f ∘ (ζ ^ ·)) _ = _
-    rw [← Multiset.map_map, hζ'.1, nthRoots,
+    rw [← Function.comp_def f (ζ ^ ·), ← Multiset.map_map, hζ'.1, nthRoots,
       (monic_X_pow_sub_C _ this).roots_map_of_card_eq_natDegree, Polynomial.map_sub,
       Polynomial.map_pow, map_X, map_C, map_one, nthRoots]
     · rw [← nthRoots, hζ.card_nthRoots_one, natDegree_X_pow_sub_C]

@@ -185,7 +185,7 @@ instance [Finite G] [Subsingleton G] {M : Rep R G} : M.TrivialTateCohomology := 
   intro H
   let : Fintype H := Fintype.ofFinite _
   have : (M ↓ H.subtype).ρ.IsTrivial := by
-    constructor; intro g; rw [Subsingleton.eq_one g, map_one]; rfl
+    constructor; intro g; rw [Subsingleton.eq_one g, map_one, Module.End.one_eq_id]
   constructor
   · refine IsZero.of_iso ?_ (TateCohomology.zeroIsoOfIsTrivial _)
     rw [Nat.card_unique, Nat.cast_one, LinearMap.range_eq_top_of_cancel (by exact fun _ _ a ↦ a)]

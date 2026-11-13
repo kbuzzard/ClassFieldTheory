@@ -4,7 +4,7 @@ public import
   ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
+public import ClassFieldTheory.Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 
 /-!
 -/
@@ -47,8 +47,8 @@ abbrev resCongr {f1 f2 : H →* G} (h : f1 = f2) :
     resFunctor.{w} (k := R) f1 ≅ resFunctor f2 :=
   NatIso.ofComponents (fun A ↦ mkIso (.mk (LinearEquiv.refl _ _) <| fun _ ↦ by simp [h]))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R) in
+@[implicit_reducible]
 def resEquiv (f : H ≃* G) : Rep.{w} R G ≌ Rep.{w} R H where
   functor := resFunctor f.toMonoidHom
   inverse := resFunctor f.symm.toMonoidHom
@@ -114,7 +114,6 @@ namespace groupCohomology
 variable {G S S' : Type u} [Group G] [Group S] (φ : S →* G) [Group S'] (ψ : S' →* S)
   {M : Rep.{u} R G}
 
-set_option backward.defeqAttrib.useBackward true in
 /--
 The restriction map `Hⁿ(G,M) ⟶ Hⁿ(H,M)`, defined as a morphism of functors
 -/
@@ -133,7 +132,6 @@ lemma rest_id (n : ℕ) : rest (MonoidHom.id G) (R := R) n = 𝟙 (functor R G n
   rw [rest_app]
   apply map_id
 
-set_option backward.isDefEq.respectTransparency false in
 lemma rest_comp (n : ℕ) : rest (φ.comp ψ) n = rest φ (R := R) n ≫ (𝟙 _ ◫ rest ψ n) := by
   ext M : 2
   simp only [rest_app, Functor.id_hcomp, NatTrans.comp_app, Functor.whiskerLeft_app]
@@ -146,10 +144,8 @@ abbrev resEquiv_inv (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃*
   mapIso e.symm (LinearEquiv.refl R M.V) (fun _ ↦ rfl) n
 
 lemma resEquiv_inv_hom (n : ℕ) (G' : Type u) [Group G'] (M : Rep R G) (e : G ≃* G') :
-    (resEquiv_inv n G' M e).hom = map e.toMonoidHom (Rep.ofHom ⟨LinearMap.id (M := M.V), fun g ↦ by
-      ext x
-      change M.ρ (e.symm (e g)) x = M.ρ g x
-      rw [e.symm_apply_apply]⟩) n :=
+    (resEquiv_inv n G' M e).hom =
+      map e.toMonoidHom (Rep.ofHom ⟨LinearMap.id (M := M.V), fun _ ↦ by simp⟩) n :=
   map_congr (by ext; simp) rfl n
 
 
@@ -185,7 +181,6 @@ lemma rest_δ_naturality {S : ShortComplex (Rep R G)} (hS : S.ShortExact)
   }
   exact HomologicalComplex.HomologySequence.δ_naturality this ses₁ ses₂ i j hij
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def resSubtypeRangeIso (M : Rep.{u} R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ)
     (hf : Function.Injective f) :
     groupCohomology (M ↓ f.range.subtype) n ≅ groupCohomology (M ↓ f) n where
@@ -208,7 +203,6 @@ namespace groupHomology
 variable {G S S' : Type u} [Group G] [Group S] (φ : S →* G) [Group S'] (ψ : S' →* S)
   {M : Rep.{u} R G}
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable def resSubtypeRangeIso (M : Rep R G) {H : Type u} [Group H] (f : H →* G) (n : ℕ)
     (hf : Function.Injective f) :
     groupHomology (M ↓ f.range.subtype) n ≅ groupHomology (M ↓ f) n where
