@@ -83,8 +83,8 @@ theorem Polynomial.degree_add_lt {R : Type*} [Semiring R] {p q : R[X]} {n}
   (degree_add_le _ _).trans_lt <| max_lt hp hq
 
 theorem Polynomial.degree_sub_lt' {R : Type*} [Ring R] {p q : R[X]} {n}
-    (hp : p.degree < n) (hq : q.degree < n) : (p - q).degree < n := by
-  simp only [sub_eq_add_neg, degree_add_lt hp (by rwa [degree_neg])]
+    (hp : p.degree < n) (hq : q.degree < n) : (p - q).degree < n :=
+  (degree_sub_le _ _).trans_lt <| max_lt hp hq
 
 theorem Polynomial.Monic.degree_mul' {R : Type*} [Semiring R] {p q : Polynomial R} (hp : p.Monic) :
     (p * q).degree = p.degree + q.degree := by

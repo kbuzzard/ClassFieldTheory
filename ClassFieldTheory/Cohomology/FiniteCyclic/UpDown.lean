@@ -256,8 +256,7 @@ def map₁ : coind₁' (R := R) (G := G) ⟶ coind₁' where
   app M := Rep.ofHom ⟨Representation.map₁, fun g ↦ Representation.map₁_comm _ _⟩
   naturality _ _ _ := by
     ext : 2
-    simp only [hom_comp, Representation.IntertwiningMap.comp_toLinearMap, hom_ofHom,
-      coind₁'_map_hom_toLinearMap, Representation.map₁_comp_compLeft _]
+    simp [coind₁'_map_hom_toLinearMap, Representation.map₁_comp_compLeft _]
 
 lemma coind_ι_gg_map₁_app (M : Rep R G) : coind₁'_ι.app M ≫ map₁.app M = 0 := by
   ext : 2
@@ -278,8 +277,7 @@ def map₂ : ind₁' (R := R) (G := G) ⟶ ind₁' where
   -- }
   naturality X Y f := by
     ext : 2
-    simp only [hom_comp, Representation.IntertwiningMap.comp_toLinearMap, hom_ofHom,
-      ind₁'_map_hom_toLinearMap, Representation.map₂_comp_ind₁'_map _]
+    simp [ind₁'_map_hom_toLinearMap, Representation.map₂_comp_ind₁'_map _]
 
 lemma map₂_app_gg_ind₁'_π_app (M : Rep R G) :  map₂.app M ≫ ind₁'_π.app M = 0 := by
   ext : 2
@@ -329,10 +327,8 @@ and the horizontal maps are `map₁` and `map₂`.
 lemma map₁_comp_ind₁'_iso_coind₁' :
     map₁.app M ≫ (ind₁'_iso_coind₁'.app M).inv = (ind₁'_iso_coind₁'.app M).inv ≫ map₂.app M := by
   ext v
-  simp only [hom_comp, Representation.IntertwiningMap.comp_toLinearMap, LinearMap.coe_comp,
-    Representation.IntertwiningMap.coe_toLinearMap, Iso.app_inv, coe_map₁_app_hom,
-    coe_ind₁'_iso_coind₁'_inv_app_hom, coe_map₂_app_hom, Function.comp_apply,
-    Representation.linearEquivFunOnFinite_symm_map₁ v]
+  simp [coe_map₁_app_hom, coe_ind₁'_iso_coind₁'_inv_app_hom, coe_map₂_app_hom,
+    Representation.linearEquivFunOnFinite_symm_map₁]
 
 /-- The first short complex in the periodicity sequence. -/
 @[simps] def periodSeq₁ (M : Rep R G) : ShortComplex (Rep R G) where
