@@ -360,7 +360,7 @@ theorem subsingleton_of_subquotient (q : ℕ)
       cocyclesMap (.id G) (Subrepresentation.toRepSubtype _) (q + 1) (desc i) from
     this ▸ (((M_ (toDual i)).toCocyclesIso _).symm (desc i)).2
   induction i with
-  | zero => simp only [Finset.sum_range_zero, sub_zero, desc, Nat.rec_zero]
+  | zero => simp [desc]
   | succ i ih =>
     rw [Finset.sum_range_succ, ← sub_sub, ih]
     simp only [desc]

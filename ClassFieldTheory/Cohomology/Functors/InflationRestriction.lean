@@ -113,12 +113,7 @@ def isoHInfRes (n : ℕ) (M : Rep R G) :
       · ext x
         simp [← MulEquiv.eq_symm_apply]
       · ext x
-        rw [Representation.IntertwiningMap.coe_toLinearMap,
-          Representation.IntertwiningMap.coe_toLinearMap,
-          res_quotientToInvariantsFunctor'_ι_hom_toFun, Rep.hom_comp,
-          Representation.IntertwiningMap.comp_apply, resMap_hom_apply]
-        simp only [Rep.hom_ofHom, Representation.IntertwiningMap.coe_mk, LinearMap.id_apply,
-          Representation.quotientToInvariants_lift_apply])
+        simp [res_quotientToInvariantsFunctor'_ι, quotientToInvariantsFunctor'_obj_ρ])
     (by
       rw [Iso.refl_hom, Iso.refl_hom, Category.id_comp, Category.comp_id, HInfRes_g,
         inflationRestriction_g, rest_app])

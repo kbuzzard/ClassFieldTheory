@@ -235,7 +235,7 @@ theorem cores_succ_naturality (n : ℕ) (X Y : Rep R G) (f : X ⟶ Y) :
     -- `δ⁻¹ ≫ (cores_obj _ (n + 1), whiskered by `up`) ≫ δ`, so it is natural.
     have := ((δUpResNatIso S n).inv ≫
       Functor.whiskerLeft up ⟨fun M ↦ cores_obj M (n + 1), ih⟩ ≫ (δUpNatIso n).hom).naturality f
-    simpa only [NatTrans.comp_app, Functor.whiskerLeft_app, cores_obj_succ_succ] using this
+    simpa [cores_obj_succ_succ] using this
 
 variable (R) (S) in
 /-- Corestriction as a natural transformation. -/
@@ -285,8 +285,7 @@ lemma commSqₙ (n : ℕ) (M : Rep R G) :
   | n + 1 =>
     refine comp_commSq _ _ _ _ _ _ _ (δ (shortExact_upSES_res M S.subtype) (n + 1) (n + 2) rfl)
       (rest_δ_naturality (shortExact_upSES M) S.subtype (n + 1) (n + 2) rfl).symm ?_
-    simp only [coresNatTrans_app, cores_obj_succ_succ, δUpResNatIso_inv_app, δUpNatIso_hom_app,
-      IsIso.hom_inv_id_assoc]
+    simp [cores_obj_succ_succ]
 
 lemma cores_res (n : ℕ) :
     (rest (R := R) (S.subtype) n ≫ coresNatTrans R S n : functor R G n ⟶ functor R G n) =

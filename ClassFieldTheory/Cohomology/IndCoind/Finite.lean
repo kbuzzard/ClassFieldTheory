@@ -439,17 +439,10 @@ lemma coind₁_quotientToInvariants_iso_comm {φ : G →* Q} (surj : Function.Su
         (coind₁_quotientToInvariants_iso_aux2 A
           (QuotientGroup.quotientKerEquivOfSurjective φ surj))).toLinearMap := by
   obtain ⟨g, rfl⟩ := surj q
-  ext x : 1
-  refine Subtype.ext (funext fun q' ↦ ?_)
+  ext x q'
   obtain ⟨g', rfl⟩ := surj q'
-  simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, coind₁_obj_ρ_apply_val, ← map_mul]
-  rw [coind₁_quotientToInvariants_iso_equiv_apply_val,
-    coind₁_quotientToInvariants_iso_equiv_apply_val,
-    QuotientGroup.quotientKerEquivOfSurjective_symm_apply,
-    QuotientGroup.quotientKerEquivOfSurjective_symm_apply,
-    QuotientGroup.quotientKerEquivOfSurjective_symm_apply,
-    coind₁_quotientToInvariants_iso_aux1_apply_val, coind₁_quotientToInvariants_iso_aux1_apply_val,
-    quotientToInvariants_mk_apply_val, coind₁_obj_ρ_apply_val]
+  simp [-coind_apply, -LinearEquiv.trans_apply, coind₁_quotientToInvariants_iso_equiv_apply_val _,
+    coind₁_quotientToInvariants_iso_aux1_apply_val _, ← QuotientGroup.mk_mul]
 
 def coind₁_quotientToInvariants_iso {φ : G →* Q}
     (surj : Function.Surjective φ) :
@@ -467,6 +460,11 @@ right translation on `G`.
 def coind₁' : Rep.{w} R G ⥤ Rep R G where
   obj M := of M.ρ.coind₁'
   map φ := Rep.ofHom ⟨φ.hom.toLinearMap.compLeft G, fun g ↦ by ext; simp [hom_comm_apply]⟩
+
+-- Not `@[simp]`: both sides only have the same type once `coind₁'` is unfolded, so this is meant
+-- to be used under `attribute [local implicit_reducible] coind₁' in`.
+lemma coind₁'_map_hom_toLinearMap {M N : Rep.{w} R G} (f : M ⟶ N) :
+    (coind₁'.map f).hom.toLinearMap = f.hom.toLinearMap.compLeft G := rfl
 
 /--
 The inclusion of a representation `M` of `G` in the coinduced representation `coind₁'.obj M`.
@@ -507,6 +505,10 @@ by `M.ρ` on `M.V`.
 def ind₁' : Rep.{w} R G ⥤ Rep R G where -- # why???????
   obj M := of M.ρ.ind₁'
   map f := ofHom ⟨Representation.ind₁'_map f.hom.toLinearMap, fun g ↦ by ext; simp [hom_comm_apply]⟩
+
+-- Not `@[simp]`, for the same reason as `coind₁'_map_hom_toLinearMap`.
+lemma ind₁'_map_hom_toLinearMap {M N : Rep.{w} R G} (f : M ⟶ N) :
+    (ind₁'.map f).hom.toLinearMap = Representation.ind₁'_map (G := G) f.hom.toLinearMap := rfl
 
 attribute [local implicit_reducible] ind₁' in
 /--

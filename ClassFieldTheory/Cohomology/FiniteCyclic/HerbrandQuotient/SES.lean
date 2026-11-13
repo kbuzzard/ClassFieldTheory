@@ -31,25 +31,6 @@ omit [IsCyclic G] [Finite G] hS in
 lemma _root_.Rep.res_id_map (X Y : Rep R G) (f : X ⟶ Y) :
     (resFunctor (MonoidHom.id G)).map f = f := rfl
 
--- TODO : upstream the next two lemmas into mathlib
--- They need `cochainsFunctor` to unfold, to identify `(S.map (cochainsFunctor R G)).Xᵢ.homology n`
--- (the objects in `ShortExact.homology_exact₁`/`₃`) with `groupCohomology S.Xᵢ n`.
-omit [IsCyclic G] [Finite G] in
-attribute [local implicit_reducible] cochainsFunctor in
-/-- `mapShortComplex₁_exact`, restated for the short complex `Hⁱ(G, X₃) ⟶ Hʲ(G, X₁) ⟶ Hʲ(G, X₂)`
-built from `δ` and `(functor R G j).map S.f`. -/
-lemma _root_.groupCohomology.exact_δ_map (i j : ℕ) (hij : i + 1 = j) :
-    (ShortComplex.mk (δ hS i j hij) ((functor R G j).map S.f) (δ_comp_map hS i j hij)).Exact :=
-  (map_cochainsFunctor_shortExact hS).homology_exact₁ i j (ComplexShape.up_mk i j hij)
-
-omit [IsCyclic G] [Finite G] in
-attribute [local implicit_reducible] cochainsFunctor in
-/-- `mapShortComplex₃_exact`, restated for the short complex `Hⁱ(G, X₂) ⟶ Hⁱ(G, X₃) ⟶ Hʲ(G, X₁)`
-built from `(functor R G i).map S.g` and `δ`. -/
-lemma _root_.groupCohomology.exact_map_δ (i j : ℕ) (hij : i + 1 = j) :
-    (ShortComplex.mk ((functor R G i).map S.g) (δ hS i j hij) (map_comp_δ hS i j hij)).Exact :=
-  (map_cochainsFunctor_shortExact hS).homology_exact₃ i j (ComplexShape.up_mk i j hij)
-
 /-- Given a short exact sequence of representations of a finite cyclic group, the long exact
 sequence in cohomology is periodic with period six. -/
 def herbrandSixTermSequence : CochainComplex (ModuleCat R) (Fin 6) where
@@ -128,7 +109,7 @@ lemma exact_δ_periodicCohomology_map :
   refine ShortComplex.exact_of_iso ?_ (exact_δ_map hS 2 3 rfl)
   exact ShortComplex.isoMk (.refl _) ((periodicCohomology 3 1 (by decide)).app S.X₁)
     ((periodicCohomology 3 1 (by decide)).app S.X₂)
-    (comm₂₃ := by simp only [Iso.app_hom, NatTrans.naturality])
+    (comm₂₃ := by rw [Iso.app_hom, Iso.app_hom, NatTrans.naturality])
 
 lemma herbrandSixTermSequence_exactAt (i : Fin 6) : (herbrandSixTermSequence hS).ExactAt i := by
   fin_cases i <;>

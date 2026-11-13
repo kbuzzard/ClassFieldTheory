@@ -51,5 +51,4 @@ lemma CategoryTheory.ShortComplex.ShortExact.rep_exact_iff_function_exact
     {S : ShortComplex (Rep.{w} k G)} : S.Exact ↔ Function.Exact S.f S.g := by
   rw [← exact_map_iff_of_faithful (F := forget₂ _ (ModuleCat k)),
     moduleCat_exact_iff_function_exact]
-  simp only [map_f, map_g, Rep.forget₂_moduleCat_map, ModuleCat.hom_ofHom,
-    Representation.IntertwiningMap.coe_toLinearMap]
+  simp

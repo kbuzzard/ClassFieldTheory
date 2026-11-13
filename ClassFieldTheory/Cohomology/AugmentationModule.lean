@@ -321,10 +321,6 @@ def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
   refine Submodule.Quotient.equiv _ _ (H0IsoOfIsTrivial (trivial R G R ↓ φ)).symm.toLinearEquiv ?_
   rw [← range_map_eq_ker_δ, LinearMap.range_eq_map, ← leftRegular.res_span_norm R G φ inj,
     Submodule.map_span, Submodule.map_span, ← Set.range_comp]
-  congr 1
-  ext x
-  simp only [Set.image_singleton, Set.mem_singleton_iff, Set.mem_range, Function.comp_apply,
-    ShortComplex.map_g, ShortComplex.map_X₂, ShortComplex.map_X₃]
   have key (g : G) : (map (MonoidHom.id H) (resMap φ (ε R G)) 0).hom (res_norm R φ g) =
       (H0IsoOfIsTrivial (trivial R G R ↓ φ)).symm.toLinearEquiv (Nat.card H : R) := by
     rw [← Iso.toLinearEquiv_symm, LinearEquiv.eq_symm_apply, Iso.toLinearEquiv_apply,
@@ -332,6 +328,6 @@ def H1_iso' [Finite G] {H : Type} [Group H] [Fintype H] {φ : H →* G}
       RepresentationTheory.groupCohomology.zeroι_naturality, ModuleCat.hom_comp,
       LinearMap.comp_apply, leftRegular.zeroι_res_norm]
     simp
-  simp only [key, LinearEquiv.coe_coe, eq_comm, exists_const]
+  simp [key, Iso.toLinearEquiv_apply _, Function.comp_def]
 
 end Rep.aug

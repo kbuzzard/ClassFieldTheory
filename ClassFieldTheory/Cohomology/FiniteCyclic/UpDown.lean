@@ -220,13 +220,11 @@ lemma map₂_range [Finite G] :
 
 lemma map₁_comp_compLeft {B : Type} [AddCommGroup B] [Module R B] (f : A →ₗ[R] B) :
     map₁ (G := G) ∘ₗ f.compLeft G = f.compLeft G ∘ₗ map₁ := by
-  refine LinearMap.ext fun v ↦ funext fun x ↦ ?_
-  simp
+  ext; simp
 
 lemma map₂_comp_ind₁'_map {B : Type} [AddCommGroup B] [Module R B] (f : A →ₗ[R] B) :
     map₂ ∘ₗ ind₁'_map (G := G) f = ind₁'_map (G := G) f ∘ₗ map₂ := by
-  refine LinearMap.ext fun w ↦ Finsupp.ext fun x ↦ ?_
-  simp [map₂_apply, -map₂_apply_apply]
+  ext; simp [map₂, apply_single]
 
 lemma linearEquivFunOnFinite_symm_map₁ [Finite G] (v : G → A) :
     (linearEquivFunOnFinite R A G).symm (map₁ (R := R) v) =
@@ -238,14 +236,6 @@ lemma linearEquivFunOnFinite_symm_map₁ [Finite G] (v : G → A) :
 end Representation
 
 namespace Rep
-
-omit [IsCyclic G] in
-lemma coind₁'_map_hom_toLinearMap {M N : Rep R G} (f : M ⟶ N) :
-    (coind₁'.map f).hom.toLinearMap = f.hom.toLinearMap.compLeft G := rfl
-
-omit [IsCyclic G] in
-lemma ind₁'_map_hom_toLinearMap {M N : Rep R G} (f : M ⟶ N) :
-    (ind₁'.map f).hom.toLinearMap = Representation.ind₁'_map (G := G) f.hom.toLinearMap := rfl
 
 attribute [local implicit_reducible] coind₁' in
 /--

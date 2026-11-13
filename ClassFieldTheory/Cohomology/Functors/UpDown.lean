@@ -100,9 +100,7 @@ lemma shortExact_upSES_res {H : Type u} [Group H] (φ : H →* G) :
     τ₂ := coind₁'.map f
     τ₃ := up.map f
   }
-  map_comp f g := by
-    ext : 1 <;> simp only [Functor.map_comp, ShortComplex.comp_τ₁, ShortComplex.comp_τ₂,
-      ShortComplex.comp_τ₃]
+  map_comp f g := by ext : 1 <;> simp [-up_map]
 
 /--
 The connecting homomorphism from `H⁰(G,up M)` to `H¹(G,M)` is
@@ -177,8 +175,7 @@ instance epi_δUpRes_app (S : Subgroup G) : Epi ((δUpRes S.subtype).app M) :=
 
 @[reassoc (attr := simp)]
 lemma map_up_π_comp_δUp : (functor R G 0).map (up.π M) ≫ δUp.app M = 0 := by
-  rw [δUp_app]
-  exact map_comp_δ (shortExact_upSES M) 0 1 rfl
+  rw [δUp_app, functor_map, ← upSES_g, map_comp_δ]
 
 -- `δ` is built on `X.map (cochainsFunctor R H)`, so `homology_exact₃` needs it to unfold.
 attribute [local implicit_reducible] cochainsFunctor in
@@ -245,9 +242,7 @@ def downShortComplex : Rep R G ⥤ ShortComplex (Rep R G) where
       simp only [downSES_X₂, ind₁', downSES_X₃, downSES_g, ind₁'_π, hom_comp, hom_ofHom,
         IntertwiningMap.comp_toLinearMap]
       ext; simp}
-  map_comp f g := by
-    ext : 1 <;> simp only [Functor.map_comp, ShortComplex.comp_τ₁, ShortComplex.comp_τ₂,
-      ShortComplex.comp_τ₃]
+  map_comp f g := by ext : 1 <;> simp [-down_map]
 
 variable [Finite G]
 

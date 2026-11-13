@@ -626,8 +626,7 @@ instance isIntegralClosure : IsIntegralClosure 𝒪[L] 𝒪[K] L where
 variable {K L} in
 theorem isIntegral_iff {y : L} : IsIntegral 𝒪[K] y ↔ valuation L y ≤ 1 := by
   rw [IsIntegralClosure.isIntegral_iff (A := 𝒪[L])]
-  simp only [Algebra.algebraMap_ofSubsemiring_apply, Subtype.exists, exists_prop, exists_eq_right,
-    Valuation.mem_integer_iff]
+  simp [Valuation.mem_integer_iff]
 
 end extension_of_local_fields
 
@@ -676,8 +675,7 @@ theorem isNonarchimedeanLocalField_of_finiteDimensional [FiniteDimensional K L] 
     refine ⟨fun {x y} ↦ ?_⟩
     rw [Valuation.Compatible.vle_iff_le (v := v),
       Valuation.Compatible.vle_iff_le (v := ValuativeRel.valuation K)]
-    simp only [v, NormedField.valuation_apply, ← NNReal.coe_le_coe, coe_nnNorm,
-      spectralNorm.normedField_norm_eq, spectralNorm_extends, Valued.toNormedField.norm_le_iff,
+    simp [v, ← NNReal.coe_le_coe, spectralNorm.normedField_norm_eq, spectralNorm_extends,
       IsValuativeTopology.v_eq_valuation]
   exact ⟨ofValuation v, this, isNonarchimedeanLocalField_of_valuativeExtension K L⟩
 

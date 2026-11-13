@@ -24,7 +24,7 @@ theorem Submodule.factorPow_eq_factorPow {m n : ℕ} (h : m ≤ n) :
       Ideal.Quotient.factorPow I h ∘ Ideal.quotEquivOfEq (by simp) := by
   ext x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  simp only [factor_eq_factor, Quotient.factor_mk, Function.comp_apply, Ideal.quotEquivOfEq_mk]
+  simp
 
 theorem Ideal.quotEquivOfEq_trans {I₁ I₂ I₃ : Ideal R} (h12 : I₁ = I₂) (h23 : I₂ = I₃) :
     (quotEquivOfEq h12).trans (quotEquivOfEq h23) = quotEquivOfEq (h12.trans h23) :=
@@ -60,4 +60,4 @@ theorem IsHausdorff.eq_iff_eq [IsHausdorff I R] {x y : R} :
   simp_rw [IsHausdorff.eq_iff_smodEq (I := I), SModEq, mk_eq_mk]
   refine forall_congr' fun n ↦ ?_
   rw [← (quotEquivOfEq <| show I ^ n • ⊤ = I ^ n by simp).injective.eq_iff]
-  simp only [quotEquivOfEq_mk]
+  simp
