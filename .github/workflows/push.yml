@@ -34,7 +34,10 @@ jobs:
 
   build:
     name: Build project
-    runs-on: ubuntu-latest
+    # Pinned: on the ubuntu-26.04 image (`ubuntu-latest` since November 2026) the API docs build
+    # runs out of memory whenever it has to regenerate mathlib's docs from scratch, which happens
+    # after every mathlib bump. The same build succeeds on ubuntu-24.04.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout project
         uses: actions/checkout@v7.0.1
