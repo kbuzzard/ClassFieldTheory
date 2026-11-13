@@ -262,12 +262,12 @@ lemma ind₁'_π_comp_ind₁'_map (f : V →ₗ[R] W) :
     rw [sum_add_index']
     · simp
     · intros
-      simp only [map_add]
+      simp [map_add]
   map_smul' _ _ := by
     rw [sum_smul_index']
-    · simp only [map_smul, RingHom.id_apply, smul_sum]
+    · simp [smul_sum]
     · intro
-      simp only [map_zero]
+      simp
 
 def ind₁'_invlmap_aux : (G →₀ R) →ₗ[R] V →ₗ[R] G →₀ V where
   toFun f := {

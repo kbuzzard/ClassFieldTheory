@@ -287,7 +287,7 @@ theorem map_injective_of_sqZero : (map (Ideal.Quotient.mk I) (f := f)).Injective
   -- -- `deg q = deg s`
   have h₂ : fac₁.snd.degree = fac₂.snd.degree := by
     convert congr($eq.2.degree) using 1 <;>
-    simp only [degree_snd_map]
+    rw [degree_snd_map]
   have h₃ : fac₁.snd.natDegree = fac₂.snd.natDegree := natDegree_eq_natDegree h₂
   obtain ⟨p, q, mp, mq, c₁, e₁⟩ := fac₁
   obtain ⟨r, s, mr, ms, c₂, e₂⟩ := fac₂
@@ -595,7 +595,7 @@ noncomputable def liftAdic {f : R[X]} (mf : f.Monic)
       map_limit (fun n ↦ n.casesOn monic_one fun _ ↦ monic_snd _)]
     obtain _ | n := n
     · subsingleton
-    simp only [fst_mul_snd_eq]
+    rw [fst_mul_snd_eq]
 
 @[simp] theorem map_fst_liftAdic {fac} :
     (liftAdic (I := I) mf fac).fst.map (Ideal.Quotient.mk I) = fac.fst := by

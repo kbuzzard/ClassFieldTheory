@@ -212,7 +212,7 @@ def cores_obj : (M : Rep R G) → (n : ℕ) →
     -- have := M.coind₁'_trivialCohomology
     have : upsc_top.X₂.TrivialCohomology := Rep.TrivialCohomology.res_subtype (coind₁'.obj M)
     refine isIso_δ_of_isZero (htopexact) (d + 1) ?_ ?_
-    all_goals simpa only [upSES_X₂] using isZero_of_trivialCohomology
+    all_goals simpa using isZero_of_trivialCohomology
   let ih := cores_obj (up.obj M) (d + 1)
   (asIso (δ htopexact (d + 1) (d + 2) rfl)).inv ≫ ih ≫ (up_δ_bottom_Iso).hom.app M
 

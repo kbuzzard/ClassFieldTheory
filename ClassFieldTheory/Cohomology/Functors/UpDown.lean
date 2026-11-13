@@ -108,14 +108,14 @@ an epimorphism (i.e. surjective).
 -/
 instance δ_up_zero_epi : Epi (δ (shortExact_upSES M) 0 1 rfl) := by
   refine epi_δ_of_isZero (shortExact_upSES M) 0 ?_
-  simpa only [upSES_X₂, zero_add] using isZero_of_trivialCohomology
+  simpa [-coind₁'_obj] using isZero_of_trivialCohomology
 
 /--
 The connecting homomorphism from `Hⁿ⁺¹(G,up M)` to `Hⁿ⁺²(G,M)` is an isomorphism.
 -/
 instance δ_up_isIso (n : ℕ) : IsIso (δ (shortExact_upSES M) (n + 1) (n + 2) rfl) := by
   refine isIso_δ_of_isZero (shortExact_upSES M) (n + 1) ?_ ?_ <;>
-    simpa only [upSES_X₂] using isZero_of_trivialCohomology
+    simpa [-coind₁'_obj] using isZero_of_trivialCohomology
 
 @[simps! hom]
 def δUpIso (n : ℕ) : groupCohomology (G := G) (up.obj M) (n + 1) ≅ groupCohomology M (n + 2) :=
@@ -134,8 +134,7 @@ an epimorphism (i.e. surjective).
 lemma epi_δ_up_zero_res {S : Type u} [Group S] {φ : S →* G} (inj : Injective φ) :
     Epi (δ ((shortExact_res φ).2 <| shortExact_upSES M) 0 1 rfl) := by
   refine epi_δ_of_isZero _ 0 ?_
-  simpa only [ShortComplex.map_X₂, upSES_X₂, zero_add]
-    using isZero_of_injective _ φ _ (by omega) inj
+  simpa using isZero_of_injective _ φ _ (by omega) inj
 
 /--
 If `S ⊆ G` and `M` is a `G`-module then the connecting homomorphism
@@ -144,8 +143,7 @@ from `H^{n+1}(S,(up_G M)↓S)` to `H^{n+2}(S,M↓S)` is an isomorphism.
 lemma isIso_δ_up_res {S : Type u} [Group S] {φ : S →* G} (inj : Injective φ) (n : ℕ) [NeZero n] :
     IsIso (δ ((shortExact_res φ).2 <| shortExact_upSES M) n (n + 1) rfl) := by
   refine isIso_δ_of_isZero _ n ?_ ?_ <;>
-    simpa only [ShortComplex.map_X₂, upSES_X₂]
-      using isZero_of_injective _ φ _ (NeZero.ne _) inj
+    simpa using isZero_of_injective _ φ _ (NeZero.ne _) inj
 
 def δUpResIso {S : Type u} [Group S] {φ : S →* G} (inj : Function.Injective φ) (n : ℕ) [NeZero n] :
     groupCohomology (up.obj M ↓ φ) n ≅ groupCohomology (M ↓ φ) (n + 1) := by
@@ -251,7 +249,7 @@ The connecting homomorphism `H⁰(G,down.obj M) ⟶ H¹(G, M)` is an epimorphism
 -/
 instance epi_δ_down_zero : Epi (δ (shortExact_downSES M) 0 1 rfl) := by
   refine epi_δ_of_isZero (shortExact_downSES M) 0 ?_
-  simpa only [downSES_X₂, zero_add] using isZero_of_trivialCohomology
+  simpa [-ind₁'_obj] using isZero_of_trivialCohomology
 
 /--
 The connecting homomorphism `H⁰(H,down.obj M ↓ H) ⟶ H¹(H, M ↓ H)` is an epimorphism if
@@ -260,8 +258,7 @@ The connecting homomorphism `H⁰(H,down.obj M ↓ H) ⟶ H¹(H, M ↓ H)` is an
 lemma epi_δ_down_res_zero {S : Type u} [Group S] {φ : S →* G} (inj : Injective φ) :
     Epi (δ (shortExact_downSES_res M φ) 0 1 rfl) := by
   refine epi_δ_of_isZero (shortExact_downSES_res M φ) 0 ?_
-  simpa only [downSES_X₂, ShortComplex.map_X₂, zero_add]
-    using isZero_of_injective _ φ _ (by omega) inj
+  simpa [-ind₁'_obj, -ind₁'_obj_ρ] using isZero_of_injective _ φ _ (by omega) inj
 
 /--
 The connecting homomorphism `Hⁿ⁺¹(G,down.obj M) ⟶ Hⁿ⁺²(G, M)` is an isomorphism
@@ -274,7 +271,7 @@ lemma isIso_δ_down_res (n : ℕ) [NeZero n] {H : Type u} [Group H] {φ : H →*
     IsIso (δ (shortExact_downSES_res M φ) n (n + 1) rfl) := by
   have := NeZero.ne n
   refine isIso_δ_of_isZero (shortExact_downSES_res M φ) n ?_ ?_ <;>
-    simpa only [downSES_X₂, ShortComplex.map_X₂] using isZero_of_injective _ φ _ (by omega) inj
+    simpa [-ind₁'_obj, -ind₁'_obj_ρ] using isZero_of_injective _ φ _ (by omega) inj
 
 def δDownIso (n : ℕ) [NeZero n] : groupCohomology M n ≅ groupCohomology (down.obj M) (n + 1) :=
   asIso (δ (shortExact_downSES M) n (n + 1) rfl)

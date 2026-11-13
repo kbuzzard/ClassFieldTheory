@@ -197,8 +197,8 @@ lemma map₂_range [Finite G] :
             simp only at hk_unique
             have := (unique_gen_pow (gen G ^ x)).choose_spec.right
             rw [this x, this y]
-            · simp only [hy, h, and_self]
-            · simp only [hx, and_self]
+            · simp [hy, h]
+            · simp [hx]
           _ = ∑ x, w x := by
             congr
             rw [Finset.eq_univ_iff_forall]
