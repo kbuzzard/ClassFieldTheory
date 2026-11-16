@@ -353,9 +353,6 @@ omit [TopologicalSpace K] [IsNonarchimedeanLocalField K]
 @[simp] theorem algebraMap_integers_apply_coe (x : 𝒪[K]) :
     (algebraMap 𝒪[K] 𝒪[L]) x = algebraMap K L x := rfl
 
--- done in `Continuity.lean` by Andrew and Maddy
-instance : ContinuousSMul K L := inferInstance
-
 instance : FaithfulSMul 𝒪[K] 𝒪[L] :=
   (faithfulSMul_iff_algebraMap_injective _ _).mpr fun _ _ h ↦ Subtype.ext <|
     FaithfulSMul.algebraMap_injective K L congr($h)
