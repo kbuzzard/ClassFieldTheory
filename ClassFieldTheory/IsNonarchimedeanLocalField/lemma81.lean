@@ -65,7 +65,16 @@ noncomputable def subrepFamily (ϖ : 𝒪[K]) (B : Submodule 𝒪[K] L) (hB : Is
       linear_combination (-1 + (algebraMap K L (ϖ ^ i : 𝒪[K]) * a + ((u : 𝒪[L]) : L) - 1) *
         ((u⁻¹ : 𝒪[L]ˣ) : L)) * ha + (((u : 𝒪[L]) : L) - 2) * hu1
   }
-  apply_mem_toSubmodule := sorry
+  apply_mem_toSubmodule g v hv := by
+    rw [← SetLike.mem_coe, ← Submodule.coe_toAddSubgroup] at hv ⊢
+    simp only [AddSubgroup.toIntSubmodule_toAddSubgroup, SetLike.mem_coe,
+      Additive.mem_toAddSubgroup _, Subgroup.mem_mk, ← Submonoid.mem_carrier, Set.mem_preimage,
+      Rep.ofMulDistribMulAction_ρ_apply_apply, toMul_ofMul, Units.coe_smul] at hv ⊢
+    obtain ⟨a, ha, ha'⟩ := Set.mem_smul_set.1 hv
+    rw [eq_comm, sub_eq_iff_eq_add] at ha'
+    have := invariant (M := G) K (L := L)
+    rw [← IsInvariantSubring.coe_subtypeHom G 𝒪[L], map_smul]
+    simpa [ha', smul_comm] using Set.smul_mem_smul_set <| hB.smul_mem _ _ ha
 
 @[simp] lemma mem_subrepFamily (ϖ : 𝒪[K]) (B : Submodule 𝒪[K] L) (hB : IsSerreLattice G ϖ B)
     (i : ℕ) (x : repUnitsInteger G K L) :
