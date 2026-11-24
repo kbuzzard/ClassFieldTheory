@@ -11,7 +11,7 @@ open scoped ValuativeRel Pointwise
 variable {K L : Type} [Field K] [ValuativeRel K] [TopologicalSpace K]
     [IsNonarchimedeanLocalField K] [Field L] [ValuativeRel L] [TopologicalSpace L]
     [IsNonarchimedeanLocalField L] [Algebra K L] [ValuativeExtension K L]
-    (G : Type) [Group G] [Finite G] [MulSemiringAction G L] [IsGaloisGroup G K L]
+    (G : Type) [Group G] [MulSemiringAction G L] [IsGaloisGroup G K L]
 
 instance : TopologicalSpace (repUnitsInteger G K L) := inferInstanceAs(TopologicalSpace 𝒪[L]ˣ)
 
@@ -23,17 +23,50 @@ structure IsSerreLattice (ϖ : 𝒪[K]) (B : Submodule 𝒪[K] L) : Prop where
   exists_pow_smul_mem : ∃ m : ℕ, ∀ x ∈ 𝒪[L], (ϖ : K) ^ m • x ∈ B     -- ϖ^m 𝒪[L] ⊆ B
   smul_mem : ∀ g : G, ∀ x ∈ B, g • x ∈ B
 
+variable {G} in
+omit [TopologicalSpace K]
+  [IsNonarchimedeanLocalField K]
+  [TopologicalSpace L]
+  [IsNonarchimedeanLocalField L]
+  [ValuativeExtension K L]
+  [IsGaloisGroup G K L] in
+lemma IsSerreLattice.mul_mem {ϖ : 𝒪[K]} {B : Submodule 𝒪[K] L} (hB : IsSerreLattice G ϖ B)
+    {a b : L} (ha : a ∈ B) (hb : b ∈ B) : a * b ∈ B := by
+  have := hB.mul_mul_mem _ ha _ hb 1 (one_mem _)
+  rw [mul_one] at this
+  exact B.smul_le_self_of_tower ϖ this
+
 noncomputable def subrepFamily (ϖ : 𝒪[K]) (B : Submodule 𝒪[K] L) (hB : IsSerreLattice G ϖ B)
     (i : ℕ) : Subrepresentation (repUnitsInteger G K L).ρ where
   toSubmodule := AddSubgroup.toIntSubmodule <| Subgroup.toAddSubgroup (G := 𝒪[L]ˣ) {
     carrier := (fun u : 𝒪[L]ˣ ↦ u.1.1 - 1) ⁻¹' (ϖ ^ i • B)
-    mul_mem' := by sorry
-    one_mem' := by sorry
-    inv_mem' := by sorry
+    mul_mem' {a b} ha hb := by
+      simp only [Set.mem_preimage, Units.val_mul, Subring.coe_mul] at ha hb ⊢
+      obtain ⟨a, haB, ha⟩ := Submodule.mem_smul_pointwise_iff_exists _ _ _|>.1 ha
+      obtain ⟨b, hbB, hb⟩ := Submodule.mem_smul_pointwise_iff_exists _ _ _|>.1 hb
+      refine Submodule.mem_smul_pointwise_iff_exists _ _ _|>.2 ⟨(a + b + ϖ ^ i • (a * b)),
+        add_mem (add_mem haB hbB) (B.smul_mem _ (hB.mul_mem haB hbB)), ?_⟩
+      rw [eq_comm, sub_eq_iff_eq_add] at ha hb
+      simp only [SubmonoidClass.coe_pow, smul_add, ha, hb]
+      ring_nf
+      rw [add_assoc, add_comm (_ • b), ← add_assoc, smul_mul_smul, mul_smul,
+        Subring.smul_def, Subring.coe_pow]
+    one_mem' := ⟨0, by simp⟩
+    inv_mem' {u} hu := by
+      simp only [Set.mem_preimage] at hu ⊢
+      obtain ⟨a, haB, ha⟩ := Submodule.mem_smul_pointwise_iff_exists _ _ _|>.1 hu
+      refine Submodule.mem_smul_pointwise_iff_exists _ _ _|>.2
+        ⟨-a + ϖ ^ i • (a * a * ((u⁻¹ : 𝒪[L]ˣ) : L)), add_mem (neg_mem haB)
+          (B.smul_mem _ (B.smul_le_self_of_tower ϖ (hB.mul_mul_mem _ haB _ haB _ (u⁻¹).1.2))), ?_⟩
+      have hu1 : ((u : 𝒪[L]) : L) * ((u⁻¹ : 𝒪[L]ˣ) : L) = 1 := by
+        rw [← Subring.coe_mul, ← Units.val_mul, mul_inv_cancel, Units.val_one, Subring.coe_one]
+      simp only [Algebra.smul_def] at ha ⊢
+      rw [IsScalarTower.algebraMap_apply 𝒪[K] K L, Algebra.algebraMap_ofSubsemiring_apply]
+      linear_combination (-1 + (algebraMap K L (ϖ ^ i : 𝒪[K]) * a + ((u : 𝒪[L]) : L) - 1) *
+        ((u⁻¹ : 𝒪[L]ˣ) : L)) * ha + (((u : 𝒪[L]) : L) - 2) * hu1
   }
   apply_mem_toSubmodule := sorry
 
-omit [Finite G] in
 @[simp] lemma mem_subrepFamily (ϖ : 𝒪[K]) (B : Submodule 𝒪[K] L) (hB : IsSerreLattice G ϖ B)
     (i : ℕ) (x : repUnitsInteger G K L) :
     x ∈ subrepFamily G ϖ B hB i ↔ ((Additive.toMul x : 𝒪[L]ˣ) : L) - 1 ∈ ϖ ^ i • B :=
@@ -56,7 +89,7 @@ noncomputable def subrepOfStable (B : Submodule 𝒪[K] L) (hB : ∀ g : G, ∀ 
   apply_mem_toSubmodule g x hx := by simpa using hB g x hx
 
 omit [TopologicalSpace K] [IsNonarchimedeanLocalField K] [ValuativeRel L] [TopologicalSpace L]
-  [IsNonarchimedeanLocalField L] [ValuativeExtension K L] [Finite G] in
+  [IsNonarchimedeanLocalField L] [ValuativeExtension K L] in
 /-- If `B` is `G`-stable then so is `ϖ • B`. -/
 lemma smul_stable (B : Submodule 𝒪[K] L) (hB : ∀ g : G, ∀ x ∈ B, g • x ∈ B) (ϖ : 𝒪[K]) :
     ∀ g : G, ∀ x ∈ ϖ • B, g • x ∈ ϖ • B := by
@@ -92,7 +125,7 @@ noncomputable def subrepFamilyQuotIso (ϖ : 𝒪[K]) (B : Submodule 𝒪[K] L) (
 
 open scoped Pointwise in
 variable (K L) in
-lemma serre_cor81 : ∃ M : Subrepresentation (A := ℤ) (G := G) (repUnitsInteger G K L).ρ,
+lemma serre_cor81 [Finite G] : ∃ M : Subrepresentation (A := ℤ) (G := G) (repUnitsInteger G K L).ρ,
     IsOpen (M.toSubmodule : Set (repUnitsInteger G K L)) ∧ ∀ q : ℕ,
     Subsingleton (groupCohomology M.toRep (q + 1)) := by
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
