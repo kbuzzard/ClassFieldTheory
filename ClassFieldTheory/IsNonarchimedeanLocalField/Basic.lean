@@ -10,6 +10,7 @@ public import ClassFieldTheory.Mathlib.RingTheory.Localization.AtPrime.Basic
 public import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
 public import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
 public import ClassFieldTheory.Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Extension
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
@@ -341,26 +342,12 @@ lemma algebraMap_mem_integer (x : 𝒪[K]) : (algebraMap 𝒪[K] L) x ∈ 𝒪[L
     ValuativeExtension.algebraMap_le, map_one, ← Valuation.mem_integer_iff]
   exact x.2
 
--- by David Ang
-noncomputable instance : Algebra 𝒪[K] 𝒪[L] where
-  smul r a := ⟨r • a, Algebra.smul_def r (a : L) ▸ mul_mem (algebraMap_mem_integer ..) a.2⟩
-  algebraMap := (algebraMap K L).restrict 𝒪[K] 𝒪[L] fun x hx => algebraMap_mem_integer K L ⟨x, hx⟩
-  commutes' _ _ := Subtype.ext (Algebra.commutes _ _)
-  smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
-
-omit [TopologicalSpace K] [IsNonarchimedeanLocalField K]
-  [TopologicalSpace L] [IsNonarchimedeanLocalField L] in
-@[simp] theorem algebraMap_integers_apply_coe (x : 𝒪[K]) :
-    (algebraMap 𝒪[K] 𝒪[L]) x = algebraMap K L x := rfl
+-- The `𝒪[K]`-algebra structure on `𝒪[L]`, with its `IsScalarTower`, `FaithfulSMul` and
+-- `IsLocalHom` instances, comes from mathlib's `Valuation.HasExtension.instAlgebraInteger`
+-- through `ValuativeExtension.hasExtension`.
 
 -- done in `Continuity.lean` by Andrew and Maddy
 instance : ContinuousSMul K L := inferInstance
-
-instance : FaithfulSMul 𝒪[K] 𝒪[L] :=
-  (faithfulSMul_iff_algebraMap_injective _ _).mpr fun _ _ h ↦ Subtype.ext <|
-    FaithfulSMul.algebraMap_injective K L congr($h)
-
-instance : IsScalarTower 𝒪[K] 𝒪[L] L := .of_algebraMap_eq' rfl
 
 /--
 **Bounded denominators**: if `b` is any finite `K`-basis of `L` and `ϖ` is a uniformiser of `K`,
@@ -493,14 +480,8 @@ instance : 𝓂[L].LiesOver 𝓂[K] := by
   refine ⟨le_antisymm ?_ fun _ ↦ mt <| IsUnit.map _⟩
   rw [← Ideal.map_le_iff_le_comap, hk, Ideal.map_span, Set.image_singleton,
     Ideal.span_singleton_le_iff_mem, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
-    Valuation.Integer.not_isUnit_iff_valuation_lt_one, algebraMap_integers_apply_coe]
+    Valuation.Integer.not_isUnit_iff_valuation_lt_one, Valuation.HasExtension.val_algebraMap]
   exact valuation_map_irreducible_lt_one hϖK
-
-instance : IsLocalHom (algebraMap 𝒪[K] 𝒪[L]) := by
-  refine ⟨fun x hx ↦ ?_⟩
-  rw [Valuation.Integers.isUnit_iff_valuation_eq_one (Valuation.integer.integers vK)]
-  rw [Valuation.Integers.isUnit_iff_valuation_eq_one (Valuation.integer.integers vL)] at hx
-  exact (ValuativeRel.isEquiv ((vL).comap iKL) vK).eq_one_iff_eq_one.mp hx
 
 noncomputable instance : Algebra 𝓀[K] 𝓀[L] := inferInstance
 
