@@ -95,6 +95,7 @@ public import ClassFieldTheory.Mathlib.RingTheory.UniqueFactorizationDomain.Basi
 public import ClassFieldTheory.Mathlib.RingTheory.Unramified.Basic
 public import ClassFieldTheory.Mathlib.RingTheory.Unramified.LocalRing
 public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Basic
+public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Extension
 public import ClassFieldTheory.Mathlib.RingTheory.Valuation.Integers
 public import ClassFieldTheory.Mathlib.RingTheory.Valuation.ValuativeRel
 public import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
