@@ -346,9 +346,6 @@ lemma algebraMap_mem_integer (x : 𝒪[K]) : (algebraMap 𝒪[K] L) x ∈ 𝒪[L
 -- `IsLocalHom` instances, comes from mathlib's `Valuation.HasExtension.instAlgebraInteger`
 -- through `ValuativeExtension.hasExtension`.
 
--- done in `Continuity.lean` by Andrew and Maddy
-instance : ContinuousSMul K L := inferInstance
-
 /--
 **Bounded denominators**: if `b` is any finite `K`-basis of `L` and `ϖ` is a uniformiser of `K`,
 then a large enough power of `ϖ` multiplies every integer of `L` into the `𝒪[K]`-lattice

@@ -61,6 +61,7 @@ public import ClassFieldTheory.Mathlib.CategoryTheory.Category.Cat
 public import ClassFieldTheory.Mathlib.Data.Int.WithZero
 public import ClassFieldTheory.Mathlib.FieldTheory.Finite.Basic
 public import ClassFieldTheory.Mathlib.FieldTheory.Finite.IntermediateField
+public import ClassFieldTheory.Mathlib.FieldTheory.Galois.NormalBasis
 public import ClassFieldTheory.Mathlib.FieldTheory.Separable
 public import ClassFieldTheory.Mathlib.GroupTheory.GroupAction.Quotient
 public import ClassFieldTheory.Mathlib.GroupTheory.SpecificGroups.Cyclic
@@ -102,8 +103,11 @@ public import ClassFieldTheory.Mathlib.SetTheory.Cardinal.Finite
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Group.Basic
 public import ClassFieldTheory.Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Module.FiniteDimension
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Module.Lattice
+public import ClassFieldTheory.Mathlib.Topology.Algebra.Module.ModuleTopology
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Monoid
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Ring.Basic
+public import ClassFieldTheory.Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.NormedValued
 public import ClassFieldTheory.Mathlib.Topology.Algebra.Valued.ValuativeRel
 public import ClassFieldTheory.Tactic.Dualize
