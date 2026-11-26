@@ -71,3 +71,45 @@ jobs:
         uses: leanprover-community/docgen-action@main
         with:
           blueprint: true
+          # The action can also upload and deploy the site, but its deploy step looks for the
+          # artifact right after the upload and often does not find it yet
+          # (actions/deploy-pages#451, leanprover-community/docgen-action#43). That fails this job
+          # after the docs have been built, so the docs cache is not saved either. The next step
+          # and the `deploy` job upload and deploy instead.
+          deploy: false
+
+      # The upload step that the action would otherwise run. The action leaves the blueprint and
+      # the API docs in `docs/`. Pushes only, like the action: a manual run does not build the
+      # API docs, so deploying it would remove them from the site.
+      - if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        name: Upload website (API documentation and blueprint)
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: docs/
+
+  # A separate job, so that the artifact is looked up well after it was uploaded, and so that a
+  # failed deployment does not fail the `build` job. "Re-run failed jobs" then re-runs only this
+  # job, which deploys the artifact that `build` uploaded (it is kept for one day). A re-run
+  # deploys the commit of its own run, so only re-run the latest run on `main`.
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # No `url`: the deploy step's `page_url` is the root of the site, and there is no page there.
+    environment: github-pages
+    steps:
+      # A deployment can fail for a reason that is gone a minute later (an earlier deployment
+      # still in progress, the artifact not listed yet), so a failed one is tried once more.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      - name: Wait before the second attempt
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 60
+
+      - name: Deploy to GitHub Pages (second attempt)
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
